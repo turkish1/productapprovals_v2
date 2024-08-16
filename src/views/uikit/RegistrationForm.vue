@@ -62,7 +62,7 @@ export default {
         function checkLicense() {
             events.value.forEach((item) => {
                 // CRC002120 CRC026270
-                const current = Date.now();
+                // const current = Date.now();
                 if (formDatas.value.license === item.alt_license) {
                     (formDatas.value.dba = item.DBA), (formDatas.value.name = item.name), (formDatas.value.secondary_status = item.secondary_status), (formDatas.value.expiration_date = item.expiration_date), (formDatas.value.address = item.address1);
                 }
