@@ -1,9 +1,9 @@
 <script setup>
 import useDripSize from '@/composables/use-dripedgesize';
 import { onMounted, reactive, ref, watch } from 'vue';
+
 import AgreementsDialogShingle from './AgreementsDialogShingle.vue';
 import InputItems from './InputItems.vue';
-
 onMounted(() => {
     isDialog = true;
 });
@@ -67,8 +67,6 @@ function checkSlope() {
     <AgreementsDialogShingle v-show="isDialog === true"></AgreementsDialogShingle>
 
     <div class="card md:w-3/4 container space-y-1" style="margin-left: 50px">
-        <input-items :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-items>
-
         <div class="card w-96 grid gap-1 grid-cols-1">
             <label>Drip Edge Material</label>
             <Select v-model="selectDripEdge" :options="type" placeholder="make selection" @click="checkValue" />
@@ -76,6 +74,7 @@ function checkSlope() {
             <label>Drip Edge Size</label>
             <Select v-model="selectDripEdgeSize" :options="size" placeholder="make selection" @click="getdripSize" />
         </div>
+        <input-items :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-items>
     </div>
 </template>
 <style scoped>

@@ -3,8 +3,11 @@ import useBurMat from '@/composables/use-burmaterials';
 import useDripSize from '@/composables/use-dripedgesize';
 import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 let isDialog = ref(false);
+const roofType = ref('lowslope');
 onMounted(() => {
-    isDialog = true;
+    if (roofType.value === 'lowslope') {
+        isDialog = true;
+    }
 });
 
 const props = defineProps({

@@ -1,6 +1,6 @@
 <template>
     <!-- grid grid-cols-3 gap-4 card flex flex-row gap-16-->
-    <div class="md:w-1/2 card flex flex-row gap-4" style="margin-left: 300px">
+    <div class="md:w-1/2 card flex flex-row gap-3" style="margin-left: 200px">
         <div class="basis-1/7"><InputNumber v-model="value1" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
         <div class="basis-1/7"><InputNumber v-model="value2" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
         <div class="basis-1/7"><InputNumber v-model="value3" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>

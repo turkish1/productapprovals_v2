@@ -125,10 +125,8 @@ function valueEntered() {
 </script>
 <template>
     <div class="flex flex-col md:flex-row gap-2" style="margin-left: 10px">
-        <!-- md:w-3/4 w-full -->
-        <!-- <div class="w-full"> -->
         <div class="container">
-            <div class="card w-64 gap-4" style="margin-left: 2px">
+            <div class="card w-64 gap-2" style="margin-left: 2px">
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
             </div>
             <div class="w-64 gap-4" style="margin-left: 2px">
@@ -244,7 +242,7 @@ function valueEntered() {
     border-radius: 12px;
     /* box-shadow: 4px 4px 16px rgb(22, 183, 183); */
     position: left;
-    min-height: 500px;
+    min-height: 400px;
     min-width: 200px;
     top: 10vh;
 }

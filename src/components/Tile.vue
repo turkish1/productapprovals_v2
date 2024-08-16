@@ -16,6 +16,7 @@ export default {
         const save = ref([]);
         const isDialog = ref(false);
         const exposure = ref('');
+        const roofType = ref('Tile');
         onMounted(() => {
             isDialog.value = true;
         });
@@ -60,7 +61,7 @@ export default {
             }
         });
 
-        return { onMounted, underlaymentNOA, exposure, saNOA, isUDLNOAValid, isUDLValid, isSAValid, save, selectedUnderlayment, underlaymentType, selectedDeck, perimeter, type, slope, height, area };
+        return { onMounted, roofType, underlaymentNOA, exposure, saNOA, isUDLNOAValid, isUDLValid, isSAValid, save, selectedUnderlayment, underlaymentType, selectedDeck, perimeter, type, slope, height, area };
     }
 };
 </script>
@@ -68,42 +69,42 @@ export default {
     <!-- <div class="flex flex-col md:flex-row gap-2" style="margin-left: 320px"> -->
     <AgreementsDialog v-show="isDialog === true"></AgreementsDialog>
     <div class="md:w-2/3" style="margin-left: 320px">
-        <div class="card flex flex-col gap-5">
-            <div class="container">
-                <div class="w-64 mt-6 ..." style="margin-left: 20px">
-                    <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
-                    <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" />
-                </div>
-                <div class="w-64 mt-6 ..." style="margin-left: 20px">
-                    <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-                    <InputText id="height" v-model="height" type="text" placeholder="height" />
-                </div>
-                <div class="w-64 mt-6 ..." style="margin-left: 20px">
-                    <label for="area">Area</label>
-                    <InputText id="area" v-model="area" type="text" placeholder="area" />
-                </div>
-                <div class="w-64 mt-6 ..." style="margin-left: 20px">
-                    <label for="perimeter">Roof Permeter(a) = 4h</label>
-                    <InputText id="perimeter" v-model="perimeter" type="text" placeholder="perimeter" />
-                </div>
-                <div v-if="isUDLValid" class="w-64" style="margin-left: 20px">
-                    <label for="underlaymentNOA">UDL Anchor Sheer NOA Number</label><label class="px-1" style="color: red">*</label>
-                    <InputText id="underlaymentNOA" v-model="underlaymentNOA" type="text" placeholder=" " />
-                </div>
+        <!-- <div class="card flex flex-col gap-5"> -->
+        <div class="container">
+            <div class="w-64 mt-6 ..." style="margin-left: 20px">
+                <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
+                <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" />
+            </div>
+            <div class="w-64 mt-6 ..." style="margin-left: 20px">
+                <label for="height">Height</label><label class="px-2" style="color: red">*</label>
+                <InputText id="height" v-model="height" type="text" placeholder="height" />
+            </div>
+            <div class="w-64 mt-6 ..." style="margin-left: 20px">
+                <label for="area">Area</label>
+                <InputText id="area" v-model="area" type="text" placeholder="area" />
+            </div>
+            <div class="w-64 mt-6 ..." style="margin-left: 20px">
+                <label for="perimeter">Roof Permeter(a) = 4h</label>
+                <InputText id="perimeter" v-model="perimeter" type="text" placeholder="perimeter" />
+            </div>
+            <div v-if="isUDLValid" class="w-64" style="margin-left: 20px">
+                <label for="underlaymentNOA">UDL Anchor Sheer NOA Number</label><label class="px-1" style="color: red">*</label>
+                <InputText id="underlaymentNOA" v-model="underlaymentNOA" type="text" placeholder=" " />
+            </div>
 
-                <div v-if="isSAValid" class="w-64" style="margin-left: 20px">
-                    <label for="saNOA">S/A Tile Capsheet NOA Number</label><label class="px-1" style="color: red">*</label>
-                    <InputText id="saNOA" v-model="saNOA" type="text" placeholder=" " />
-                </div>
+            <div v-if="isSAValid" class="w-64" style="margin-left: 20px">
+                <label for="saNOA">S/A Tile Capsheet NOA Number</label><label class="px-1" style="color: red">*</label>
+                <InputText id="saNOA" v-model="saNOA" type="text" placeholder=" " />
+            </div>
 
-                <div class="card grid gap-4 grid-cols-1">
-                    <label for="decktype">Select a Deck Type</label>
-                    <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="make selection" />
-                    <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
-                    <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" />
-                </div>
+            <div class="card grid gap-4 grid-cols-1">
+                <label for="decktype">Select a Deck Type</label>
+                <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="make selection" />
+                <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
+                <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" />
             </div>
         </div>
+        <!-- </div> -->
     </div>
     <!-- </div> -->
     <Divider />
@@ -172,7 +173,7 @@ export default {
                 <InputText id="expiredate_sa" v-model="expiredate_sa" aria-describedby="username-help" />
             </div>
         </div>
-        <Divider />
+        <!-- <Divider /> -->
         <div class="flex flex-wrap gap-4" style="margin-left: 390px">
             <label>Select Exposure</label>
             <div class="flex items-center">
@@ -183,7 +184,8 @@ export default {
                 <RadioButton v-model="exposure" inputId="D" name="exposureD" value="D" />
                 <label for="exposureD" class="ml-2">D</label>
             </div>
-            <div class="container flex flex-wrap gap-1">
+
+            <div class="container flex flex-wrap gap-1" style="margin-right: 300px">
                 <TileTable1 style="margin-left: 40px" />
                 <TileTable2 style="margin-left: 40px" />
                 <TileTable3 style="margin-left: 40px" />
@@ -200,7 +202,7 @@ export default {
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 200px;
-    min-width: 150px;
+    /* min-width: 150px; */
     top: 10vh;
 }
 
