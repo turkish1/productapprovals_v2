@@ -137,10 +137,14 @@ export default {
                                             <InputText id="zip" v-model="contractor" type="text" placeholder="name" />
                                             <!-- <Message severity="error">Contractor Name Required</Message> -->
                                         </div>
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <!-- <div class="flex flex-col grow basis-0 gap-3">
                                             <label for="phone">Phone Number</label>
                                             <InputText id="phone" v-model="phone" type="text" placeholder="000-000-0000" />
-                                            <!-- <Message severity="error">Phone Required</Message> -->
+                                            <Message severity="error">Phone Required</Message>
+                                        </div> -->
+                                        <div class="flex flex-col grow basis-0 gap-3">
+                                            <label for="phone">Cell Phone Number</label>
+                                            <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
                                         </div>
 
                                         <div class="flex flex-col grow basis-0 gap-3">
