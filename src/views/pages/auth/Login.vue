@@ -15,9 +15,9 @@ function checkAuth() {
     }
 }
 
-const register = () => {
-    router.push('/');
-};
+function register() {
+    router.push('/registration');
+}
 
 const navigateNext = () => {
     router.push('/dashboard');

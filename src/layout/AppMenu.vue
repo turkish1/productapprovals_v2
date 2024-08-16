@@ -6,14 +6,14 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
     {
         label: 'Home',
-        items: [{ label: 'registrationform', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: 'login', icon: 'pi pi-fw pi-home', to: '/' }]
     },
     {
         label: 'UI Components',
         items: [
             { label: 'Dashboard', icon: 'pi pi-fw pi-id-card', to: '/dashboard' },
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
-            // { label: 'Registration Form', icon: 'pi pi-fw pi-id-card', to: '/registrationform' },
+            { label: 'Registration Form', icon: 'pi pi-fw pi-id-card', to: '/registration' },
             { label: 'General Page', icon: 'pi pi-fw pi-id-card', to: '/generalpage' },
             { label: 'Roof System', icon: 'pi pi-fw pi-clone', to: '/roofsystem' },
             { label: 'Permit Application', icon: 'pi pi-fw pi-clone', to: '/permitapp' },
