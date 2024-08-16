@@ -74,11 +74,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/PanelsDoc.vue')
                 },
 
-                {
-                    path: '/uikit/overlay',
-                    name: 'overlay',
-                    component: () => import('@/views/uikit/OverlayDoc.vue')
-                },
+                // {
+                //     path: '/uikit/overlay',
+                //     name: 'overlay',
+                //     component: () => import('@/views/uikit/OverlayDoc.vue')
+                // },
 
                 {
                     path: '/uikit/file',
