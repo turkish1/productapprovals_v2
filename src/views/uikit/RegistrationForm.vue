@@ -79,7 +79,7 @@ export default {
             });
         }
         const navigateNext = () => {
-            router.push('/auth/login');
+            router.push('/');
         };
 
         const toast = useToast();
