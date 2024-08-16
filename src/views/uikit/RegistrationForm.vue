@@ -47,7 +47,7 @@ export default {
 
                 .then((response) => {
                     responseMessage.value = 'Form submitted successfully!';
-                    // console.log('Response:', response.data);
+                    console.log('Response:', response.data);
                     // store the values
 
                     // then clear the page
