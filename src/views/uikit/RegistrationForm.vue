@@ -47,7 +47,7 @@ export default {
 
                 .then((response) => {
                     responseMessage.value = 'Form submitted successfully!';
-                    console.log('Response:', response.data);
+                    // console.log('Response:', response.data);
                     // store the values
 
                     // then clear the page
@@ -64,12 +64,10 @@ export default {
                 // CRC002120 CRC026270
                 const current = Date.now();
                 if (formDatas.value.license === item.alt_license) {
-                    console.log(item.alt_license, item.address1, item.DBA, item.name, item.secondary_status, item.expiration_date);
-
                     (formDatas.value.dba = item.DBA), (formDatas.value.name = item.name), (formDatas.value.secondary_status = item.secondary_status), (formDatas.value.expiration_date = item.expiration_date), (formDatas.value.address = item.address1);
                 }
-                if (item.secondary_status !== 'A') {
-                    console.log('Not active');
+                if (formDatas.value.secondary_status !== 'A') {
+                    console.log('Not active', formDatas.value.secondary_status);
                     alert('License is not Activite ');
                     disabled = true;
                 }
