@@ -1,0 +1,1 @@
+import{d as p}from"./index-FANDn_ZI.js";const s=p("permitapp",{state:()=>({permitapp:[],id:0}),actions:{addSystem(t,e){this.permitapp.push({formdt:t,permType:e,id:this.id++,completed:!1})}}});export{s as u};
