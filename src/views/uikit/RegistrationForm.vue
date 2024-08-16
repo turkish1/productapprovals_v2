@@ -68,7 +68,7 @@ export default {
 
                     (formDatas.value.dba = item.DBA), (formDatas.value.name = item.name), (formDatas.value.secondary_status = item.secondary_status), (formDatas.value.expiration_date = item.expiration_date), (formDatas.value.address = item.address1);
                 }
-                if (item.secondary_status === 'I') {
+                if (item.secondary_status !== 'A') {
                     console.log('Not active');
                     alert('License is not Activite ');
                     disabled = true;
