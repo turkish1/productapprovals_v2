@@ -1,0 +1,1 @@
+import{e as i}from"./index-PiqeIkyu.js";const d=i("roofList",{state:()=>({roofList:[],id:0}),actions:{addSystem(o,t){this.roofList.push({item:o,dim:t,id:this.id++,completed:!1})},deleteSystem(o){this.roofList=this.roofList.filter(t=>t.id!==o)},toggleCompleted(o){const t=this.roofList.find(e=>e.id===o);t&&(t.completed=!t.completed)}}});export{d as u};
