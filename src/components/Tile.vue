@@ -1,15 +1,15 @@
 <script>
-import { default as TileTable1, default as TileTable2, default as TileTable3 } from '@/components/TileTable.vue';
+import TileTable1 from '@/components/TileTable.vue';
 import { onMounted, ref, watch } from 'vue';
 import AgreementsDialog from './AgreementsDialog.vue';
-
+//  default as TileTable2, default as TileTable3
 export default {
     components: {
         AgreementsDialog,
-        TileTable1,
-        TileTable2,
+        TileTable1
+        // TileTable2,
 
-        TileTable3
+        // TileTable3
     },
 
     setup() {
@@ -66,11 +66,15 @@ export default {
 };
 </script>
 <template>
+    <!-- class="md:w-2/3" style="margin-left: 320px" -->
     <!-- <div class="flex flex-col md:flex-row gap-2" style="margin-left: 320px"> -->
-    <AgreementsDialog v-show="isDialog === true"></AgreementsDialog>
-    <div class="md:w-2/3" style="margin-left: 320px">
+    <!-- class="flex flex-col w-full gap-4 bg-cyan-500 shadow-lg shadow-gray" style="margin-left: 5px" -->
+
+    <div class="flex flex-col md:w-3/4 min-h-[420px] gap-6 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px; margin-bottom: 4px">
+        <AgreementsDialog v-if="isDialog === true"></AgreementsDialog>
         <!-- <div class="card flex flex-col gap-5"> -->
-        <div class="container">
+        <!-- <div class="container"> -->
+        <div class="columns-2 mt-2">
             <div class="w-64 mt-6 ..." style="margin-left: 20px">
                 <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
                 <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" />
@@ -83,33 +87,33 @@ export default {
                 <label for="area">Area</label>
                 <InputText id="area" v-model="area" type="text" placeholder="area" />
             </div>
-            <div class="w-64 mt-6 ..." style="margin-left: 20px">
+            <div class="w-64 mt-3 ..." style="margin-left: 20px">
                 <label for="perimeter">Roof Permeter(a) = 4h</label>
                 <InputText id="perimeter" v-model="perimeter" type="text" placeholder="perimeter" />
             </div>
-            <div v-if="isUDLValid" class="w-64" style="margin-left: 20px">
+            <div v-if="isUDLValid" class="w-72 gap-2 mt-12 ..." style="margin-left: 20px">
                 <label for="underlaymentNOA">UDL Anchor Sheer NOA Number</label><label class="px-1" style="color: red">*</label>
                 <InputText id="underlaymentNOA" v-model="underlaymentNOA" type="text" placeholder=" " />
             </div>
 
-            <div v-if="isSAValid" class="w-64" style="margin-left: 20px">
+            <div v-if="isSAValid" class="w-72 gap-2 mt-14 ..." style="margin-left: 20px">
                 <label for="saNOA">S/A Tile Capsheet NOA Number</label><label class="px-1" style="color: red">*</label>
                 <InputText id="saNOA" v-model="saNOA" type="text" placeholder=" " />
             </div>
 
-            <div class="card grid gap-4 grid-cols-1">
+            <div class="card md:w-1/2 grid gap-1 grid-cols-1">
                 <label for="decktype">Select a Deck Type</label>
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="make selection" />
+            </div>
+            <div class="card md:w-full grid gap-1 grid-cols-1">
                 <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
                 <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" />
             </div>
         </div>
-        <!-- </div> -->
     </div>
-    <!-- </div> -->
-    <Divider />
-    <div class="card md:w-3/4 ql-container" style="margin-left: 200px">
-        <div class="flex space-x-6 md:w-1/2">
+
+    <div class="card md:w-3/4 min-h-[500px] gap-2 mt-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <div class="flex flex-row space-x-8" style="margin-left: 10px">
             <div class="flex flex-col gap-2">
                 <label for="tilenoa">Tile Noa</label>
                 <InputText id="tilenoa" v-model="tilenoa" aria-describedby="username-help" />
@@ -173,9 +177,9 @@ export default {
                 <InputText id="expiredate_sa" v-model="expiredate_sa" aria-describedby="username-help" />
             </div>
         </div>
-        <!-- <Divider /> -->
-        <div class="flex flex-wrap gap-4" style="margin-left: 390px">
-            <label>Select Exposure</label>
+        <Divider />
+        <div class="flex flex-wrap gap-4" style="margin-left: 300px">
+            <label style="margin-left: 200px">Select Exposure</label>
             <div class="flex items-center">
                 <RadioButton v-model="exposure" inputId="C" name="exposureC" value="C" />
                 <label for="exposureC" class="ml-2">C</label>
@@ -185,16 +189,16 @@ export default {
                 <label for="exposureD" class="ml-2">D</label>
             </div>
 
-            <div class="container flex flex-wrap gap-1" style="margin-right: 300px">
-                <TileTable1 style="margin-left: 40px" />
-                <TileTable2 style="margin-left: 40px" />
-                <TileTable3 style="margin-left: 40px" />
+            <div class="flex flex-wrap gap-1" style="margin-right: 300px">
+                <TileTable1 style="margin-left: 1px" />
+                <!-- <TileTable2 style="margin-left: 40px" />
+                <TileTable3 style="margin-left: 40px" /> -->
             </div>
         </div>
     </div>
 </template>
 <style scoped>
-.container {
+/* .container {
     padding-bottom: 3px;
     padding-top: 1px;
     border: none;
@@ -202,11 +206,11 @@ export default {
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 200px;
-    /* min-width: 150px; */
+    min-width: 150px;
     top: 10vh;
-}
+} */
 
-.ql-container {
+/* .ql-container {
     padding-bottom: 30px;
     padding-top: 12px;
     padding-right: 30px;
@@ -215,7 +219,7 @@ export default {
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 250px;
-    /* min-width: 250px; */
+    min-width: 250px;
     top: 10vh;
-}
+} */
 </style>

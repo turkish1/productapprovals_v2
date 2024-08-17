@@ -1,11 +1,55 @@
 <template>
     <!-- grid grid-cols-3 gap-4 card flex flex-row gap-16-->
-    <div class="md:w-1/2 card flex flex-row gap-3" style="margin-left: 200px">
-        <div class="basis-1/7"><InputNumber v-model="value1" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
+    <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
+        <table width="100%" align="left">
+            <tbody>
+                <tr>
+                    <td valign="middle">
+                        <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
+                            <tbody>
+                                <tr>
+                                    <td>Zone 1:</td>
+                                    <td><input ref="zone1" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                    <td><input ref="lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
+                                    <td><input ref="mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
+                                    <td><input ref="mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
+                                    <td>
+                                        <input ref="mf1" readonly="" size="4" name="mf1" value="" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Zone 2:</td>
+                                    <td><input ref="zone2" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                    <td><input ref="lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
+                                    <td><input ref="mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
+                                    <td><input ref="mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
+                                    <td>
+                                        <input ref="mf2" readonly="" size="4" name="mf32" value="" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Zone 3:</td>
+                                    <td><input ref="zone3" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                    <td><input ref="lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
+                                    <td><input ref="mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
+                                    <td><input ref="mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
+                                    <td>
+                                        <input ref="mf3" readonly="" size="4" name="mf3" value="" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- <div class="basis-1/7"><InputNumber v-model="value1" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
         <div class="basis-1/7"><InputNumber v-model="value2" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
         <div class="basis-1/7"><InputNumber v-model="value3" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
         <div class="basis-1/7"><InputNumber v-model="value4" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
-        <div class="basis-1/7"><InputNumber v-model="value5" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
+        <div class="basis-1/7"><InputNumber v-model="value5" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div> -->
     </div>
 </template>
 

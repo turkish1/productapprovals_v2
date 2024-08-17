@@ -1,7 +1,6 @@
 <script setup>
 import useDripSize from '@/composables/use-dripedgesize';
 import { onMounted, reactive, ref, watch } from 'vue';
-
 import AgreementsDialogShingle from './AgreementsDialogShingle.vue';
 import InputItems from './InputItems.vue';
 onMounted(() => {
@@ -13,7 +12,7 @@ let slope = ref(null);
 let isDialog = ref(false);
 const selectDripEdge = ref(null);
 const selectDripEdgeSize = ref(null);
-
+const MiamiBC = ref(false);
 let sizes = ref();
 let size = ref([]);
 
@@ -66,7 +65,7 @@ function checkSlope() {
 <template>
     <AgreementsDialogShingle v-show="isDialog === true"></AgreementsDialogShingle>
 
-    <div class="card md:w-3/4 container space-y-1" style="margin-left: 50px">
+    <div class="card w-full container space-y-1" style="margin-left: 20px">
         <div class="card w-96 grid gap-1 grid-cols-1">
             <label>Drip Edge Material</label>
             <Select v-model="selectDripEdge" :options="type" placeholder="make selection" @click="checkValue" />
@@ -74,11 +73,12 @@ function checkSlope() {
             <label>Drip Edge Size</label>
             <Select v-model="selectDripEdgeSize" :options="size" placeholder="make selection" @click="getdripSize" />
         </div>
+
         <input-items :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-items>
     </div>
 </template>
 <style scoped>
-.container {
+/* .container {
     padding-bottom: 1px;
     padding-top: 0.5px;
     border: none;
@@ -86,9 +86,9 @@ function checkSlope() {
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 600px;
-    /* min-width: 600px; */
+    min-width: 600px;
     top: 10vh;
-}
+} */
 
 /* .ql-container-top {
     padding-bottom: 10px;

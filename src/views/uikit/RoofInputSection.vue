@@ -9,7 +9,8 @@ console.log(page);
 </script>
 
 <template>
-    <div class="container mx-auto px-4">
+    <!-- lg:w-full min-h-[10px] card flex flex-row gap-18  -->
+    <div class="container md:mx-auto px-4">
         <div class="card flex justify-center">
             <Stepper value="1" linear class="basis-[700rem]">
                 <StepList>
@@ -17,24 +18,20 @@ console.log(page);
                     <Step value="2">Low Slope</Step>
                     <Step value="3">Tile</Step>
                 </StepList>
-                <StepPanels class="object-scale-down h-720 w-900 ...">
+                <StepPanels class="object-scale-down h-600 w-1200 ...">
                     <StepPanel v-slot="{ activateCallback }" value="1">
                         <div class="flex flex-col h-96">
-                            <!-- <div class="border-2 border-dashed border-surface-900 dark:border-surface-900 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium" style="min-height: 700px"> -->
                             <shingles />
-                            <!-- </div> -->
                         </div>
-                        <!-- as="router-link" to="/lowslope" -->
-                        <div class="flex pt-6 justify-end" style="margin-top: 550px">
+
+                        <div class="flex pt-6 justify-end" style="margin-top: 350px">
                             <Button label="Next" severity="contrast" icon="pi pi-arrow-right" @click="activateCallback('2')" />
                         </div>
                     </StepPanel>
 
                     <StepPanel v-slot="{ activateCallback }" value="2">
-                        <div class="flex flex-col h-96">
-                            <!-- <div class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"> -->
+                        <div class="flex flex-col h-72">
                             <LowSlope />
-                            <!-- </div> -->
                         </div>
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" style="margin-top: 550px" />
@@ -42,10 +39,9 @@ console.log(page);
                         </div>
                     </StepPanel>
                     <StepPanel v-slot="{ activateCallback }" value="3">
-                        <div class="flex flex-col h-96">
-                            <!-- <div class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"> -->
+                        <!-- flex flex-row -->
+                        <div class="flex flex-col grow h-96">
                             <Tile />
-                            <!-- </div> -->
                         </div>
                         <div class="pt-6">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 550px" />
@@ -65,12 +61,12 @@ console.log(page);
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 1100px;
+    min-height: 500px;
     /* min-width: 600px; */
     top: 5vh;
 }
 .card {
-    min-height: 1100px;
+    min-height: 500px;
     position: center;
 }
 .ql-container {

@@ -25,6 +25,10 @@ export default {
         });
 
         const loading = ref(false);
+        const { pNum } = useProcess();
+        const { lastNum, resNum } = useLast();
+        const checkMB = ref('');
+        const checkV = ref('');
 
         const load = async () => {
             const addr = ref(formData.address);
@@ -41,13 +45,14 @@ export default {
 
             formData.folio = data.MinimumPropertyInfos[0].Strap;
             formData.processNumber = pNum.value;
-
+            checkV.value = formData.folio;
+            checkMB.value = checkV.value.substring(0, 2);
+            console.log(checkMB.value);
+            // if checkMB.value === 13 after number conversion disable shingle roof.
             setTimeout(() => {
                 loading.value = false;
             }, 2000);
         };
-        const { pNum } = useProcess();
-        const { lastNum, resNum } = useLast();
 
         const onSubmit = async () => {
             await DataService.postProcessnumber(formData.processNumber)
@@ -100,7 +105,9 @@ export default {
             responseMessage,
             lastNum,
             useLast,
-            load
+            load,
+            checkMB,
+            checkV
         };
     }
 };

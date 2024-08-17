@@ -5,9 +5,9 @@ import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 let isDialog = ref(false);
 const roofType = ref('lowslope');
 onMounted(() => {
-    if (roofType.value === 'lowslope') {
-        isDialog = true;
-    }
+    // if (roofType.value === 'lowslope') {
+    isDialog = true;
+    // }
 });
 
 const props = defineProps({
@@ -105,50 +105,49 @@ watch(checkValue, selectedBur, selectedSystem, selectDripEdge, findSelected, fin
 });
 </script>
 <template>
-    <div class="flex flex-col md:flex-row gap-4" style="margin-left: 100px">
-        <agreements-dialog-lowslope v-show="isDialog === true"></agreements-dialog-lowslope>
-        <div class="container">
-            <!-- <div class="md:w-3/4"> -->
-            <div class="card flex flex-col gap-8">
-                <div class="w-64 gap-4" style="margin-left: 22px">
-                    <Select v-model="selectedDeck" :options="type" placeholder="Select a Deck Type" class="w-full md:w-56" />
-                </div>
-                <div class="w-64 gap-4" style="margin-left: 22px">
-                    <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
+    <div class="flex flex-col md:flex-row gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
+        <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope>
 
-                    <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
-                </div>
-
-                <div class="w-64" style="margin-left: 22px">
-                    <label for="height">Height</label><label class="px-1" style="color: red">*</label>
-                    <InputText id="height" v-model="height" type="text" placeholder="height" />
-                </div>
-                <div class="w-64" style="margin-left: 22px">
-                    <label for="area">Area</label>
-                    <InputText id="area" v-model="area" type="text" placeholder="area" />
-                </div>
-                <div class="w-64" style="margin-left: 22px">
-                    <label for="height"> Roof Perimeter (a') = .6 x h:</label><label class="px-1" style="color: red">*</label>
-                    <InputText id="height" v-model="height" type="text" placeholder="height" />
-                </div>
-
-                <div class="card grid gap-5 grid-cols-1">
-                    <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
-                    <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" />
-                    <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
-                    <Select v-model="selectedSystem" :options="syst" placeholder="make selection" :loading="loadingSelect" @click="findSystem" />
-                    <label for="fieldPresc1" style="color: red">Attach P(1') Prime using P(1) Field Prescriptive Basesheet: *</label>
-                    <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" />
-                    <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: *</label>
-                    <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" />
-                </div>
+        <div class="card flex flex-col gap-6">
+            <div class="w-64 gap-4" style="margin-left: 12px">
+                <Select v-model="selectedDeck" :options="type" placeholder="Select a Deck Type" class="w-full md:w-56" />
             </div>
-            <!-- </div> -->
+            <div class="w-64 gap-4 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
+
+                <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
+            </div>
+
+            <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="height">Height</label><label class="px-1" style="color: red">*</label>
+                <InputText id="height" v-model="height" type="text" placeholder="height" />
+            </div>
+            <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="area">Area</label>
+                <InputText id="area" v-model="area" type="text" placeholder="area" />
+            </div>
+            <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="height"> Roof Perimeter (a') = .6 x h:</label><label class="px-1" style="color: red">*</label>
+                <InputText id="height" v-model="height" type="text" placeholder="height" />
+            </div>
+
+            <div class="card grid gap-5 grid-cols-1">
+                <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
+                <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" />
+                <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
+                <Select v-model="selectedSystem" :options="syst" placeholder="make selection" :loading="loadingSelect" @click="findSystem" />
+                <label for="fieldPresc1" style="color: red">Attach P(1') Prime using P(1) Field Prescriptive Basesheet: *</label>
+                <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" />
+                <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: *</label>
+                <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" />
+            </div>
         </div>
+        <!-- </div> -->
     </div>
+    <!-- </div> -->
 </template>
 <style scoped>
-.container {
+/* .container {
     padding-bottom: 1px;
     padding-top: 0.5px;
     border: none;
@@ -156,7 +155,7 @@ watch(checkValue, selectedBur, selectedSystem, selectDripEdge, findSelected, fin
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 600px;
-    /* min-width: 600px; */
+    min-width: 600px;
     top: 10vh;
-}
+} */
 </style>

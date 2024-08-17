@@ -2,6 +2,7 @@
 import useShingle from '@/composables/use-shingles';
 import useShingleattach from '@/composables/use-shinglesattach';
 import useSlope from '@/composables/use-updateSlope';
+import Divider from 'primevue/divider';
 // import { logicOr } from '@vueuse/math';
 // import { whenever } from '@vueuse/core';
 import { defineProps, ref, watch, watchEffect } from 'vue';
@@ -124,52 +125,57 @@ function valueEntered() {
 }
 </script>
 <template>
-    <div class="flex flex-col md:flex-row gap-2" style="margin-left: 10px">
-        <div class="container">
-            <div class="card w-64 gap-2" style="margin-left: 2px">
+    <div class="flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <!-- <div class="container"> -->
+        <!-- <div class="card w-64 gap-2" style="margin-left: 2px">
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
+            </div> -->
+        <!-- class="w-64 gap-2 space-y-9" style="margin-left: 2px"    class="w-64" style="margin-left: 2px"-->
+        <div class="w-64 gap-2 mt-3 space-y-6" style="margin-left: 20px">
+            <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
+        </div>
+        <div class="w-64 gap-2 mt-3 space-y-4" style="margin-left: 20px">
+            <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
+            <!-- @change="valueEntered"  -->
+            <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
+            <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p>
+        </div>
+        <div class="w-64 gap-2 mt-3 space-y-4" style="margin-left: 20px">
+            <label for="height">Height</label><label class="px-1" style="color: red">*</label>
+            <InputText id="height" v-model="height" type="text" placeholder="height" :invalid="height === null" />
+        </div>
+        <div class="w-64 gap-4 mt-3 space-y-4 mb-8" style="margin-left: 20px">
+            <label for="area">Area</label>
+            <InputText id="area" v-model="area" type="text" placeholder="area" />
+        </div>
+        <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
+            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
+                <label for="udlInput">Fastened UDL NOA Number</label>
+                <InputText id="udlInput" v-model="udlInput" @input="grabAttachmets" />
             </div>
-            <div class="w-64 gap-4" style="margin-left: 2px">
-                <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
-                <!-- @change="valueEntered"  -->
-                <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
-                <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p>
+        </div>
+        <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
+            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
+                <label for="saInput">S/A Membrane NOA Number</label>
+                <InputText id="saInput" v-model="saInput" @input="grabAttachmets" />
             </div>
-            <div class="w-64" style="margin-left: 2px">
-                <label for="height">Height</label><label class="px-1" style="color: red">*</label>
-                <InputText id="height" v-model="height" type="text" placeholder="height" />
-            </div>
-            <div class="w-64" style="margin-left: 2px">
-                <label for="area">Area</label>
-                <InputText id="area" v-model="area" type="text" placeholder="area" />
-            </div>
-            <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
-                <div class="flex flex-col gap-2">
-                    <label for="udlInput">Fastened UDL NOA Number</label>
-                    <InputText id="udlInput" v-model="udlInput" @input="grabAttachmets" />
-                </div>
-            </div>
-            <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
-                <div class="flex flex-col gap-2">
-                    <label for="saInput">S/A Membrane NOA Number</label>
-                    <InputText id="saInput" v-model="saInput" @input="grabAttachmets" />
-                </div>
-            </div>
-            <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">
-                <label style="color: red">Select Underlayment (S/A) *</label>
-                <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
-            </div>
+        </div>
+        <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">
+            <label style="color: red">Select Underlayment (S/A) *</label>
+            <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
+        </div>
 
-            <div v-show="isSelectVisible1" class="card grid gap-2 grid-cols-1">
-                <label style="color: red">Select Underlayment (UDL) *</label>
-                <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
-            </div>
+        <div v-show="isSelectVisible1" class="card grid gap-2 grid-cols-1">
+            <label style="color: red">Select Underlayment (UDL) *</label>
+            <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>
     </div>
     <!-- </div> -->
-
+    <!-- </div> -->
+    <Divider />
+    <Divider />
     <!--  md:w-2/3 flex space-x-4  flex flex-row space-x-4   grid grid-cols-2 gap-4 place-content-around h-48 -->
-    <div class="card md:w-full ql-container-bottom">
+    <div class="card md:w-full gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="flex flex-row space-x-8" style="margin-left: 10px">
             <div v-show="isUDLNOAValid" class="flex space-x-4">
                 <div class="flex flex-col gap-2">
@@ -235,19 +241,19 @@ function valueEntered() {
     </div>
 </template>
 <style scoped>
-.container {
+/* .container {
     padding-bottom: 1px;
     padding-top: 0.5px;
     border: none;
     border-radius: 12px;
-    /* box-shadow: 4px 4px 16px rgb(22, 183, 183); */
+    box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: left;
     min-height: 400px;
     min-width: 200px;
     top: 10vh;
-}
+} */
 
-.ql-container-top {
+/* .ql-container-top {
     padding-bottom: 10px;
     padding-top: 0.2px;
     padding-right: 30px;
@@ -258,8 +264,8 @@ function valueEntered() {
     min-height: 650px;
     min-width: 650px;
     top: 10vh;
-}
-.ql-container-bottom {
+} */
+/* .ql-container-bottom {
     padding-bottom: 3px;
     padding-top: 2px;
     padding-right: 1px;
@@ -270,5 +276,5 @@ function valueEntered() {
     min-height: 300px;
     min-width: 600px;
     top: 10vh;
-}
+} */
 </style>

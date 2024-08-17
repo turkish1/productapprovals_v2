@@ -1,5 +1,7 @@
 <script>
 import DataService from '@/services/DataService.js';
+// import NewButton from '@/components/NewButton.vue';
+
 import { useAuthStore } from '@/stores/auth.js';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
@@ -200,6 +202,7 @@ export default {
                 </div>
                 <div class="card md:w-1/4 flex justify-center flex-wrap gap-4">
                     <Button label="Submit" severity="contrast" raised @click="navigateNext" />
+                    <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
                 </div>
             </div>
             <div class="flex flex-col items-center gap-2">
