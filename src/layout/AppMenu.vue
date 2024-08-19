@@ -21,6 +21,7 @@ const model = ref([
             { label: 'Shingles', icon: 'pi pi-fw pi-circle', to: '/shingles' },
             { label: 'Tile', icon: 'pi pi-fw pi-list', to: '/tile' },
             { label: 'Lowslope', icon: 'pi pi-fw pi-check-square', to: '/lowslope' }
+            // { label: 'UseAxios', icon: 'pi pi-fw pi-check-square', to: '/useaxios' }
 
             // { label: 'Panel', icon: 'pi pi-fw pi-tablet', to: '/uikit/panel' },
             // { label: 'Overlay', icon: 'pi pi-fw pi-clone', to: '/uikit/overlay' },

@@ -1,62 +1,64 @@
 <script setup>
-import useDripSize from '@/composables/use-dripedgesize';
-import { onMounted, reactive, ref, watch } from 'vue';
+// import useDripSize from '@/composables/use-dripedgesize';
+import { onMounted, ref } from 'vue';
 import AgreementsDialogShingle from './AgreementsDialogShingle.vue';
 import InputItems from './InputItems.vue';
+
 onMounted(() => {
     isDialog = true;
 });
+
 const roofType = ref('Shingle');
 let slope = ref(null);
 //
 let isDialog = ref(false);
-const selectDripEdge = ref(null);
-const selectDripEdgeSize = ref(null);
+// const selectDripEdge = ref(null);
+// const selectDripEdgeSize = ref(null);
 const MiamiBC = ref(false);
 let sizes = ref();
 let size = ref([]);
 
-const save = useDripSize();
-const type = reactive(save.types.value);
-const sze = ref([save.typeSize.value]);
+// const save = useDripSize();
+// const type = reactive(save.types.value);
+// const sze = ref([save.typeSize.value]);
 
 let deriv1 = ref();
 
-function checkValue() {
-    let devArray = [];
+// function checkValue() {
+//     let devArray = [];
 
-    deriv1 = sze.value[0][0];
-    for (let i = 0; i < sze.value[0].length; i++) {
-        devArray.push(sze.value[0][i]);
-    }
+//     deriv1 = sze.value[0][0];
+//     for (let i = 0; i < sze.value[0].length; i++) {
+//         devArray.push(sze.value[0][i]);
+//     }
 
-    sizes = devArray;
-}
+//     sizes = devArray;
+// }
 
-function getdripSize() {
-    console.log(sizes, selectDripEdge.value);
-    if (selectDripEdge.value !== null) {
-        console.log('Enter if state');
-        if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
-            size = sizes[0];
-            console.log(size);
-        }
-        if (selectDripEdge.value === 'Stainless Steel Metal ²') {
-            size = sizes[1];
-        }
-        if (selectDripEdge.value === 'Aluminum Metal ³') {
-            size = sizes[2];
-        }
-        if (selectDripEdge.value === 'Copper Metal ⁴') {
-            size = sizes[3];
-        }
-    } else {
-        console.log('The element not mounted yet');
-    }
-}
-watch(selectDripEdge, getdripSize, size, () => {
-    console.log(selectDripEdge, selectDripEdgeSize);
-});
+// function getdripSize() {
+//     console.log(sizes, selectDripEdge.value);
+//     if (selectDripEdge.value !== null) {
+//         console.log('Enter if state');
+//         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
+//             size = sizes[0];
+//             console.log(size);
+//         }
+//         if (selectDripEdge.value === 'Stainless Steel Metal ²') {
+//             size = sizes[1];
+//         }
+//         if (selectDripEdge.value === 'Aluminum Metal ³') {
+//             size = sizes[2];
+//         }
+//         if (selectDripEdge.value === 'Copper Metal ⁴') {
+//             size = sizes[3];
+//         }
+//     } else {
+//         console.log('The element not mounted yet');
+//     }
+// }
+// watch(selectDripEdge, getdripSize, size, () => {
+//     console.log(selectDripEdge, selectDripEdgeSize);
+// });
 
 function checkSlope() {
     console.log(slope);

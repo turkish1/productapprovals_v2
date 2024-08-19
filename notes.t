@@ -1,4 +1,152 @@
+// onMounted(() => {
+    //     console.log(proccesedValue);
 
+    //     const noa = async () =>
+    //         DataService.getNoas(proccesedValue)
+    //             .then((response) => {
+    //                 noaNum.value = response.data.result;
+    //                 console.log(response);
+    //             })
+    //             .catch((e) => {
+    //                 error.value = e;
+    //                 console.log(error.value);
+    //             });
+    //     noa();
+    //     console.log(noaNum.value);
+    //     return noaNum.value;
+    // });
+  // const noas = computedAsync(
+    //     async () => {
+    //         return await DataService.getNoas()
+    //             .then((response) => {
+    //                 noaNum.value = response.data.result;
+    //                 console.log(response);
+    //                 finish();
+    //             })
+    //             .catch((e) => {
+    //                 error.value = e;
+    //                 console.log(error.value);
+    //             });
+    //     },
+    //     null,
+    //     { lazy: true, evaluating }
+    //     // initial state
+    // );
+
+    // onMounted(() => {
+    //     const noa = async () =>
+    //         await DataService.getNoas()
+    //             .then((response) => {
+    //                 noaNum.value = response.data.result;
+    //                 console.log(response);
+    //             })
+    //             .catch((e) => {
+    //                 error.value = e;
+    //                 console.log(error.value);
+    //             });
+    //     noa();
+    //     finish();
+    //     return noaNum.value;
+    // });
+
+    // function getdata() {
+    //     const noa = async () =>
+    //         DataService.getNoas()
+    //             .then((response) => {
+    //                 noaNum.value = response.data;
+    //                 console.log(response.data, noaNum.value);
+    //             })
+    //             .catch((e) => {
+    //                 error.value = e;
+    //                 console.log(error.value);
+    //             });
+    //     noa();
+
+    //     finish();
+    //     console.log(noaNum.value);
+    //     return noaNum.value;
+    // }
+
+
+
+  // function finish() {
+        // results.value = noaNum.value;
+        // let use = noaNum.value.forEach((item, index) => {
+        //     let num = Number(input.value);
+        //     console.log(item, num);
+        //     if (item.noa === num) {
+        //         (shingleData.applicant = item.applicant), (shingleData.material = item.material), (shingleData.description = item.description), (shingleData.expiration_date = item.expiration_date);
+        //     }
+        // });
+        // return use;
+    // }
+    // finish();
+     // payload = JSON.stringify(containerNoa.value);
+        // console.log(payload);
+        // const noa = async () =>
+        //     DataService.getNoas(18061905)
+        //         .then((response) => {
+        //             console.log(response);
+        //             noaNum.value = response.data.result;
+        //             console.log(noaNum.value);
+        //         })
+        //         .catch((e) => {
+        //             error.value = e;
+        //             console.log(error.value);
+        //         });
+        // noa();
+        // console.log(noaNum.value);
+        // return noaNum.value;
+   //     console.log(values);
+    //     if (values) {
+    //         for (let i = 0; i < values.length; i++) {
+    //             results.value.push({
+    //                 noa: values[i].noa,
+    //                 applicant: values[i].applicant,
+    //                 material: values[i].material,
+    //                 description: values[i].description,
+    //                 expiration_date: values[i].expiration_date
+    //             });
+    //         }
+    //         console.log(results.value);
+    //     } else {
+    //         console.log('No values found');
+    //     }
+    // }
+
+   // const apiUrl = `https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/shinglenoa?noa=${payload.value}`;
+
+        // ld = axios
+        //     .get(apiUrl)
+        //     .then(function (response) {
+        //         noaNum.value = response.data;
+        //         console.log(response.data, noaNum.value);
+        //     })
+        //     .catch(function (error) {
+        //         console.log(error);
+        //     });
+
+
+
+  function callServerlessFunction() {
+        try {
+            const response = fetch('https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': 'LduI7j9z7Iwppo1AbxE9TBz2z2lJFZZFF3MU5ZFCbfxHU8wMlyCjvz0pWMByVH5n' // Optional, if required
+                },
+                body: JSON.stringify({
+                    param: proccesedValue.value // Body parameters
+                })
+            });
+
+            const data = response;
+            console.log('Function response:', data);
+        } catch (error) {
+            console.error('Error calling function:', error);
+        }
+    }
 
 
         //      syst.forEach((item, index) => {

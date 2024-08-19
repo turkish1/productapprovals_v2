@@ -1,10 +1,10 @@
 <script setup>
 import useBurMat from '@/composables/use-burmaterials';
 import useDripSize from '@/composables/use-dripedgesize';
-import { onMounted, reactive, ref, toRefs, watch } from 'vue';
+import { onUpdated, reactive, ref, toRefs, watch } from 'vue';
 let isDialog = ref(false);
 const roofType = ref('lowslope');
-onMounted(() => {
+onUpdated(() => {
     // if (roofType.value === 'lowslope') {
     isDialog = true;
     // }

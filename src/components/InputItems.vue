@@ -1,17 +1,16 @@
 <script setup>
-import useShingle from '@/composables/use-shingles';
-import useShingleattach from '@/composables/use-shinglesattach';
+// import useShingle from '@/composables/use-shingles';
+// import useShingleattach from '@/composables/use-shinglesattach';
+import useInputs from '@/composables/use-Inputs';
 import useSlope from '@/composables/use-updateSlope';
 import Divider from 'primevue/divider';
 // import { logicOr } from '@vueuse/math';
 // import { whenever } from '@vueuse/core';
-import { defineProps, ref, watch, watchEffect } from 'vue';
-const props = defineProps({
-    slopeEntered: { type: String }
-});
-
+import { useShingleStore } from '@/stores/shingleStore';
+import { reactive, ref, watch, watchEffect } from 'vue';
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
-const lowselected = ref([]);
+const store = useShingleStore();
+
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isSelectVisible1 = ref(false);
@@ -19,7 +18,7 @@ let isSelectVisible2 = ref(false);
 let isSlopeValid = ref(true);
 let slope = ref(null);
 let data = ref();
-let udlInput = ref(18061905);
+let udlInput = ref();
 let saInput = ref();
 let noaInput = ref();
 let manufacturer = ref(null);
@@ -36,32 +35,36 @@ let slopetypeless = ref(slopeCondition.slope_less_4);
 const selectedSlopehigh = ref();
 const selectedSlopelow = ref();
 const selectedDeck = ref();
-const { proccesedValue, processInput, results, processData, noa } = useShingle(noaInput.value);
+// const { proccesedValue, processInput, results, callServerlessFunction, noa } = useShingle(noaInput);
+/*
 const { processInputs, result, Poly, SBS } = useShingleattach(udlInput.value, saInput.value);
-
+*/
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 
 // 18061905
+const { input, takeValue } = useInputs();
+const useIn = reactive(useInputs());
+console.log(useIn);
+
 function grabNoa() {
     data.value = noaInput.value;
-    console.log(data.value, results.value);
-    processInput(noaInput.value);
 
-    results.value.forEach((item, index) => {
-        (manufacturer = item.applicant), (material = item.material), (description = item.description);
-    });
+    takeValue(data.value);
+    console.log(store.inputshingle[0].shingleData);
+    manufacturer.value = store.inputshingle[0].shingleData.applicant;
+    material.value = store.inputshingle[0].shingleData.material;
+    description.value = store.inputshingle[0].shingleData.description;
 }
 
-function grabAttachmets() {
-    processInputs(udlInput.value, saInput.value);
-    console.log(result.value);
-}
+// function grabAttachmets() {
+//     processInputs(udlInput.value, saInput.value);
+//     console.log(result.value);
+// }
 
-watchEffect(slopetypeless, slopetypemore, getIndexs, useShingle, selectedSlopelow, selectedSlopehigh, grabNoa, () => {
-    console.log(shingleNoaInfo);
-});
+watchEffect(slopetypeless, slopetypemore, getIndexs, selectedSlopelow, selectedSlopehigh, grabNoa, () => {});
 
-watch(valueEntered, noaInput, grabNoa, grabAttachmets, () => {
+// grabAttachmets,
+watch(valueEntered, noaInput, grabNoa, useInputs, () => {
     console.log(slopeCondition.slope_more_4);
 });
 
@@ -126,11 +129,6 @@ function valueEntered() {
 </script>
 <template>
     <div class="flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <!-- <div class="container"> -->
-        <!-- <div class="card w-64 gap-2" style="margin-left: 2px">
-                <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
-            </div> -->
-        <!-- class="w-64 gap-2 space-y-9" style="margin-left: 2px"    class="w-64" style="margin-left: 2px"-->
         <div class="w-64 gap-2 mt-3 space-y-6" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
@@ -170,11 +168,9 @@ function valueEntered() {
             <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>
     </div>
-    <!-- </div> -->
-    <!-- </div> -->
+
     <Divider />
     <Divider />
-    <!--  md:w-2/3 flex space-x-4  flex flex-row space-x-4   grid grid-cols-2 gap-4 place-content-around h-48 -->
     <div class="card md:w-full gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="flex flex-row space-x-8" style="margin-left: 10px">
             <div v-show="isUDLNOAValid" class="flex space-x-4">

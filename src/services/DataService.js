@@ -1,5 +1,4 @@
 // import apiClient from '../../http-axios';
-
 import axios from 'axios';
 const apiClient = axios.create({
     baseURL: `https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint`,
@@ -13,7 +12,6 @@ const apiClient = axios.create({
     }
 });
 
-// const { data, isFinished } = useAxios('/noa', { method: 'GET' }, apiClient);
 export default {
     getAddr() {
         return apiClient.get('/folio');
@@ -102,8 +100,8 @@ export default {
         return apiClient.get('/perimeter');
     },
 
-    getNoaTiles(noa) {
-        return http.get(`/tiles/${noa}`);
+    getNoas() {
+        return apiClient.post('/shinglenoa');
     },
 
     getTile() {

@@ -1,8 +1,7 @@
-import { onMounted, ref } from 'vue';
-import DataService from '../services/DataService.js';
+import { ref } from 'vue';
+export default function useShingle() {
+    const proccesedValue = ref();
 
-export default function useShingle(initialValue) {
-    const proccesedValue = ref(initialValue);
     const noaNum = ref([]);
     const loading = ref(false);
     const noa = ref(null);
@@ -11,27 +10,10 @@ export default function useShingle(initialValue) {
 
     const error = ref(null);
 
-    onMounted(() => {
-        const noa = async () =>
-            DataService.getNoa()
-                .then((response) => {
-                    noaNum.value = response.data.result;
-                    console.log(noaNum.value);
-                })
-                .catch((e) => {
-                    error.value = e;
-                    console.log(error.value);
-                });
-        noa();
-        console.log(noaNum.value);
-        return noaNum.value;
-    });
     function processInput() {
         containerNoa.value = proccesedValue.value;
-
-        processData();
+        console.log(containerNoa.value);
     }
-
     function processData() {
         const values = noaNum.value.filter((item) => item.noa === containerNoa.value);
         if (values) {
@@ -51,6 +33,6 @@ export default function useShingle(initialValue) {
             console.log('No values found');
         }
     }
-
+    // callServerlessFunction,
     return { error, loading, results, processInput, proccesedValue, processData, noa };
 }

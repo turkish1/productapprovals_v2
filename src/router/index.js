@@ -27,10 +27,11 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 // {
-                //     path: '/',
-                //     name: 'dashboard',
-                //     component: () => import('@/views/Dashboard.vue')
+                //     path: '/useaxios',
+                //     name: 'useaxios',
+                //     component: () => import('@/components/UseAxios.vue')
                 // },
+
                 {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
