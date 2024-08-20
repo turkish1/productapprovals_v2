@@ -153,17 +153,20 @@ function valueEntered() {
         <div class="w-64 gap-2 mt-3 space-y-6" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
-        <div class="w-64 gap-3 mt-3 space-y-4" style="margin-left: 20px">
-            <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
+        <!--  flex flex-col gap-2 w-64 gap-3 mt-3 space-y-4-->
+        <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
+            <label for="slope" style="color: red">Slope *</label>
+            <!-- <label class="px-1" style="color: red">*</label> -->
             <!-- @change="valueEntered"  -->
             <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
             <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p>
         </div>
-        <div class="w-64 gap-3 mt-3 space-y-4" style="margin-left: 20px">
-            <label for="height">Height</label><label class="px-1" style="color: red">*</label>
+        <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
+            <label for="height" style="color: red">Height *</label>
+            <!-- <label class="px-1" style="color: red">*</label> -->
             <InputText id="height" v-model="height" type="text" placeholder="height" :invalid="height === null" />
         </div>
-        <div class="w-64 gap-4 mt-3 space-y-4 mb-8" style="margin-left: 20px">
+        <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">
             <label for="area">Area</label>
             <InputText id="area" v-model="area" type="text" placeholder="area" />
         </div>
