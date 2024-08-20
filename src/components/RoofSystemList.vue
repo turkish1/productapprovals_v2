@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 const store = useRoofListStore();
 
 const { roofList } = storeToRefs(store);
-console.log(roofList);
+
 const { toggleCompleted } = storeToRefs(store);
 </script>
 <template>

@@ -75,7 +75,6 @@ function checkSlope() {
             <label>Drip Edge Size</label>
             <Select v-model="selectDripEdgeSize" :options="size" placeholder="make selection" @click="getdripSize" />
         </div>
-
         <input-items :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-items>
     </div>
 </template>

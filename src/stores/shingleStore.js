@@ -6,12 +6,18 @@ export const useShingleStore = defineStore('inputshingle', {
         inputshingle: [],
         id: 0
     }),
-    //getters
 
     //actions
     actions: {
         addShingle(shingleData) {
-            this.inputshingle.push({ shingleData, id: this.id++, completed: false });
+            this.inputshingle.push({ shingleData, completed: false });
+        }
+    },
+
+    //getters
+    getters: {
+        noaInfo(state) {
+            return state.inputshingle.shingleData;
         }
     }
     // persist: true

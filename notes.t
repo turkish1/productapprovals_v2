@@ -67,7 +67,20 @@
     //     return noaNum.value;
     // }
 
+// function reactives(target) {
+//     console.log(inputshingle._object.inputshingle);
 
+//     const handler = {
+//         // for (let i = 0; )
+//         get(target, key, receiver) {
+//             console.log(key, target, receiver);
+//             return Reflect.get(target, key, receiver);
+//         }
+//     };
+//     return new Proxy(target, handler);
+// }
+// let newShingle = inputshingle._object.inputshingle;
+// let prod = reactives(newShingle);
 
   // function finish() {
         // results.value = noaNum.value;

@@ -1,16 +1,39 @@
 <script setup>
 // import useShingle from '@/composables/use-shingles';
 // import useShingleattach from '@/composables/use-shinglesattach';
+// import { logicOr } from '@vueuse/math';
+// import { whenever } from '@vueuse/core';
 import useInputs from '@/composables/use-Inputs';
 import useSlope from '@/composables/use-updateSlope';
 import Divider from 'primevue/divider';
-// import { logicOr } from '@vueuse/math';
-// import { whenever } from '@vueuse/core';
+
+import { storeToRefs } from 'pinia';
+
 import { useShingleStore } from '@/stores/shingleStore';
-import { reactive, ref, watch, watchEffect } from 'vue';
+import { computed, reactive, ref, watch, watchEffect } from 'vue';
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
 const store = useShingleStore();
+const { inputshingle } = storeToRefs(store);
 
+const shingles = reactive({
+    manufacturer: '',
+    material: '',
+    description: ''
+});
+
+const underlayment = reactive({
+    umanufacturer: '',
+    umaterial: '',
+    udescription: ''
+});
+
+const selfadhered = reactive({
+    samanufacturer: '',
+    samaterial: '',
+    sadescription: '',
+    designpressure: ''
+});
+let datamounted = ref(inputshingle._object.inputshingle);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isSelectVisible1 = ref(false);
@@ -21,15 +44,7 @@ let data = ref();
 let udlInput = ref();
 let saInput = ref();
 let noaInput = ref();
-let manufacturer = ref(null);
-let material = ref(null);
-let description = ref(null);
-let umanufacturer = ref(null);
-let umaterial = ref(null);
-let udescription = ref(null);
-let samanufacturer = ref(null);
-let samaterial = ref(null);
-let sadescription = ref(null);
+
 let slopetypemore = ref(slopeCondition.slope_more_4);
 let slopetypeless = ref(slopeCondition.slope_less_4);
 const selectedSlopehigh = ref();
@@ -40,36 +55,42 @@ const selectedDeck = ref();
 const { processInputs, result, Poly, SBS } = useShingleattach(udlInput.value, saInput.value);
 */
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
-
+const whatChanged = computed(() => {
+    checkNoa();
+});
 // 18061905
 const { input, takeValue } = useInputs();
-const useIn = reactive(useInputs());
-console.log(useIn);
+
+// console.log(useIn);
 
 function grabNoa() {
     data.value = noaInput.value;
 
     takeValue(data.value);
-    console.log(store.inputshingle[0].shingleData);
-    manufacturer.value = store.inputshingle[0].shingleData.applicant;
-    material.value = store.inputshingle[0].shingleData.material;
-    description.value = store.inputshingle[0].shingleData.description;
+    // datamounted.value = inputshingle._object.inputshingle;
 }
-
+function checkNoa() {
+    datamounted.value.forEach((item, index) => {
+        console.log(item.shingleData, index);
+        shingles.manufacturer = item.shingleData.applicant;
+        shingles.material = item.shingleData.material;
+        shingles.description = item.shingleData.description;
+    });
+}
 // function grabAttachmets() {
 //     processInputs(udlInput.value, saInput.value);
 //     console.log(result.value);
 // }
 
-watchEffect(slopetypeless, slopetypemore, getIndexs, selectedSlopelow, selectedSlopehigh, grabNoa, () => {});
+watchEffect(slopetypeless, slopetypemore, getIndexs, selectedSlopelow, selectedSlopehigh, grabNoa, whatChanged, () => {});
 
 // grabAttachmets,
-watch(valueEntered, noaInput, grabNoa, useInputs, () => {
+watch(valueEntered, noaInput, grabNoa, useInputs, inputshingle, datamounted, checkNoa, () => {
     console.log(slopeCondition.slope_more_4);
+    console.log(datamounted.value);
 });
 
 function getIndexs() {
-    console.log(selectedSlopelow);
     console.log(selectedSlopelow);
 
     // '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E'
@@ -132,13 +153,13 @@ function valueEntered() {
         <div class="w-64 gap-2 mt-3 space-y-6" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
-        <div class="w-64 gap-2 mt-3 space-y-4" style="margin-left: 20px">
+        <div class="w-64 gap-3 mt-3 space-y-4" style="margin-left: 20px">
             <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
             <!-- @change="valueEntered"  -->
             <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
             <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p>
         </div>
-        <div class="w-64 gap-2 mt-3 space-y-4" style="margin-left: 20px">
+        <div class="w-64 gap-3 mt-3 space-y-4" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-1" style="color: red">*</label>
             <InputText id="height" v-model="height" type="text" placeholder="height" :invalid="height === null" />
         </div>
@@ -176,15 +197,15 @@ function valueEntered() {
             <div v-show="isUDLNOAValid" class="flex space-x-4">
                 <div class="flex flex-col gap-2">
                     <label for="manufacturer">(UDL) NOA Applicant</label>
-                    <InputText id="manufacturer" v-model="umanufacturer" />
+                    <InputText id="manufacturer" v-model="underlayment.umanufacturer" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="material">(UDL) Material</label>
-                    <InputText id="material" v-model="umaterial" />
+                    <InputText id="material" v-model="underlayment.umaterial" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="description">(UDL) Description</label>
-                    <InputText id="description" v-model="udescription" />
+                    <InputText id="description" v-model="underlayment.udescription" />
                 </div>
             </div>
         </div>
@@ -193,19 +214,19 @@ function valueEntered() {
             <div v-show="isSAValid" class="flex space-x-3">
                 <div class="flex flex-col gap-2">
                     <label for="saapplicant">S/A Applicant</label>
-                    <InputText id="saapplicant" v-model="samanufacturer" />
+                    <InputText id="saapplicant" v-model="selfadhered.samanufacturer" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="samaterial">S/A Material Type</label>
-                    <InputText id="saaterial" v-model="samaterial" />
+                    <InputText id="saaterial" v-model="selfadhered.samaterial" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="sadescription">S/A Description</label>
-                    <InputText id="sadescription" v-model="sadescription" />
+                    <InputText id="sadescription" v-model="selfadhered.sadescription" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="designpressure">Design psf:</label>
-                    <InputText id="designpressure" v-model="designpressure" />
+                    <InputText id="designpressure" v-model="selfadhered.designpressure" />
                 </div>
 
                 <div class="flex shrink flex-col gap-2">
@@ -218,20 +239,20 @@ function valueEntered() {
         <div class="flex flex-row space-x-8" style="margin-left: 1px">
             <div class="flex flex-col gap-2">
                 <label for="shinglenoa">Shingle Noa</label>
-                <InputText id="shinglenoa" v-model="noaInput" placeholder="18061905" @input="grabNoa" />
+                <InputText id="shinglenoa" v-model="noaInput" placeholder="18061905" @input="grabNoa" @change="checkNoa" />
             </div>
             <!-- flex flex-col gap-2 -->
             <div class="flex flex-col gap-2">
                 <label for="manufacturer">Manufacturer</label>
-                <InputText id="manufacturer" v-model="manufacturer" />
+                <InputText id="manufacturer" v-model="shingles.manufacturer" />
             </div>
             <div class="flex flex-col gap-2">
                 <label for="material"> Material</label>
-                <InputText id="material" v-model="material" />
+                <InputText id="material" v-model="shingles.material" />
             </div>
             <div class="flex flex-col gap-2">
                 <label for="description">Description</label>
-                <InputText id="description" v-model="description" />
+                <InputText id="description" v-model="shingles.description" />
             </div>
         </div>
     </div>
