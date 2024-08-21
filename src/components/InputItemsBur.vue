@@ -41,7 +41,7 @@ const selectedBur = ref();
 const mat = ref();
 const selectedSystem = ref();
 const syst = ref([]);
-
+const selectedDeck = ref();
 const selectedPrimeone = ref(null);
 const primeone = ref();
 const selectedPrimethree = ref(null);
@@ -65,7 +65,7 @@ function findSelected() {
 
     mat.value = bMaters.value;
 }
-watch(dimensions, setRoofInputs, findSelected, updateselection, updateselectSystem, syst, selSytem, () => {});
+watch(dimensions, setRoofInputs, findSelected, updateselection, updateselectSystem, syst, selSytem, type, () => {});
 watchEffect(dimensions, setRoofInputs, sB, syst, selectedSystem, () => {});
 
 function updateselection() {
@@ -104,11 +104,11 @@ function updateselectSystem() {
 }
 </script>
 <template>
-    <div class="flex flex-col w-1/2 gap-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
+    <div class="flex flex-col w-2/3 gap-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
         <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope>
 
         <div class="card flex flex-col gap-6">
-            <div class="w-96 gap-4" style="margin-left: 12px">
+            <div class="w-128 gap-4" style="margin-left: 12px">
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" />
             </div>
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
