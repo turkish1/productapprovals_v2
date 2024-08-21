@@ -1,1 +1,0 @@
-import{e as p}from"./index-BX7mOiGt.js";const s=p("permitapp",{state:()=>({permitapp:[],id:0}),actions:{addSystem(e,t){this.permitapp.push({formdt:e,permType:t,id:this.id++,completed:!1})}}});export{s as u};
