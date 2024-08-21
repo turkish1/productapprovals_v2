@@ -1,104 +1,143 @@
 <script setup>
-import useSlope from '@/composables/use-updateSlope';
-import { defineProps, ref, watch } from 'vue';
+import useburAxios from '@/composables/use-burAxios';
+import { useBurStore } from '@/stores/burStore';
+import { useRoofListStore } from '@/stores/roofList';
+import { storeToRefs } from 'pinia';
+import { onMounted, onUpdated, reactive, ref, watch, watchEffect } from 'vue';
+import DripEdgeComponent from './DripEdgeComponent.vue';
 
-const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
+const { materials, tMaters, bMaters, systemHW, systemHM, systemSA } = useburAxios();
+const storebur = useBurStore();
+const storeroof = useRoofListStore();
+const { roofList } = storeToRefs(storeroof);
+const { burinput } = storeToRefs(storebur);
+let isDialog = ref(false);
+const roofType = ref('lowslope');
+console.log;
+onUpdated(() => {
+    // if (roofType.value === 'lowslope') {
+    isDialog = true;
+    // }
+});
+
 const props = defineProps({
-    slopeEntered: { type: String }
+    roofType: {
+        type: ref,
+        required: false,
+        default: 'LowSlope'
+    }
 });
-
-let isSelectVisible1 = ref(false);
-let isSelectVisible2 = ref(false);
-let isSlopeValid = ref(false);
 let slope = ref(null);
-let slopetypemore = ref(slopeCondition.slope_more_4);
-let slopetypeless = ref(slopeCondition.slope_less_4);
-const selectedDeck = ref();
-const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
+let roofArea = ref(roofList._object.roofList);
 
-watch(validateEntries, () => {
-    console.log(slope);
-    console.log(slopeCondition.slope_more_4);
+const dims = reactive({
+    area: '',
+    height: '',
+    perimeter: ''
 });
 
-// function showMessage() {
-//     visible.value = true;
+const selectedBur = ref();
+const mat = ref();
+const selectedSystem = ref();
+const syst = ref([]);
 
-//     setTimeout(() => {
-//         visible.value = false;
-//     }, 3500);
-// }
-
-function validateEntries() {
-    let slopeNumber = Number(slope.value);
-    console.log(slopeNumber);
-    if (slopeNumber === null) {
-        console.log('No Entry has been submited');
-    } else if (slopeNumber <= 2) {
-        isSlopeValid = true;
-        console.log('Entry to lowslope');
-    } else {
-        isSlopeValid = false;
-        // showMessage();
-    }
+const selectedPrimeone = ref(null);
+const primeone = ref();
+const selectedPrimethree = ref(null);
+const primethree = ref();
+const sB = ref('');
+let selSytem = ref('');
+const maps = ref([]);
+function setRoofInputs() {
+    roofArea.value.forEach((item, index) => {
+        console.log(item.dim);
+        dims.area = item.dim;
+    });
+    dims.perimeter = dims.height * 6;
 }
-function valueEntered() {
-    if (slope.value) {
-        let slopeNumber = Number(slope.value);
+const dimensions = onMounted(() => {
+    setRoofInputs();
+});
 
-        if (slopeNumber > 4 && slopeNumber <= 12) {
-            isSlopeValid = true;
-            isSlopeMoreFour.value = true;
-            isSelectVisible2 = true;
-            isSelectVisible1 = false;
+function findSelected() {
+    console.log(bMaters.value, systemHM.value, systemHW.value, systemSA.value);
+
+    mat.value = bMaters.value;
+}
+watch(dimensions, setRoofInputs, findSelected, updateselection, updateselectSystem, syst, selSytem, () => {});
+watchEffect(dimensions, setRoofInputs, sB, syst, selectedSystem, () => {});
+
+function updateselection() {
+    sB.value = Object.entries(selectedBur).map((obj) => {
+        const value = obj[1];
+
+        if (obj[1] === 'SBS Modified Hot-Mopped Applied Systems') {
+            console.log('captured index1: ');
+            syst.value = systemHM.value;
         }
-        if (slopeNumber >= 2 && slopeNumber <= 4) {
-            isSlopeValid = true;
-            isSlopeLessFour.value = true;
-            isSelectVisible1 = true;
-            isSelectVisible2 = false;
+        if (obj[1] === 'SBS/APP Modified Heat-Weld Bitumen Membrane') {
+            syst.value = systemHW.value;
         }
-        if (slopeNumber < 2) {
-            isSlopeValid = false;
+        if (obj[1] === 'SBS Modified Bitumen Self-Adhered Membrane') {
+            syst.value = systemSA.value;
+        } else {
+            return null;
         }
-    } else {
-        console.log('Not Mounted');
+    });
+}
+function selectSystem() {
+    for (let i = 0; i < syst.value.length; i++) {
+        let index = i;
+        let value = syst.value[i];
+        maps.value.push([index, value]);
     }
+    console.log(maps.value);
+}
+
+function updateselectSystem() {
+    selSytem.value = Object.entries(selectedSystem).map((obj) => {
+        const val = obj[1];
+        console.log(val);
+    });
+    console.log(selSytem.value);
 }
 </script>
 <template>
-    <div class="flex flex-col md:flex-row gap-12" style="margin-left: 320px">
-        <div class="md:w-3/4">
-            <div class="card flex flex-col gap-4">
-                <div class="container">
-                    <div class="card flex justify-left">
-                        <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
-                    </div>
-                    <div class="w-64 gap-4" style="margin-left: 22px">
-                        <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
-                        <!-- @change="valueEntered"  -->
-                        <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="validateEntries" />
-                        <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p>
-                        <!-- <Message v-if="isSlopeValid" severity="warn" :life="3000">Enter Valid Slope</Message> -->
-                    </div>
-                    <div class="w-64" style="margin-left: 22px">
-                        <label for="height">Height</label><label class="px-1" style="color: red">*</label>
-                        <InputText id="height" v-model="height" type="text" placeholder="height" />
-                    </div>
-                    <div class="w-64" style="margin-left: 22px">
-                        <label for="area">Area</label>
-                        <InputText id="area" v-model="area" type="text" placeholder="area" />
-                    </div>
-                    <div v-show="isSelectVisible2" class="card w-96 grid gap-6 grid-cols-1">
-                        <label style="color: red">Select Underlayment (S/A) *</label>
-                        <Select ref="selectedAttachment" v-model="isSlopeMoreFour" :options="slopetypemore" placeholder="make selection" />
-                    </div>
+    <div class="card flex flex-col md:flex-row gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
+        <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope>
 
-                    <div v-show="isSelectVisible1" class="card grid gap-6 grid-cols-1">
-                        <label style="color: red">Select Underlayment (UDL) *</label>
-                        <Select ref="selectedAttachment" v-model="isSlopeLessFour" :options="slopetypeless" placeholder="make selection" />
-                    </div>
-                </div>
+        <div class="card flex flex-col gap-6">
+            <div class="w-64 gap-4" style="margin-left: 12px">
+                <Select v-model="selectedDeck" :options="type" placeholder="Select a Deck Type" class="w-full md:w-56" />
+            </div>
+            <div class="w-64 gap-4 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="slope">Slope</label><label class="px-1" style="color: red">*</label>
+
+                <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
+            </div>
+
+            <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="height">Height</label><label class="px-1" style="color: red">*</label>
+                <InputText id="height" v-model="dims.height" type="text" placeholder="height" />
+            </div>
+            <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="area">Area</label>
+                <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
+            </div>
+            <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
+                <label for="height"> Roof Perimeter (a') = .6 x h:</label><label class="px-1" style="color: red">*</label>
+                <InputText id="height" v-model="dims.perimeter" type="text" placeholder="perimeter" />
+            </div>
+            <DripEdgeComponent />
+            <div class="card grid gap-5 grid-cols-1">
+                <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
+                <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
+                <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
+                <Select v-model="selectedSystem" :options="syst" placeholder="make selection" @click="selectSystem" @change="updateselectSystem" />
+                <label for="fieldPresc1" style="color: red">Attach P(1') Prime using P(1) Field Prescriptive Basesheet: *</label>
+                <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" />
+                <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: *</label>
+                <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" />
             </div>
         </div>
     </div>
