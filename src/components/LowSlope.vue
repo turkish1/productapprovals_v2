@@ -1,7 +1,12 @@
 <script setup>
 import useBurMat from '@/composables/use-burmaterials';
-import useDripSize from '@/composables/use-dripedgesize';
-import { onUpdated, reactive, ref, toRefs, watch } from 'vue';
+import { useRoofListStore } from '@/stores/roofList';
+import { storeToRefs } from 'pinia';
+import { onMounted, onUpdated, reactive, ref, toRefs, watch, watchEffect } from 'vue';
+import DripEdgeComponent from './DripEdgeComponent.vue';
+
+const storeroof = useRoofListStore();
+const { roofList } = storeToRefs(storeroof);
 let isDialog = ref(false);
 const roofType = ref('lowslope');
 onUpdated(() => {
@@ -18,16 +23,16 @@ const props = defineProps({
     }
 });
 let slope = ref(null);
-// const roofType = ref('LowSlope');
-const selectDripEdge = ref(null);
-const selectDripEdgeSize = ref();
+let roofArea = ref(roofList._object.roofList);
 const bur = useBurMat();
 let sizes = ref();
 const size = ref([]);
-const save = useDripSize();
-const type = reactive(save.types.value);
-const sze = ref([save.typeSize.value]);
-let deriv1 = ref();
+const dims = reactive({
+    area: '',
+    height: '',
+    perimeter: ''
+});
+
 const mat = ref();
 let syst = reactive({});
 const burMat = ref([bur.bMaters]);
@@ -40,16 +45,19 @@ let loadingselect = ref(false);
 const primeone = ref();
 const primethree = ref();
 console.log(toRefs(burMat.value));
-function checkValue() {
-    let devArray = [];
 
-    deriv1 = sze.value[0][0];
-    for (let i = 0; i < sze.value[0].length; i++) {
-        devArray.push(sze.value[0][i]);
-    }
-
-    sizes = devArray;
+function setRoofInputs() {
+    roofArea.value.forEach((item, index) => {
+        console.log(item.dim);
+        dims.area = item.dim;
+    });
+    dims.perimeter = dims.height * 6;
 }
+const dimensions = onMounted(() => {
+    setRoofInputs();
+});
+watch(dimensions, setRoofInputs, () => {});
+watchEffect(dimensions, setRoofInputs, () => {});
 function findSelected() {
     let material = [];
     let deconstruct = toRefs(burMat.value);
@@ -82,30 +90,9 @@ function findSystem() {
         });
     }
 }
-
-watch(checkValue, selectedBur, selectedSystem, selectDripEdge, findSelected, findSystem, () => {
-    if (selectDripEdge.value !== null) {
-        console.log('Enter if state');
-        if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
-            size = sizes[0];
-            console.log(size);
-        }
-        if (selectDripEdge.value === 'Stainless Steel Metal ²') {
-            size = sizes[1];
-        }
-        if (selectDripEdge.value === 'Aluminum Metal ³') {
-            size = sizes[2];
-        }
-        if (selectDripEdge.value === 'Copper Metal ⁴') {
-            size = sizes[3];
-        }
-    } else {
-        console.log('The element not mounted yet');
-    }
-});
 </script>
 <template>
-    <div class="flex flex-col md:flex-row gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
+    <div class="card flex flex-col md:flex-row gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
         <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope>
 
         <div class="card flex flex-col gap-6">
@@ -120,17 +107,17 @@ watch(checkValue, selectedBur, selectedSystem, selectDripEdge, findSelected, fin
 
             <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="height">Height</label><label class="px-1" style="color: red">*</label>
-                <InputText id="height" v-model="height" type="text" placeholder="height" />
+                <InputText id="height" v-model="dims.height" type="text" placeholder="height" />
             </div>
             <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="area">Area</label>
-                <InputText id="area" v-model="area" type="text" placeholder="area" />
+                <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
             </div>
             <div class="w-64 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="height"> Roof Perimeter (a') = .6 x h:</label><label class="px-1" style="color: red">*</label>
-                <InputText id="height" v-model="height" type="text" placeholder="height" />
+                <InputText id="height" v-model="dims.perimeter" type="text" placeholder="perimeter" />
             </div>
-
+            <DripEdgeComponent />
             <div class="card grid gap-5 grid-cols-1">
                 <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
                 <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" />
@@ -142,20 +129,6 @@ watch(checkValue, selectedBur, selectedSystem, selectDripEdge, findSelected, fin
                 <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" />
             </div>
         </div>
-        <!-- </div> -->
     </div>
-    <!-- </div> -->
 </template>
-<style scoped>
-/* .container {
-    padding-bottom: 1px;
-    padding-top: 0.5px;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 4px 4px 16px rgb(22, 183, 183);
-    position: center;
-    min-height: 600px;
-    min-width: 600px;
-    top: 10vh;
-} */
-</style>
+<style scoped></style>

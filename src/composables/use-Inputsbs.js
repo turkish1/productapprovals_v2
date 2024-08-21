@@ -5,7 +5,7 @@ import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref, toRefs } from 'vue';
 
 export default function useSbs() {
-    const input = ref();
+    const inputs = ref();
     const effort = ref([]);
     const noaNum = ref([]);
     let results = ref([]);
@@ -24,20 +24,20 @@ export default function useSbs() {
         description: '',
         expiration_date: ''
     });
-    function takeValue(saNoa) {
-        input.value = saNoa;
-        console.log(input.value);
+    function takeValues(saNoa) {
+        inputs.value = saNoa;
+        console.log(inputs.value);
         const result = execute().then((result) => {
             noaNum.value = data.value;
             console.log(noaNum.value, data.value);
 
             results.value = noaNum.value.forEach((item, index) => {
-                let num = Number(input.value);
+                let num = Number(inputs.value);
 
                 if (item.noa === num) {
-                    shingleData.applicant = item.applicant;
-                    shingleData.material = item.material;
-                    shingleData.description = item.description;
+                    sbsData.applicant = item.applicant;
+                    sbsData.material = item.material;
+                    sbsData.description = item.description;
 
                     console.log(sbsData.applicant);
                     if (sbsData.length === 0) {
@@ -55,5 +55,5 @@ export default function useSbs() {
 
     // 18061905
 
-    return { input, takeValue, noaNum, error, results, ...toRefs(sbsData), store };
+    return { inputs, takeValues, noaNum, error, results, ...toRefs(sbsData), store };
 }

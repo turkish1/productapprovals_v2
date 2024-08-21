@@ -66,14 +66,9 @@ export default {
 };
 </script>
 <template>
-    <!-- class="md:w-2/3" style="margin-left: 320px" -->
-    <!-- <div class="flex flex-col md:flex-row gap-2" style="margin-left: 320px"> -->
-    <!-- class="flex flex-col w-full gap-4 bg-cyan-500 shadow-lg shadow-gray" style="margin-left: 5px" -->
-
     <div class="flex flex-col md:w-3/4 min-h-[420px] gap-6 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px; margin-bottom: 4px">
         <AgreementsDialog v-if="isDialog === true"></AgreementsDialog>
-        <!-- <div class="card flex flex-col gap-5"> -->
-        <!-- <div class="container"> -->
+
         <div class="columns-2 mt-2">
             <div class="w-64 mt-6 ..." style="margin-left: 20px">
                 <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>

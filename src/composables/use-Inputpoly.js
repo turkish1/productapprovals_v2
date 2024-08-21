@@ -1,10 +1,10 @@
 // import DataService from '@/services/DataService';
+import { usePolyStore } from '@/stores/polyStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
-
 import { reactive, ref, toRefs } from 'vue';
 
 export default function usePoly() {
-    const input = ref();
+    const inp = ref();
     const effort = ref([]);
     const noaNum = ref([]);
     let results = ref([]);
@@ -23,15 +23,15 @@ export default function usePoly() {
         description: '',
         expiration_date: ''
     });
-    function takeValue(udlInput) {
-        input.value = udlInput;
-        console.log(input.value);
+    function takp(udlInput) {
+        inp.value = udlInput;
+        console.log(inp.value);
         const result = execute().then((result) => {
             noaNum.value = data.value;
             console.log(noaNum.value, data.value);
 
             results.value = noaNum.value.forEach((item, index) => {
-                let num = Number(input.value);
+                let num = Number(inp.value);
 
                 if (item.noa === num) {
                     polyData.applicant = item.applicant;
@@ -54,5 +54,5 @@ export default function usePoly() {
 
     // 18061905
 
-    return { input, takeValue, noaNum, error, results, ...toRefs(polyData), store };
+    return { inp, takp, noaNum, error, results, ...toRefs(polyData), store };
 }

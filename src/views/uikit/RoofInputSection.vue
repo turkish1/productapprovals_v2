@@ -56,18 +56,19 @@ console.log(page);
 <style scoped>
 .container {
     padding-bottom: 3px;
-    padding-top: 12px;
+    padding-top: 2px;
     border: none;
-    border-radius: 12px;
+    border-radius: 5px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 500px;
-    /* min-width: 600px; */
+    min-height: 1000px;
+    min-width: 800px;
     top: 5vh;
 }
 .card {
-    min-height: 500px;
+    min-height: 900px;
     position: center;
+    min-width: 800px;
 }
 .ql-container {
     height: calc(100% - 52px);
