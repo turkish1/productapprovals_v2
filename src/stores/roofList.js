@@ -20,6 +20,5 @@ export const useRoofListStore = defineStore('roofList', {
                 list.completed = !list.completed;
             }
         }
-    },
-    persist: true
+    }
 });
