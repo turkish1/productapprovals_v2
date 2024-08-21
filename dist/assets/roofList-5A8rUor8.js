@@ -1,0 +1,1 @@
+import{e as s}from"./index-CzuNuKWQ.js";const r=s("roofList",{state:()=>({roofList:[],id:0}),actions:{addSystem(e,t){this.roofList.push({item:e,dim:t,id:this.id++,completed:!1})},deleteSystem(e){this.roofList=this.roofList.filter(t=>t.id!==e)},toggleCompleted(e){const t=this.roofList.find(o=>o.id===e);t&&(t.completed=!t.completed)}},persist:!0});export{r as u};
