@@ -10,7 +10,7 @@ console.log(page);
 
 <template>
     <!-- lg:w-full min-h-[10px] card flex flex-row gap-18  -->
-    <div class="container md:mx-auto px-4">
+    <div class="md:w-2/3 px-2 pt-0">
         <!-- <div class="card flex justify-center"> -->
         <Stepper value="1" linear class="basis-[700rem]">
             <StepList>
@@ -34,8 +34,8 @@ console.log(page);
                         <LowSlope />
                     </div>
                     <div class="flex pt-6 justify-between">
-                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" style="margin-top: 550px" />
-                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" style="margin-top: 550px" />
+                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" style="margin-top: 650px" />
+                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" style="margin-top: 650px" />
                     </div>
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="3">
@@ -54,9 +54,9 @@ console.log(page);
     </div>
 </template>
 <style scoped>
-.container {
+/* .container {
     padding-bottom: 3px;
-    /* padding-top: 2px; */
+    padding-top: 2px;
     border: none;
     border-radius: 5px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
@@ -65,12 +65,12 @@ console.log(page);
     min-width: 1000px;
     top: 1vh;
 }
-.card {
+ .card {
     min-height: 900px;
     position: center;
     min-width: 800px;
 }
 .ql-container {
     height: calc(100% - 52px);
-}
+}  */
 </style>

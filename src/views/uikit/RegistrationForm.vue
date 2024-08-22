@@ -1,11 +1,11 @@
 <script>
 import DataService from '@/services/DataService.js';
 // import NewButton from '@/components/NewButton.vue';
-
+import usecreateAccount from '@/composables/use-createAccount';
 import { useAuthStore } from '@/stores/auth.js';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, ref, toRefs } from 'vue';
+import { onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -13,10 +13,11 @@ export default {
         const events = ref(null);
         const { authStore } = useAuthStore();
         const { message } = storeToRefs(authStore);
-        const responseMessage = ref('');
+
         const router = useRouter();
         let disabled = ref(false);
-        const formDatas = ref({
+
+        let formDatas = reactive({
             license: '',
             dba: '',
             name: '',
@@ -43,30 +44,22 @@ export default {
                     console.log(error);
                 });
         });
-
+        const { Data, takp } = usecreateAccount();
         const onSubmit = async () => {
-            await DataService.postAccount(formDatas.value)
-
-                .then((response) => {
-                    responseMessage.value = 'Form submitted successfully!';
-                    console.log('Response:', response.data);
-                    // store the values
-
-                    // then clear the page
-                    formDatas.value = '';
-                })
-
-                .catch((error) => {
-                    responseMessage.value = 'An error occurred while submitting the form.';
-                    console.error('Error:', error);
-                });
+            takp(formDatas);
+            formDatas.license = '';
+            formDatas.name = '';
+            formDatas.secondary_status = '';
+            (formDatas.dba = ''), (formDatas.username = ''), (formDatas.password = ''), (formDatas.address = ''), (formDatas.cphone = ''), (formDatas.phone = ''), (formDatas.email = '');
+            navigateNext();
         };
         function checkLicense() {
             events.value.forEach((item) => {
                 // CRC002120 CRC026270
+
                 // const current = Date.now();
-                if (formDatas.value.license === item.alt_license) {
-                    (formDatas.value.dba = item.DBA), (formDatas.value.name = item.name), (formDatas.value.secondary_status = item.secondary_status), (formDatas.value.expiration_date = item.expiration_date), (formDatas.value.address = item.address1);
+                if (formDatas.license === item.alt_license) {
+                    (formDatas.dba = item.DBA), (formDatas.name = item.name), (formDatas.secondary_status = item.secondary_status), (formDatas.expiration_date = item.expiration_date), (formDatas.address = item.address1);
                 }
                 // if (formDatas.value.secondary_status !== 'A') {
                 //     console.log('Not active', formDatas.value.secondary_status);
@@ -201,7 +194,7 @@ export default {
                     </div>
                 </div>
                 <div class="card md:w-1/4 flex justify-center flex-wrap gap-4">
-                    <Button label="Submit" severity="contrast" raised @click="navigateNext" />
+                    <Button label="Submit" severity="contrast" raised @click="onSubmit" />
                     <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
                 </div>
             </div>

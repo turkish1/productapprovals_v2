@@ -3,15 +3,19 @@
 import DropZone from '@/components/DropZone.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
-import DataService from '@/services/DataService';
+import usecreateProcessnumber from '@/composables/use-createProcessnumber';
+// import useaccountStore from '@/stores/accountStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
-
 export default {
     setup() {
         const responseMessage = ref('');
         const router = useRouter();
+        const { procData, procReceive } = usecreateProcessnumber();
+        // const useacctStore = useaccountStore();
+        // const { accountinput } = storeToRefs(useacctStore);
+        const convertProcess = ref();
         const store = usePermitappStore();
         const formData = reactive({
             address: '',
@@ -28,9 +32,10 @@ export default {
         const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
+
         const checkMB = ref('');
         const checkV = ref('');
-
+        // const getData = reactive(accountinput);
         const load = async () => {
             const addr = ref(formData.address);
             const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
@@ -45,10 +50,14 @@ export default {
             formData.muni = data.MinimumPropertyInfos[0].Municipality;
 
             formData.folio = data.MinimumPropertyInfos[0].Strap;
-            formData.processNumber = pNum.value;
+
+            formData.processNumber = lastNum.value + 1;
+            console.log(formData.processNumber);
             checkV.value = formData.folio;
             checkMB.value = checkV.value.substring(0, 2);
             console.log(checkMB.value);
+
+            procReceive(formData);
             // if checkMB.value === 13 after number conversion disable shingle roof.
             setTimeout(() => {
                 loading.value = false;
@@ -56,18 +65,20 @@ export default {
         };
 
         const onSubmit = async () => {
-            await DataService.postProcessnumber(formData.processNumber)
+            procReceive(formData);
+            // await DataService.postProcessnumber(formData.processNumber)
 
-                .then((response) => {
-                    responseMessage.value = 'Form submitted successfully!';
-                    console.log('Response:', response.data);
+            //     .then((response) => {
+            //         console.log(formData.processNumber);
+            //         responseMessage.value = 'Form submitted successfully!';
+            //         console.log('Response:', response.data);
 
-                    // value = '';
-                })
-                .catch((error) => {
-                    responseMessage.value = 'An error occurred while submitting the form.';
-                    console.error('Error:', error);
-                });
+            //         // value = '';
+            //     })
+            //     .catch((error) => {
+            //         responseMessage.value = 'An error occurred while submitting the form.';
+            //         console.error('Error:', error);
+            //     });
         };
         // const { isValid, inp, iValid, uValid } = useinputValid();
         const selectedApplication = ref();

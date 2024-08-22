@@ -1,17 +1,50 @@
 <script setup>
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import { ref } from 'vue';
+import DataService from '@/services/DataService';
+
+import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 const username = ref('');
 const password = ref('');
 const checked = ref(false);
 const router = useRouter();
 const visible = ref(false);
+const held = ref([]);
+const keep = reactive({
+    ids: [username, password]
+});
+async function checkAu() {
+    await DataService.getAccount()
+        .then((response) => {
+            let val = response.data;
+            for (let i = 0; i < val.length; i++) {
+                keep.ids.push({
+                    username: val[i].username,
+                    password: val[i].password
+                });
+
+                // (keep.usernames = val[i].username), (keep.passwords = val[i].password);
+            }
+            console.log(keep);
+            // checkAuth();
+        })
+        .catch((e) => {
+            console.log(e);
+        });
+}
+
+watch(checkAu, username, password, () => {});
+
 function checkAuth() {
-    if (username.value === 'flavio' && password.value === 'flavio') {
-        navigateNext();
-    } else {
-        visible.value = true;
+    for (let i = 2; i < keep.ids.length; i++) {
+        let k = [];
+        k.push(keep.ids[i]);
+        console.log(k[0].username);
+        if (username.value === k[0].username && password.value === k[0].password) {
+            navigateNext();
+        } else {
+            visible.value = true;
+        }
     }
 }
 
@@ -47,7 +80,7 @@ const navigateNext = () => {
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
                         <!-- as="router-link" to="/roofsystem" -->
-                        <Button label="Sign In" severity="contrast" class="w-full" @click="checkAuth"></Button>
+                        <Button label="Sign In" severity="contrast" class="w-full" @keydown="checkAuth" @change="checkAu"></Button>
                     </div>
                 </div>
             </div>

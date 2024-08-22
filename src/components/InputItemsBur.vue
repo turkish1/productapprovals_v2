@@ -114,7 +114,7 @@ function updateselectSystem() {
         let sp4 = convert.split(/(?=[)⁴])/);
         let sp5 = convert.split(/(?=[)⁵])/);
 
-        if (sp2[3] === '²') {
+        if (sp2[2] === '²' || sp2[3] === '²') {
             primeone.value = Perimeters.p1_two;
             primethree.value = Perimeters.p2_two;
         }
@@ -140,7 +140,7 @@ function updateselectSystem() {
 }
 </script>
 <template>
-    <div class="flex flex-col w-2/3 gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
+    <div class="flex flex-col w-3/4 gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
         <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope>
 
         <div class="card flex flex-col gap-2">

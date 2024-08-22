@@ -6,7 +6,7 @@ export default function useLast() {
     const resNum = ref(null);
     // const lastNum = async () => {
     // await
-    const lastNum = ref(null);
+    const lastNum = ref(0);
     DataService.getLastProcess()
 
         .then((response) => {
@@ -16,6 +16,7 @@ export default function useLast() {
             resNum.value.forEach((element) => {
                 console.log(element.processNumber);
                 lastNum.value = element.processNumber;
+                console.log(lastNum.value, element.processNumber);
             });
         })
 

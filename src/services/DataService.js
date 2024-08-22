@@ -124,6 +124,10 @@ export default {
     postAccount(input) {
         return apiClient.post('/accounts', input);
     },
+
+    getAccount() {
+        return apiClient.get('/retriveaccounts');
+    },
     getDripMaterials() {
         return apiClient.get('/dripmaterials');
     }
