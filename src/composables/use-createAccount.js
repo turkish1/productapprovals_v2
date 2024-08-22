@@ -1,4 +1,3 @@
-import { useaccountStore } from '@/stores/accountStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref, toRefs } from 'vue';
 export default function usecreateAccount() {
@@ -6,7 +5,7 @@ export default function usecreateAccount() {
     const noaNum = ref([]);
     const responseMessage = ref('');
     let results = ref([]);
-    const accountStore = useaccountStore();
+    const useacctStore = accountStore();
     let formData = reactive({
         license: '',
         dba: '',
@@ -38,7 +37,7 @@ export default function usecreateAccount() {
         // console.log(data);
         // data = Data.value;
         responseMessage.value = 'Form submitted successfully!';
-        accountStore.addData(Data);
+        useacctStore.addData(Data);
         // store the values
 
         // then clear the page
