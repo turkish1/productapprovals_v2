@@ -21,7 +21,7 @@ export default function usedripAxios() {
             type.value.push(hold.value[i]);
         }
         typeSize.value.push(holdSize.value.size1, holdSize.value.size2, holdSize.value.size3, holdSize.value.size4);
-        console.log(hold.value, data.value);
+
         return hold.value;
     });
 

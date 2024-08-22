@@ -1,6 +1,7 @@
 <script setup>
 import useInputpoly from '@/composables/use-Inputpoly';
 import useInputsbs from '@/composables/use-Inputsbs';
+import useSystemf from '@/composables/use-Inputsystemf';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
@@ -8,21 +9,24 @@ import DripEdgeComponent from './DripEdgeComponent.vue';
 // import { whenever } from '@vueuse/core';
 import useInputs from '@/composables/use-Inputs';
 import useSlope from '@/composables/use-updateSlope';
-import Divider from 'primevue/divider';
-
 import { usePolyStore } from '@/stores/polyStore';
 import { useSbsStore } from '@/stores/sbsStore';
 import { useShingleStore } from '@/stores/shingleStore';
+import Divider from 'primevue/divider';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
+
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
 const sbsStore = useSbsStore();
 const polyStore = usePolyStore();
 const store = useShingleStore();
+const usesystemfStore = useSystemf();
 const { inputshingle } = storeToRefs(store);
 const { sbsinput } = storeToRefs(sbsStore);
 const { polyinput } = storeToRefs(polyStore);
+const { systeminput } = storeToRefs(usesystemfStore);
+console.log(systeminput);
 const shingles = reactive({
     manufacturer: '',
     material: '',
@@ -41,9 +45,11 @@ const selfadhered = reactive({
     sadescription: '',
     designpressure: ''
 });
+
 let datamounted = ref(inputshingle._object.inputshingle);
 let sbsdatamt = ref(sbsinput._object.sbsinput);
 let polydatamt = ref(polyinput._object.polyinput);
+let systemdatamt = ref(systeminput);
 let roofArea = ref(roofList._object.roofList);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
@@ -53,6 +59,7 @@ let isSelectVisible2 = ref(false);
 let isSlopeValid = ref(true);
 let slope = ref(null);
 let data = ref();
+let datasystemf = ref();
 let datasbs = ref();
 let datapoly = ref();
 let udlInput = ref(null);
@@ -70,6 +77,7 @@ const selectedSlopelow = ref();
 const selectedDeck = ref();
 const { input, takeValue } = useInputs();
 const { inputs, takeValues } = useInputsbs();
+const { inputsystem, takef } = useSystemf();
 const { inp, takp } = useInputpoly();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const whatChanged = computed(() => {
@@ -80,21 +88,42 @@ function grabInput() {
     data.value = noaInput.value;
     datasbs.value = saInput.value;
     datapoly.value = udlInput.value;
-    console.log(udlInput.value);
+    datasystemf.value = saInput.value;
 
     if (noaInput.value !== null) {
         // 18061905
 
         takeValue(data.value);
-    } else if (saInput.value !== null) {
-        //  22020307
-        takeValues(datasbs.value);
-    } else if (udlInput.value !== null) {
+    }
+    if (saInput.value !== null) {
+        //  23101807
+        console.log(datasystemf.value);
+        takef(datasystemf.value);
+        console.log(systeminput.value);
+    }
+    if (udlInput.value !== null) {
         //  17040522
+        console.log(datapoly.value);
+        console.log(udlInput.value);
         takp(datapoly.value);
     }
+    // else if (saInput.value !== null) {
+    //      22020307
+    //     console.log(saInput.value);
+    //     takeValues(datasbs.value);
+    // }
 }
 
+function checkInputPoly() {
+    if (polydatamt.value.length !== null) {
+        polydatamt.value.forEach((item, index) => {
+            console.log(item.polyData, index);
+            underlayment.umanufacturer = item.polyData.applicant;
+            underlayment.umaterial = item.polyData.material;
+            underlayment.udescription = item.polyData.description;
+        });
+    }
+}
 function checkInput() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
@@ -104,22 +133,24 @@ function checkInput() {
             shingles.description = item.shingleData.description;
         });
     }
-    if (sbsdatamt.value.length !== null) {
-        sbsdatamt.value.forEach((item, index) => {
-            console.log(item.sbsData, index);
-            selfadhered.samanufacturer = item.sbsData.applicant;
-            selfadhered.samaterial = item.sbsData.material;
-            selfadhered.sadescription = item.sbsData.description;
-        });
-    }
-    if (polydatamt.value.length !== null) {
-        polydatamt.value.forEach((item, index) => {
-            console.log(item.polyData, index);
-            underlayment.umanufacturer = item.polyData.applicant;
-            underlayment.umaterial = item.polyData.material;
-            underlayment.udescription = item.polyData.description;
-        });
-    }
+    // if (sbsdatamt.value.length !== null) {
+    //     sbsdatamt.value.forEach((item, index) => {
+    //         console.log(item.sbsData, index);
+    //         selfadhered.samanufacturer = item.sbsData.applicant;
+    //         selfadhered.samaterial = item.sbsData.material;
+    //         selfadhered.sadescription = item.sbsData.description;
+    //     });
+    // }
+    // if (systemdatamt.value.length !== null) {
+    //     systemdatamt.value.forEach((item, index) => {
+    //         console.log(item.systemData, index);
+    //         selfadhered.samanufacturer = item.systemData.manufacturer;
+    //         selfadhered.samaterial = item.systemData.material;
+    //         selfadhered.sadescription = item.systemData.description;
+    //         selfadhered.designpressure = item.systemData.design_pressure;
+    //     });
+    //     console.log(systemdatamt);
+    // }
 }
 
 function setRoofInputs() {
@@ -131,9 +162,31 @@ const dimensions = onMounted(() => {
     setRoofInputs();
 });
 
-watchEffect(slopetypeless, slopetypemore, getIndexs, selectedSlopelow, selectedSlopehigh, setRoofInputs, grabInput, whatChanged, () => {});
+watchEffect(slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, setRoofInputs, grabInput, whatChanged, () => {});
 
-watch(valueEntered, noaInput, saInput, udlInput, roofArea, dimensions, grabInput, useInputs, inputshingle, datamounted, datasbs, datapoly, checkInput, setRoofInputs, () => {});
+watch(
+    valueEntered,
+    noaInput,
+    saInput,
+    udlInput,
+    roofArea,
+    dimensions,
+    grabInput,
+    useInputs,
+    useSystemf,
+    inputshingle,
+    inputsystem,
+    datamounted,
+    datasystemf,
+    datasystemf,
+    systeminput,
+    datasbs,
+    datapoly,
+    checkInputPoly,
+    checkInput,
+    setRoofInputs,
+    () => {}
+);
 
 function getIndexs() {
     console.log(selectedSlopelow);
@@ -154,7 +207,7 @@ function getIndexs() {
         isSAValid = true;
         isShingleValid = true;
     }
-    if (selectedSlopelow._rawValue === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E' || selectedSlopehigh.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E') {
+    if (selectedSlopelow.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E' || selectedSlopehigh.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E') {
         isUDLNOAValid = true;
         isSAValid = true;
         isShingleValid = true;
@@ -217,13 +270,13 @@ function valueEntered() {
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
-                <InputText id="udlInput" v-model="udlInput" placeholder="17040522" @input="grabInput" @change="checkInput" />
+                <InputText id="udlInput" v-model="udlInput" placeholder="17040522" @input="grabInput" @change="checkInputPoly" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" @input="grabInput" @change="checkInput" />
+                <InputText id="saInput" v-model="saInput" placeholder="23101807" @input="grabInput" @change="checkInput" />
             </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">

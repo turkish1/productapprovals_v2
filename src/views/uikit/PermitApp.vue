@@ -1,5 +1,6 @@
 <script>
 // import useinputValid from '@/composables/input.js';
+import DropZone from '@/components/DropZone.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import DataService from '@/services/DataService';
@@ -179,6 +180,7 @@ export default {
                                         </div>
 
                                         <br />
+
                                         <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/generalpage" @click="addItemAndClear(formData, selectedApplication)" />
                                     </form>
                                     <p v-if="responseMessage">{{ responseMessage }}</p>
@@ -188,6 +190,7 @@ export default {
                     </div>
                 </form>
                 <!-- </div> -->
+                <drop-zone />
             </div>
         </div>
     </div>

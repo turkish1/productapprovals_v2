@@ -1,4 +1,5 @@
 <script setup>
+import testImage from '@/components/testImage.vue';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
@@ -187,7 +188,7 @@ const navigateNext = () => {
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
 
-                    <!-- <test-image class="md:w-2/3" style="margin-left: 140px" /> -->
+                    <test-image class="md:w-2/3" style="margin-left: 140px" />
                 </div>
             </div>
         </div>
