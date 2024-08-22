@@ -4,10 +4,12 @@ import DropZone from '@/components/DropZone.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
-// import useaccountStore from '@/stores/accountStore';
 import { usePermitappStore } from '@/stores/permitapp';
+// import { useSum } from '@vueuse/math';
 import { reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
+// import useaccountStore from '@/stores/accountStore';
+const a = ref(1);
 export default {
     setup() {
         const responseMessage = ref('');
@@ -51,7 +53,7 @@ export default {
 
             formData.folio = data.MinimumPropertyInfos[0].Strap;
 
-            formData.processNumber = lastNum.value + 1;
+            formData.processNumber = lastNum.value + a.value;
             console.log(formData.processNumber);
             checkV.value = formData.folio;
             checkMB.value = checkV.value.substring(0, 2);

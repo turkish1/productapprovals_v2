@@ -2,15 +2,24 @@
 import LowSlope from '@/components/LowSlope.vue';
 import Shingles from '@/components/Shingles.vue';
 import Tile from '@/components/Tile.vue';
-import { computed } from 'vue';
+import { tryOnMounted } from '@vueuse/core';
+import { computed, ref } from 'vue';
 const props = defineProps(['page']);
 const page = computed(() => props.page);
 console.log(page);
+const values = ref(1);
+tryOnMounted(() => {
+    updateNode();
+});
+// watchEffect(updateNode, () => {});
+function updateNode() {
+    values.value += 1;
+}
 </script>
 
 <template>
     <!-- lg:w-full min-h-[10px] card flex flex-row gap-18  -->
-    <div class="md:w-2/3 px-2 pt-0">
+    <div class="md:w-3/4 px-2 pt-0">
         <!-- <div class="card flex justify-center"> -->
         <Stepper value="1" linear class="basis-[700rem]">
             <StepList>
@@ -25,13 +34,13 @@ console.log(page);
                     </div>
 
                     <div class="flex pt-6 justify-end" style="margin-top: 350px">
-                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" @click="activateCallback('2')" />
+                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" @click="activateCallback('2'), updateNode" />
                     </div>
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
                     <div class="flex flex-col h-128">
-                        <LowSlope />
+                        <LowSlope v-if="values === 2" />
                     </div>
                     <div class="flex pt-6 justify-between">
                         <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" style="margin-top: 650px" />

@@ -207,11 +207,11 @@ function getIndexs() {
         isSAValid = true;
         isShingleValid = true;
     }
-    if (selectedSlopelow.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E' || selectedSlopehigh.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E') {
-        isUDLNOAValid = true;
-        isSAValid = true;
-        isShingleValid = true;
-    }
+    // if (selectedSlopelow.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E' || selectedSlopehigh.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E') {
+    //     isUDLNOAValid.value = true;
+    //     isSAValid.value = true;
+    //     isShingleValid.value = true;
+    // }
     if (selectedSlopelow._rawValue === null) {
         console.log('Not Mounted');
     }
@@ -221,8 +221,10 @@ function valueEntered() {
     if (slope.value) {
         let slopeNumber = Number(slope.value);
         console.log(slopeNumber);
-        if (slope.value === null) {
-            isSlopeValid = false;
+        if (slope.value === '') {
+            isSlopeValid.value = false;
+            isSlopeLessFour.value = false;
+            isSlopeMoreFour.value = false;
         }
         if (slopeNumber < 2) {
             isSlopeValid = false;
@@ -232,12 +234,18 @@ function valueEntered() {
             isSlopeMoreFour.value = true;
             isSelectVisible2 = true;
             isSelectVisible1 = false;
+            isUDLNOAValid = false;
+            isSAValid = false;
+            isShingleValid = true;
         }
         if (slopeNumber >= 2 && slopeNumber <= 4) {
             isSlopeValid = true;
             isSlopeLessFour.value = true;
             isSelectVisible1 = true;
             isSelectVisible2 = false;
+            isUDLNOAValid = false;
+            isSAValid = false;
+            isShingleValid = true;
         }
     } else {
         console.log('Not Mounted');
