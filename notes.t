@@ -1,4 +1,47 @@
-// onMounted(() => {
+
+ // else if (saInput.value !== null) {
+    //      22020307
+    //     console.log(saInput.value);
+    //     takeValues(datasbs.value);
+    // }
+
+function checkSbs() {
+    sbsdatamt.value.forEach((item, index) => {
+        console.log(item.sbsData, index);
+        selfadhered.samanufacturer = item.sbsData.applicant;
+        selfadhered.samaterial = item.sbsData.material;
+        selfadhered.sadescription = item.sbsData.description;
+    });
+}
+
+// function checkPoly() {
+//     polydatamt.value.forEach((item, index) => {
+//         console.log(item.polyData, index);
+//         underlayment.umanufacturer = item.polyData.applicant;
+//         underlayment.umaterial = item.polyData.material;
+//         underlayment.udescription = item.polyData.description;
+//     });
+// }
+
+// if (sbsdatamt.value.length !== null) {
+    //     sbsdatamt.value.forEach((item, index) => {
+    //         console.log(item.sbsData, index);
+    //         selfadhered.samanufacturer = item.sbsData.applicant;
+    //         selfadhered.samaterial = item.sbsData.material;
+    //         selfadhered.sadescription = item.sbsData.description;
+    //     });
+    // }
+    // if (systemdatamt.value.length !== null) {
+    //     systemdatamt.value.forEach((item, index) => {
+    //         console.log(item.systemData, index);
+    //         selfadhered.samanufacturer = item.systemData.manufacturer;
+    //         selfadhered.samaterial = item.systemData.material;
+    //         selfadhered.sadescription = item.systemData.description;
+    //         selfadhered.designpressure = item.systemData.design_pressure;
+    //     });
+    //     console.log(systemdatamt);
+    // }
+    // onMounted(() => {
     //     console.log(proccesedValue);
 
     //     const noa = async () =>

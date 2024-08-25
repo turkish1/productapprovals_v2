@@ -17,9 +17,7 @@ export const usesystemfStore = defineStore('systeminput', {
 
     //getters
     getters: {
-        noaInfo(state) {
-            return state.systeminput.systemData;
-        }
+        sysData: (state) => state.systemData
     }
     // persist: true
 });

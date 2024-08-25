@@ -1,8 +1,8 @@
 <script>
-import DataService from '@/services/DataService.js';
-// import NewButton from '@/components/NewButton.vue';
-import usecreateAccount from '@/composables/use-createAccount';
+import usecreateAccount from '@/composables/Authentication/use-createAccount';
+import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
+// import { usecccStore } from '@/stores/contractorStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref, toRefs } from 'vue';
@@ -10,7 +10,7 @@ import { useRouter } from 'vue-router';
 
 export default {
     setup() {
-        const events = ref(null);
+        let events = reactive({});
         const { authStore } = useAuthStore();
         const { message } = storeToRefs(authStore);
 
@@ -33,17 +33,16 @@ export default {
             email: '',
             date: new Date()
         });
+        const { contractors } = useRegAxios();
+
+        // const contractStore = usecccStore();
+        // let contractor = ref(contractStore);
 
         onMounted(() => {
-            DataService.getContractors()
-                .then((response) => {
-                    events.value = response.data.result;
-                    console.log(events.value);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            events = contractors;
+            console.log(events);
         });
+
         const { Data, takp } = usecreateAccount();
         const onSubmit = async () => {
             takp(formDatas);
@@ -106,20 +105,36 @@ export default {
         const dropdownItemst = ref(null);
         const dropdownItemct = ref(null);
 
-        return { formDatas, ...toRefs(formDatas), disabled, checkLicense, navigateNext, authStore, message, trade, trades, onSubmit, onUpload, onMounted, upload, dropdownItemCt, dropdownItemSt, dropdownItemct, dropdownItemst };
+        return {
+            formDatas,
+            ...toRefs(formDatas),
+            disabled,
+            navigateNext,
+            authStore,
+            message,
+            checkLicense,
+            trade,
+            trades,
+            onSubmit,
+            onUpload,
+            onMounted,
+            upload,
+            dropdownItemCt,
+            dropdownItemSt,
+            dropdownItemct,
+            dropdownItemst
+        };
     }
 };
 </script>
 
 <template>
-    <!-- <Fluid class="container"> -->
-    <!-- md:flex-row flex-col -->
-    <!-- <div class="flex container gap-2" style="margin-left: 30px"> -->
     <form class="container w-1/2" @submit.prevent="onSubmit" style="margin-left: 300px">
         <div class="card flex flex-col gap-7">
             <div class="font-semibold text-xl">Contractor Information</div>
             <div class="flex flex-col gap-2">
                 <label for="lic1">State of Florida License No.</label>
+
                 <InputText type="text" v-model="formDatas.license" placeholder="CRC000000" :invalid="formDatas.license === ''" @input="checkLicense" />
             </div>
             <div class="flex flex-wrap gap-2">

@@ -1,5 +1,4 @@
 <script setup>
-import testImage from '@/components/testImage.vue';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
@@ -15,11 +14,11 @@ const router = useRouter();
 let total = ref(0);
 let low1 = ref(0);
 let steep1 = ref(0);
-let low2 = ref(0);
 const steep = ref(0);
 let low = ref(0);
 let steep2 = ref(0);
 let steep3 = ref(0);
+let steep4 = ref(0);
 let checkedmtile = ref(false);
 let checkedadtile = ref(false);
 let checkedshingle = ref(false);
@@ -39,25 +38,30 @@ onMounted(() => {
     roofList.value.forEach((item, index) => {
         console.log(item.item, index);
         if (item.item === 'Low Slope') {
-            low1.value = item.dim;
+            console.log(item.dim2);
+            low1.value = item.dim2;
             checkedslp.value = true;
         }
         if (item.item === 'Asphalt Shingle') {
-            low2.value = item.dim;
+            console.log(item.dim1);
+            steep1.value = item.dim1;
             checkedshingle.value = true;
         }
-        if (item.item === 'Mechanical Fastened Tile') {
-            steep1.value = item.dim;
-            checkedmtile.value = true;
-        }
-        if (item.item === 'Mortar/Adhesive Set Tile') {
-            steep2.value = item.dim;
-            checkedadtile.value = true;
-        }
-        if (item.item === 'Mortar/Adhesive Set Tile') {
-            steep3.value = item.dim;
-            checkedmetal.value = true;
-        }
+
+        // if (item.item === 'Mechanical Fastened Tile') {
+        //     steep1.value = item.dim4;
+        //     checkedmtile.value = true;
+        // }
+
+        // if (item.item === 'Mortar/Adhesive Set Tile') {
+        //     steep2.value = item.dim3;
+        //     checkedadtile.value = true;
+        // }
+        // if (item.item === 'Metal Panel') {
+        //     steep3.value = item.dim5;
+        //     checkedmetal.value = true;
+        // }
+
         // (slope.value = item.formdt.permit), (mtile.value = item.formdt.processNumber), (adtile.value = item.formdt.phone), (mtile.value = item.formdt.email), (shingle.value = item.formdt.contractor);
     });
 
@@ -69,17 +73,25 @@ onMounted(() => {
 });
 
 function roofArea() {
-    let l1 = Number(low1.value);
-    let l2 = Number(low2.value);
+    if (low1.value.length === 0 || steep1.value === 0) {
+        low1.value = 0;
+        steep1.value = 0;
+        steep2.value = 0;
+        steep3.value = 0;
+        steep4.value = 0;
+    } else {
+        let l1 = Number(low1.value);
 
-    let st1 = Number(steep1.value);
-    let st2 = Number(steep2.value);
-    let st3 = Number(steep3.value);
-    steep.value = st1 + st2 + st3;
+        let st1 = Number(steep1.value);
+        let st2 = Number(steep2.value);
+        let st3 = Number(steep3.value);
+        let st4 = Number(steep4.value);
+        steep.value = st1 + st2 + st3 + st4;
 
-    low.value = l1 + l2;
-    console.log(steep.value);
-    total.value = low.value + steep.value;
+        low.value = l1;
+        console.log(steep1.value);
+        total.value = low.value + steep.value;
+    }
 }
 
 const navigateNext = () => {
@@ -187,8 +199,8 @@ const navigateNext = () => {
                     <div class="card md:w-1/3 flex flex-col gap-4">
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
-
-                    <test-image class="md:w-2/3" style="margin-left: 140px" />
+                    <!--
+                    <test-image class="md:w-2/3" style="margin-left: 140px" /> -->
                 </div>
             </div>
         </div>

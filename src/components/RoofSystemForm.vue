@@ -7,17 +7,43 @@ import { ref } from 'vue';
 const store = useRoofListStore();
 const area = ref('');
 const selectedItem = ref('');
-const type = ref([{ name: 'Low Slope' }, { name: 'Asphalt Shingle' }, { name: 'Mechanical Fastened Tile' }, { name: 'Mortar/Adhesive Tile' }, { name: 'Metal Panel' }]);
+const type = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Asphalt Shingle' }, { name: 'Mechanical Fastened Tile' }, { name: 'Mortar/Adhesive Tile' }, { name: 'Metal Panel' }]);
 
-function addItemAndClear(item, dim) {
+function clearSelected() {
+    store.$reset();
+}
+
+function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     item = selectedItem.value.name;
-    dim = area.value;
+
     if (item.length === 0) {
         return;
     }
-    store.addSystem(item, dim);
+    if (item === 'Asphalt Shingle') {
+        dim1 = area.value;
+        store.addSystemShingle(item, dim1);
+    }
+    if (item === 'Low Slope') {
+        dim2 = area.value;
+        store.addSystemBur(item, dim2);
+    }
+
+    if (item === 'Mechanical Fastened Tile') {
+        dim3 = area.value;
+
+        store.addSystemMTile(item, dim3);
+    }
+    if (item === 'Mortar/Adhesive Tile') {
+        dim4 = area.value;
+        store.addSystemATile(item, dim4);
+    }
+    if (item === 'Metal Panel') {
+        dim5 = area.value;
+        store.addSystemMetal(item, dim5);
+    }
+
     clear();
-    console.log(item, dim, 'System added');
+    console.log(item, dim1, 'System added');
 }
 
 function clear() {
@@ -28,7 +54,11 @@ function clear() {
 <template>
     <div class="card flex justify-center">
         <!-- addItemAndClear(roofSystem) -->
-
+        <div class="grid grid-cols-2 gap-4 place-content-around h-12 mr-49">
+            <div>
+                <Button plain text><i class="pi pi-refresh" style="font-size: 2.5rem; color: blueviolet" @click="clearSelected"></i></Button>
+            </div>
+        </div>
         <form>
             <div class="card flex flex-col gap-4">
                 <h1 class="h1">Select System</h1>
@@ -38,7 +68,7 @@ function clear() {
             </div>
         </form>
         <div class="add">
-            <i class="pi pi-plus-circle" style="font-size: 2rem; color: green" @click="addItemAndClear(selectedItem, area)"></i>
+            <i class="pi pi-plus-circle" style="font-size: 2rem; color: blueviolet" @click="addItemAndClear(selectedItem, area)"></i>
         </div>
         <div class="grid grid-cols-2 gap-4 place-content-end h72 ..">
             <div>

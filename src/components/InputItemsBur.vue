@@ -28,7 +28,7 @@ const props = defineProps({
     }
 });
 let slope = ref(null);
-let roofArea = ref(roofList._object.roofList);
+let roofArea = ref(roofList._object.roofList[0].dim2);
 let isSlopeValid = ref(true);
 let isHeightValid = ref(true);
 const dims = reactive({
@@ -51,10 +51,7 @@ const sB = ref('');
 let selSytem = ref('');
 const maps = ref([]);
 function setRoofInputs() {
-    roofArea.value.forEach((item, index) => {
-        dims.area = item.dim;
-    });
-
+    dims.area = roofArea.value;
     dims.per = dims.height * 0.6;
 }
 const dimensions = onMounted(() => {

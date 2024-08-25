@@ -1,8 +1,8 @@
 <script setup>
 import useInputpoly from '@/composables/use-Inputpoly';
-import useInputsbs from '@/composables/use-Inputsbs';
 import useSystemf from '@/composables/use-Inputsystemf';
 import { useRoofListStore } from '@/stores/roofList';
+import { watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 // import { logicOr } from '@vueuse/math';
@@ -10,7 +10,7 @@ import DripEdgeComponent from './DripEdgeComponent.vue';
 import useInputs from '@/composables/use-Inputs';
 import useSlope from '@/composables/use-updateSlope';
 import { usePolyStore } from '@/stores/polyStore';
-import { useSbsStore } from '@/stores/sbsStore';
+// import { useSbsStore } from '@/stores/sbsStore';
 import { useShingleStore } from '@/stores/shingleStore';
 import Divider from 'primevue/divider';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
@@ -18,15 +18,15 @@ import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
-const sbsStore = useSbsStore();
+
 const polyStore = usePolyStore();
 const store = useShingleStore();
 const usesystemfStore = useSystemf();
 const { inputshingle } = storeToRefs(store);
-const { sbsinput } = storeToRefs(sbsStore);
+
+const evaluating = ref(false);
 const { polyinput } = storeToRefs(polyStore);
-const { systeminput } = storeToRefs(usesystemfStore);
-console.log(systeminput);
+
 const shingles = reactive({
     manufacturer: '',
     material: '',
@@ -43,13 +43,21 @@ const selfadhered = reactive({
     samanufacturer: '',
     samaterial: '',
     sadescription: '',
-    designpressure: ''
+    Description_F1: '',
+    Description_F2: '',
+    Description_F3: '',
+    Description_F4: '',
+    Description_F5: '',
+    Description_F6: '',
+    Description_F7: '',
+    system: [],
+    maps: []
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
-let sbsdatamt = ref(sbsinput._object.sbsinput);
+
 let polydatamt = ref(polyinput._object.polyinput);
-let systemdatamt = ref(systeminput);
+let systemdatamt = ref(usesystemfStore.store.$state.systeminput);
 let roofArea = ref(roofList._object.roofList);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
@@ -65,23 +73,34 @@ let datapoly = ref();
 let udlInput = ref(null);
 let saInput = ref(null);
 let noaInput = ref(null);
+
 const dims = reactive({
     area: '',
     height: ''
 });
 
+const selfAdData = ref([]);
+//  This goes in the systemtype ref({ name: array })
+const array = ref([]);
+const selectedsystemf = ref();
+const systemtype = ref(selfadhered.system);
+const descriptionSAdata = ref([]);
 let slopetypemore = ref(slopeCondition.slope_more_4);
 let slopetypeless = ref(slopeCondition.slope_less_4);
 const selectedSlopehigh = ref();
 const selectedSlopelow = ref();
 const selectedDeck = ref();
 const { input, takeValue } = useInputs();
-const { inputs, takeValues } = useInputsbs();
+const desc = ref(false);
 const { inputsystem, takef } = useSystemf();
 const { inp, takp } = useInputpoly();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
+const descSystem = ref([]);
 const whatChanged = computed(() => {
     checkInput();
+    descriptionSA();
+    checkInputPoly();
+    systemfunc();
 });
 
 function grabInput() {
@@ -96,33 +115,87 @@ function grabInput() {
         takeValue(data.value);
     }
     if (saInput.value !== null) {
-        //  23101807
-        console.log(datasystemf.value);
+        //  23101807, 23091404
+
         takef(datasystemf.value);
-        console.log(systeminput.value);
     }
     if (udlInput.value !== null) {
         //  17040522
-        console.log(datapoly.value);
-        console.log(udlInput.value);
+
         takp(datapoly.value);
     }
-    // else if (saInput.value !== null) {
-    //      22020307
-    //     console.log(saInput.value);
-    //     takeValues(datasbs.value);
-    // }
 }
 
 function checkInputPoly() {
     if (polydatamt.value.length !== null) {
         polydatamt.value.forEach((item, index) => {
-            console.log(item.polyData, index);
             underlayment.umanufacturer = item.polyData.applicant;
             underlayment.umaterial = item.polyData.material;
             underlayment.udescription = item.polyData.description;
         });
     }
+}
+function checkInputSystem() {
+    systemdatamt.value.forEach((item, index) => {
+        selfadhered.samanufacturer = item.systemData.manufacturer;
+        selfadhered.samaterial = item.systemData.material;
+        selfadhered.Description_F1 = item.systemData.Description_F1;
+        selfadhered.Description_F2 = item.systemData.Description_F2;
+        selfadhered.Description_F3 = item.systemData.Description_F3;
+        selfadhered.Description_F4 = item.systemData.Description_F4;
+        selfadhered.Description_F5 = item.systemData.Description_F5;
+        selfadhered.Description_F6 = item.systemData.Description_F6;
+        selfadhered.Description_F7 = item.systemData.Description_F7;
+
+        console.log(selfadhered.Description_F1);
+        if (selfadhered.samanufacturer === 'Tarco Specialty Products' || selfadhered.samanufacturer === 'Polyglass USA') {
+            //    23111506
+            selfadhered.maps = item.systemData.maps;
+            for (const [key, value] of Object.entries(selfadhered.maps)) {
+                array.value.push(`${key}`);
+                descriptionSAdata.value.push(`${value}`);
+            }
+        }
+    });
+}
+function systemfunc() {
+    if (selfAdData.length !== null) {
+        selfadhered.system = array.value;
+        selfadhered.sadescription = '';
+        if (selfadhered.system[0] === 'F1') {
+            descriptionSA(selfadhered.Description_F1);
+            console.log('sent');
+        } else if (selfadhered.system[1] === 'F2') {
+            selfadhered.sadescription = selfadhered.Description_F2;
+            descriptionSA(selfadhered.Description_F2);
+        }
+        // else if (selfadhered.system[2] === 'F3') {
+        //     selfadhered.sadescription = selfadhered.Description_F3;
+        //     // descriptionSA(descriptionSAdata.value[1]);
+        // }
+    }
+}
+
+const sendAsync = computed(() => {
+    descriptionSA();
+});
+// const sendAsync = computedAsync(
+//     async () => {
+//         if (selfadhered.system[0] === 'F1') {
+//             return descriptionSA(descriptionSAdata.value[0]);
+//         } else if (selfadhered.system[1] === 'F2') {
+//             descriptionSA(descriptionSAdata.value[1]);
+//         }
+//     },
+//     null,
+//     { lazy: true, evaluating }
+// );
+function descriptionSA(value) {
+    // if (selfadhered.system.length === 0) {
+    //     selfadhered.sadescription = '';
+    // } else
+    selfadhered.sadescription = value;
+    console.log(value);
 }
 function checkInput() {
     if (datamounted.value.length !== null) {
@@ -133,58 +206,45 @@ function checkInput() {
             shingles.description = item.shingleData.description;
         });
     }
-    // if (sbsdatamt.value.length !== null) {
-    //     sbsdatamt.value.forEach((item, index) => {
-    //         console.log(item.sbsData, index);
-    //         selfadhered.samanufacturer = item.sbsData.applicant;
-    //         selfadhered.samaterial = item.sbsData.material;
-    //         selfadhered.sadescription = item.sbsData.description;
-    //     });
-    // }
-    // if (systemdatamt.value.length !== null) {
-    //     systemdatamt.value.forEach((item, index) => {
-    //         console.log(item.systemData, index);
-    //         selfadhered.samanufacturer = item.systemData.manufacturer;
-    //         selfadhered.samaterial = item.systemData.material;
-    //         selfadhered.sadescription = item.systemData.description;
-    //         selfadhered.designpressure = item.systemData.design_pressure;
-    //     });
-    //     console.log(systemdatamt);
-    // }
 }
 
 function setRoofInputs() {
     roofArea.value.forEach((item, index) => {
-        dims.area = item.dim;
+        dims.area = item.dim1;
     });
 }
 const dimensions = onMounted(() => {
     setRoofInputs();
 });
 
-watchEffect(slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, setRoofInputs, grabInput, whatChanged, () => {});
+watchOnce(checkInputSystem, () => {
+    // triggers only once
+    console.log('checkInputSystem changed!');
+});
+watchEffect(slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, setRoofInputs, grabInput, () => {});
 
 watch(
+    descriptionSA,
     valueEntered,
     noaInput,
-    saInput,
+    whatChanged,
     udlInput,
     roofArea,
     dimensions,
     grabInput,
     useInputs,
-    useSystemf,
+
     inputshingle,
     inputsystem,
     datamounted,
-    datasystemf,
-    datasystemf,
-    systeminput,
+
     datasbs,
     datapoly,
+
     checkInputPoly,
     checkInput,
     setRoofInputs,
+
     () => {}
 );
 
@@ -207,11 +267,7 @@ function getIndexs() {
         isSAValid = true;
         isShingleValid = true;
     }
-    // if (selectedSlopelow.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E' || selectedSlopehigh.value === '(S/A) membrane adhered to a mechanically fastened UDL/Base Sheet, per the NOA System E') {
-    //     isUDLNOAValid.value = true;
-    //     isSAValid.value = true;
-    //     isShingleValid.value = true;
-    // }
+
     if (selectedSlopelow._rawValue === null) {
         console.log('Not Mounted');
     }
@@ -221,31 +277,27 @@ function valueEntered() {
     if (slope.value) {
         let slopeNumber = Number(slope.value);
         console.log(slopeNumber);
-        if (slope.value === '') {
-            isSlopeValid.value = false;
-            isSlopeLessFour.value = false;
-            isSlopeMoreFour.value = false;
-        }
+
         if (slopeNumber < 2) {
             isSlopeValid = false;
-        }
-        if (slopeNumber > 4 && slopeNumber <= 12) {
-            isSlopeValid = true;
-            isSlopeMoreFour.value = true;
-            isSelectVisible2 = true;
-            isSelectVisible1 = false;
-            isUDLNOAValid = false;
-            isSAValid = false;
-            isShingleValid = true;
         }
         if (slopeNumber >= 2 && slopeNumber <= 4) {
             isSlopeValid = true;
             isSlopeLessFour.value = true;
             isSelectVisible1 = true;
             isSelectVisible2 = false;
-            isUDLNOAValid = false;
-            isSAValid = false;
-            isShingleValid = true;
+        }
+        if (slopeNumber > 4 && slopeNumber <= 12) {
+            isSlopeValid = true;
+            isSlopeMoreFour.value = true;
+            isSelectVisible2 = true;
+            isSelectVisible1 = false;
+        }
+
+        if (slope.value === '') {
+            isSlopeValid.value = false;
+            isSlopeLessFour.value = false;
+            isSlopeMoreFour.value = false;
         }
     } else {
         console.log('Not Mounted');
@@ -257,18 +309,17 @@ function valueEntered() {
         <div class="w-64 gap-2 mt-3 space-y-6" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
-        <!--  flex flex-col gap-2 w-64 gap-3 mt-3 space-y-4-->
+
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Slope *</label>
-            <!-- <label class="px-1" style="color: red">*</label> -->
-            <!-- @change="valueEntered"  -->
-            <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" />
+
+            <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" />
             <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p>
         </div>
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label>
             <!-- <label class="px-1" style="color: red">*</label> -->
-            <InputText id="height" v-model="height" type="text" placeholder="height" :invalid="height === null" />
+            <InputText id="height" v-model="dims.height" type="text" placeholder="height" :invalid="height === null" />
         </div>
         <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">
             <label for="area">Area</label>
@@ -284,7 +335,7 @@ function valueEntered() {
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="23101807" @input="grabInput" @change="checkInput" />
+                <InputText id="saInput" v-model="saInput" placeholder="23101807" @input="grabInput" />
             </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
@@ -326,7 +377,6 @@ function valueEntered() {
         </div>
 
         <div class="flex flex-row space-x-12 space-y-6" style="margin-left: 2px">
-            <!-- class="w-96" class="flex space-x-20"-->
             <div v-show="isSAValid" class="flex flex-row space-x-20">
                 <div class="flex flex-col gap-2">
                     <label for="saapplicant">S/A Applicant</label>
@@ -336,13 +386,14 @@ function valueEntered() {
                     <label for="samaterial">S/A Material Type</label>
                     <InputText id="saaterial" v-model="selfadhered.samaterial" />
                 </div>
+
+                <div class="flex flex-col gap-2">
+                    <label style="color: red">Select System F *</label>
+                    <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="systemfunc" />
+                </div>
                 <div class="w-128 flex flex-col gap-2">
                     <label for="sadescription">S/A Description</label>
-                    <InputText id="sadescription" v-model="selfadhered.sadescription" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label for="designpressure">Design psf:</label>
-                    <InputText id="designpressure" v-model="selfadhered.designpressure" />
+                    <InputText id="sadescription" v-model="selfadhered.sadescription" @change="descriptionSA" />
                 </div>
 
                 <!-- <div class="flex shrink flex-col gap-2">

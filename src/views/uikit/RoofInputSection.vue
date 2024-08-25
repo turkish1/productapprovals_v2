@@ -1,19 +1,55 @@
 <script setup>
-import LowSlope from '@/components/LowSlope.vue';
+// import LowSlope from '@/components/LowSlope.vue';
 import Shingles from '@/components/Shingles.vue';
 import Tile from '@/components/Tile.vue';
+import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted } from '@vueuse/core';
-import { computed, ref } from 'vue';
+// import { invoke, until } from '@vueuse/shared';
+import { defineAsyncComponent } from 'vue';
+
+import { computed, ref, watch } from 'vue';
+
+const LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
+
 const props = defineProps(['page']);
 const page = computed(() => props.page);
 console.log(page);
 const values = ref(1);
+
+const store = useRoofListStore();
+const isValidshingle = ref(false);
+const isValidbur = ref(false);
+const isValidtile = ref(false);
+// invoke(async () => {
+//     await until(isValidshingle).toBe(true);
+//     await until(isValidbur).toBe(true);
+//     await until(isValidtile).toBe(true);
+// });
+const roofType = ref(store.$state.roofList);
+function checkState() {
+    if (roofType.value === 'Asphalt Shingle') {
+        isValidshingle.value = true;
+    }
+    // if (roofType.value === 'Low Slope') {
+    //     isValidbur.value = true;
+    // }
+    // if (roofType.value === 'Tile') {
+    //     isValidtile.value = true;
+    // }
+}
+
+console.log(roofType);
+// onMounted(() => {
+//     checkState();
+// });
+
 tryOnMounted(() => {
-    updateNode();
+    checkState();
 });
-// watchEffect(updateNode, () => {});
+watch(() => {});
 function updateNode() {
-    values.value += 1;
+    console.log(isValidbur.value);
+    isValidbur.value = true;
 }
 </script>
 
@@ -34,13 +70,23 @@ function updateNode() {
                     </div>
 
                     <div class="flex pt-6 justify-end" style="margin-top: 350px">
-                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" @click="activateCallback('2'), updateNode" />
+                        <Button
+                            label="Next"
+                            severity="contrast"
+                            icon="pi pi-arrow-right"
+                            @click="
+                                activateCallback('2');
+                                isValidbur = true;
+                                updateNode;
+                            "
+                        />
                     </div>
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
                     <div class="flex flex-col h-128">
-                        <LowSlope v-if="values === 2" />
+                        <!-- v-if="values === 3" -->
+                        <LowSlope v-if="isValidbur" />
                     </div>
                     <div class="flex pt-6 justify-between">
                         <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" style="margin-top: 650px" />

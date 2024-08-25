@@ -16,7 +16,6 @@ export default function useLast() {
             resNum.value.forEach((element) => {
                 console.log(element.processNumber);
                 lastNum.value = element.processNumber;
-                console.log(lastNum.value, element.processNumber);
             });
         })
 

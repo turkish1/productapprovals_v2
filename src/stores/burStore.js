@@ -12,13 +12,10 @@ export const useBurStore = defineStore('burinput', {
         addData(burData) {
             this.burinput.push({ burData, completed: false });
         }
-    }
+    },
 
-    //getters
-    // getters: {
-    //     noaInfo(state) {
-    //         return state.inputshingle.shingleData;
-    //     }
-    // }
+    getters: {
+        burData: (state) => state.burData
+    }
     // persist: true
 });

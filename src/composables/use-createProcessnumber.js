@@ -33,21 +33,13 @@ export default function usecreateProcess() {
         console.log(form);
         procData = form;
         execute({ data: form });
-        // console.log(data);
-        // data = Data.value;
+
         responseMessage.value = 'Form submitted successfully!';
         procStore.addData(procData);
         // store the values
 
         // then clear the page
 
-        // results.value = noaNum.value.forEach((item, index) => {
-        // if (Data.length === 0) {
-        //     return;
-        // }
-        // accountStore.addData(Data);
-        // area.value = '';
-        // type.value = '';
         console.log(procData, 'System added');
 
         // return results;

@@ -5,6 +5,7 @@ import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
 import { usePermitappStore } from '@/stores/permitapp';
+import { useToNumber } from '@vueuse/core';
 // import { useSum } from '@vueuse/math';
 import { reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
@@ -14,10 +15,11 @@ export default {
     setup() {
         const responseMessage = ref('');
         const router = useRouter();
+
         const { procData, procReceive } = usecreateProcessnumber();
         // const useacctStore = useaccountStore();
         // const { accountinput } = storeToRefs(useacctStore);
-        const convertProcess = ref();
+        const prefix = ref('me');
         const store = usePermitappStore();
         const formData = reactive({
             address: '',
@@ -52,8 +54,14 @@ export default {
             formData.muni = data.MinimumPropertyInfos[0].Municipality;
 
             formData.folio = data.MinimumPropertyInfos[0].Strap;
+            let strLength = String(lastNum.value);
+            console.log(lastNum.value.length, lastNum.value, strLength);
+            let newNumber = strLength.substring(2, 13);
 
-            formData.processNumber = lastNum.value + a.value;
+            const number = useToNumber(newNumber);
+            let addNumber = number.value + 1;
+            let createStr = String(addNumber);
+            formData.processNumber = prefix.value.concat(createStr);
             console.log(formData.processNumber);
             checkV.value = formData.folio;
             checkMB.value = checkV.value.substring(0, 2);
@@ -153,7 +161,7 @@ export default {
                                             <!-- pi-search-plus -->
                                             <!-- <Message severity="error">Property Address Required</Message> -->
                                         </div>
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="contractor">Contractor Name</label>
                                             <InputText id="zip" v-model="contractor" type="text" placeholder="name" />
                                             <!-- <Message severity="error">Contractor Name Required</Message> -->
@@ -163,31 +171,31 @@ export default {
                                             <InputText id="phone" v-model="phone" type="text" placeholder="000-000-0000" />
                                             <Message severity="error">Phone Required</Message>
                                         </div> -->
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="phone">Cell Phone Number</label>
                                             <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
                                         </div>
 
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="Email">Email</label>
                                             <!-- label="Email" type="email" v-model="email"  id="email1" v-model="email" :error="emailError" type="text"-->
                                             <InputText v-model="email" :invalid="email === null" />
                                             <!-- <Message v-if="invalid" severity="error">Email is required</Message> @click="navigateNext"-->
                                         </div>
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="muni">Municipality</label>
                                             <InputText id="muni" v-model="muni" type="text" placeholder="municipality" />
                                         </div>
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="folio">Folio</label>
                                             <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" />
                                         </div>
 
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="permit">Master Permit</label>
                                             <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
                                         </div>
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="processnum">mEProcess Number</label>
                                             <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
                                         </div>

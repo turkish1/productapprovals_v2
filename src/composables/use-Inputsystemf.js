@@ -21,28 +21,46 @@ export default function useSystemf() {
         noa: '',
         manufacturer: '',
         material: '',
+        system_f: [],
         description: '',
-        design_pressure: '',
-        expiration_date: ''
+        expiration_date: '',
+        Description_F1: '',
+        Description_F2: '',
+        Description_F3: '',
+        Description_F4: '',
+        Description_F5: '',
+        Description_F6: '',
+        Description_F7: '',
+
+        maps: []
     });
     function takef(saNoa) {
         inputsystem.value = saNoa;
-        console.log(inputsystem.value);
+
         const result = execute().then((result) => {
             noaNum.value = data.value;
 
             results.value = noaNum.value.forEach((item, index) => {
-                console.log(item.Expiration_Date, item.Manufacturer.Name);
                 let num = Number(inputsystem.value);
-                console.log(item.NOA_No, num);
-                if (item.NOA_No === num) {
-                    systemData.manufacturer = item.Manufacturer.Name;
-                    systemData.material = item.materials;
-                    systemData.description = item.Description;
-                    systemData.expiration_date = item.Expiration_Date;
-                    systemData.design_pressure = item.Approved_Assemblies[0].System_F1.Underlayment_Uplift_Design_Pressure;
-                    // System_F1.Underlayment_Uplift_Design_Pressure;
 
+                if (item.NOA === num) {
+                    systemData.manufacturer = item.Manufacturer;
+                    systemData.material = item.Material;
+                    systemData.Description_F1 = item.Description_F1;
+                    systemData.Description_F2 = item.Description_F2;
+                    systemData.Description_F3 = item.Description_F3;
+                    systemData.Description_F4 = item.Description_F4;
+                    systemData.Description_F5 = item.Description_F5;
+                    systemData.Description_F6 = item.Description_F6;
+                    systemData.Description_F7 = item.Description_F7;
+                    // systemData.system_f = item.System;
+                    if (systemData.manufacturer === 'Tarco Specialty Products' || systemData.manufacturer === 'Polyglass USA') {
+                        systemData.maps = item.maps;
+                    }
+
+                    // systemData.expiration_date = item.Expiration_Date;
+                    // systemData.System_F1 = item;
+                    // System_F1.Underlayment_Uplift_Design_Pressure;
                     store.addData(systemData);
                     // area.value = '';
                     // type.value = '';

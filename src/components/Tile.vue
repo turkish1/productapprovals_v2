@@ -66,7 +66,7 @@ export default {
 };
 </script>
 <template>
-    <div class="flex flex-col md:w-3/4 min-h-[420px] gap-6 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px; margin-bottom: 4px">
+    <div class="flex flex-col w-3/4 min-h-[420px] gap-6 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px; margin-bottom: 4px">
         <AgreementsDialog v-if="isDialog === true"></AgreementsDialog>
 
         <div class="columns-2 mt-2">
@@ -107,7 +107,7 @@ export default {
         </div>
     </div>
 
-    <div class="card md:w-3/4 min-h-[500px] gap-2 mt-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="card w-full min-h-[500px] gap-2 mt-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="flex flex-row space-x-8" style="margin-left: 10px">
             <div class="flex flex-col gap-2">
                 <label for="tilenoa">Tile Noa</label>

@@ -1,16 +1,28 @@
 <script setup>
+import { useRoofListStore } from '@/stores/roofList';
+import { invoke, until } from '@vueuse/shared';
 import { onMounted, ref } from 'vue';
 import AgreementsDialogShingle from './AgreementsDialogShingle.vue';
 import InputItems from './InputItems.vue';
 
+const store = useRoofListStore();
+const isDialog = ref(false);
+invoke(async () => {
+    await until(isDialog).toBe(true);
+});
+const roofType = ref(store.$state.roofList[0].item);
+function checkState() {
+    if (roofType.value === 'Asphalt Shingle') {
+        isDialog.value = true;
+    } else isDialog.value = false;
+}
+
+console.log(roofType);
 onMounted(() => {
-    isDialog = true;
+    checkState();
 });
 
-const roofType = ref('Shingle');
 let slope = ref(null);
-
-let isDialog = ref(false);
 
 const MiamiBC = ref(false);
 

@@ -38,7 +38,6 @@ export default function usePoly() {
                     polyData.material = item.material;
                     polyData.description = item.description;
 
-                    console.log(polyData.applicant);
                     if (polyData.length === 0) {
                         return;
                     }
