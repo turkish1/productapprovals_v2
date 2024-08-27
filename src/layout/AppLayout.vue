@@ -2,7 +2,7 @@
 import { useLayout } from '@/layout/composables/layout';
 import { computed, ref, watch } from 'vue';
 import AppFooter from './AppFooter.vue';
-import AppSidebar from './AppSidebar.vue';
+// import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 
 const { layoutConfig, layoutState, isSidebarActive, resetMenu } = useLayout();
@@ -53,7 +53,7 @@ const isOutsideClicked = (event) => {
 <template>
     <div class="layout-wrapper" :class="containerClass">
         <app-topbar></app-topbar>
-        <app-sidebar></app-sidebar>
+        <!-- <app-sidebar></app-sidebar> -->
         <div class="layout-main-container">
             <!-- <div class="layout-main"> -->
             <router-view></router-view>
