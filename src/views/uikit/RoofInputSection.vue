@@ -1,6 +1,6 @@
 <script setup>
 // import LowSlope from '@/components/LowSlope.vue';
-import Shingles from '@/components/Shingles.vue';
+// import Shingles from '@/components/Shingles.vue';
 import Tile from '@/components/Tile.vue';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted } from '@vueuse/core';
@@ -10,6 +10,7 @@ import { defineAsyncComponent } from 'vue';
 import { computed, ref, watch } from 'vue';
 
 const LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
+const Shingles = defineAsyncComponent(() => import('@/components/Shingles.vue'));
 
 const props = defineProps(['page']);
 const page = computed(() => props.page);
@@ -29,27 +30,27 @@ const roofType = ref(store.$state.roofList);
 function checkState() {
     if (roofType.value === 'Asphalt Shingle') {
         isValidshingle.value = true;
+        console.log(isValidshingle.value);
     }
-    // if (roofType.value === 'Low Slope') {
-    //     isValidbur.value = true;
-    // }
+    if (roofType.value === 'Low Slope') {
+        isValidbur.value = true;
+        console.log(isValidbur.value);
+    }
     // if (roofType.value === 'Tile') {
     //     isValidtile.value = true;
     // }
 }
 
 console.log(roofType);
-// onMounted(() => {
-//     checkState();
-// });
 
 tryOnMounted(() => {
     checkState();
 });
-watch(() => {});
+watch(roofType, () => {});
 function updateNode() {
     console.log(isValidbur.value);
     isValidbur.value = true;
+    isValidshingle.value = true;
 }
 </script>
 
@@ -57,19 +58,19 @@ function updateNode() {
     <!-- lg:w-full min-h-[10px] card flex flex-row gap-18  -->
     <div class="md:w-3/4 px-2 pt-0">
         <!-- <div class="card flex justify-center"> -->
-        <Stepper value="1" linear class="basis-[700rem]">
+        <Stepper value="1" linear class="basis-[400rem]">
             <StepList>
                 <Step value="1">Shingles</Step>
                 <Step value="2">Low Slope</Step>
                 <Step value="3">Tile</Step>
             </StepList>
-            <StepPanels class="object-scale-down h-900 w-1200 ...">
+            <StepPanels class="object-scale-down h-700 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
-                    <div class="flex flex-col h-96">
-                        <shingles />
+                    <div class="flex flex-col h-16">
+                        <shingles v-if="!isValidshingle" />
                     </div>
 
-                    <div class="flex pt-6 justify-end" style="margin-top: 350px">
+                    <div class="flex pt-6 justify-end" style="margin-top: 550px">
                         <Button
                             label="Next"
                             severity="contrast"

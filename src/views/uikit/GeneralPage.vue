@@ -5,20 +5,21 @@ import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+// import editorComponent from '../../components/Editor/editorArea.vue';
 
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
 const store = useRoofListStore();
 const { roofList } = storeToRefs(store);
 const router = useRouter();
-let total = ref(0);
-let low1 = ref(0);
-let steep1 = ref(0);
-const steep = ref(0);
-let low = ref(0);
-let steep2 = ref(0);
-let steep3 = ref(0);
-let steep4 = ref(0);
+let total = ref('');
+let low1 = ref('');
+let steep1 = ref('');
+const steep = ref('');
+let lowslope = ref('');
+let steep2 = ref('');
+let steep3 = ref('');
+let steep4 = ref('');
 let checkedmtile = ref(false);
 let checkedadtile = ref(false);
 let checkedshingle = ref(false);
@@ -26,8 +27,8 @@ let checkedmetal = ref(false);
 // let checkedslope = ref();
 let master = ref();
 let process = ref();
-let phone = ref();
-let email = ref();
+
+let jobaddress = ref();
 let contractor = ref();
 
 const checkedslp = ref(false);
@@ -37,61 +38,57 @@ console.log(roofList, permitapp);
 onMounted(() => {
     roofList.value.forEach((item, index) => {
         console.log(item.item, index);
-        if (item.item === 'Low Slope') {
-            console.log(item.dim2);
-            low1.value = item.dim2;
-            checkedslp.value = true;
-        }
         if (item.item === 'Asphalt Shingle') {
             console.log(item.dim1);
             steep1.value = item.dim1;
             checkedshingle.value = true;
         }
 
-        // if (item.item === 'Mechanical Fastened Tile') {
-        //     steep1.value = item.dim4;
-        //     checkedmtile.value = true;
-        // }
+        if (item.item === 'Low Slope') {
+            console.log(item.dim2);
+            low1.value = item.dim2;
+            console.log(low1.value);
+            checkedslp.value = true;
+        }
 
-        // if (item.item === 'Mortar/Adhesive Set Tile') {
-        //     steep2.value = item.dim3;
-        //     checkedadtile.value = true;
-        // }
-        // if (item.item === 'Metal Panel') {
-        //     steep3.value = item.dim5;
-        //     checkedmetal.value = true;
-        // }
+        if (item.item === 'Mechanical Fastened Tile') {
+            steep1.value = item.dim4;
+            checkedmtile.value = true;
+        }
+
+        if (item.item === 'Mortar/Adhesive Set Tile') {
+            steep2.value = item.dim3;
+            checkedadtile.value = true;
+        }
+        if (item.item === 'Metal Panel') {
+            steep3.value = item.dim5;
+            checkedmetal.value = true;
+        }
 
         // (slope.value = item.formdt.permit), (mtile.value = item.formdt.processNumber), (adtile.value = item.formdt.phone), (mtile.value = item.formdt.email), (shingle.value = item.formdt.contractor);
     });
 
     permitapp.value.forEach((item, index) => {
-        (master.value = item.formdt.permit), (process.value = item.formdt.processNumber), (phone.value = item.formdt.phone), (email.value = item.formdt.email), (contractor.value = item.formdt.contractor);
+        (master.value = item.formdt.permit), (process.value = item.formdt.processNumber), (jobaddress.value = item.formdt.address), (contractor.value = item.formdt.contractor);
     });
 
     roofArea();
 });
 
 function roofArea() {
-    if (low1.value.length === 0 || steep1.value === 0) {
-        low1.value = 0;
-        steep1.value = 0;
-        steep2.value = 0;
-        steep3.value = 0;
-        steep4.value = 0;
-    } else {
-        let l1 = Number(low1.value);
+    let l1 = Number(low1.value);
 
-        let st1 = Number(steep1.value);
-        let st2 = Number(steep2.value);
-        let st3 = Number(steep3.value);
-        let st4 = Number(steep4.value);
-        steep.value = st1 + st2 + st3 + st4;
+    let st1 = Number(steep1.value);
+    let st2 = Number(steep2.value);
+    let st3 = Number(steep3.value);
+    let st4 = Number(steep4.value);
+    steep.value = st1 + st2 + st3 + st4;
 
-        low.value = l1;
-        console.log(steep1.value);
-        total.value = low.value + steep.value;
-    }
+    // + st2 + st3 + st4;
+
+    lowslope.value = l1;
+    console.log(steep1.value);
+    total.value = lowslope.value + steep.value;
 }
 
 const navigateNext = () => {
@@ -116,7 +113,7 @@ const navigateNext = () => {
                             <div class="grid grid-cols-1 gap-1 place-content-center h-6 ...">
                                 <p class="text-center font-semibold text-xl">General Information Page</p>
                             </div>
-                            <div class="flex flex-wrap gap-4">
+                            <div class="flex flex-wrap gap-8 columns-3">
                                 <div class="flex flex-col grow basis-0 gap-3">
                                     <label for="master">Master Permit</label>
                                     <InputText id="master" v-model="master" type="text" planceholder="permit number" />
@@ -127,22 +124,18 @@ const navigateNext = () => {
                                     <InputText id="process" v-model="process" type="text" planceholder="mEProcess" />
                                 </div>
 
-                                <div class="flex flex-col gap-3">
+                                <div class="flex flex-col grow basis-0 gap-3">
+                                    <label for="email1">Job Address</label>
+                                    <InputText id="email1" v-model="jobaddress" type="text" planceholder="" />
+                                </div>
+                                <div class="flex flex-col min-w-96 gap-2">
                                     <label for="contractor">Licensed DBA Name </label>
                                     <InputText id="contractor" v-model="contractor" type="text" />
-                                </div>
-                                <div class="flex flex-col grow basis-0 gap-3">
-                                    <label for="cphone">Phone Number</label>
-                                    <InputText id="cphone" v-model="phone" type="text" planceholder="Number" />
-                                </div>
-                                <div class="flex flex-col grow basis-0 gap-3">
-                                    <label for="email1">Email</label>
-                                    <InputText id="email1" v-model="email" type="text" planceholder="" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card flex flex-wrap justify-center gap-2">
+                    <div class="card flex flex-wrap justify-center gap-16">
                         <div class="flex items-center">
                             <Checkbox v-model="newroof" inputId="newroof" name="newroof" value="newroof" />
                             <label for="newroof" class="ml-2"> New Roof</label>
@@ -178,29 +171,32 @@ const navigateNext = () => {
                         </div>
                     </div>
                     <label style="margin-left: 350px">Roof Area </label>
-                    <div class="card flex flex-col md:flex-row gap-4">
+                    <div class="card flex flex-col md:flex-row gap-8">
+                        <div><label for="lowslope" class="ml-1 text-left">Low Slope </label></div>
+
                         <InputGroup>
+                            <InputText v-model="lowslope" placeholder="Low Slope" @change="roofArea" />
                             <InputGroupAddon>
                                 <i class="pi pi-angle-down"></i>
                             </InputGroupAddon>
-                            <InputText v-model="low" placeholder="Low Slope" />
                         </InputGroup>
-
+                        <div class="ml-1 text-left"><label for="">Steep Slope </label></div>
                         <InputGroup>
-                            <InputGroupAddon>\</InputGroupAddon>
-                            <InputNumber v-model="steep" placeholder="Steep Sloped" />
+                            <InputNumber v-model="steep" placeholder="Steep Sloped" @change="roofArea" />
+
                             <InputGroupAddon></InputGroupAddon>
                         </InputGroup>
+                        <label for="" class="ml-1">Total </label>
                         <InputGroup>
                             <InputGroupAddon>Total</InputGroupAddon>
-                            <InputText v-model="total" placeholder="" />
+                            <InputText v-model="total" placeholder="Total" />
                         </InputGroup>
                     </div>
                     <div class="card md:w-1/3 flex flex-col gap-4">
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
-                    <!--
-                    <test-image class="md:w-2/3" style="margin-left: 140px" /> -->
+
+                    <!-- <test-image class="md:w-2/3" style="margin-left: 140px" />  -->
                 </div>
             </div>
         </div>

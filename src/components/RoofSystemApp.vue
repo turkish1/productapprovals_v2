@@ -13,7 +13,7 @@ import RoofSystemList from './RoofSystemList.vue';
 
 <style scoped>
 .h1 {
-    margin-left: 300px;
+    margin-left: 500px;
 }
 .container {
     padding-bottom: 30px;

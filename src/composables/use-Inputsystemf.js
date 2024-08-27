@@ -21,7 +21,7 @@ export default function useSystemf() {
         noa: '',
         manufacturer: '',
         material: '',
-        system_f: [],
+        system: [],
         description: '',
         expiration_date: '',
         Description_F1: '',
@@ -31,9 +31,11 @@ export default function useSystemf() {
         Description_F5: '',
         Description_F6: '',
         Description_F7: '',
-
-        maps: []
+        arraySystem: [],
+        maps: [],
+        systemCheck: []
     });
+    const systemCheck = ref([]);
     function takef(saNoa) {
         inputsystem.value = saNoa;
 
@@ -53,9 +55,21 @@ export default function useSystemf() {
                     systemData.Description_F5 = item.Description_F5;
                     systemData.Description_F6 = item.Description_F6;
                     systemData.Description_F7 = item.Description_F7;
-                    // systemData.system_f = item.System;
-                    if (systemData.manufacturer === 'Tarco Specialty Products' || systemData.manufacturer === 'Polyglass USA') {
+                    systemData.systemCheck = item.System;
+                    console.log(systemData.systemCheck, item.System, systemData.systemCheck.length);
+                    // systemData.manufacturer === 'Tarco Specialty Products' || systemData.manufacturer === 'Polyglass USA'
+                    if (systemData.systemCheck.length >= 3) {
+                        console.log('Maps created');
                         systemData.maps = item.maps;
+                        for (const [key] of Object.entries(systemData.maps)) {
+                            systemData.arraySystem.push(`${key}`);
+                            console.log(`${key}`);
+                            // descriptionSAdata.value.push(`${value}`);
+                        }
+                        console.log(systemData.arraySystem);
+                    } else {
+                        systemData.system = item.System;
+                        systemData.description = item.Description;
                     }
 
                     // systemData.expiration_date = item.Expiration_Date;

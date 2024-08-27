@@ -48,16 +48,14 @@ function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
 
 function clear() {
     area.value = '';
-    // type.value.Clear();
+
+    selectedItem.value = '';
 }
 </script>
 <template>
     <div class="card flex justify-center">
-        <!-- addItemAndClear(roofSystem) -->
-        <div class="grid grid-cols-2 gap-4 place-content-around h-12 mr-49">
-            <div>
-                <Button plain text><i class="pi pi-refresh" style="font-size: 2.5rem; color: blueviolet" @click="clearSelected"></i></Button>
-            </div>
+        <div class="refresh">
+            <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
         <form>
             <div class="card flex flex-col gap-4">
@@ -67,25 +65,31 @@ function clear() {
                 <InputText type="text" v-model="area" />
             </div>
         </form>
+        <!-- Prevent the addition of a system until the roof area has been entered -->
         <div class="add">
-            <i class="pi pi-plus-circle" style="font-size: 2rem; color: blueviolet" @click="addItemAndClear(selectedItem, area)"></i>
+            <i class="pi pi-plus-circle" style="font-size: 2rem; color: gray; margin-left: 1px; margin-top: 150px" @click="addItemAndClear(selectedItem, area)"></i>
         </div>
-        <div class="grid grid-cols-2 gap-4 place-content-end h72 ..">
+
+        <div class="grid grid-cols-1 gap-2 place-content-end h42 ..">
             <div>
-                <Button class="button" label="Submit" severity="contrast" as="router-link" to="/permitapp"></Button>
+                <Button class="button" label="Submit" severity="contrast" style="margin-left: 5px; margin-top: 100px" as="router-link" to="/permitapp"></Button>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.add {
-    margin-left: 80px;
-    margin-top: 110px;
-}
+/* .add { */
+/* margin-left: 280px;
+    margin-top: 30px; */
+/* } */
+/* .refresh {
+    margin-left: 40px;
+    margin-top: 90px;
+} */
 
-.button {
-    margin-left: 70px;
-    margin-top: 300px;
-}
+/* .button {
+    margin-left: 30px;
+    margin-top: 120px;
+} */
 </style>

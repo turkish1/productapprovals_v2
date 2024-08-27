@@ -1,59 +1,69 @@
 <script setup>
-import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import DataService from '@/services/DataService';
-import { tryOnMounted } from '@vueuse/core';
+// import useacctStore from '@/stores/loginStore';
+// import { tryOnMounted } from '@vueuse/core';
+import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+
 const username = ref('');
 const password = ref('');
 const checked = ref(false);
 const router = useRouter();
 const visible = ref(false);
-const held = ref([]);
-
-const keep = reactive({
-    ids: [username, password]
+const localData = ref([]);
+let Data = reactive({});
+const acctCompare = ref([]);
+let accountUser = reactive({
+    email: '',
+    expiration_date: '',
+    name: '',
+    projects: [],
+    secondary_status: '',
+    license: ''
 });
+// const dataStore = useacctStore();
+
+// const { login } = storeToRefs(dataStore);
 
 async function checkAu() {
-    await DataService.getAccount()
-        .then((response) => {
-            let val = response.data;
-            for (let i = 0; i < val.length; i++) {
-                keep.ids.push({
-                    username: val[i].username,
-                    password: val[i].password
-                });
+    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/getaccounts';
 
-                // (keep.usernames = val[i].username), (keep.passwords = val[i].password);
-            }
-            console.log(keep);
-            // checkAuth();
-        })
-        .catch((e) => {
-            console.log(e);
-        });
+    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
+    // const loginStore = useacctStore();
+    // const username = ref('');
+
+    let results = ref([]);
+
+    results.value = execute().then((result) => {
+        Data = data.value;
+
+        for (const [key, value] of Object.entries(Data)) {
+            localData.value.push(value);
+        }
+    });
 }
 
-watch(checkAu, username, password, () => {});
+watch(checkAuth, () => {});
 
-tryOnMounted(() => {
-    checkAu();
-});
 function checkAuth() {
-    for (let i = 2; i < keep.ids.length; i++) {
-        let k = [];
-        k.push(keep.ids[i]);
-        held.value = k;
-        console.log(held.value);
-    }
-    console.log(held.value[0].password, password.value);
-    if (password.value === held.value[0].password) {
-        console.log('Great');
-        navigateNext();
-    } else {
-        visible.value = true;
-    }
+    localData.value.forEach((item, index) => {
+        for (let i = 0; i < item.length; i++) {
+            if (username.value === item[i].password) {
+                acctCompare.value.push(item[i]);
+
+                accountUser.email = item[i].email;
+                accountUser.name = item[i].name;
+                accountUser.expiration_date = item[i].expiration_date;
+                accountUser.projects = item[i].projects;
+                accountUser.secondary_status = item[i].secondary_status;
+                accountUser.license = item[i].license;
+                navigateNext();
+            } else {
+                visible.value = true;
+            }
+            console.log(acctCompare);
+        }
+    });
 }
 
 function register() {
@@ -87,8 +97,8 @@ const navigateNext = () => {
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
-                        <!-- as="router-link" to="/roofsystem" -->
-                        <Button label="Sign In" severity="contrast" class="w-full" @click="checkAuth" @change="checkAu"></Button>
+                        <!-- as="router-link" to="/roofsystem" @change="checkAu"-->
+                        <Button label="Sign In" severity="contrast" class="w-full" @click="checkAu"></Button>
                     </div>
                 </div>
             </div>

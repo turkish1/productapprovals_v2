@@ -15,10 +15,10 @@ export const useShingleStore = defineStore('inputshingle', {
     },
 
     //getters
+
     getters: {
-        noaInfo(state) {
-            return state.inputshingle.shingleData;
-        }
+        shingleData: (state) => state.shingleData
     }
+
     // persist: true
 });

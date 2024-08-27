@@ -2,7 +2,6 @@
 import useInputpoly from '@/composables/use-Inputpoly';
 import useSystemf from '@/composables/use-Inputsystemf';
 import { useRoofListStore } from '@/stores/roofList';
-import { watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 // import { logicOr } from '@vueuse/math';
@@ -51,7 +50,8 @@ const selfadhered = reactive({
     Description_F6: '',
     Description_F7: '',
     system: [],
-    maps: []
+    maps: [],
+    arrSystem: []
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
@@ -79,10 +79,11 @@ const dims = reactive({
     height: ''
 });
 
+const selSytem = ref();
 const selfAdData = ref([]);
 //  This goes in the systemtype ref({ name: array })
 const array = ref([]);
-const selectedsystemf = ref();
+const selectedsystemf = ref(null);
 const systemtype = ref(selfadhered.system);
 const descriptionSAdata = ref([]);
 let slopetypemore = ref(slopeCondition.slope_more_4);
@@ -98,9 +99,8 @@ const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }
 const descSystem = ref([]);
 const whatChanged = computed(() => {
     checkInput();
-    descriptionSA();
+
     checkInputPoly();
-    systemfunc();
 });
 
 function grabInput() {
@@ -115,8 +115,6 @@ function grabInput() {
         takeValue(data.value);
     }
     if (saInput.value !== null) {
-        //  23101807, 23091404
-
         takef(datasystemf.value);
     }
     if (udlInput.value !== null) {
@@ -146,57 +144,57 @@ function checkInputSystem() {
         selfadhered.Description_F5 = item.systemData.Description_F5;
         selfadhered.Description_F6 = item.systemData.Description_F6;
         selfadhered.Description_F7 = item.systemData.Description_F7;
-
-        console.log(selfadhered.Description_F1);
-        if (selfadhered.samanufacturer === 'Tarco Specialty Products' || selfadhered.samanufacturer === 'Polyglass USA') {
+        selfadhered.arrSystem = item.systemData.arraySystem;
+        console.log(selfadhered.arrSystem.length);
+        if (selfadhered.arrSystem.length > 1) {
             //    23111506
-            selfadhered.maps = item.systemData.maps;
-            for (const [key, value] of Object.entries(selfadhered.maps)) {
-                array.value.push(`${key}`);
-                descriptionSAdata.value.push(`${value}`);
-            }
+            addFSystem();
+            console.log('condition met');
+        } else {
+            selfadhered.system = item.systemData.system;
+            // selfAdData.value = item.systemData.description;
+            selfadhered.Description_F1 = item.systemData.description;
+            // if ((selfadhered.Description_F1 = '')) {
+            //     selfadhered.sadescription = selfAdData.value;
+            // }
         }
     });
 }
-function systemfunc() {
-    if (selfAdData.length !== null) {
-        selfadhered.system = array.value;
-        selfadhered.sadescription = '';
-        if (selfadhered.system[0] === 'F1') {
-            descriptionSA(selfadhered.Description_F1);
-            console.log('sent');
-        } else if (selfadhered.system[1] === 'F2') {
-            selfadhered.sadescription = selfadhered.Description_F2;
-            descriptionSA(selfadhered.Description_F2);
-        }
-        // else if (selfadhered.system[2] === 'F3') {
-        //     selfadhered.sadescription = selfadhered.Description_F3;
-        //     // descriptionSA(descriptionSAdata.value[1]);
-        // }
-    }
+
+function addFSystem() {
+    selfadhered.system = selfadhered.arrSystem;
+    console.log(typeof selfadhered.arrSystem, typeof selfadhered.system);
 }
 
-const sendAsync = computed(() => {
-    descriptionSA();
-});
-// const sendAsync = computedAsync(
-//     async () => {
-//         if (selfadhered.system[0] === 'F1') {
-//             return descriptionSA(descriptionSAdata.value[0]);
-//         } else if (selfadhered.system[1] === 'F2') {
-//             descriptionSA(descriptionSAdata.value[1]);
-//         }
-//     },
-//     null,
-//     { lazy: true, evaluating }
-// );
-function descriptionSA(value) {
-    // if (selfadhered.system.length === 0) {
-    //     selfadhered.sadescription = '';
-    // } else
-    selfadhered.sadescription = value;
-    console.log(value);
+function updateselectSystem() {
+    selSytem.value = Object.entries(selectedsystemf).map((obj) => {
+        const val = obj[1];
+        // console.log(val, typeof selfadhered.Description_F1, selfadhered.Description_F1, selfAdData.value);
+
+        if (val === 'F1') {
+            selfadhered.sadescription = selfadhered.Description_F1;
+        }
+        if (val === 'F2') {
+            selfadhered.sadescription = selfadhered.Description_F2;
+        }
+        if (val === 'F3') {
+            selfadhered.sadescription = selfadhered.Description_F3;
+        }
+        if (val === 'F4') {
+            selfadhered.sadescription = selfadhered.Description_F4;
+        }
+        if (val === 'F5') {
+            selfadhered.sadescription = selfadhered.Description_F5;
+        }
+        if (val === 'F6') {
+            selfadhered.sadescription = selfadhered.Description_F6;
+        }
+        if (val === 'F7') {
+            selfadhered.sadescription = selfadhered.Description_F7;
+        }
+    });
 }
+
 function checkInput() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
@@ -217,14 +215,12 @@ const dimensions = onMounted(() => {
     setRoofInputs();
 });
 
-watchOnce(checkInputSystem, () => {
-    // triggers only once
-    console.log('checkInputSystem changed!');
-});
-watchEffect(slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, setRoofInputs, grabInput, () => {});
+watchEffect(selectedsystemf, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, setRoofInputs, grabInput, () => {});
 
 watch(
-    descriptionSA,
+    checkInputSystem,
+    addFSystem,
+    updateselectSystem,
     valueEntered,
     noaInput,
     whatChanged,
@@ -305,8 +301,8 @@ function valueEntered() {
 }
 </script>
 <template>
-    <div class="flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <div class="w-64 gap-2 mt-3 space-y-6" style="margin-left: 20px">
+    <div class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
 
@@ -389,11 +385,11 @@ function valueEntered() {
 
                 <div class="flex flex-col gap-2">
                     <label style="color: red">Select System F *</label>
-                    <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="systemfunc" />
+                    <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
                 </div>
                 <div class="w-128 flex flex-col gap-2">
                     <label for="sadescription">S/A Description</label>
-                    <InputText id="sadescription" v-model="selfadhered.sadescription" @change="descriptionSA" />
+                    <InputText id="sadescription" v-model="selfadhered.sadescription" />
                 </div>
 
                 <!-- <div class="flex shrink flex-col gap-2">
@@ -404,7 +400,6 @@ function valueEntered() {
         </div>
 
         <div class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
-            <!-- flex flex-col gap-2 -->
             <div class="flex flex-col gap-2">
                 <label for="manufacturer">Applicant</label>
                 <InputText id="manufacturer" v-model="shingles.manufacturer" />

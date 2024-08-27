@@ -16,9 +16,7 @@ export const useSbsStore = defineStore('sbsinput', {
 
     //getters
     getters: {
-        noaInfo(state) {
-            return state.sbsinput.selfadhered;
-        }
+        sbsDb: (state) => state.sbsData
     }
     // persist: true
 });
