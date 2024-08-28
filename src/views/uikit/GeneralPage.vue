@@ -1,11 +1,11 @@
 <script setup>
+import Drop from '@/components/DropZone/Drop.vue';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-// import editorComponent from '../../components/Editor/editorArea.vue';
 
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
@@ -192,11 +192,11 @@ const navigateNext = () => {
                             <InputText v-model="total" placeholder="Total" />
                         </InputGroup>
                     </div>
+
                     <div class="card md:w-1/3 flex flex-col gap-4">
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
-
-                    <!-- <test-image class="md:w-2/3" style="margin-left: 140px" />  -->
+                    <drop />
                 </div>
             </div>
         </div>

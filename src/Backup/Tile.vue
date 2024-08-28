@@ -1,99 +1,69 @@
-<script setup>
-// import TileTable1 from '@/components/TileTable.vue';
-// import { useRoofListStore } from '@/stores/roofList';
-// import { invoke, until } from '@vueuse/shared';
-import { ref } from 'vue';
-import InputTile from './InputTile.vue';
+<script>
+import TileTable1 from '@/components/TileTable.vue';
+import { onMounted, ref, watch } from 'vue';
+import AgreementsDialog from './AgreementsDialog.vue';
 
-// const store = useRoofListStore();
+export default {
+    components: {
+        AgreementsDialog,
+        TileTable1
+    },
 
-// const store = useRoofListStore();
-// const { roofList } = storeToRefs(store);
-// const isDialog = ref(false);
-// invoke(async () => {
-//     await until(isDialog).toBe(true);
-// });
-// const roofType = ref(store.$state.roofList[0].item);
-// function checkState() {
-//     if (roofType.value === 'Tiles') {
-//         isDialog.value = true;
-//     } else isDialog.value = false;
-// }
+    setup() {
+        const save = ref([]);
+        const isDialog = ref(false);
+        const exposure = ref('');
+        const roofType = ref('Tile');
+        onMounted(() => {
+            isDialog.value = true;
+        });
+        const selectedDeck = ref();
+        const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
+        const selectedUnderlayment = ref();
 
-// console.log(roofType);
-// onMounted(() => {
-//     checkState();
-// });
+        const underlaymentType = ref([
+            { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
+            { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
+            { selectedBasesheet: '(S/A) Tile Capsheet adhered diretly to a wood deck, per the NOA System F', key: 2 },
+            { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
+        ]);
+        const slope = ref();
+        const area = ref();
+        const height = ref();
+        const perimeter = ref();
+        const underlaymentNOA = ref('');
+        const saNOA = ref('');
+        const isUDLValid = ref('');
+        const isUDLNOAValid = ref('');
+        const isSAValid = ref('');
+        watch(selectedUnderlayment, () => {
+            save.value = selectedUnderlayment.value.key;
+            console.log(save.value);
+            if (save.value === 1) {
+                isUDLValid.value = false;
+                isUDLNOAValid.value = false;
+                isSAValid.value = false;
+            } else if (save.value === 2) {
+                isUDLValid.value = false;
+                isUDLNOAValid.value = false;
+                isSAValid.value = true;
+            } else if (save.value === 3) {
+                isUDLValid.value = true;
+                isUDLNOAValid.value = true;
+                isSAValid.value = true;
+            } else if (save.value === 0) {
+                isUDLValid.value = false;
+                isUDLNOAValid.value = false;
+                isSAValid.value = false;
+            }
+        });
 
-let slope = ref(null);
-
-function checkSlope() {
-    console.log(slope);
-}
-// export default {
-//     components: {
-//         AgreementsDialog,
-//         TileTable1
-//     },
-
-//     setup() {
-//         const save = ref([]);
-//         const isDialog = ref(false);
-//         const exposure = ref('');
-//         const roofType = ref('Tile');
-//         onMounted(() => {
-//             isDialog.value = true;
-//         });
-//         const selectedDeck = ref();
-//         const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
-//         const selectedUnderlayment = ref();
-
-//         const underlaymentType = ref([
-//             { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
-//             { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
-//             { selectedBasesheet: '(S/A) Tile Capsheet adhered diretly to a wood deck, per the NOA System F', key: 2 },
-//             { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
-//         ]);
-//         const slope = ref();
-//         const area = ref();
-//         const height = ref();
-//         const perimeter = ref();
-//         const underlaymentNOA = ref('');
-//         const saNOA = ref('');
-//         const isUDLValid = ref('');
-//         const isUDLNOAValid = ref('');
-//         const isSAValid = ref('');
-//         watch(selectedUnderlayment, () => {
-//             save.value = selectedUnderlayment.value.key;
-//             console.log(save.value);
-//             if (save.value === 1) {
-//                 isUDLValid.value = false;
-//                 isUDLNOAValid.value = false;
-//                 isSAValid.value = false;
-//             } else if (save.value === 2) {
-//                 isUDLValid.value = false;
-//                 isUDLNOAValid.value = false;
-//                 isSAValid.value = true;
-//             } else if (save.value === 3) {
-//                 isUDLValid.value = true;
-//                 isUDLNOAValid.value = true;
-//                 isSAValid.value = true;
-//             } else if (save.value === 0) {
-//                 isUDLValid.value = false;
-//                 isUDLNOAValid.value = false;
-//                 isSAValid.value = false;
-//             }
-//         });
-
-//         return { onMounted, roofType, underlaymentNOA, exposure, saNOA, isUDLNOAValid, isUDLValid, isSAValid, save, selectedUnderlayment, underlaymentType, selectedDeck, perimeter, type, slope, height, area };
-//     }
-// };
+        return { onMounted, roofType, underlaymentNOA, exposure, saNOA, isUDLNOAValid, isUDLValid, isSAValid, save, selectedUnderlayment, underlaymentType, selectedDeck, perimeter, type, slope, height, area };
+    }
+};
 </script>
 <template>
-    <div class="card w-full space-y-1" style="margin-left: 20px">
-        <input-tile :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-tile>
-    </div>
-    <!-- <div class="flex flex-col w-3/4 min-h-[420px] gap-6 bg-white shadow-lg shadow-cyan-800" style="margin-left: 150px; margin-bottom: 4px">
+    <div class="flex flex-col w-3/4 min-h-[420px] gap-6 bg-white shadow-lg shadow-cyan-800" style="margin-left: 150px; margin-bottom: 4px">
         <AgreementsDialog v-if="isDialog === true"></AgreementsDialog>
 
         <div class="columns-2 mt-2">
@@ -194,10 +164,10 @@ function checkSlope() {
                 <InputText id="designpressure" v-model="designpressure" aria-describedby="username-help" />
             </div>
 
-            <div class="flex flex-col gap-2">
+            <!-- <div class="flex flex-col gap-2">
                 <label for="expiredate_sa">Expiration Date:</label>
                 <InputText id="expiredate_sa" v-model="expiredate_sa" aria-describedby="username-help" />
-            </div>
+            </div> -->
         </div>
         <Divider />
         <div class="flex flex-wrap gap-4" style="margin-left: 300px">
@@ -213,10 +183,11 @@ function checkSlope() {
 
             <div class="flex flex-wrap gap-1" style="margin-right: 300px">
                 <TileTable1 style="margin-left: 1px" />
-
+                <!-- <TileTable2 style="margin-left: 40px" />
+                <TileTable3 style="margin-left: 40px" /> -->
             </div>
         </div>
-    </div> -->
+    </div>
 </template>
 <style scoped>
 /* .container {

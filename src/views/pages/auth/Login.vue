@@ -1,5 +1,6 @@
 <script setup>
 // import useacctStore from '@/stores/loginStore';
+import { useStorage } from '@vueuse/core';
 // import { tryOnMounted } from '@vueuse/core';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref, watch } from 'vue';
@@ -57,15 +58,17 @@ function checkAuth() {
                 accountUser.projects = item[i].projects;
                 accountUser.secondary_status = item[i].secondary_status;
                 accountUser.license = item[i].license;
+
                 navigateNext();
             } else {
                 visible.value = true;
             }
-            console.log(acctCompare);
         }
+        console.log(accountUser);
     });
 }
-
+const state = useStorage('accountUser', accountUser);
+console.log(state.value);
 function register() {
     router.push('/registration');
 }

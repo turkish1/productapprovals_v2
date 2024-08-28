@@ -1,11 +1,12 @@
 <script>
 // import useinputValid from '@/composables/input.js';
-import DropZone from '@/components/DropZone.vue';
+import Drop from '@/components/DropZone/Drop.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useToNumber } from '@vueuse/core';
+
 // import { useSum } from '@vueuse/math';
 import { reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
@@ -76,21 +77,8 @@ export default {
 
         const onSubmit = async () => {
             procReceive(formData);
-            // await DataService.postProcessnumber(formData.processNumber)
-
-            //     .then((response) => {
-            //         console.log(formData.processNumber);
-            //         responseMessage.value = 'Form submitted successfully!';
-            //         console.log('Response:', response.data);
-
-            //         // value = '';
-            //     })
-            //     .catch((error) => {
-            //         responseMessage.value = 'An error occurred while submitting the form.';
-            //         console.error('Error:', error);
-            //     });
         };
-        // const { isValid, inp, iValid, uValid } = useinputValid();
+
         const selectedApplication = ref();
 
         const type = ref([
@@ -100,7 +88,7 @@ export default {
             { name: 'Windows Permit', code: 'WP' }
         ]);
         const navigateNext = () => {
-            router.push('/generalpage');
+            router.push('/roofsystem');
         };
 
         function addItemAndClear(formdt, permType) {
@@ -109,10 +97,10 @@ export default {
             if (formdt.length === 0) {
                 return;
             }
-            store.addSystem(formdt, permType);
+            store.addSystem(formdt, permType, checkMB.value);
             // area.value = '';
             // type.value = '';
-            console.log(formdt, permType, 'System added');
+            console.log(formdt, permType, checkMB.value, 'System added');
         }
 
         return {
@@ -136,7 +124,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-4" style="margin-left: 320px">
+    <div class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
         <div class="md:w-2/3">
             <!-- <div class="card flex flex-col gap-4"> -->
             <div class="container">
@@ -202,16 +190,16 @@ export default {
 
                                         <br />
 
-                                        <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/generalpage" @click="addItemAndClear(formData, selectedApplication)" />
+                                        <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
                                     </form>
                                     <p v-if="responseMessage">{{ responseMessage }}</p>
+                                    <drop />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </form>
                 <!-- </div> -->
-                <drop-zone />
             </div>
         </div>
     </div>

@@ -325,19 +325,20 @@ function valueEntered() {
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
-                <InputText id="udlInput" v-model="udlInput" placeholder="17040522" @input="grabInput" @change="checkInputPoly" />
+
+                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @input="grabInput" @change="checkInputPoly" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="23101807" @input="grabInput" />
+                <InputText id="saInput" v-model="saInput" placeholder="00000000" @input="grabInput" />
             </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="shinglenoa">Shingle Noa</label>
-                <InputText id="shinglenoa" v-model="noaInput" placeholder="18061905" @input="grabInput" @change="checkInput" />
+                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
             </div>
         </div>
         <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">

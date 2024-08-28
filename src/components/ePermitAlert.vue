@@ -16,7 +16,7 @@ function buttonClick() {
 
 emits: ['close'],
     function routerNext() {
-        this.$router.push('/roofsystem');
+        this.$router.push('/permitapp');
     };
 </script>
 

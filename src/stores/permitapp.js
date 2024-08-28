@@ -11,9 +11,14 @@ export const usePermitappStore = defineStore('permitapp', {
     //actions
     actions: {
         // addr, municipality, Folio, Contractorname, MasterPermit, processnumber, phone, email
-        addSystem(formdt, permType) {
-            this.permitapp.push({ formdt, permType, id: this.id++, completed: false });
+        addSystem(formdt, permType, miamibeach) {
+            this.permitapp.push({ formdt, miamibeach, permType, id: this.id++, completed: false });
         }
+    },
+    //getters
+    getters: {
+        form: (state) => state.formdt,
+        folio: (state) => state.miamibeach
     }
     // persist: true
 });

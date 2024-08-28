@@ -1,8 +1,14 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
+import { useRouter } from 'vue-router';
 import AppConfigurator from './AppConfigurator.vue';
 
+const router = useRouter();
 const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
+
+const routerNext = () => {
+    router.push('/');
+};
 </script>
 
 <template>
@@ -44,9 +50,9 @@ const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
+                    <button type="Submit" class="layout-topbar-action" raised as="router-link" to="/" @click="routerNext">
+                        <i class="pi pi-home"></i>
+                        <span>Home</span>
                     </button>
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-inbox"></i>

@@ -6,7 +6,7 @@ const alertTitle = ref("System's Terms of Use   🚧   👷🏼  🚧  👷🏼 
 const router = useRouter();
 
 const navigateNext = () => {
-    router.push('/roofsystem');
+    router.push('/permitapp');
 };
 </script>
 

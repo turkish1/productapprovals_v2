@@ -1,18 +1,27 @@
 <script setup>
+import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
+import { tryOnMounted } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import { ref } from 'vue';
 
 const store = useRoofListStore();
+const permitStore = usePermitappStore();
+const { permitapp } = storeToRefs(permitStore);
 const area = ref('');
 const selectedItem = ref('');
 const type = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Asphalt Shingle' }, { name: 'Mechanical Fastened Tile' }, { name: 'Mortar/Adhesive Tile' }, { name: 'Metal Panel' }]);
+const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Mortar/Adhesive Tile' }, { name: 'Metal Panel' }]);
 
+tryOnMounted(usePermitappStore, () => {
+    console.log(permitapp);
+});
 function clearSelected() {
     store.$reset();
 }
-
+const isMiamiBeachValid = ref(false);
 function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     item = selectedItem.value.name;
 
@@ -64,6 +73,12 @@ function clear() {
                 <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
                 <InputText type="text" v-model="area" />
             </div>
+            <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
+                <h1 class="h1">Select System</h1>
+
+                <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
+                <InputText type="text" v-model="area" />
+            </div>
         </form>
         <!-- Prevent the addition of a system until the roof area has been entered -->
         <div class="add">
@@ -72,7 +87,7 @@ function clear() {
 
         <div class="grid grid-cols-1 gap-2 place-content-end h42 ..">
             <div>
-                <Button class="button" label="Submit" severity="contrast" style="margin-left: 5px; margin-top: 100px" as="router-link" to="/permitapp"></Button>
+                <Button class="button" label="Submit" severity="contrast" style="margin-left: 5px; margin-top: 100px" as="router-link" to="/generalpage"></Button>
             </div>
         </div>
     </div>
