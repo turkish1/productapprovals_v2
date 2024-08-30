@@ -2,7 +2,7 @@
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 // import { useRoofListStore } from '@/stores/roofList';
-// import { usetilesysfStore } from '@/stores/tilesysfStore';
+
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 // import { storeToRefs } from 'pinia';
@@ -11,15 +11,12 @@ import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const ftileStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
-// let systemdatamt = ref(ftileStore.sysData);
 
 const { takef } = useTileSystemF();
 const { getV } = useTileSystemE();
 // const storeroof = useRoofListStore();
 // const { tilefinput } = storeToRefs(ftileStore);
 
-// const tileFsytem = usetilesysfStore();
-// const { tilefinput } = storeToRefs(tileFsytem);
 const saTiles = reactive({
     manufacturer: '',
     material: '',
@@ -77,7 +74,6 @@ const dims = reactive({
 });
 
 function setRoofInputs() {
-    // dims.area = roofArea.value;
     dims.per = dims.height * 0.4;
 }
 const dimensions = onMounted(() => {
@@ -117,7 +113,6 @@ function checkInput() {
 function EcheckInput() {
     if (Edatamounted.value.length !== null) {
         Edatamounted.value.forEach((item, index) => {
-            // console.log(item.systemData.manufacturer, item.systemData.system, item.systemData.designPressure);
             udlTiles.manufacturer = item.systemDataE.manufacturer;
             udlTiles.material = item.systemDataE.material;
             udlTiles.system = item.systemDataE.system;
@@ -189,21 +184,13 @@ function checkInputSystem() {
         saTiles.Description_F6 = item.systemData.Description_F6;
         saTiles.Description_F7 = item.systemData.Description_F7;
         saTiles.arrDesignPressure = item.systemData.designPressure;
-        //     selfadhered.arrSystem = item.systemData.system;
-        //     console.log(item.systemData.system.length);
+
         if (item.systemData.system.length > 1) {
-            //         //
             addFSystem();
-            //         console.log('condition met');
         } else {
             saTiles.system = item.systemData.system;
-            // selfAdData.value = item.systemData.description;
             saTiles.description = item.systemData.description;
             saTiles.designpressure = item.systemData.designPressure;
-
-            // if ((selfadhered.Description_F1 = '')) {
-            //     selfadhered.sadescription = selfAdData.value;
-            // }
         }
     });
 }
@@ -231,20 +218,15 @@ function EcheckInputSystem() {
         udlTiles.TileCap_Sheet_Description_E7 = item.systemDataE.TileCap_Sheet_Description_E7;
 
         udlTiles.arrDesignPressure = item.systemDataE.designPressure;
-        //     selfadhered.arrSystem = item.systemData.system;
-        //     console.log(item.systemData.system.length);
+
         if (item.systemDataE.system.length > 1) {
             //         //
-            //         console.log('condition met');
+            console.log('condition met');
         } else {
             udlTiles.system = item.systemDataE.system;
             // selfAdData.value = item.systemData.description;
             udlTiles.description = item.systemDataE.description;
             udlTiles.designPressure = item.systemDataE.designPressure;
-
-            // if ((selfadhered.Description_F1 = '')) {
-            //     selfadhered.sadescription = selfAdData.value;
-            // }
         }
     });
 }
@@ -256,7 +238,6 @@ function addFSystem() {
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedsystemf).map((obj) => {
         const val = obj[1];
-        // console.log(val, typeof selfadhered.Description_F1, selfadhered.Description_F1, selfAdData.value);
 
         if (val === 'F1') {
             saTiles.description = saTiles.Description_F1;
