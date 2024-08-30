@@ -28,7 +28,7 @@ export default function usePoly() {
         console.log(inp.value);
         const result = execute().then((result) => {
             noaNum.value = data.value;
-            console.log(noaNum.value, data.value);
+            console.log([noaNum.value], data.value);
 
             results.value = noaNum.value.forEach((item, index) => {
                 let num = Number(inp.value);

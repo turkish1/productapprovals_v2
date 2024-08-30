@@ -4,7 +4,7 @@
         <!-- onTemplatedUpload($event) -->
         <!-- http://127.0.0.1:5173/upload   http://localhost:8080/upload http://acs.amazonaws.com/groups/global/AllUsers :auto="true" s3://digitalsolutionsroofs/permitfolder/-->
         <!-- digitalsolutiions-pxgy3bs6nfwx3q7wqn7ugrjbacxdsuse1a-s3alias  http://acs.amazonaws.com/groups/global/AllUsers-->
-        <FileUpload name="demo[]" url="http://localhost:5173/api/upload" @upload="onUpload" :multiple="true" accept=".xlsx,.pdf,.csv,.xls,image/*" :maxFileSize="10000000000" @select="onSelectedFiles">
+        <FileUpload name="demo[]" url="https://digitalsolutionsroofs.s3.amazonaws.com/" @upload="onUpload" :multiple="true" accept=".xlsx,.pdf,.csv,.xls,image/*" :maxFileSize="10000000000" @select="onSelectedFiles">
             <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
                 <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
                     <div class="flex gap-2">
@@ -65,9 +65,6 @@
 import { usePrimeVue } from 'primevue/config';
 import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
-// import { useAxios } from '@vueuse/integrations/useAxios';
-// import s3 from './s3.js'
-// import { genereteUploadUrl } from './s3.js'
 
 const $primevue = usePrimeVue();
 const toast = useToast();
@@ -76,18 +73,25 @@ const totalSize = ref(0);
 const totalSizePercent = ref(0);
 const files = ref([]);
 
-// const result = execute().then((result) => {
-//     const u
+// const config = reactive({
+//     bucketName: 'digitalsolutionsroofs',
+//     // dirName: 'photos', /* optional */
+//     region: 'us-east-1',
+//     accessKeyId: 'AKIAZJSO5HWN2545F34N',
+//     secretAccessKey: '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',
+//     s3Url: 'https://digitalsolutionsroofs.s3.amazonaws.com/' /* optional */
 // });
+
+// function S3Client() {
+//     return new aws(config);
+// }
 
 const onUpload = () => {
     console.log(url);
-    var drop = document.getElementById('demo[]');
-    new Dropzone(drop, {
-        // url: "/file/post",
-        url: 'http://localhost:5173/api/upload',
-        addRemoveLinks: true
-    });
+    // S3Client.uploadFiles(files)
+    //     .then((data) => console.log(data))
+    //     .catch((err) => console.error(err));
+
     toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
 };
 

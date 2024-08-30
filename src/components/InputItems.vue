@@ -163,7 +163,6 @@ function checkInputSystem() {
 
 function addFSystem() {
     selfadhered.system = selfadhered.arrSystem;
-    console.log(typeof selfadhered.arrSystem, typeof selfadhered.system);
 }
 
 function updateselectSystem() {

@@ -1,4 +1,4 @@
-import { usesystemfStore } from '@/stores/systemfStore';
+import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 
 import { reactive, ref, toRefs } from 'vue';
@@ -6,9 +6,9 @@ import { reactive, ref, toRefs } from 'vue';
 export default function useTileSystemF() {
     const inputsystem = ref();
     const effort = ref([]);
-    const noaNum = ref([]);
+    const noaNum = ref();
     let results = ref([]);
-    const store = usesystemfStore();
+    const store = usetilesysfStore();
 
     const error = ref('');
 
@@ -41,50 +41,34 @@ export default function useTileSystemF() {
         const result = execute().then((result) => {
             noaNum.value = data.value;
 
-            results.value = noaNum.value.forEach((item, index) => {
+            Object.entries(noaNum.value.result).map((obj) => {
                 let num = Number(inputsystem.value);
+                //     // 23061202
+                if (obj[1].NOA === num) {
+                    systemData.manufacturer = obj[1].Manufacturer;
+                    systemData.material = obj[1].Material;
 
-                if (item.NOA === num) {
-                    systemData.manufacturer = item.Manufacturer;
-                    systemData.material = item.Material;
-                    systemData.Description_F1 = item.Description_F1;
-                    systemData.Description_F2 = item.Description_F2;
-                    systemData.Description_F3 = item.Description_F3;
-                    systemData.Description_F4 = item.Description_F4;
-                    systemData.Description_F5 = item.Description_F5;
-                    systemData.Description_F6 = item.Description_F6;
-                    systemData.Description_F7 = item.Description_F7;
-                    systemData.designPressure = item.DesignPressure;
-                    systemData.systemCheck = item.System;
-                    console.log(systemData.systemCheck, item.System, systemData.systemCheck.length);
-                    // if (systemData.systemCheck.length >= 3) {
-                    //     console.log('Maps created');
-                    //     systemData.maps = item.maps;
-                    //     for (const [key] of Object.entries(systemData.maps)) {
-                    //         systemData.arraySystem.push(`${key}`);
-                    //         console.log(`${key}`);
-                    //         // descriptionSAdata.value.push(`${value}`);
-                    //     }
-                    //     console.log(systemData.arraySystem);
-                    // } else {
-                    systemData.system = item.System;
-                    systemData.description = item.Description;
-                    // }
-
-                    // systemData.expiration_date = item.Expiration_Date;
-                    // systemData.System_F1 = item;
-                    // System_F1.Underlayment_Uplift_Design_Pressure;
+                    systemData.Description_F1 = obj[1].TileCap_Sheet_Description_F1;
+                    systemData.Description_F2 = obj[1].TileCap_Sheet_Description_F2;
+                    systemData.Description_F3 = obj[1].TileCap_Sheet_Description_F3;
+                    systemData.Description_F4 = obj[1].TileCap_Sheet_Description_F4;
+                    systemData.Description_F5 = obj[1].TileCap_Sheet_Description_F5;
+                    systemData.Description_F6 = obj[1].TileCap_Sheet_Description_F6;
+                    systemData.Description_F7 = obj[1].TileCap_Sheet_Description_F7;
+                    systemData.designPressure = obj[1].DesignPressure;
+                    systemData.system = obj[1].System;
                     store.addData(systemData);
                     // area.value = '';
                     // type.value = '';
-                    console.log(systemData, 'System added');
+                    console.log('System added');
                 }
             });
+
             return results;
         });
     }
 
     // 18061905
 
-    return { inputsystem, takef, noaNum, error, results, ...toRefs(systemData), store };
+    return { inputsystem, takef, noaNum, results, error, ...toRefs(systemData), store };
 }

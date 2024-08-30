@@ -26,7 +26,7 @@ let accountUser = reactive({
 
 // const { login } = storeToRefs(dataStore);
 
-async function checkAu() {
+async function submit() {
     let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/getaccounts';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
@@ -91,7 +91,7 @@ const navigateNext = () => {
                         <InputText id="username" type="text" placeholder="username" class="w-full md:w-[30rem] mb-8" v-model="username" />
 
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                        <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
+                        <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true" class="mb-4" @keyup.enter="submit" fluid :feedback="false"></Password>
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">
@@ -101,7 +101,7 @@ const navigateNext = () => {
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
                         <!-- as="router-link" to="/roofsystem" @change="checkAu"-->
-                        <Button label="Sign In" severity="contrast" class="w-full" @click="checkAu"></Button>
+                        <Button label="Sign In" severity="contrast" class="w-full" @keyup.enter="submit"></Button>
                     </div>
                 </div>
             </div>

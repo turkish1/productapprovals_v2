@@ -5,22 +5,6 @@ export default function usecreateProcess() {
     const responseMessage = ref('');
     let results = ref([]);
     const procStore = useprocStore();
-    // let formData = reactive({
-    //     license: '',
-    //     dba: '',
-    //     name: '',
-    //     username: '',
-    //     password: '',
-    //     secondary_status: '',
-    //     expiration_date: '',
-    //     address: '',
-    //     projects: [],
-    //     password: '',
-    //     cphone: '',
-    //     phone: '',
-    //     email: '',
-    //     date: new Date()
-    // });
 
     const error = ref('');
 
@@ -32,8 +16,8 @@ export default function usecreateProcess() {
     function procReceive(form) {
         console.log(form);
         procData = form;
-        execute({ data: form });
 
+        execute({ data: form });
         responseMessage.value = 'Form submitted successfully!';
         procStore.addData(procData);
         // store the values
