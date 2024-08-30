@@ -73,19 +73,6 @@ const totalSize = ref(0);
 const totalSizePercent = ref(0);
 const files = ref([]);
 
-// const config = reactive({
-//     bucketName: 'digitalsolutionsroofs',
-//     // dirName: 'photos', /* optional */
-//     region: 'us-east-1',
-//     accessKeyId: 'AKIAZJSO5HWN2545F34N',
-//     secretAccessKey: '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',
-//     s3Url: 'https://digitalsolutionsroofs.s3.amazonaws.com/' /* optional */
-// });
-
-// function S3Client() {
-//     return new aws(config);
-// }
-
 const onUpload = () => {
     console.log(url);
     // S3Client.uploadFiles(files)

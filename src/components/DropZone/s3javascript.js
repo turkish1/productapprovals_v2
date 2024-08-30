@@ -4,9 +4,9 @@ const AWS = require('aws-sdk');
 
 const region = 'us-east-1';
 const bucketName = 'digitalsolutionsroofs';
-const accessKeyId = 'AKIAZJSO5HWN2545F34N';
+const accessKeyId = '';
 // process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = 'I02z4rvONYyk4kxbtRXxzGenoxzGM8uLPy6U6lLO';
+const secretAccessKey = '';
 // process.env.AWS_SECRET_ACCESS_KEY;
 
 const s3 = new AWS.S3({
