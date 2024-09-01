@@ -54,9 +54,36 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import useExposurec from '@/composables/Tiletables/exposure_c';
 
+import { reactive, ref, watch } from 'vue';
 const value = ref(null);
+
+const { zoneData, tables, results, slopes } = useExposurec();
+console.log(results);
+const zoneone = reactive({
+    zone1: '',
+    lambda1: '',
+    mg1: '',
+    mr1: '',
+    mf1: ''
+});
+
+const zonetwo = reactive({
+    zone2: '',
+    lambda2: '',
+    mg2: '',
+    mr2: '',
+    mf2: ''
+});
+const zonethree = reactive({
+    zone3: '',
+    lambda3: '',
+    mg3: '',
+    mr3: '',
+    mf3: ''
+});
+watch(zoneone, zonetwo, zonethree, () => {});
 </script>
 
 <style scoped>

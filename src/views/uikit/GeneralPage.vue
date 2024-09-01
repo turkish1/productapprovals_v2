@@ -1,5 +1,6 @@
 <script setup>
 import Drop from '@/components/DropZone/Drop.vue';
+import { useGlobalState } from '@/stores/accountStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
@@ -12,6 +13,8 @@ const { permitapp } = storeToRefs(permitstore);
 const store = useRoofListStore();
 const { roofList } = storeToRefs(store);
 const router = useRouter();
+
+const { accountUsers, getUser, addUser } = useGlobalState();
 let total = ref('');
 let low1 = ref('');
 let steep1 = ref('');
@@ -27,7 +30,7 @@ let checkedmetal = ref(false);
 // let checkedslope = ref();
 let master = ref();
 let process = ref();
-
+let dba = ref();
 let jobaddress = ref();
 let contractor = ref();
 
@@ -64,7 +67,12 @@ onMounted(() => {
             steep3.value = item.dim5;
             checkedmetal.value = true;
         }
-
+        if (accountUsers._value[0].DBA === '') {
+            console.log(accountUsers._value[0].dba);
+            return null;
+        } else {
+            dba.value = accountUsers._value[0].dba;
+        }
         // (slope.value = item.formdt.permit), (mtile.value = item.formdt.processNumber), (adtile.value = item.formdt.phone), (mtile.value = item.formdt.email), (shingle.value = item.formdt.contractor);
     });
 
@@ -126,11 +134,11 @@ const navigateNext = () => {
 
                                 <div class="flex flex-col grow basis-0 gap-3">
                                     <label for="email1">Job Address</label>
-                                    <InputText id="email1" v-model="jobaddress" type="text" planceholder="" />
+                                    <InputText id="jobaddress" v-model="jobaddress" type="text" planceholder="" />
                                 </div>
                                 <div class="flex flex-col min-w-96 gap-2">
-                                    <label for="contractor">Licensed DBA Name </label>
-                                    <InputText id="contractor" v-model="contractor" type="text" />
+                                    <label for="dba">Licensed DBA Name </label>
+                                    <InputText id="dba" v-model="dba" type="text" />
                                 </div>
                             </div>
                         </div>

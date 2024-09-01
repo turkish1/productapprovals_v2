@@ -1,10 +1,17 @@
 <script setup>
-// import useacctStore from '@/stores/loginStore';
-import { useStorage } from '@vueuse/core';
-// import { tryOnMounted } from '@vueuse/core';
+import { useGlobalState } from '@/stores/accountStore';
+
 import { useAxios } from '@vueuse/integrations/useAxios';
+import jsPDF from 'jspdf';
 import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+
+const generatePDF = () => {
+    const doc = new jsPDF();
+
+    doc.text('Hello world!', 10, 10);
+    doc.save('sample.pdf');
+};
 
 const username = ref('');
 const password = ref('');
@@ -15,6 +22,7 @@ const localData = ref([]);
 let Data = reactive({});
 const acctCompare = ref([]);
 let accountUser = reactive({
+    dba: '',
     email: '',
     expiration_date: '',
     name: '',
@@ -22,7 +30,7 @@ let accountUser = reactive({
     secondary_status: '',
     license: ''
 });
-// const dataStore = useacctStore();
+// const store = useLoginStore();
 
 // const { login } = storeToRefs(dataStore);
 
@@ -34,7 +42,6 @@ async function submit() {
     // const username = ref('');
 
     let results = ref([]);
-
     results.value = execute().then((result) => {
         Data = data.value;
 
@@ -43,9 +50,9 @@ async function submit() {
         }
     });
 }
-
+const status = ref('');
 watch(checkAuth, () => {});
-
+const { accountUsers, getUser, addUser } = useGlobalState();
 function checkAuth() {
     localData.value.forEach((item, index) => {
         for (let i = 0; i < item.length; i++) {
@@ -54,21 +61,31 @@ function checkAuth() {
 
                 accountUser.email = item[i].email;
                 accountUser.name = item[i].name;
+                accountUser.dba = item[i].DBA;
+                accountUser.phone = item[i].phone;
                 accountUser.expiration_date = item[i].expiration_date;
                 accountUser.projects = item[i].projects;
-                accountUser.secondary_status = item[i].secondary_status;
+                status.value = item[i].secondary_status;
+                if (item[i].secondary_status === 'A') {
+                    accountUser.secondary_status = 'Active';
+                } else {
+                    accountUser.secondary_status = 'InActive';
+                }
                 accountUser.license = item[i].license;
-
+                // store.addLogin(accountUser);
+                addUser(accountUser);
                 navigateNext();
             } else {
                 visible.value = true;
             }
         }
-        console.log(accountUser);
+
+        console.log('UserData', accountUser);
     });
 }
-const state = useStorage('accountUser', accountUser);
-console.log(state.value);
+
+// const state = useStorage('accountUser', accountUser);
+// console.log(state.value);
 function register() {
     router.push('/registration');
 }
@@ -82,6 +99,9 @@ const navigateNext = () => {
     <FloatingConfigurator />
     <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
+            <div>
+                <Button severity="contrast" class="w-2/3" @click="generatePDF">Generate PDF</Button>
+            </div>
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                     <div class="card flex justify-center"></div>

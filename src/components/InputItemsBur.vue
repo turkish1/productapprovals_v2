@@ -13,7 +13,8 @@ const { roofList } = storeToRefs(storeroof);
 const { burinput } = storeToRefs(storebur);
 let isDialog = ref(false);
 const roofType = ref('lowslope');
-
+const factor = ref(0.6);
+const perimeter = ref();
 const agreement = onMounted(() => {
     // if (roofType.value === 'lowslope') {
     isDialog = true;
@@ -52,7 +53,8 @@ let selSytem = ref('');
 const maps = ref([]);
 function setRoofInputs() {
     dims.area = roofArea.value;
-    dims.per = dims.height * 0.6;
+    perimeter.value = dims.height * factor;
+    dims.per = perimeter.value.toFixed(2);
 }
 const dimensions = onMounted(() => {
     setRoofInputs();

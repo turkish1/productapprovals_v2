@@ -1,21 +1,34 @@
 <script setup>
+import useExposurec from '@/composables/Tiletables/exposure_c';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 // import { useRoofListStore } from '@/stores/roofList';
-
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
+import usetileInputs from '@/composables/InputLogic/use-tileInput';
 // import { storeToRefs } from 'pinia';
-import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-import DripEdgeComponent from './DripEdgeComponent.vue';
+// import usetileadhesive from '@/composables/Tiletables/use-tileadhesive';
 
+import { useGlobalState } from '@/stores/exposurecStore';
+import { computed, reactive, ref, watch, watchEffect } from 'vue';
+import DripEdgeComponent from './DripEdgeComponent.vue';
 const ftileStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
-
+const { getTilenoa, tileData } = usetileInputs();
+// const { hold, tileadhesive } = usetileadhesive();
 const { takef } = useTileSystemF();
 const { getV } = useTileSystemE();
 // const storeroof = useRoofListStore();
 // const { tilefinput } = storeToRefs(ftileStore);
+const { slopes, heights, getSlopes, getZones, getHeight, zones } = useGlobalState();
+const tilenoas = reactive({
+    manufacturer: '',
+    material: [],
+    description: '',
+    paddies: [],
+    Table2: [],
+    Table3: []
+});
 
 const saTiles = reactive({
     manufacturer: '',
@@ -62,35 +75,73 @@ let datamounted = ref(ftileStore.$state.tilefinput);
 let Edatamounted = ref(etileStore.$state.tilesysEinput);
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 let datasystemf = ref();
+let datatilenoa = ref(tileData);
 let datasystemE = ref();
 let saInput = ref(null);
+let tilenoaInput = ref(null);
 const selectedDeck = ref();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const save = ref([]);
+let slopeModel = ref('');
+let heightModel = ref('');
 const dims = reactive({
     area: '',
     per: '',
-    height: ''
+    height: '',
+    slope: ''
 });
+const factor = ref(0.4);
 
 function setRoofInputs() {
-    dims.per = dims.height * 0.4;
+    console.log(dims.height, dims.per);
+    dims.height = heightModel.value;
+    dims.slope = slopeModel.value;
+    dims.per = (dims.height * factor.value).toFixed(2);
+
+    getData(dims.slope, dims.height);
+    console.log(dims.height, dims.slope);
 }
-const dimensions = onMounted(() => {
+const dimensions = computed(() => {
     setRoofInputs();
 });
+
+const { zoneData, tb, tables, results, getData } = useExposurec();
+console.log(tables);
+const zoneone = reactive({
+    zone1: '',
+    lambda1: '',
+    mg1: '',
+    mr1: '',
+    mf1: ''
+});
+
+const zonetwo = reactive({
+    zone2: '',
+    lambda2: '',
+    mg2: '',
+    mr2: '',
+    mf2: ''
+});
+const zonethree = reactive({
+    zone3: '',
+    lambda3: '',
+    mg3: '',
+    mr3: '',
+    mf3: ''
+});
+watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
 
 function grabInput() {
     // data.value = noaInput.value;
     // datasbs.value = saInput.value;
-
+    datatilenoa.value = tilenoaInput.value;
     datasystemf.value = saInput.value;
     datasystemE.value = udlInput.value;
-    // if (noaInput.value !== null) {
-    //     // 18061905
+    if (datatilenoa.value !== null) {
+        // 18061905
 
-    //     takeE(data.value);
-    // }
+        getTilenoa(datatilenoa.value);
+    }
     if (saInput.value !== null) {
         takef(datasystemf.value);
     }
@@ -107,6 +158,20 @@ function checkInput() {
             saTiles.material = item.systemData.material;
             saTiles.system = item.systemData.system;
         });
+    }
+    if (datatilenoa.value.length !== null) {
+        // datatilenoa.value.forEach((item, index) => {
+        tilenoas.manufacturer = tileData.applicant;
+        tilenoas.description = tileData.description;
+        tables.zones.lessfifteen.forEach((item, index) => {
+            zoneone.zone1 = tables.zones.lessfifteen[0];
+            zonetwo.zone2 = tables.zones.lessfifteen[1];
+            zonethree.zone3 = tables.zones.lessfifteen[2];
+
+            console.log(item, index, tables.zones.lessfifteen[index], zoneone.zone1);
+        });
+        // zoneone.zone1 = get
+        // });
     }
 }
 
@@ -126,10 +191,13 @@ const selSytem = ref();
 const whatChanged = computed(() => {
     checkInput();
     EcheckInput();
+    setRoofInputs();
 });
 
-watch(dimensions, checkInputSystem, updateselectSystem, EcheckInputSystem, updateselectSystemE, () => {});
+watch(checkInputSystem, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 const selectedsystemf = ref(null);
+const selectedsysNoa = ref(null);
+const selectedpaddies = ref(null);
 const selectedsystemE = ref(null);
 const selectedAnchor = ref(null);
 let isUDLValid = ref('');
@@ -137,7 +205,7 @@ let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
 // let isSlopeValid = ref(true);
-let slope = ref(null);
+
 let selectedUnderlayment = ref();
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
@@ -170,8 +238,25 @@ watch(selectedUnderlayment, () => {
     }
 });
 
-watchEffect(setRoofInputs, isTileValid, whatChanged, saTiles, () => {});
+watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, () => {});
+function checkMaterial() {
+    console.log(getZones);
+    tilenoas.material = tileData.material;
+    tilenoas.paddies = tileData.Table_FiveTwoPaddies;
+    // zoneone.zone1 = tables.;
+    // zonetwo.zone2 = tables.t2zone2;
+    // zonethree.zone3 = tables.t3zone3;
+    zoneone.lambda1 = tileData.Table2.Direct_Deck;
+    zonetwo.lambda2 = tileData.Table2.Direct_Deck;
+    zonethree.lambda3 = tileData.Table2.Direct_Deck;
 
+    zoneone.mg1 = tileData.Table3.Direct_Deck;
+    zonetwo.mg2 = tileData.Table3.Direct_Deck;
+    zonethree.mg3 = tileData.Table3.Direct_Deck;
+    zoneone.mf1 = tileData.Table_FiveTwoPaddies[1];
+    zonetwo.mf2 = tileData.Table_FiveTwoPaddies[1];
+    zonethree.mf3 = tileData.Table_FiveTwoPaddies[1];
+}
 function checkInputSystem() {
     // 23061202 23070604
 
@@ -312,12 +397,14 @@ function updateselectSystemE() {
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
+            <!-- @input="setRoofInputs" -->
             <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
-            <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" />
+
+            <InputText id="slope" v-model="slopeModel" type="text" placeholder="slope" :invalid="slope === null" />
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-            <InputText id="height" v-model="dims.height" type="text" placeholder="height" @input="setRoofInputs" />
+            <InputText id="height" v-model="heightModel" type="text" placeholder="height" @keydown.enter="setRoofInputs" />
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
             <label for="area">Area</label>
@@ -325,7 +412,7 @@ function updateselectSystemE() {
         </div>
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label for="perimeter">Roof Permeter(a) = 4h</label>
-            <InputText id="perimeter" v-model="dims.per" type="text" placeholder="perimeter" />
+            <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
 
         <div class="card md:w-1/2 grid gap-1 grid-cols-1">
@@ -349,7 +436,7 @@ function updateselectSystemE() {
         <div v-show="isTileValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="tilenoa">Tile Noa</label>
-                <InputText id="tilenoa" v-model="tilenoa" placeholder="00000000" />
+                <InputText id="tilenoa" v-model="tilenoaInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
             </div>
         </div>
     </div>
@@ -426,22 +513,30 @@ function updateselectSystemE() {
         </div>
 
         <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
-            <div class="flex flex-col gap-2">
+            <div class="w-128 flex flex-col gap-2">
                 <label for="manufacturer">Applicant</label>
-                <InputText id="manufacturer" v-model="manufacturer" />
+                <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
-            <div class="flex flex-col gap-2">
-                <label for="material"> Material</label>
-                <InputText id="material" v-model="material" />
-            </div>
+
             <div class="w-128 flex flex-col gap-2">
                 <label for="description">Description</label>
-                <InputText id="description" v-model="description" />
+                <!-- @change="updateselectSystem"  -->
+
+                <InputText id="description" v-model="tilenoas.description" />
+            </div>
+            <div class="w-128 flex flex-col gap-2">
+                <label for="material"> Material</label>
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="" @click="checkMaterial" />
             </div>
         </div>
-
+        <!-- <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
+            <div class="w-56 flex flex-col gap-2">
+                <label for="material"> Material</label>
+                <Select v-model="selectedpaddies" :options="tilenoas.paddies" placeholder="" @click="checkMaterial" />
+            </div>
+        </div> -->
         <Divider />
-        <div class="flex flex-wrap gap-4" style="margin-left: 300px">
+        <div class="flex flex-wrap gap-4" style="margin-left: 1px">
             <label style="margin-left: 500px">Select Exposure</label>
             <div class="flex items-center">
                 <RadioButton v-model="exposure" inputId="C" name="exposureC" value="C" />
@@ -452,8 +547,54 @@ function updateselectSystemE() {
                 <label for="exposureD" class="ml-2">D</label>
             </div>
         </div>
-        <div class="flex flex-wrap gap-1" style="margin-left: 600px">
-            <TileTable1 style="margin-left: 1px" />
+        <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
+            <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
+                <table width="100%" align="left">
+                    <tbody>
+                        <tr>
+                            <td valign="middle">
+                                <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
+                                    <tbody>
+                                        <tr>
+                                            <td>Zone 1:</td>
+                                            <td><input v-model="zoneone.zone1" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                            <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
+                                            <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
+                                            <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
+                                            <td>
+                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Zone 2:</td>
+                                            <td><input v-model="zonetwo.zone2" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                            <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
+                                            <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
+                                            <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
+                                            <td>
+                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Zone 3:</td>
+                                            <td><input v-model="zonethree.zone3" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                            <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
+                                            <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
+                                            <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
+                                            <td>
+                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- <TileTable style="margin-left: 1px" /> -->
             <!-- <TileTable2 style="margin-left: 40px" />
                 <TileTable3 style="margin-left: 40px" /> -->
         </div>

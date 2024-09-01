@@ -1,24 +1,37 @@
-import { defineStore } from 'pinia';
+// import { defineStore } from 'pinia';
 
-export const useacctStore = defineStore('accountinput', {
-    //state
-    state: () => ({
-        accountinput: [],
-        id: 0
-    }),
+// export const userStore = defineStore('inputuser', {
+//     //state
+//     state: () => ({
+//         inputuser: [],
+//         id: 0
+//     }),
 
-    //actions
-    actions: {
-        addData(Data) {
-            this.accountinput.push({ Data, completed: false });
-        }
+//     //actions
+//     actions: {
+//         addData(accountUser) {
+//             this.inputuser.push({ accountUser });
+//         }
+//     },
+//     getters: {
+//         acctData: (state) => state.accountUser
+//     }
+
+// });
+import { createGlobalState } from '@vueuse/core';
+import { computed, ref } from 'vue';
+
+export const useGlobalState = createGlobalState(() => {
+    // state
+    const accountUsers = ref([]);
+
+    // getters
+    const getUser = computed(() => accountUsers.value);
+
+    // actions
+    function addUser(account) {
+        accountUsers.value.push(account);
     }
 
-    //getters
-    // getters: {
-    //     noaInfo(state) {
-    //         return state.inputshingle.shingleData;
-    //     }
-    // }
-    // persist: true
+    return { accountUsers, getUser, addUser };
 });

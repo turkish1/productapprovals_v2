@@ -10,6 +10,7 @@ import { ref } from 'vue';
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
 const { permitapp } = storeToRefs(permitStore);
+console.log(permitapp._object);
 const area = ref('');
 const selectedItem = ref('');
 const type = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Asphalt Shingle' }, { name: 'Mechanical Fastened Tile' }, { name: 'Mortar/Adhesive Tile' }, { name: 'Metal Panel' }]);

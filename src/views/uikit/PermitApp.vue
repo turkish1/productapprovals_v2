@@ -4,20 +4,28 @@ import Drop from '@/components/DropZone/Drop.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
+import { useGlobalState } from '@/stores/accountStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { useToNumber } from '@vueuse/core';
+import { tryOnMounted, useToNumber } from '@vueuse/core';
 
-// import { useSum } from '@vueuse/math';
+import jsPDF from 'jspdf';
 import { reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 // import useaccountStore from '@/stores/accountStore';
 const a = ref(1);
+
 export default {
     setup() {
         const responseMessage = ref('');
         const router = useRouter();
-
+        const content = ref();
+        const canvas = ref();
+        const doc = ref();
         const { procData, procReceive } = usecreateProcessnumber();
+        const { accountUsers, getUser, addUser } = useGlobalState();
+        console.log(accountUsers._value[0].name);
+
+        // watch(createHtml, () => {});
         // const useacctStore = useaccountStore();
         // const { accountinput } = storeToRefs(useacctStore);
         const prefix = ref('me');
@@ -25,19 +33,34 @@ export default {
         const formData = reactive({
             address: '',
             muni: '',
+            // licenseStatus: '',
             folio: '',
-            contractor: '',
+            // contractor: '',
             permit: '',
             processNumber: '',
-            phone: '',
-            email: '',
+            // phone: '',
+            // email: '',
             date: new Date()
         });
-
+        const contractor = ref('');
+        const email = ref('');
+        const phone = ref('');
+        const licenseStatus = ref('');
+        tryOnMounted(() => {
+            if (accountUsers._value[0].name === '') {
+                return router.push('/');
+            } else {
+                contractor.value = accountUsers._value[0].name;
+                email.value = accountUsers._value[0].email;
+                phone.value = accountUsers._value[0].phone;
+                licenseStatus.value = accountUsers._value[0].secondary_status;
+                console.log(email.value, contractor.value);
+            }
+        });
         const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
-
+        const permitapp = ref(null);
         const checkMB = ref('');
         const checkV = ref('');
         // const getData = reactive(accountinput);
@@ -77,6 +100,7 @@ export default {
 
         const onSubmit = async () => {
             procReceive(formData);
+            createHtml();
         };
 
         const selectedApplication = ref();
@@ -103,8 +127,38 @@ export default {
             console.log(formdt, permType, checkMB.value, 'System added');
         }
 
+        function createHtml() {
+            doc.value = new jsPDF();
+            const html = html.$refs.permitapp.innerHTML;
+            doc.value.fromHTML(html, 15, 15, {
+                width: 150
+            });
+            doc.save('output.pdf');
+            // content.value = permitapp.value;
+            // canvas.value = html2canvas(content, {
+            //     scale: 0.5,
+            //     width: content.clientWidth / 160,
+            //     height: content.clientHeith / 120
+            // });
+
+            // doc.value = new jsPDF('p', 'mm', 'a0');
+            // doc.html(document.querySelector('#permitapp'), {
+            //     callback: function (pdf) {
+            //         pdf.saveGraphicState();
+            //     }
+            // });
+            console.log(doc.value);
+        }
         return {
+            createHtml,
             onSubmit,
+            accountUsers,
+            getUser,
+            email,
+            phone,
+            contractor,
+            licenseStatus,
+            addUser,
             navigateNext,
             addItemAndClear,
             selectedApplication,
@@ -117,14 +171,17 @@ export default {
             useLast,
             load,
             checkMB,
-            checkV
+            checkV,
+            content,
+            canvas,
+            doc
         };
     }
 };
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
+    <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
         <div class="md:w-2/3">
             <!-- <div class="card flex flex-col gap-4"> -->
             <div class="container">
@@ -140,9 +197,14 @@ export default {
                                 <div class="flex flex-wrap gap-4">
                                     <form class="w-3/4" @submit="onSubmit">
                                         <div class="flex flex-col grow basis-0 gap-3">
+                                            <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                                <label for="license">License Status</label>
+                                                <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
+                                                <!-- <Message severity="error">Contractor Name Required</Message> -->
+                                            </div>
                                             <label for="addr">Property Address</label>
                                             <InputText id="addr" type="text" v-model="address" placeholder="address" />
-                                            <Button v-if="!loading" type="button" label="Search" severity="contrast" icon="pi pi-search-plus" :loading="loading" @click="load" />
+                                            <Button v-if="!loading" type="button" label="Search" severity="contrast" icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
 
                                             <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
 
@@ -151,7 +213,7 @@ export default {
                                         </div>
                                         <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="contractor">Contractor Name</label>
-                                            <InputText id="zip" v-model="contractor" type="text" placeholder="name" />
+                                            <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
                                             <!-- <Message severity="error">Contractor Name Required</Message> -->
                                         </div>
                                         <!-- <div class="flex flex-col grow basis-0 gap-3">

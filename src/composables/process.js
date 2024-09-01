@@ -18,13 +18,9 @@ export default function useProcess() {
     console.log(test);
     pNum.value = sequence[0] + 1;
     if (lastNum.value !== 0) {
-        console.log('entered lastNum equal null', lastNum.value);
     } else {
-        console.log('entered lastNum equal a number', lastNum.value);
         pNum.value = lastNum.value + 1;
     }
-
-    console.log(pNum.value, lastNum.value, test);
 
     return { pNum, lastNum, resNum, test };
 }
