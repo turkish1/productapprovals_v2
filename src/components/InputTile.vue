@@ -8,6 +8,7 @@ import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
 // import { storeToRefs } from 'pinia';
 // import usetileadhesive from '@/composables/Tiletables/use-tileadhesive';
+import { useMath } from '@vueuse/math';
 
 import { useGlobalState } from '@/stores/exposurecStore';
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
@@ -20,6 +21,7 @@ const { takef } = useTileSystemF();
 const { getV } = useTileSystemE();
 // const storeroof = useRoofListStore();
 // const { tilefinput } = storeToRefs(ftileStore);
+
 const { slopes, heights, getSlopes, getZones, getHeight, zones } = useGlobalState();
 const tilenoas = reactive({
     manufacturer: '',
@@ -93,22 +95,26 @@ const dims = reactive({
 const factor = ref(0.4);
 
 function setRoofInputs() {
-    console.log(dims.height, dims.per);
     dims.height = heightModel.value;
     dims.slope = slopeModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
 
     getData(dims.slope, dims.height);
-    console.log(dims.height, dims.slope);
 }
 const dimensions = computed(() => {
     setRoofInputs();
 });
 
-const { zoneData, tb, tables, results, getData } = useExposurec();
-console.log(tables);
+const selectedExposure = ref('');
+const windZones = ref([
+    { name: 'C', key: '1' },
+    { name: 'D', key: '2' }
+]);
+
+const { tables, getData } = useExposurec();
+
 const zoneone = reactive({
-    zone1: '',
+    zone: '',
     lambda1: '',
     mg1: '',
     mr1: '',
@@ -116,14 +122,14 @@ const zoneone = reactive({
 });
 
 const zonetwo = reactive({
-    zone2: '',
+    zone: '',
     lambda2: '',
     mg2: '',
     mr2: '',
     mf2: ''
 });
 const zonethree = reactive({
-    zone3: '',
+    zone: '',
     lambda3: '',
     mg3: '',
     mr3: '',
@@ -160,18 +166,13 @@ function checkInput() {
         });
     }
     if (datatilenoa.value.length !== null) {
-        // datatilenoa.value.forEach((item, index) => {
         tilenoas.manufacturer = tileData.applicant;
         tilenoas.description = tileData.description;
         tables.zones.lessfifteen.forEach((item, index) => {
-            zoneone.zone1 = tables.zones.lessfifteen[0];
-            zonetwo.zone2 = tables.zones.lessfifteen[1];
-            zonethree.zone3 = tables.zones.lessfifteen[2];
-
-            console.log(item, index, tables.zones.lessfifteen[index], zoneone.zone1);
+            zoneone.zone = tables.zones.lessfifteen[0];
+            zonetwo.zone = tables.zones.lessfifteen[1];
+            zonethree.zone = tables.zones.lessfifteen[2];
         });
-        // zoneone.zone1 = get
-        // });
     }
 }
 
@@ -216,7 +217,7 @@ const underlaymentType = ref([
 
 watch(selectedUnderlayment, () => {
     save.value = selectedUnderlayment.value.key;
-    console.log(save.value, ftileStore.$state.tilefinput);
+
     if (save.value === 1) {
         isTileValid.value = true;
         isUDLValid.value = false;
@@ -238,21 +239,85 @@ watch(selectedUnderlayment, () => {
     }
 });
 
+const slopeOptions = {
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7
+};
+const result1 = ref();
+const result2 = ref();
+const result3 = ref();
+
+const v1 = ref();
+const v2 = ref();
+const v3 = ref();
 watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, () => {});
 function checkMaterial() {
-    console.log(getZones);
     tilenoas.material = tileData.material;
     tilenoas.paddies = tileData.Table_FiveTwoPaddies;
-    // zoneone.zone1 = tables.;
-    // zonetwo.zone2 = tables.t2zone2;
-    // zonethree.zone3 = tables.t3zone3;
+
     zoneone.lambda1 = tileData.Table2.Direct_Deck;
     zonetwo.lambda2 = tileData.Table2.Direct_Deck;
     zonethree.lambda3 = tileData.Table2.Direct_Deck;
+    const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+    const slopeRange = clampNumber1(2, Number(dims.slope), 12);
+    console.log(slopeRange);
+    if (slopeRange <= slopeOptions.three) {
+        console.log('Is Less');
+        zoneone.mg1 = tileData.Table3.two.Direct_Deck;
+        zonetwo.mg2 = tileData.Table3.two.Direct_Deck;
+        zonethree.mg3 = tileData.Table3.two.Direct_Deck;
+    } else if (slopeRange < slopeOptions.four) {
+        console.log('Is Less');
+        zoneone.mg1 = tileData.Table3.three.Direct_Deck;
+        zonetwo.mg2 = tileData.Table3.three.Direct_Deck;
+        zonethree.mg3 = tileData.Table3.three.Direct_Deck;
+    } else if (slopeRange < slopeOptions.five) {
+        console.log('Is Less');
+        zoneone.mg1 = tileData.Table3.four.Direct_Deck;
+        zonetwo.mg2 = tileData.Table3.four.Direct_Deck;
+        zonethree.mg3 = tileData.Table3.four.Direct_Deck;
+    } else if (slopeRange <= slopeOptions.six) {
+        console.log('Is Less');
+        zoneone.mg1 = tileData.Table3.six.Direct_Deck;
+        zonetwo.mg2 = tileData.Table3.six.Direct_Deck;
+        zonethree.mg3 = tileData.Table3.six.Direct_Deck;
+    } else if (slopeRange >= slopeOptions.seven) {
+        console.log('Is Less');
+        zoneone.mg1 = tileData.Table3.seven.Direct_Deck;
+        zonetwo.mg2 = tileData.Table3.sevebn.Direct_Deck;
+        zonethree.mg3 = tileData.Table3.seven.Direct_Deck;
+    }
+    const z1 = ref(zoneone.zone);
+    const l1 = ref(zoneone.lambda1);
+    const z2 = ref(zonetwo.zone);
+    const l2 = ref(zonetwo.lambda2);
+    const z3 = ref(zonethree.zone);
+    const l3 = ref(zonethree.lambda3);
+    console.log(z1, l1);
+    result1.value = useMath('mul', z1, l1);
+    console.log(result1.value);
+    result2.value = useMath('mul', z2, l2);
+    console.log(result2.value);
+    result3.value = useMath('mul', z3, l3);
+    const m1 = ref(zoneone.mg1);
+    // const m2 = ref(zonetwo.mg2);
+    // const m3 = ref(zonethree.mg3);
+    v1.value = useMath('sub', m1.value, result1.value);
+    // v2.value = useMath('sub', result2.value, m2.value);
+    // v3.value = useMath('sub', result3.value, m3.value);
+    console.log(m1.value, result1.value, v1.value);
+    // const d1 = ref(v1.value);
+    // const d2 = ref(decplace2.value);
+    // const d3 = ref(decplace3.value);
 
-    zoneone.mg1 = tileData.Table3.Direct_Deck;
-    zonetwo.mg2 = tileData.Table3.Direct_Deck;
-    zonethree.mg3 = tileData.Table3.Direct_Deck;
+    // zoneone.mr1 = v1.value;
+    // zonetwo.mr2 = d2.value;
+    // zonethree.mr3 = d3.value;
+
     zoneone.mf1 = tileData.Table_FiveTwoPaddies[1];
     zonetwo.mf2 = tileData.Table_FiveTwoPaddies[1];
     zonethree.mf3 = tileData.Table_FiveTwoPaddies[1];
@@ -283,8 +348,6 @@ function EcheckInputSystem() {
     // 23111506
 
     datamountedsystemE.value.forEach((item, index) => {
-        console.log(item, index);
-        console.log(etileStore.$state.tilesysEinput);
         udlTiles.Maps = item.systemDataE.Maps;
         udlTiles.Anchor_Base_Sheet_E1 = item.systemDataE.Anchor_Base_Sheet_E1;
         udlTiles.Anchor_Base_Sheet_E2 = item.systemDataE.Anchor_Base_Sheet_E2;
@@ -305,8 +368,6 @@ function EcheckInputSystem() {
         udlTiles.arrDesignPressure = item.systemDataE.designPressure;
 
         if (item.systemDataE.system.length > 1) {
-            //         //
-            console.log('condition met');
         } else {
             udlTiles.system = item.systemDataE.system;
             // selfAdData.value = item.systemData.description;
@@ -331,6 +392,7 @@ function updateselectSystem() {
         if (val === 'F2') {
             saTiles.description = saTiles.Description_F2;
             saTiles.designpressure = saTiles.arrDesignPressure[1];
+            console.log(saTiles.arrDesignPressure);
         }
         if (val === 'F3') {
             saTiles.description = saTiles.Description_F3;
@@ -514,7 +576,7 @@ function updateselectSystemE() {
 
         <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
             <div class="w-128 flex flex-col gap-2">
-                <label for="manufacturer">Applicant</label>
+                <label for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
@@ -536,16 +598,16 @@ function updateselectSystemE() {
             </div>
         </div> -->
         <Divider />
-        <div class="flex flex-wrap gap-4" style="margin-left: 1px">
+        <div v-for="w in windZones" :key="w.key" class="flex flex-wrap gap-4" style="margin-left: 1px">
             <label style="margin-left: 500px">Select Exposure</label>
             <div class="flex items-center">
-                <RadioButton v-model="exposure" inputId="C" name="exposureC" value="C" />
-                <label for="exposureC" class="ml-2">C</label>
+                <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
+                <label for="w.key" class="ml-2">{{ w.name }}</label>
             </div>
-            <div class="flex items-center">
-                <RadioButton v-model="exposure" inputId="D" name="exposureD" value="D" />
+            <!-- <div class="flex items-center">
+                <RadioButton v-model="exposure" inputId="D" name="exposureD" value="D" @click="swapZones"/>
                 <label for="exposureD" class="ml-2">D</label>
-            </div>
+            </div> -->
         </div>
         <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
             <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
@@ -557,7 +619,7 @@ function updateselectSystemE() {
                                     <tbody>
                                         <tr>
                                             <td>Zone 1:</td>
-                                            <td><input v-model="zoneone.zone1" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                            <td><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
                                             <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
                                             <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
@@ -568,7 +630,7 @@ function updateselectSystemE() {
 
                                         <tr>
                                             <td>Zone 2:</td>
-                                            <td><input v-model="zonetwo.zone2" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                            <td><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
                                             <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
                                             <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
@@ -579,7 +641,7 @@ function updateselectSystemE() {
 
                                         <tr>
                                             <td>Zone 3:</td>
-                                            <td><input v-model="zonethree.zone3" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                            <td><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
                                             <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
                                             <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>

@@ -1,4 +1,5 @@
-import { useacctStore } from '@/stores/accountStore';
+// import { useacctStore } from '@/stores/accountStore';
+import { useGlobalState } from '@/stores/accountsStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref, toRefs } from 'vue';
 export default function usecreateAccount() {
@@ -6,7 +7,9 @@ export default function usecreateAccount() {
     const noaNum = ref([]);
     const responseMessage = ref('');
     let results = ref([]);
-    const acctStore = useacctStore();
+    // const acctStore = useacctStore();
+
+    const { accountUsers, getUser, addUser } = useGlobalState();
     let formData = reactive({
         license: '',
         dba: '',
@@ -37,7 +40,7 @@ export default function usecreateAccount() {
         execute({ data: formd });
 
         responseMessage.value = 'Form submitted successfully!';
-        acctStore.addData(Data);
+        addUser(Data);
         // store the values
 
         // then clear the page
@@ -49,5 +52,5 @@ export default function usecreateAccount() {
 
     // 18061905
 
-    return { takp, noaNum, error, results, responseMessage, ...toRefs(Data), acctStore };
+    return { takp, noaNum, error, accountUsers, getUser, addUser, accountUsers, results, responseMessage, ...toRefs(Data) };
 }

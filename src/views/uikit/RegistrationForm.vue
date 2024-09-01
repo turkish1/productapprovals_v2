@@ -1,8 +1,10 @@
 <script>
+import Drop from '@/components/DropZone/Drop.vue';
 import usecreateAccount from '@/composables/Authentication/use-createAccount';
+// import useGlobalState from '@/composables/Authentication/use-createAccount';
+// import { useGlobalState } from '@/stores/accountsStore';
 import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
-// import { usecccStore } from '@/stores/contractorStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref, toRefs } from 'vue';
@@ -49,7 +51,7 @@ export default {
             formDatas.license = '';
             formDatas.name = '';
             formDatas.secondary_status = '';
-            (formDatas.dba = ''), (formDatas.username = ''), (formDatas.password = ''), (formDatas.address = ''), (formDatas.cphone = ''), (formDatas.phone = ''), (formDatas.email = '');
+            (formDatas.dba = ''), (formDatas.username = ''), (formDatas.password = ''), (formDatas.address = ''), (formDatas.cphone = ''), (formDatas.phone = ''), (formDatas.email = ''), (formDatas.insurance = ''), (formDatas.carrier = '');
             navigateNext();
         };
         function checkLicense() {
@@ -60,11 +62,11 @@ export default {
                 if (formDatas.license === item.alt_license) {
                     (formDatas.dba = item.DBA), (formDatas.name = item.name), (formDatas.secondary_status = item.secondary_status), (formDatas.expiration_date = item.expiration_date), (formDatas.address = item.address1);
                 }
-                // if (formDatas.value.secondary_status !== 'A') {
-                //     console.log('Not active', formDatas.value.secondary_status);
-                //     alert('License is not Activite ');
-                //     disabled = true;
-                // }
+                if (formDatas.value.secondary_status !== 'A') {
+                    console.log('Not active', formDatas.value.secondary_status);
+                    alert('License is not Activite ');
+                    disabled = true;
+                }
                 // if (item.expiration_date < current) {
                 //     console.log('Expired');
                 //     alert('Expired License');
@@ -159,6 +161,14 @@ export default {
                 <InputText id="license" type="text" v-model="formDatas.expiration_date" placeholder=" " :invalid="formDatas.expiration_date === ''" />
             </div>
             <div class="flex flex-col gap-2">
+                <label for="license">Insurance Policy Number</label>
+                <InputText id="license" type="text" v-model="formDatas.insurance" placeholder=" " :invalid="formDatas.expiration_date === ''" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <label for="license">Insurance Carrier</label>
+                <InputText id="license" type="text" v-model="formDatas.carrier" placeholder=" " :invalid="formDatas.expiration_date === ''" />
+            </div>
+            <div class="flex flex-col gap-2">
                 <label for="username">User Name</label>
                 <InputText id="username" type="text" v-model="formDatas.username" placeholder="user name" :invalid="formDatas.username === ''" />
             </div>
@@ -209,7 +219,7 @@ export default {
                     </div>
                 </div>
                 <div class="card md:w-1/4 flex justify-center flex-wrap gap-4">
-                    <Button label="Submit" severity="contrast" raised @click="onSubmit" />
+                    <Button label="Submit" severity="contrast" raised @click="onSubmit" :disabled="disabled" />
                     <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
                 </div>
             </div>
@@ -223,8 +233,9 @@ export default {
             <div class="card md:w-1/3 flex flex-col gap-3">
                 <label for="addr">Upload Insurance Information</label>
                 <Toast />
-                <FileUpload ref="fileupload" mode="basic" name="demo[]" url="http://localhost:8080/upload" accept="*" :maxFileSize="10000000000" @upload="onUpload" />
-                <Button label="Upload" @click="upload" severity="contrast" :disabled="disabled" />
+                <Drop />
+                <!-- <FileUpload ref="fileupload" mode="basic" name="demo[]" url="http://localhost:8080/upload" accept="*" :maxFileSize="10000000000" @upload="onUpload" />
+                <Button label="Upload" @click="upload" severity="contrast" :disabled="disabled" /> -->
             </div>
         </div>
     </form>

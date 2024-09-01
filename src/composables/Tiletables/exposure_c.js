@@ -78,7 +78,7 @@ export default function useExposurec() {
                 zoneData.value = data.value.result.WindExposureC2023_db.slp_six_twelve;
                 console.log(zoneData?.value);
                 console.log('table3', zoneData.value);
-                slopeSelection_sixtotwelve(slope.value, height.value, zoneData.value);
+                slopeSelection(slope.value, height.value, zoneData.value);
                 addDimslope(slope.value);
                 addDimheight(height.value);
             }
@@ -87,7 +87,7 @@ export default function useExposurec() {
 
                 zoneData.value = data.value.result.WindExposureC2023_db.slp_four_six;
                 console.log('table2', zoneData.value);
-                slopeSelection_fourtosix(slope.value, height.value, zoneData.value);
+                slopeSelection(slope.value, height.value, zoneData.value);
                 addDimslope(slope.value);
                 addDimheight(height.value);
             } else {
@@ -95,14 +95,14 @@ export default function useExposurec() {
 
                 zoneData.value = data.value.result.WindExposureC2023_db.slp_two_four;
                 console.log(zoneData.value);
-                slopeSelection_twotofour(slope.value, height.value, zoneData.value);
+                slopeSelection(slope.value, height.value, zoneData.value);
                 addDimslope(slope.value);
                 addDimheight(height.value);
             }
         });
         return results.value;
     }
-    function slopeSelection_twotofour(slp, hgt, zn) {
+    function slopeSelection(slp, hgt, zn) {
         newSlp.value = slp;
         newHgt.value = hgt;
         zones = zn;
@@ -200,5 +200,5 @@ export default function useExposurec() {
     }
     loading.value = false;
     // slopeSelection_fourtosix, slopeSelection_sixtotwelve,
-    return { type, error, newSlp, tb, processData, newHgt, slopeSelection_twotofour, loading, zoneData, slope, tables, results, getData };
+    return { type, error, newSlp, tb, processData, newHgt, slopeSelection, loading, zoneData, slope, tables, results, getData };
 }

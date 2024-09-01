@@ -4,7 +4,7 @@ import Drop from '@/components/DropZone/Drop.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
-import { useGlobalState } from '@/stores/accountStore';
+import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 
@@ -46,6 +46,7 @@ export default {
         const email = ref('');
         const phone = ref('');
         const licenseStatus = ref('');
+        const dba = ref('');
         tryOnMounted(() => {
             if (accountUsers._value[0].name === '') {
                 return router.push('/');
@@ -54,6 +55,7 @@ export default {
                 email.value = accountUsers._value[0].email;
                 phone.value = accountUsers._value[0].phone;
                 licenseStatus.value = accountUsers._value[0].secondary_status;
+                dba.value = accountUsers._value[0].dba;
                 console.log(email.value, contractor.value);
             }
         });
@@ -155,6 +157,7 @@ export default {
             accountUsers,
             getUser,
             email,
+            dba,
             phone,
             contractor,
             licenseStatus,
@@ -211,6 +214,12 @@ export default {
                                             <!-- pi-search-plus -->
                                             <!-- <Message severity="error">Property Address Required</Message> -->
                                         </div>
+
+                                        <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                            <label for="dba">DBA </label>
+                                            <InputText id="dba" v-model="dba" type="text" placeholder="name" />
+                                            <!-- <Message severity="error">Contractor Name Required</Message> -->
+                                        </div>
                                         <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="contractor">Contractor Name</label>
                                             <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
@@ -255,7 +264,7 @@ export default {
                                         <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
                                     </form>
                                     <p v-if="responseMessage">{{ responseMessage }}</p>
-                                    <drop />
+                                    <Drop />
                                 </div>
                             </div>
                         </div>

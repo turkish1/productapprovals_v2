@@ -1,5 +1,5 @@
 <script setup>
-import { useGlobalState } from '@/stores/accountStore';
+import { useGlobalState } from '@/stores/accountsStore';
 
 import { useAxios } from '@vueuse/integrations/useAxios';
 import jsPDF from 'jspdf';
