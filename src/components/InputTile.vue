@@ -195,7 +195,7 @@ const whatChanged = computed(() => {
     setRoofInputs();
 });
 
-watch(checkInputSystem, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(checkInputSystem, checkMaterial, updateMF, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 const selectedsystemf = ref(null);
 const selectedsysNoa = ref(null);
 const selectedpaddies = ref(null);
@@ -256,6 +256,7 @@ const v2 = ref();
 const v3 = ref();
 watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, () => {});
 function checkMaterial() {
+    console.log(tileData);
     tilenoas.material = tileData.material;
     tilenoas.paddies = tileData.Table_FiveTwoPaddies;
 
@@ -317,10 +318,6 @@ function checkMaterial() {
     // zoneone.mr1 = v1.value;
     // zonetwo.mr2 = d2.value;
     // zonethree.mr3 = d3.value;
-
-    zoneone.mf1 = tileData.Table_FiveTwoPaddies[1];
-    zonetwo.mf2 = tileData.Table_FiveTwoPaddies[1];
-    zonethree.mf3 = tileData.Table_FiveTwoPaddies[1];
 }
 function checkInputSystem() {
     // 23061202 23070604
@@ -381,6 +378,18 @@ function addFSystem() {
     // console.log(typeof selfadhered.arrSystem, typeof selfadhered.system);
 }
 // 23061202
+
+function updateMF() {
+    Object.entries(selectedsysNoa).map((obj) => {
+        const k = obj[0];
+        const v = obj[1];
+        console.log(k, v);
+    });
+
+    zoneone.mf1 = tileData.Table_FiveTwoPaddies[1];
+    zonetwo.mf2 = tileData.Table_FiveTwoPaddies[1];
+    zonethree.mf3 = tileData.Table_FiveTwoPaddies[1];
+}
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedsystemf).map((obj) => {
         const val = obj[1];
@@ -466,7 +475,7 @@ function updateselectSystemE() {
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-            <InputText id="height" v-model="heightModel" type="text" placeholder="height" @keydown.enter="setRoofInputs" />
+            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @keydown.enter="setRoofInputs" />
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
             <label for="area">Area</label>
@@ -486,19 +495,19 @@ function updateselectSystemE() {
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @input="grabInput" @change="EcheckInput" />
+                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @input="grabInput" @change="EcheckInput" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
+                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
             </div>
         </div>
         <div v-show="isTileValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="tilenoa">Tile Noa</label>
-                <InputText id="tilenoa" v-model="tilenoaInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
+                <InputText id="tilenoa" v-tooltip.bottom="'Press Enter after value'" v-model="tilenoaInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
             </div>
         </div>
     </div>
@@ -588,7 +597,7 @@ function updateselectSystemE() {
             </div>
             <div class="w-128 flex flex-col gap-2">
                 <label for="material">Adhesive Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="" @click="checkMaterial" />
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
         </div>
         <!-- <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
@@ -598,16 +607,18 @@ function updateselectSystemE() {
             </div>
         </div> -->
         <Divider />
-        <div v-for="w in windZones" :key="w.key" class="flex flex-wrap gap-4" style="margin-left: 1px">
-            <label style="margin-left: 500px">Select Exposure</label>
-            <div class="flex items-center">
-                <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
-                <label for="w.key" class="ml-2">{{ w.name }}</label>
-            </div>
-            <!-- <div class="flex items-center">
+        <div class="flex flex-row space-x-10 space-y-6" style="margin-left: 400px">
+            <label>Select Exposure</label>
+            <div v-for="w in windZones" :key="w.key" class="flex flex-wrap gap-4" style="margin-left: 1px">
+                <div class="flex items-center">
+                    <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
+                    <label for="w.key" class="ml-2">{{ w.name }}</label>
+                </div>
+                <!-- <div class="flex items-center">
                 <RadioButton v-model="exposure" inputId="D" name="exposureD" value="D" @click="swapZones"/>
                 <label for="exposureD" class="ml-2">D</label>
             </div> -->
+            </div>
         </div>
         <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
             <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">

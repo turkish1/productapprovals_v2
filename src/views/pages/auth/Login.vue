@@ -111,7 +111,7 @@ const navigateNext = () => {
                         <InputText id="username" type="text" placeholder="username" class="w-full md:w-[30rem] mb-8" v-model="username" />
 
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                        <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true" class="mb-4" @keyup.enter="submit" fluid :feedback="false"></Password>
+                        <Password id="password1" v-tooltip.bottom="'Press Enter after value'" v-model="password" placeholder="Password" :toggleMask="true" class="mb-4" @keyup.enter="submit" fluid :feedback="false"></Password>
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">

@@ -40,7 +40,6 @@ export default function usetileInputs() {
         console.log(input.value);
         const result = execute().then((result) => {
             noaNum.value = data.value.result;
-            console.log(noaNum.value);
 
             results.value = noaNum.value.forEach((item, index) => {
                 let num = Number(input.value);
@@ -57,7 +56,7 @@ export default function usetileInputs() {
                     tileData.Table_SevenOnePaddy = item.Table_SixOnePaddy;
                     tileData.Table_SixTwoPaddies = item.Table_SixTwoPaddies;
                     tileData.Table_SevenOnePaddy = item.Table_SevenOnePaddy;
-
+                    console.log(item.AdhesiveMaterial);
                     if (tileData.length === 0) {
                         return;
                     }
