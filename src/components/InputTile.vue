@@ -519,13 +519,13 @@ function updateselectSystemE() {
             </div>
 
             <div class="w-128 flex flex-col gap-2">
-                <label for="description">Description</label>
+                <label for="description">Tile Description</label>
                 <!-- @change="updateselectSystem"  -->
 
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
             <div class="w-128 flex flex-col gap-2">
-                <label for="material"> Material</label>
+                <label for="material">Adhesive Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="" @click="checkMaterial" />
             </div>
         </div>
