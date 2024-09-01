@@ -1,6 +1,6 @@
 <script setup>
 import Drop from '@/components/DropZone/Drop.vue';
-import { useGlobalState } from '@/stores/accountStore';
+import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
