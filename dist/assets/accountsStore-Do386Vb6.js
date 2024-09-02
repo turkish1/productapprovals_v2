@@ -1,1 +1,0 @@
-import{c as r}from"./index-Dd_wmtm5.js";import{r as s,$ as c}from"./index-w9Dbtzee.js";const l=r(()=>{const t=s([]),e=c(()=>t.value);function a(o){t.value.push(o)}return{accountUsers:t,getUser:e,addUser:a}});export{l as u};
