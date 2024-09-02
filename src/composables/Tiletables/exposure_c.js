@@ -57,7 +57,7 @@ export default function useExposurec() {
         height.value = Number(height.value);
 
         if (slope.value > slopeRange2) {
-            tables.table1 = zoneData.value.slp_two_four;
+            // tables.table1 = zoneData.value.slp_two_four;
             console.log('Six is true');
             passData('table3');
         }
@@ -76,7 +76,7 @@ export default function useExposurec() {
             if (type.value === 'table3') {
                 console.log('table3 executed');
                 zoneData.value = data.value.result.WindExposureC2023_db.slp_six_twelve;
-                console.log(zoneData?.value);
+                console.log(zoneData.value);
                 console.log('table3', zoneData.value);
                 slopeSelection(slope.value, height.value, zoneData.value);
                 addDimslope(slope.value);

@@ -25,12 +25,7 @@ export default function usetileInputs() {
         Table2: [],
         Table3: [],
         expiration_date: '',
-        Table_FourOnePaddy: [],
-        Table_FiveTwoPaddies: [],
-        Table_SixOnePaddy: [],
-        Table_SixTwoPaddies: [],
-
-        Table_SevenOnePaddy: []
+        resistance: []
     });
 
     function getTilenoa(number) {
@@ -51,11 +46,7 @@ export default function usetileInputs() {
                     tileData.description = item.description;
                     tileData.Table2 = item.Table2;
                     tileData.Table3 = item.Table3;
-                    tileData.Table_FourOnePaddy = item.Table_FourOnePaddy;
-                    tileData.Table_FiveTwoPaddies = item.Table_FiveTwoPaddies;
-                    tileData.Table_SevenOnePaddy = item.Table_SixOnePaddy;
-                    tileData.Table_SixTwoPaddies = item.Table_SixTwoPaddies;
-                    tileData.Table_SevenOnePaddy = item.Table_SevenOnePaddy;
+                    tileData.resistance = item.Resistance;
                     console.log(item.AdhesiveMaterial);
                     if (tileData.length === 0) {
                         return;

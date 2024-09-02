@@ -3,12 +3,12 @@ import useExposurec from '@/composables/Tiletables/exposure_c';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 // import { useRoofListStore } from '@/stores/roofList';
+
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
 // import { storeToRefs } from 'pinia';
 // import usetileadhesive from '@/composables/Tiletables/use-tileadhesive';
-import { useMath } from '@vueuse/math';
 
 import { useGlobalState } from '@/stores/exposurecStore';
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
@@ -27,7 +27,7 @@ const tilenoas = reactive({
     manufacturer: '',
     material: [],
     description: '',
-    paddies: [],
+    resistance: [],
     Table2: [],
     Table3: []
 });
@@ -138,8 +138,6 @@ const zonethree = reactive({
 watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
 
 function grabInput() {
-    // data.value = noaInput.value;
-    // datasbs.value = saInput.value;
     datatilenoa.value = tilenoaInput.value;
     datasystemf.value = saInput.value;
     datasystemE.value = udlInput.value;
@@ -205,7 +203,6 @@ let isUDLValid = ref('');
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
-// let isSlopeValid = ref(true);
 
 let selectedUnderlayment = ref();
 const underlaymentType = ref([
@@ -247,14 +244,32 @@ const slopeOptions = {
     six: 6,
     seven: 7
 };
-const result1 = ref();
-const result2 = ref();
-const result3 = ref();
 
-const v1 = ref();
-const v2 = ref();
-const v3 = ref();
-watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, () => {});
+const isDataValid = ref(true);
+
+watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, checkData, () => {});
+
+function checkData() {
+    if (tileData.Table3.two.Direct_Deck === 'N/A') {
+        isDataValid.value = false;
+    }
+    if (tileData.Table3.three.Direct_Deck === 'N/A') {
+        isDataValid.value = false;
+    }
+    if (tileData.Table3.four.Direct_Deck === 'N/A') {
+        isDataValid.value = false;
+    }
+    if (tileData.Table3.five.Direct_Deck === 'N/A') {
+        isDataValid.value = false;
+    }
+    if (tileData.Table3.six.Direct_Deck === 'N/A') {
+        isDataValid.value = false;
+    }
+    if (tileData.Table3.seven.Direct_Deck === 'N/A') {
+        isDataValid.value = false;
+    }
+}
+const visible = ref(false);
 function checkMaterial() {
     console.log(tileData);
     tilenoas.material = tileData.material;
@@ -292,32 +307,22 @@ function checkMaterial() {
         zonetwo.mg2 = tileData.Table3.sevebn.Direct_Deck;
         zonethree.mg3 = tileData.Table3.seven.Direct_Deck;
     }
-    const z1 = ref(zoneone.zone);
-    const l1 = ref(zoneone.lambda1);
-    const z2 = ref(zonetwo.zone);
-    const l2 = ref(zonetwo.lambda2);
-    const z3 = ref(zonethree.zone);
-    const l3 = ref(zonethree.lambda3);
-    console.log(z1, l1);
-    result1.value = useMath('mul', z1, l1);
-    console.log(result1.value);
-    result2.value = useMath('mul', z2, l2);
-    console.log(result2.value);
-    result3.value = useMath('mul', z3, l3);
-    const m1 = ref(zoneone.mg1);
-    // const m2 = ref(zonetwo.mg2);
-    // const m3 = ref(zonethree.mg3);
-    v1.value = useMath('sub', m1.value, result1.value);
-    // v2.value = useMath('sub', result2.value, m2.value);
-    // v3.value = useMath('sub', result3.value, m3.value);
-    console.log(m1.value, result1.value, v1.value);
-    // const d1 = ref(v1.value);
-    // const d2 = ref(decplace2.value);
-    // const d3 = ref(decplace3.value);
 
-    // zoneone.mr1 = v1.value;
-    // zonetwo.mr2 = d2.value;
-    // zonethree.mr3 = d3.value;
+    const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+    console.log(result1.value);
+    const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+    console.log(result2.value);
+    const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+
+    console.log(result1.value, result2.value, result3.value);
+
+    zoneone.mr1 = computed(() => result1.value - zoneone.mg1);
+    zonetwo.mr2 = computed(() => result2.value - zonetwo.mg2);
+    zonethree.mr3 = computed(() => result2.value - zonethree.mg3);
+
+    if (zoneone.mr1 > zoneone.mf1) {
+        visible.value = true;
+    }
 }
 function checkInputSystem() {
     // 23061202 23070604
@@ -377,18 +382,18 @@ function addFSystem() {
     saTiles.system = saTiles.system;
     // console.log(typeof selfadhered.arrSystem, typeof selfadhered.system);
 }
-// 23061202
+const resistanceCheck = ref(null);
 
 function updateMF() {
-    Object.entries(selectedsysNoa).map((obj) => {
+    resistanceCheck.value = Object.entries(selectedsysNoa).map((obj) => {
         const k = obj[0];
         const v = obj[1];
-        console.log(k, v);
+        console.log(k._value, v);
     });
 
-    zoneone.mf1 = tileData.Table_FiveTwoPaddies[1];
-    zonetwo.mf2 = tileData.Table_FiveTwoPaddies[1];
-    zonethree.mf3 = tileData.Table_FiveTwoPaddies[1];
+    zoneone.mf1 = tileData.resistance[1];
+    zonetwo.mf2 = tileData.resistance[1];
+    zonethree.mf3 = tileData.resistance[1];
 }
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedsystemf).map((obj) => {
@@ -607,69 +612,64 @@ function updateselectSystemE() {
             </div>
         </div> -->
         <Divider />
-        <div class="flex flex-row space-x-10 space-y-6" style="margin-left: 400px">
+        <div class="flex flex-row space-x-10 space-y-6" style="margin-left: 560px">
             <label>Select Exposure</label>
-            <div v-for="w in windZones" :key="w.key" class="flex flex-wrap gap-4" style="margin-left: 1px">
-                <div class="flex items-center">
-                    <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
-                    <label for="w.key" class="ml-2">{{ w.name }}</label>
-                </div>
-                <!-- <div class="flex items-center">
-                <RadioButton v-model="exposure" inputId="D" name="exposureD" value="D" @click="swapZones"/>
-                <label for="exposureD" class="ml-2">D</label>
-            </div> -->
+        </div>
+
+        <div v-for="w in windZones" :key="w.key" class="flex flex-row mt-5 space-x-20" style="margin-left: 550px">
+            <div class="flex items-center">
+                <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
+                <label for="w.key" class="ml-2">{{ w.name }}</label>
             </div>
         </div>
-        <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
-            <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
-                <table width="100%" align="left">
-                    <tbody>
-                        <tr>
-                            <td valign="middle">
-                                <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
-                                    <tbody>
-                                        <tr>
-                                            <td>Zone 1:</td>
-                                            <td><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
-                                            <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
-                                            <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
-                                            <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
-                                            <td>
-                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
-                                            </td>
-                                        </tr>
+    </div>
+    <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
+        <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
+            <table width="100%" align="left">
+                <tbody>
+                    <tr>
+                        <td valign="middle">
+                            <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
+                                <tbody>
+                                    <tr>
+                                        <td>Zone 1:</td>
+                                        <td><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                        <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
+                                        <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
+                                        <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
+                                        <td>
+                                            <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
+                                        </td>
+                                    </tr>
 
-                                        <tr>
-                                            <td>Zone 2:</td>
-                                            <td><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
-                                            <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
-                                            <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
-                                            <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
-                                            <td>
-                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                        <td>Zone 2:</td>
+                                        <td><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                        <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
+                                        <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
+                                        <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
+                                        <td>
+                                            <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
+                                        </td>
+                                    </tr>
 
-                                        <tr>
-                                            <td>Zone 3:</td>
-                                            <td><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
-                                            <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
-                                            <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
-                                            <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
-                                            <td>
-                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- <TileTable style="margin-left: 1px" /> -->
-            <!-- <TileTable2 style="margin-left: 40px" />
-                <TileTable3 style="margin-left: 40px" /> -->
+                                    <tr>
+                                        <td>Zone 3:</td>
+                                        <td><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                        <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
+                                        <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
+                                        <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
+                                        <td>
+                                            <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
+                                        </td>
+                                    </tr>
+                                    <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>

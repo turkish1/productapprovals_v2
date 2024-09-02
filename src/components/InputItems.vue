@@ -152,11 +152,8 @@ function checkInputSystem() {
             console.log('condition met');
         } else {
             selfadhered.system = item.systemData.system;
-            // selfAdData.value = item.systemData.description;
+
             selfadhered.Description_F1 = item.systemData.description;
-            // if ((selfadhered.Description_F1 = '')) {
-            //     selfadhered.sadescription = selfAdData.value;
-            // }
         }
     });
 }
