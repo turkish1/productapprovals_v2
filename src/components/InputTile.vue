@@ -111,6 +111,12 @@ const windZones = ref([
     { name: 'D', key: '2' }
 ]);
 
+const selectedPaddies = ref('');
+const categories = ref([
+    { name: 'Single', key: '1' },
+    { name: 'Double', key: '2' }
+]);
+
 const { tables, getData } = useExposurec();
 
 const zoneone = reactive({
@@ -513,6 +519,17 @@ function updateselectSystemE() {
                 <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
             </div>
         </div>
+        <div v-show="isTileValid" class="flex flex-row space-x-10 space-y-6" style="margin-left: 650px">
+            <label style="color: red">Select Exposure</label>
+        </div>
+        <!-- flex flex-row mt-5 space-x-2 -->
+
+        <div v-show="isTileValid" v-for="w in windZones" :key="w.key" class="h-5 grid grid-cols-1 gap-4 content-start" style="margin-left: 660px">
+            <div class="flex flex-wrap gap-4">
+                <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
+                <label for="w.key" class="ml-2">{{ w.name }}</label>
+            </div>
+        </div>
         <div v-show="isTileValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="tilenoa">Tile Noa</label>
@@ -526,6 +543,16 @@ function updateselectSystemE() {
 
     <div class="card md:w-full gap-8 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
+            <!-- <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 550px">
+                <label style="color: red">Select a Paddy category</label>
+            </div>
+
+            <div v-show="isTileValid" v-for="w in categories" :key="w.key" class="h-5 grid grid-cols-1 gap-4 content-start" style="margin-left: 550px">
+                <div class="flex flex-wrap gap-4">
+                    <RadioButton v-model="selectedPaddies" :inputId="w.key" name="paddies" :value="w.name" />
+                    <label for="w.key" class="ml-2">{{ w.name }}</label>
+                </div>
+            </div> -->
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
                     <label for="manufacturer">(UDL) NOA Applicant</label>
@@ -585,15 +612,11 @@ function updateselectSystemE() {
                     <label for="designpressure">Design psf:</label>
                     <InputText id="designpressure" v-model="saTiles.designpressure" aria-describedby="username-help" />
                 </div>
-                <!-- <div class="flex shrink flex-col gap-2">
-                    <label for="expiredate_sa">Expiration Date:</label>
-                    <InputText id="expiredate_sa" v-model="expiredate_sa" />
-                </div> -->
             </div>
         </div>
 
         <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
-            <div class="w-128 flex flex-col gap-2">
+            <div class="w-96 flex flex-col gap-2">
                 <label for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
@@ -615,19 +638,58 @@ function updateselectSystemE() {
                 <Select v-model="selectedpaddies" :options="tilenoas.paddies" placeholder="" @click="checkMaterial" />
             </div>
         </div> -->
-        <Divider />
-        <div class="flex flex-row space-x-10 space-y-6" style="margin-left: 560px">
-            <label>Select Exposure</label>
-        </div>
 
-        <div v-for="w in windZones" :key="w.key" class="flex flex-row mt-5 space-x-20" style="margin-left: 550px">
-            <div class="flex items-center">
-                <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
-                <label for="w.key" class="ml-2">{{ w.name }}</label>
+        <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
+            <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
+                <table width="100%" align="left">
+                    <tbody>
+                        <tr>
+                            <td valign="middle">
+                                <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
+                                    <tbody>
+                                        <tr>
+                                            <td>Zone 1:</td>
+                                            <td><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                            <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
+                                            <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
+                                            <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
+                                            <td>
+                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Zone 2:</td>
+                                            <td><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                            <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
+                                            <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
+                                            <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
+                                            <td>
+                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Zone 3:</td>
+                                            <td><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                            <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
+                                            <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
+                                            <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
+                                            <td>
+                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
+                                            </td>
+                                        </tr>
+                                        <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
+    <!-- <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
         <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
             <table width="100%" align="left">
                 <tbody>
@@ -675,6 +737,6 @@ function updateselectSystemE() {
                 </tbody>
             </table>
         </div>
-    </div>
+    </div> -->
 </template>
 <style scoped></style>
