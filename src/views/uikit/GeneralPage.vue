@@ -59,7 +59,7 @@ onMounted(() => {
             checkedmtile.value = true;
         }
 
-        if (item.item === 'Mortar/Adhesive Set Tile') {
+        if (item.item === 'Adhesive Set Tile') {
             steep2.value = item.dim3;
             checkedadtile.value = true;
         }

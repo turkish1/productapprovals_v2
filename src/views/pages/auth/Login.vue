@@ -66,7 +66,7 @@ function checkAuth() {
                 accountUser.expiration_date = item[i].expiration_date;
                 accountUser.projects = item[i].projects;
                 status.value = item[i].secondary_status;
-                if (item[i].secondary_status === 'A') {
+                if (item[i].secondary_status === 'Active') {
                     accountUser.secondary_status = 'Active';
                 } else {
                     accountUser.secondary_status = 'InActive';

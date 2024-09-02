@@ -7,7 +7,7 @@ import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, reactive, ref, toRefs } from 'vue';
+import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -31,12 +31,12 @@ export default {
             projects: [],
             password: '',
             cphone: '',
-            phone: '',
+            bphone: '',
             email: '',
             date: new Date()
         });
         const { contractors } = useRegAxios();
-
+        const dataLic = ref('');
         // const contractStore = usecccStore();
         // let contractor = ref(contractStore);
 
@@ -44,35 +44,64 @@ export default {
             events = contractors;
             console.log(events);
         });
-
+        const license_stat = ref('');
         const { Data, takp } = usecreateAccount();
         const onSubmit = async () => {
             takp(formDatas);
             formDatas.license = '';
             formDatas.name = '';
             formDatas.secondary_status = '';
-            (formDatas.dba = ''), (formDatas.username = ''), (formDatas.password = ''), (formDatas.address = ''), (formDatas.cphone = ''), (formDatas.phone = ''), (formDatas.email = ''), (formDatas.insurance = ''), (formDatas.carrier = '');
+            formDatas.dba = '';
+            formDatas.username = '';
+            formDatas.password = '';
+            formDatas.address = '';
+            formDatas.cphone = '';
+            formDatas.bphone = '';
+            formDatas.email = '';
+            formDatas.insurance = '';
+            formDatas.carrier = '';
             navigateNext();
         };
         function checkLicense() {
             events.value.forEach((item) => {
                 // CRC002120 CRC026270
+                dataLic.value = formDatas.license.toUpperCase();
 
                 // const current = Date.now();
-                if (formDatas.license === item.alt_license) {
-                    (formDatas.dba = item.DBA), (formDatas.name = item.name), (formDatas.secondary_status = item.secondary_status), (formDatas.expiration_date = item.expiration_date), (formDatas.address = item.address1);
+                if (dataLic.value === item.alt_license) {
+                    formDatas.dba = item.DBA;
+                    formDatas.name = item.name;
+                    formDatas.expiration_date = item.expiration_date;
+                    formDatas.address = item.address1;
+                    formDatas.city = item.city;
+                    license_stat.value = item.secondary_status;
                 }
-                if (formDatas.value.secondary_status !== 'A') {
-                    console.log('Not active', formDatas.value.secondary_status);
-                    alert('License is not Activite ');
-                    disabled = true;
-                }
+                licenseStatus();
+                // if (formDatas.secondary_status !== 'A') {
+                //     console.log('Not active', formDatas.secondary_status);
+                // alert('License is not Activite ');
+                // disabled = true;
+                // }
                 // if (item.expiration_date < current) {
                 //     console.log('Expired');
                 //     alert('Expired License');
                 //     disabled = true;
                 // }
             });
+        }
+
+        watch(licenseStatus, () => {});
+
+        function licenseStatus() {
+            if (license_stat.value === '') {
+                formDatas.secondary_status = '';
+            }
+            if (license_stat.value === 'A') {
+                formDatas.secondary_status = 'Active';
+            }
+            if (license_stat.value === 'I') {
+                formDatas.secondary_status = 'Inactive';
+            }
         }
         const navigateNext = () => {
             router.push('/');
@@ -195,9 +224,10 @@ export default {
                         <label for="addr">Business Address</label>
                         <InputText id="addr" type="text" v-model="formDatas.address" placeholder="address" />
                     </div>
-                    <div class="flex flex-wrap gap-2 w-full">
+                    <div class="flex flex-col grow basis-1 gap-3">
                         <label for="state">City</label>
-                        <Select id="state" v-model="dropdownItemct" :options="dropdownItemCt" optionLabel="name" placeholder="Select One" class="w-full"></Select>
+                        <!-- <Select id="state" v-model="dropdownItemct" :options="dropdownItemCt" optionLabel="name" placeholder="Select One" class="w-full"></Select> -->
+                        <InputText id="city" type="text" v-model="formDatas.city" placeholder="city" />
                     </div>
                     <div class="flex flex-wrap gap-2 w-full">
                         <label for="state">State</label>

@@ -483,9 +483,13 @@ function updateselectSystemE() {
             <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @keydown.enter="setRoofInputs" />
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
-            <label for="area">Area</label>
+            <label for="area">Area</label><label class="px-2" style="color: red">*</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
+        <!-- <div class="w-64 mt-6 ..." style="margin-left: 20px">
+            <label for="area">Area</label>
+            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
+        </div> -->
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
