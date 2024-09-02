@@ -172,10 +172,13 @@ function checkInput() {
     if (datatilenoa.value.length !== null) {
         tilenoas.manufacturer = tileData.applicant;
         tilenoas.description = tileData.description;
-        tables.zones.lessfifteen.forEach((item, index) => {
-            zoneone.zone = tables.zones.lessfifteen[0];
-            zonetwo.zone = tables.zones.lessfifteen[1];
-            zonethree.zone = tables.zones.lessfifteen[2];
+        console.log(zones);
+
+        zones._value.forEach((item, index) => {
+            console.log(item);
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
         });
     }
 }
@@ -279,7 +282,7 @@ const visible = ref(false);
 function checkMaterial() {
     console.log(tileData);
     tilenoas.material = tileData.material;
-    tilenoas.paddies = tileData.Table_FiveTwoPaddies;
+    tilenoas.paddies = tileData.resistance;
 
     zoneone.lambda1 = tileData.Table2.Direct_Deck;
     zonetwo.lambda2 = tileData.Table2.Direct_Deck;
@@ -310,7 +313,7 @@ function checkMaterial() {
     } else if (slopeRange >= slopeOptions.seven) {
         console.log('Is Less');
         zoneone.mg1 = tileData.Table3.seven.Direct_Deck;
-        zonetwo.mg2 = tileData.Table3.sevebn.Direct_Deck;
+        zonetwo.mg2 = tileData.Table3.seven.Direct_Deck;
         zonethree.mg3 = tileData.Table3.seven.Direct_Deck;
     }
 
@@ -492,10 +495,7 @@ function updateselectSystemE() {
             <label for="area">Area</label><label class="px-2" style="color: red">*</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
-        <!-- <div class="w-64 mt-6 ..." style="margin-left: 20px">
-            <label for="area">Area</label>
-            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
-        </div> -->
+
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
@@ -542,17 +542,17 @@ function updateselectSystemE() {
     <Divider />
 
     <div class="card md:w-full gap-8 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
-            <!-- <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 550px">
-                <label style="color: red">Select a Paddy category</label>
-            </div>
+        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 550px">
+            <label style="color: red">Select a Paddy category</label>
+        </div>
 
-            <div v-show="isTileValid" v-for="w in categories" :key="w.key" class="h-5 grid grid-cols-1 gap-4 content-start" style="margin-left: 550px">
-                <div class="flex flex-wrap gap-4">
-                    <RadioButton v-model="selectedPaddies" :inputId="w.key" name="paddies" :value="w.name" />
-                    <label for="w.key" class="ml-2">{{ w.name }}</label>
-                </div>
-            </div> -->
+        <div v-show="isTileValid" v-for="w in categories" :key="w.key" class="h-5 grid grid-cols-1 gap-4 content-start" style="margin-left: 550px">
+            <div class="flex flex-wrap gap-4">
+                <RadioButton v-model="selectedPaddies" :inputId="w.key" name="paddies" :value="w.name" />
+                <label for="w.key" class="ml-2">{{ w.name }}</label>
+            </div>
+        </div>
+        <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
                     <label for="manufacturer">(UDL) NOA Applicant</label>
