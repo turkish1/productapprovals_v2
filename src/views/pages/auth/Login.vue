@@ -50,7 +50,7 @@ async function submit() {
         }
     });
 }
-const status = ref('');
+// const status = ref('');
 watch(checkAuth, () => {});
 const { accountUsers, getUser, addUser } = useGlobalState();
 function checkAuth() {
@@ -65,19 +65,21 @@ function checkAuth() {
                 accountUser.phone = item[i].phone;
                 accountUser.expiration_date = item[i].expiration_date;
                 accountUser.projects = item[i].projects;
+                accountUser.secondary_status = item[i].secondary_status;
                 status.value = item[i].secondary_status;
-                if (item[i].secondary_status === 'Active') {
-                    accountUser.secondary_status = 'Active';
-                } else {
-                    accountUser.secondary_status = 'InActive';
-                }
+                // if (item[i].secondary_status === 'Active') {
+                //     accountUser.secondary_status = 'Active';
+                // } else {
+                //     accountUser.secondary_status = 'InActive';
+                // }
                 accountUser.license = item[i].license;
                 // store.addLogin(accountUser);
                 addUser(accountUser);
                 navigateNext();
-            } else {
-                visible.value = true;
             }
+            // else {
+            //     visible.value = true;
+            // }
         }
 
         console.log('UserData', accountUser);
