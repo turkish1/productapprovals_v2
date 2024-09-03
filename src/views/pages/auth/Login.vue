@@ -1,16 +1,28 @@
 <script setup>
+// import pdfGen from '@/composables/pdfGen/pdfGen.vue';
 import { useGlobalState } from '@/stores/accountsStore';
-
 import { useAxios } from '@vueuse/integrations/useAxios';
+import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-const generatePDF = () => {
-    const doc = new jsPDF();
+const generatePdf = () => {
+    const element = document.getElementById('content');
+    console.log(element);
+    // Use html2canvas to capture the element as a canvas
+    html2canvas(element).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
 
-    doc.text('Hello world!', 10, 10);
-    doc.save('sample.pdf');
+        // Create a new jsPDF instance
+        const pdf = new jsPDF();
+
+        // Add the captured image data to the PDF
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+        // Save the generated PDF
+        pdf.save('generated.pdf');
+    });
 };
 
 const username = ref('');
@@ -99,11 +111,11 @@ const navigateNext = () => {
 
 <template>
     <FloatingConfigurator />
-    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div id="content" class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
-            <div>
+            <!-- <div>
                 <Button severity="contrast" class="w-2/3" @click="generatePDF">Generate PDF</Button>
-            </div>
+            </div> -->
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                     <div class="card flex justify-center"></div>
@@ -125,6 +137,7 @@ const navigateNext = () => {
                         <!-- as="router-link" to="/roofsystem" @change="checkAu"-->
                         <Button label="Sign In" severity="contrast" class="w-full" @keyup.enter="submit"></Button>
                     </div>
+                    <pdfGen />
                 </div>
             </div>
         </div>

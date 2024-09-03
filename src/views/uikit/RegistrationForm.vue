@@ -75,6 +75,7 @@ export default {
                     formDatas.address = item.address1;
                     formDatas.city = item.city;
                     license_stat.value = item.secondary_status;
+                    console.log(item.DBA, formDatas.dba);
                 }
                 licenseStatus();
                 // if (formDatas.secondary_status !== 'A') {

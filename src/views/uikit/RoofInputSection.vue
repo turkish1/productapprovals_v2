@@ -87,7 +87,7 @@ function updateNode() {
                 <StepPanel v-slot="{ activateCallback }" value="2">
                     <div class="flex flex-col h-128">
                         <!-- v-if="values === 3" -->
-                        <LowSlope v-if="isValidbur" />
+                        <LowSlope v-if="!isValidbur" />
                     </div>
                     <div class="flex pt-6 justify-between">
                         <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" style="margin-top: 650px" />

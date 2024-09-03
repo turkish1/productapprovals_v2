@@ -47,6 +47,7 @@
 <script>
 import { ref } from 'vue';
 import useAlert from '../../composables/alerts.js';
+
 import UserAlert from './ecommerce/products/components/ePermitAlert.vue';
 export default {
     components: {

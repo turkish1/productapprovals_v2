@@ -692,3 +692,13 @@ const { types, typeSize, holdSize } = useDripSize;
 // onMounted(() => {
 //     checkState();
 // });
+// const windZones = ref([
+//     { name: 'C', key: '1' },
+//     { name: 'D', key: '2' }
+// ]);
+
+// const selectedPaddies = ref('');
+// const categories = ref([
+//     { name: 'Single', key: '1' },
+//     { name: 'Double', key: '2' }
+// ]);

@@ -7,6 +7,9 @@ import Button from 'primevue/button';
 import Select from 'primevue/select';
 import { ref } from 'vue';
 
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
 const { permitapp } = storeToRefs(permitStore);
@@ -22,6 +25,57 @@ tryOnMounted(usePermitappStore, () => {
 function clearSelected() {
     store.$reset();
 }
+
+const generatePdf = () => {
+    const element = document.getElementById('roofselect');
+    console.log(element);
+    // Use html2canvas to capture the element as a canvas
+    html2canvas(element).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+
+        // Create a new jsPDF instance
+        const pdf = new jsPDF();
+
+        // Add the captured image data to the PDF
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+        const pdfBlob = pdf.output('blob');
+
+        // Save the PDF Blob using the File System Access API
+        savePdfBlobSilently(pdfBlob);
+    });
+
+    const savePdfBlobSilently = async (blob) => {
+        try {
+            // Use the File System Access API to request a file handle
+            // const fileHandle = await window.showSaveFilePicker({
+            //     suggestedName: 'generated.pdf',
+            //     types: [
+            //         {
+            //             description: 'PDF file',
+            //             accept: {
+            //                 'application/pdf': ['.pdf']
+            //             }
+            //         }
+            //     ]
+            // });
+
+            // Create a writable stream
+            const writable = await fileHandle.createWritable();
+
+            // Write the Blob data to the file
+            await writable.write(blob);
+
+            // Close the writable stream
+            await writable.close();
+
+            console.log('PDF saved successfully without popping download dialog!');
+        } catch (error) {
+            console.error('Error saving file:', error);
+        }
+    };
+};
+
 const isMiamiBeachValid = ref(false);
 function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     item = selectedItem.value.name;
@@ -63,7 +117,7 @@ function clear() {
 }
 </script>
 <template>
-    <div class="card flex justify-center">
+    <div id="roofselect" class="card flex justify-center">
         <div class="refresh">
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
@@ -88,7 +142,9 @@ function clear() {
 
         <div class="grid grid-cols-1 gap-2 place-content-end h42 ..">
             <div>
-                <Button class="button" label="Submit" severity="contrast" style="margin-left: 5px; margin-top: 100px" as="router-link" to="/generalpage"></Button>
+                <!-- <Button severity="contrast" @click="generatePdf">Generate PDF</Button> -->
+
+                <Button class="button" label="Submit" severity="contrast" style="margin-left: 5px; margin-top: 100px" as="router-link" to="/generalpage" @click="generatePdf"></Button>
             </div>
         </div>
     </div>

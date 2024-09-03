@@ -7,6 +7,7 @@ import { usetilesysfStore } from '@/stores/tilesysfStore';
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
+import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 // import { storeToRefs } from 'pinia';
 // import usetileadhesive from '@/composables/Tiletables/use-tileadhesive';
 
@@ -16,6 +17,7 @@ import DripEdgeComponent from './DripEdgeComponent.vue';
 const ftileStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
 const { getTilenoa, tileData } = usetileInputs();
+const { getTilenoas, tileDatas } = usetileInputsingle();
 // const { hold, tileadhesive } = usetileadhesive();
 const { takef } = useTileSystemF();
 const { getV } = useTileSystemE();
@@ -104,18 +106,10 @@ function setRoofInputs() {
 const dimensions = computed(() => {
     setRoofInputs();
 });
-
-const selectedExposure = ref('');
-const windZones = ref([
-    { name: 'C', key: '1' },
-    { name: 'D', key: '2' }
-]);
-
-const selectedPaddies = ref('');
-const categories = ref([
-    { name: 'Single', key: '1' },
-    { name: 'Double', key: '2' }
-]);
+const exposure = ref('');
+function selectedExposure() {
+    console.log(exposure.value);
+}
 
 const { tables, getData } = useExposurec();
 
@@ -147,10 +141,12 @@ function grabInput() {
     datatilenoa.value = tilenoaInput.value;
     datasystemf.value = saInput.value;
     datasystemE.value = udlInput.value;
-    if (datatilenoa.value !== null) {
+    if (datatilenoa.value !== null && paddy.value === 'Double') {
         // 18061905
 
         getTilenoa(datatilenoa.value);
+    } else {
+        getTilenoas(datatilenoa.value);
     }
     if (saInput.value !== null) {
         takef(datasystemf.value);
@@ -205,14 +201,14 @@ const whatChanged = computed(() => {
 watch(checkInputSystem, checkMaterial, updateMF, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 const selectedsystemf = ref(null);
 const selectedsysNoa = ref(null);
-const selectedpaddies = ref(null);
+
 const selectedsystemE = ref(null);
 const selectedAnchor = ref(null);
 let isUDLValid = ref('');
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
-
+const paddy = ref('single');
 let selectedUnderlayment = ref();
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
@@ -392,7 +388,9 @@ function addFSystem() {
     // console.log(typeof selfadhered.arrSystem, typeof selfadhered.system);
 }
 const resistanceCheck = ref(null);
-
+function selectPaddy() {
+    console.log(paddy.value);
+}
 function updateMF() {
     resistanceCheck.value = Object.entries(selectedsysNoa).map((obj) => {
         const k = obj[0];
@@ -519,17 +517,20 @@ function updateselectSystemE() {
                 <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
             </div>
         </div>
-        <div v-show="isTileValid" class="flex flex-row space-x-10 space-y-6" style="margin-left: 650px">
+        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 600px">
             <label style="color: red">Select Exposure</label>
-        </div>
-        <!-- flex flex-row mt-5 space-x-2 -->
-
-        <div v-show="isTileValid" v-for="w in windZones" :key="w.key" class="h-5 grid grid-cols-1 gap-4 content-start" style="margin-left: 660px">
-            <div class="flex flex-wrap gap-4">
-                <RadioButton v-model="selectedExposure" :inputId="w.key" name="exposureC" :value="w.name" @click="swapZones" />
-                <label for="w.key" class="ml-2">{{ w.name }}</label>
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center gap-2">
+                    <RadioButton v-model="exposure" inputId="c" name="c" value="c" @click="selectedExposure" />
+                    <label for="c" class="ml-2">C</label>
+                </div>
+                <div class="flex items-center gap-2">
+                    <RadioButton v-model="exposure" inputId="d" name="d" value="d" @click="selectedExposure" />
+                    <label for="d" class="ml-2">D</label>
+                </div>
             </div>
         </div>
+
         <div v-show="isTileValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="tilenoa">Tile Noa</label>
@@ -541,17 +542,21 @@ function updateselectSystemE() {
     <Divider />
     <Divider />
 
-    <div class="card md:w-full gap-8 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="card md:w-full gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 550px">
             <label style="color: red">Select a Paddy category</label>
-        </div>
-
-        <div v-show="isTileValid" v-for="w in categories" :key="w.key" class="h-5 grid grid-cols-1 gap-4 content-start" style="margin-left: 550px">
-            <div class="flex flex-wrap gap-4">
-                <RadioButton v-model="selectedPaddies" :inputId="w.key" name="paddies" :value="w.name" />
-                <label for="w.key" class="ml-2">{{ w.name }}</label>
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center gap-2">
+                    <RadioButton v-model="paddy" inputId="paddy2" name="double" value="double" @click="selectPaddy" />
+                    <label for="paddy2" class="ml-2">Double</label>
+                </div>
+                <div class="flex items-center gap-2">
+                    <RadioButton v-model="paddy" inputId="paddy1" name="single" value="single" @click="selectPaddy" />
+                    <label for="paddy1" class="ml-2">Single</label>
+                </div>
             </div>
         </div>
+
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">

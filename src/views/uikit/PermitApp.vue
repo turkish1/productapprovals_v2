@@ -8,10 +8,12 @@ import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 
-import jsPDF from 'jspdf';
 import { reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 // import useaccountStore from '@/stores/accountStore';
+
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 const a = ref(1);
 
 export default {
@@ -23,7 +25,7 @@ export default {
         const doc = ref();
         const { procData, procReceive } = usecreateProcessnumber();
         const { accountUsers, getUser, addUser } = useGlobalState();
-        console.log(accountUsers._value[0].name);
+        console.log(accountUsers._value[0]);
 
         // watch(createHtml, () => {});
         // const useacctStore = useaccountStore();
@@ -56,7 +58,7 @@ export default {
                 phone.value = accountUsers._value[0].phone;
                 licenseStatus.value = accountUsers._value[0].secondary_status;
                 dba.value = accountUsers._value[0].dba;
-                console.log(email.value, contractor.value);
+                console.log(accountUsers._value[0]);
             }
         });
         const loading = ref(false);
@@ -102,7 +104,6 @@ export default {
 
         const onSubmit = async () => {
             procReceive(formData);
-            createHtml();
         };
 
         const selectedApplication = ref();
@@ -129,30 +130,82 @@ export default {
             console.log(formdt, permType, checkMB.value, 'System added');
         }
 
-        function createHtml() {
-            doc.value = new jsPDF();
-            const html = html.$refs.permitapp.innerHTML;
-            doc.value.fromHTML(html, 15, 15, {
-                width: 150
-            });
-            doc.save('output.pdf');
-            // content.value = permitapp.value;
-            // canvas.value = html2canvas(content, {
-            //     scale: 0.5,
-            //     width: content.clientWidth / 160,
-            //     height: content.clientHeith / 120
-            // });
+        const generatePdf = async () => {
+            const element = document.getElementById('content');
 
-            // doc.value = new jsPDF('p', 'mm', 'a0');
-            // doc.html(document.querySelector('#permitapp'), {
-            //     callback: function (pdf) {
-            //         pdf.saveGraphicState();
-            //     }
-            // });
-            console.log(doc.value);
-        }
+            // Use html2canvas to capture the element as a canvas
+            const canvas = await html2canvas(element);
+            const imgData = canvas.toDataURL('image/png');
+
+            // Create a new jsPDF instance
+            const pdf = new jsPDF();
+
+            // Add the captured image data to the PDF
+            pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+            // Convert the PDF to a Blob
+            const pdfBlob = pdf.output('blob');
+
+            // Save the PDF Blob using the File System Access API
+            savePdfBlobSilently(pdfBlob);
+        };
+
+        const savePdfBlobSilently = async (blob) => {
+            // try {
+            //     // Use the File System Access API to request a file handle
+            //     const fileHandle = await window.FileSystemHandle({
+            //         suggestedName: 'generated.pdf',
+            //         types: [
+            //             {
+            //                 description: 'PDF file',
+            //                 accept: {
+            //                     'application/pdf': ['.pdf']
+            //                 }
+            //             }
+            //         ]
+            //     });
+
+            //     // Create a writable stream
+            //     const writable = await fileHandle.createWritable();
+
+            //     // Write the Blob data to the file
+            //     await writable.write(blob);
+
+            //     // Close the writable stream
+            //     await writable.close();
+
+            //     console.log('PDF saved successfully without popping download dialog!');
+            // } catch (error) {
+            //     console.error('Error saving file:', error);
+            // }
+
+            // Create a hidden link element
+            const link = document.createElement('a');
+
+            // Create a URL for the Blob
+            const url = URL.createObjectURL(blob);
+
+            // Set the link's href to the Blob URL
+            link.href = url;
+
+            // Set the download attribute to suggest a filename
+            link.download = 'generated.pdf';
+
+            // Append the link to the document body (required for Firefox)
+            document.body.appendChild(link);
+
+            // Trigger a click event on the link to initiate download
+            link.click();
+
+            // Clean up by removing the link and revoking the object URL
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        };
         return {
-            createHtml,
+            savePdfBlobSilently,
+            generatePdf,
             onSubmit,
             accountUsers,
             getUser,
@@ -184,7 +237,7 @@ export default {
 </script>
 
 <template>
-    <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
+    <div id="content" ref="permitapp" class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
         <div class="md:w-2/3">
             <!-- <div class="card flex flex-col gap-4"> -->
             <div class="container">
@@ -260,8 +313,8 @@ export default {
                                         </div>
 
                                         <br />
-
-                                        <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
+                                        <Button severity="contrast" @click="generatePdf">Generate PDF</Button>
+                                        <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication, generatePdf)" />
                                     </form>
                                     <p v-if="responseMessage">{{ responseMessage }}</p>
                                     <Drop />

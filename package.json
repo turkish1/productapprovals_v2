@@ -30,7 +30,8 @@
     "vue": "^3.4.34",
     "vue-filepond": "^7.0.4",
     "vue-router": "^4.4.0",
-    "vue3-html2pdf": "^1.1.2"
+    "vue3-html2pdf": "^1.1.2",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.46.1",
