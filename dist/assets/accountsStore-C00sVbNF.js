@@ -1,0 +1,1 @@
+import{c as r}from"./index-DcvAG_JO.js";import{r as s,a0 as c}from"./index-DdN46Z8B.js";const l=r(()=>{const t=s([]),e=c(()=>t.value);function a(o){t.value.push(o)}return{accountUsers:t,getUser:e,addUser:a}});export{l as u};

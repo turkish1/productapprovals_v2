@@ -1,1 +1,0 @@
-import{c as r}from"./index-CkZmHb6w.js";import{r as s,Y as c}from"./index-C1cXTTxg.js";const l=r(()=>{const t=s([]),e=c(()=>t.value);function a(o){t.value.push(o)}return{accountUsers:t,getUser:e,addUser:a}});export{l as u};
