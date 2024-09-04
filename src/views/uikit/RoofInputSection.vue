@@ -48,7 +48,7 @@ tryOnMounted(() => {
 });
 watch(roofType, () => {});
 function updateNode() {
-    console.log(isValidbur.value);
+    console.log(isValidbur.value, isValidshingle.value);
     isValidbur.value = true;
     isValidshingle.value = true;
 }
@@ -66,7 +66,7 @@ function updateNode() {
             </StepList>
             <StepPanels class="object-scale-down h-700 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
-                    <div class="flex flex-col h-16">
+                    <div class="flex flex-col h-16 w-1024">
                         <shingles v-if="!isValidshingle" />
                     </div>
 
@@ -85,7 +85,7 @@ function updateNode() {
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
-                    <div class="flex flex-col h-128">
+                    <div class="flex flex-col h-108">
                         <!-- v-if="values === 3" -->
                         <LowSlope v-if="!isValidbur" />
                     </div>
@@ -96,7 +96,7 @@ function updateNode() {
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="3">
                     <!-- flex flex-row -->
-                    <div class="flex flex-col grow h-128">
+                    <div class="flex flex-col h-48 w-1024">
                         <Tile />
                     </div>
                     <div class="pt-6">

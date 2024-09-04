@@ -3,6 +3,8 @@ import useExposurec from '@/composables/Tiletables/exposure_c';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 // import { useRoofListStore } from '@/stores/roofList';
+import { watchImmediate } from '@vueuse/core';
+
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
@@ -210,7 +212,7 @@ const slopeOptions = {
 
 const isDataValid = ref(true);
 
-watchEffect(isTileValid, updateMF, whatChanged, saTiles, setRoofInputs, checkData, () => {});
+watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, checkData, () => {});
 
 function checkData() {
     if (tileData.Table3.two.Direct_Deck === 'N/A') {
@@ -400,42 +402,73 @@ function checkInput() {
     }
 }
 const maps = ref([]);
-
+const vals = ref([]);
 function updateMF() {
+    // tileData.selection;
+    let mat = tileData.selection;
+
+    console.log(mat, tileData.material);
     resistanceCheck.value = Object.entries(tileData.selection).map((obj) => {
-        const k = obj;
+        const k = obj[0];
+        const v = obj[1];
 
-        for (let i = 0; i < k.length; i++) {
-            let index = i;
-            let value = k[i];
-            maps.value.push([index, value]);
-        }
+        maps.value.push(k);
+        vals.value.push(v);
+        console.log(vals.value);
+
         console.log(maps.value);
-        // 23052403
-        console.log(maps.value[0][1], maps.value[1][1]);
-        // console.log(maps.value[2][1], maps.value[3][1]);
-        console.log(k[0]);
-        console.log(k[1]);
 
-        console.log(k);
-        console.log(k[0]);
-        console.log(tilenoas.material[0], tilenoas.material[1]);
-        if (maps.value[0][1] === tilenoas.material[0]) {
-            console.log('Is true Polyset');
-            zoneone.mf1 = maps.value[1][1];
-            zonetwo.mf2 = maps.value[1][1];
-            zonethree.mf3 = maps.value[1][1];
-        } else if (k[0] === tilenoas.material[1]) {
-            console.log('Is true TileBond');
-            zoneone.mf1 = k[1];
-            zonetwo.mf2 = k[1];
-            zonethree.mf3 = k[1];
+        if (maps.value[0] === 'ICP APOC Polyset AH-160') {
+            console.log('Is true');
+            zoneone.mf1 = vals.value[0];
+            zonetwo.mf2 = vals.value[0];
+            zonethree.mf3 = vals.value[0];
         }
+
+        // for (let i = 0; i < k.length; i++) {
+        //     let index = i;
+        //     let value = k[i];
+        //     maps.value.push([index, value]);
+        // }
+        // console.log(maps.value);
+        // 23052403
+        // console.log(maps.value[0][1], maps.value[1][1]);
+        // console.log(maps.value[2][1], maps.value[3][1]);
+
+        // console.log(tilenoas.material[0], tilenoas.material[1]);
+        // if (maps.value[0][1] === tilenoas.material[0]) {
+        //     console.log('Is true Polyset', maps.value[0][1]);
+        //     zoneone.mf1 = maps.value[1][1];
+        //     zonetwo.mf2 = maps.value[1][1];
+        //     zonethree.mf3 = maps.value[1][1];
+        // }
+
+        // if (k[0] === tilenoas.material[1]) {
+        //     console.log('Is true TileBond', k[1]);
+        //     zoneone.mf1 = k[1];
+        //     zonetwo.mf2 = k[1];
+        //     zonethree.mf3 = k[1];
+        // }
     });
 }
-// watchImmediate(tilenoas, (updated) => {
-//     console.log(updated.material);
-// });
+watchImmediate(zoneone.mf1, zonetwo.mf2, zonethree.mf3, (updated) => {
+    console.log(updated);
+    if (maps.value[1] === 'TILE BOND™ Roof Tile Adhesive') {
+        console.log('Second entry');
+        zoneone.mf1 = vals.value[1];
+        zonetwo.mf2 = vals.value[1];
+        zonethree.mf3 = vals.value[1];
+    }
+});
+
+const checkValues = computed(() => {
+    if (maps.value[1] === 'TILE BOND™ Roof Tile Adhesive') {
+        console.log('Second entry');
+        zoneone.mf1 = vals.value[1];
+        zonetwo.mf2 = vals.value[1];
+        zonethree.mf3 = vals.value[1];
+    }
+});
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedsystemf).map((obj) => {
         const val = obj[1];
@@ -509,7 +542,7 @@ function updateselectSystemE() {
 }
 </script>
 <template>
-    <div class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
@@ -519,14 +552,18 @@ function updateselectSystemE() {
 
             <InputText id="slope" v-model="slopeModel" type="text" placeholder="slope" :invalid="slope === null" />
         </div>
-        <div class="w-64 mt-6 ..." style="margin-left: 20px">
+        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
             <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @keydown.enter="setRoofInputs" />
         </div>
-        <div class="w-64 mt-6 ..." style="margin-left: 20px">
-            <label for="area">Area</label><label class="px-2" style="color: red">*</label>
+        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+            <label for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
+        <!-- <div class="w-64 mt-6 gap-2" style="margin-left: 20px">
+            <label for="area">Area</label>
+            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
+        </div> -->
 
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label for="perimeter">Roof Permeter(a) = 4h</label>
@@ -665,7 +702,7 @@ function updateselectSystemE() {
             <div class="w-128 flex flex-col gap-2">
                 <!-- @input="updateMF" -->
                 <label for="material">Tile Adhesive Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" @input="checkValues" />
             </div>
         </div>
 
@@ -684,7 +721,7 @@ function updateselectSystemE() {
                                             <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
                                             <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
                                             <td>
-                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" @change="updateMF" />
+                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
                                             </td>
                                         </tr>
 
@@ -695,7 +732,7 @@ function updateselectSystemE() {
                                             <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
                                             <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
                                             <td>
-                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" @change="updateMF" />
+                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
                                             </td>
                                         </tr>
 
@@ -706,7 +743,7 @@ function updateselectSystemE() {
                                             <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
                                             <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
                                             <td>
-                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" @change="updateMF" />
+                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
                                             </td>
                                         </tr>
                                         <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
