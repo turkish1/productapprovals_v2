@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router';
 
 const emit = defineEmits([submit]);
 const router = useRouter();
-
+const agreed = ref('');
 defineProps({
     title: {
         type: String,
@@ -12,6 +12,7 @@ defineProps({
 });
 
 function buttonClick() {
+    agreed.value = 'Agreed';
     emit('submit');
 }
 
@@ -31,7 +32,8 @@ emits: ['close'],
             <slot></slot>
         </div>
         <menu>
-            <Button class="text-black ml-auto" @click="$emit('close')" @click.left="routerNext()">Agree</Button>
+            <RadioButton v-model="agreed" class="text-black ml-auto" :invalid="value === null" @click="$emit('close')" @click.left="routerNext()" />
+            <label for="consent" class="ml-2">Agree</label>
         </menu>
     </dialog>
 </template>

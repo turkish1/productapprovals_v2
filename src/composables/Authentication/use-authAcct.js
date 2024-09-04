@@ -17,7 +17,8 @@ export default function useauthAcct() {
         name: '',
         projects: [],
         secondary_status: '',
-        license: ''
+        license: '',
+        dba: ''
     });
 
     let results = ref([]);
@@ -52,6 +53,7 @@ export default function useauthAcct() {
                 accountUser.projects = acctCompare.value.projects;
                 accountUser.secondary_status = acctCompare.value.secondary_status;
                 accountUser.license = acctCompare.value.license;
+                accountUser.dba = acctCompare.value.dba;
             });
 
             // store the values

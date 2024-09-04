@@ -702,3 +702,17 @@ const { types, typeSize, holdSize } = useDripSize;
 //     { name: 'Single', key: '1' },
 //     { name: 'Double', key: '2' }
 // ]);
+
+       <div v-show="isTileValid" class="w-56 flex flex-col gap-4" style="margin-left: 550px">
+            <label style="color: red">Select a Paddy Category</label>
+            <div class="flex items-center">
+                <div class="field-radiobutton space-x-2 gap-2">
+                    <RadioButton inputId="option1" name="options" value="single" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
+                    <label for="option1">Single</label>
+                </div>
+                <div class="field-radiobutton space-x-2 gap-2">
+                    <RadioButton inputId="option2" name="options" value="double" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
+                    <label for="option2">Double</label>
+                </div>
+            </div>
+        </div>

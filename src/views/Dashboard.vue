@@ -1,13 +1,23 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 const alertTitle = ref("System's Terms of Use   🚧   👷🏼  🚧  👷🏼   🚧   👷🏼  🚧   👷🏼  🚧 High Velocity Hurricane Zone (HZHZ)");
 
 const router = useRouter();
+const val = ref(null);
+const saved = ref();
+watch(checkRadio, () => {
+    console.log(val.value);
+});
 
 const navigateNext = () => {
     router.push('/permitapp');
 };
+
+function checkRadio() {
+    saved.value = val.value;
+    console.log(val.value);
+}
 </script>
 
 <template>
@@ -22,6 +32,8 @@ const navigateNext = () => {
             <p class="m-0">The permit applicant agrees to comply with these terms of use requirements when obtaining this permit electronically.</p>
         </Panel>
 
-        <Button type="submit" label="Agree" severity="contrast" @click="navigateNext" />
+        <!-- <Button type="submit" label="Agree" severity="contrast"  />  @click="$emit('close')" @click.left="routerNext()"-->
+        <RadioButton v-model="val" value="agree" variant="filled" :invalid="val === null" severity="contrast" @input="checkRadio" @click="navigateNext" />
+        <label for="consent" class="ml-2">Agree</label>
     </div>
 </template>

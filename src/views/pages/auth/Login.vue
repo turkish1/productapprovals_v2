@@ -2,28 +2,27 @@
 // import pdfGen from '@/composables/pdfGen/pdfGen.vue';
 import { useGlobalState } from '@/stores/accountsStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+
 import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-const generatePdf = () => {
-    const element = document.getElementById('content');
-    console.log(element);
-    // Use html2canvas to capture the element as a canvas
-    html2canvas(element).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
+// const generatePdf = () => {
+//     const element = document.getElementById('content');
+//     console.log(element);
+//     // Use html2canvas to capture the element as a canvas
+//     html2canvas(element).then((canvas) => {
+//         const imgData = canvas.toDataURL('image/png');
 
-        // Create a new jsPDF instance
-        const pdf = new jsPDF();
+//         // Create a new jsPDF instance
+//         const pdf = new jsPDF();
 
-        // Add the captured image data to the PDF
-        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+//         // Add the captured image data to the PDF
+//         pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
 
-        // Save the generated PDF
-        pdf.save('generated.pdf');
-    });
-};
+//         // Save the generated PDF
+//         pdf.save('generated.pdf');
+//     });
+// };
 
 const username = ref('');
 const password = ref('');
@@ -70,10 +69,10 @@ function checkAuth() {
         for (let i = 0; i < item.length; i++) {
             if (username.value === item[i].password) {
                 acctCompare.value.push(item[i]);
-
+                console.log(item[i].dba, accountUser.dba, accountUser.name);
                 accountUser.email = item[i].email;
                 accountUser.name = item[i].name;
-                accountUser.dba = item[i].DBA;
+                accountUser.dba = item[i].dba;
                 accountUser.phone = item[i].phone;
                 accountUser.expiration_date = item[i].expiration_date;
                 accountUser.projects = item[i].projects;

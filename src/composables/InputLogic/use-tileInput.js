@@ -13,9 +13,6 @@ export default function usetileInputs() {
     const responseMessage = ref('');
     const error = ref('');
     const { tilenoa, getNoa, addNoa } = useGlobalState();
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/tilenoa';
-
-    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: true });
 
     const tileData = reactive({
         noa: '',
@@ -25,12 +22,15 @@ export default function usetileInputs() {
         Table2: [],
         Table3: [],
         expiration_date: '',
-        resistance: []
+        resistance: [],
+        selection: ''
     });
+    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/tilenoa';
+    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: true });
 
     function getTilenoa(number) {
         console.log(number);
-        //
+
         input.value = number;
         console.log(input.value);
         const result = execute().then((result) => {
@@ -43,6 +43,7 @@ export default function usetileInputs() {
                     console.log('In am In...');
                     tileData.applicant = item.applicant;
                     tileData.material = item.AdhesiveMaterial;
+                    tileData.selection = item.AdhesiveMaterials;
                     tileData.description = item.description;
                     tileData.Table2 = item.Table2;
                     tileData.Table3 = item.Table3;
@@ -61,6 +62,40 @@ export default function usetileInputs() {
             return results;
         });
     }
+
+    // const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: true });
+
+    //
+    // input.value = number;
+    // console.log(input.value);
+    // const result = execute().then((result) => {
+    //     noaNum.value = data.value.result;
+
+    //     results.value = noaNum.value.forEach((item, index) => {
+    //         let num = Number(input.value);
+
+    //         if (item.NOA === num) {
+    //             console.log('In am In...');
+    //             tileData.applicant = item.applicant;
+    //             tileData.material = item.AdhesiveMaterial;
+    //             tileData.selection = item.AdhesiveMaterials;
+    //             tileData.description = item.description;
+    //             tileData.Table2 = item.Table2;
+    //             tileData.Table3 = item.Table3;
+    //             tileData.resistance = item.Resistance;
+    //             console.log(item.AdhesiveMaterial);
+    //             if (tileData.length === 0) {
+    //                 return;
+    //             }
+    //             addNoa(tileData);
+
+    //             // area.value = '';
+    //             // type.value = '';
+    //             console.log(tileData, 'System added');
+    //         }
+    // });
+    //     return results;
+    // });
 
     // 18061905 input,
 

@@ -3,28 +3,27 @@ import useExposurec from '@/composables/Tiletables/exposure_c';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 // import { useRoofListStore } from '@/stores/roofList';
-
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
-import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
-// import { storeToRefs } from 'pinia';
-// import usetileadhesive from '@/composables/Tiletables/use-tileadhesive';
-
 import { useGlobalState } from '@/stores/exposurecStore';
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
+
+import Divider from 'primevue/divider';
+import RadioButton from 'primevue/radiobutton';
+
+const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
 const { getTilenoa, tileData } = usetileInputs();
-const { getTilenoas, tileDatas } = usetileInputsingle();
-// const { hold, tileadhesive } = usetileadhesive();
+
 const { takef } = useTileSystemF();
 const { getV } = useTileSystemE();
 // const storeroof = useRoofListStore();
 // const { tilefinput } = storeToRefs(ftileStore);
 
-const { slopes, heights, getSlopes, getZones, getHeight, zones } = useGlobalState();
+const { zones } = useGlobalState();
 const tilenoas = reactive({
     manufacturer: '',
     material: [],
@@ -106,9 +105,9 @@ function setRoofInputs() {
 const dimensions = computed(() => {
     setRoofInputs();
 });
-const exposure = ref('');
+const selectedExposures = ref(null);
 function selectedExposure() {
-    console.log(exposure.value);
+    console.log(selectedExposures.value);
 }
 
 const { tables, getData } = useExposurec();
@@ -135,49 +134,7 @@ const zonethree = reactive({
     mr3: '',
     mf3: ''
 });
-watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
-
-function grabInput() {
-    datatilenoa.value = tilenoaInput.value;
-    datasystemf.value = saInput.value;
-    datasystemE.value = udlInput.value;
-    if (datatilenoa.value !== null && paddy.value === 'Double') {
-        // 18061905
-
-        getTilenoa(datatilenoa.value);
-    } else {
-        getTilenoas(datatilenoa.value);
-    }
-    if (saInput.value !== null) {
-        takef(datasystemf.value);
-    }
-    if (udlInput.value !== null) {
-        //  17040522
-
-        getV(datasystemE.value);
-    }
-}
-function checkInput() {
-    if (datamounted.value.length !== null) {
-        datamounted.value.forEach((item, index) => {
-            saTiles.manufacturer = item.systemData.manufacturer;
-            saTiles.material = item.systemData.material;
-            saTiles.system = item.systemData.system;
-        });
-    }
-    if (datatilenoa.value.length !== null) {
-        tilenoas.manufacturer = tileData.applicant;
-        tilenoas.description = tileData.description;
-        console.log(zones);
-
-        zones._value.forEach((item, index) => {
-            console.log(item);
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
-    }
-}
+watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 
 function EcheckInput() {
     if (Edatamounted.value.length !== null) {
@@ -196,9 +153,8 @@ const whatChanged = computed(() => {
     checkInput();
     EcheckInput();
     setRoofInputs();
+    selectPaddy();
 });
-
-watch(checkInputSystem, checkMaterial, updateMF, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 const selectedsystemf = ref(null);
 const selectedsysNoa = ref(null);
 
@@ -208,7 +164,9 @@ let isUDLValid = ref('');
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
-const paddy = ref('single');
+
+watch(checkInputSystem, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+
 let selectedUnderlayment = ref();
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
@@ -252,7 +210,7 @@ const slopeOptions = {
 
 const isDataValid = ref(true);
 
-watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, checkData, () => {});
+watchEffect(isTileValid, updateMF, whatChanged, saTiles, setRoofInputs, checkData, () => {});
 
 function checkData() {
     if (tileData.Table3.two.Direct_Deck === 'N/A') {
@@ -325,7 +283,7 @@ function checkMaterial() {
     zonetwo.mr2 = computed(() => result2.value - zonetwo.mg2);
     zonethree.mr3 = computed(() => result2.value - zonethree.mg3);
 
-    if (zoneone.mr1 > zoneone.mf1) {
+    if (zoneone.mr1 < zoneone.mf1) {
         visible.value = true;
     }
 }
@@ -387,21 +345,97 @@ function addFSystem() {
     saTiles.system = saTiles.system;
     // console.log(typeof selfadhered.arrSystem, typeof selfadhered.system);
 }
+const paddySeleted = ref('');
 const resistanceCheck = ref(null);
 function selectPaddy() {
-    console.log(paddy.value);
+    console.log(selectedOption.value);
 }
-function updateMF() {
-    resistanceCheck.value = Object.entries(selectedsysNoa).map((obj) => {
-        const k = obj[0];
-        const v = obj[1];
-        console.log(k._value, v);
-    });
+watch(
+    selectPaddy,
 
-    zoneone.mf1 = tileData.resistance[1];
-    zonetwo.mf2 = tileData.resistance[1];
-    zonethree.mf3 = tileData.resistance[1];
+    selectedExposure,
+    () => {
+        paddySeleted.value = selectedOption.value;
+        console.log(selectedOption.value, selectedExposures.value);
+    },
+    { immediate: true }
+);
+function grabInput() {
+    datatilenoa.value = tilenoaInput.value;
+    datasystemf.value = saInput.value;
+    datasystemE.value = udlInput.value;
+    if (datatilenoa.value !== null) {
+        // 18061905
+
+        getTilenoa(datatilenoa.value);
+    }
+    if (saInput.value !== null) {
+        takef(datasystemf.value);
+    }
+    if (udlInput.value !== null) {
+        //  17040522
+
+        getV(datasystemE.value);
+    }
 }
+
+function checkInput() {
+    if (datamounted.value.length !== null) {
+        datamounted.value.forEach((item, index) => {
+            saTiles.manufacturer = item.systemData.manufacturer;
+            saTiles.material = item.systemData.material;
+            saTiles.system = item.systemData.system;
+        });
+    }
+    if (datatilenoa.value.length !== null) {
+        tilenoas.manufacturer = tileData.applicant;
+        tilenoas.description = tileData.description;
+        console.log(zones);
+
+        zones._value.forEach((item, index) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    }
+}
+const maps = ref([]);
+
+function updateMF() {
+    resistanceCheck.value = Object.entries(tileData.selection).map((obj) => {
+        const k = obj;
+
+        for (let i = 0; i < k.length; i++) {
+            let index = i;
+            let value = k[i];
+            maps.value.push([index, value]);
+        }
+        console.log(maps.value);
+        // 23052403
+        console.log(maps.value[0][1], maps.value[1][1]);
+        // console.log(maps.value[2][1], maps.value[3][1]);
+        console.log(k[0]);
+        console.log(k[1]);
+
+        console.log(k);
+        console.log(k[0]);
+        console.log(tilenoas.material[0], tilenoas.material[1]);
+        if (maps.value[0][1] === tilenoas.material[0]) {
+            console.log('Is true Polyset');
+            zoneone.mf1 = maps.value[1][1];
+            zonetwo.mf2 = maps.value[1][1];
+            zonethree.mf3 = maps.value[1][1];
+        } else if (k[0] === tilenoas.material[1]) {
+            console.log('Is true TileBond');
+            zoneone.mf1 = k[1];
+            zonetwo.mf2 = k[1];
+            zonethree.mf3 = k[1];
+        }
+    });
+}
+// watchImmediate(tilenoas, (updated) => {
+//     console.log(updated.material);
+// });
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedsystemf).map((obj) => {
         const val = obj[1];
@@ -517,16 +551,28 @@ function updateselectSystemE() {
                 <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
             </div>
         </div>
-        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 600px">
+        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
             <label style="color: red">Select Exposure</label>
             <div class="flex items-center space-x-2">
-                <div class="flex items-center gap-2">
-                    <RadioButton v-model="exposure" inputId="c" name="c" value="c" @click="selectedExposure" />
-                    <label for="c" class="ml-2">C</label>
+                <div class="field-radiobutton space-x-4 gap-2">
+                    <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
+                    <label for="option3">C</label>
                 </div>
-                <div class="flex items-center gap-2">
-                    <RadioButton v-model="exposure" inputId="d" name="d" value="d" @click="selectedExposure" />
-                    <label for="d" class="ml-2">D</label>
+                <div class="field-radiobutton space-x-4 gap-2">
+                    <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
+                    <label for="option4">D</label>
+                </div>
+            </div>
+            <Divider />
+            <label style="color: red">Select a Paddy Category</label>
+            <div class="flex items-center">
+                <div class="field-radiobutton space-x-3 gap-2">
+                    <RadioButton inputId="option1" name="options" value="single" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
+                    <label for="option1">Single</label>
+                </div>
+                <div class="field-radiobutton space-x-3 gap-2">
+                    <RadioButton style="margin-left: 5px" inputId="option2" name="options" value="double" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
+                    <label for="option2">Double</label>
                 </div>
             </div>
         </div>
@@ -543,20 +589,6 @@ function updateselectSystemE() {
     <Divider />
 
     <div class="card md:w-full gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 550px">
-            <label style="color: red">Select a Paddy category</label>
-            <div class="flex items-center space-x-2">
-                <div class="flex items-center gap-2">
-                    <RadioButton v-model="paddy" inputId="paddy2" name="double" value="double" @click="selectPaddy" />
-                    <label for="paddy2" class="ml-2">Double</label>
-                </div>
-                <div class="flex items-center gap-2">
-                    <RadioButton v-model="paddy" inputId="paddy1" name="single" value="single" @click="selectPaddy" />
-                    <label for="paddy1" class="ml-2">Single</label>
-                </div>
-            </div>
-        </div>
-
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
@@ -627,22 +659,15 @@ function updateselectSystemE() {
             </div>
 
             <div class="w-128 flex flex-col gap-2">
-                <label for="description">Tile Description</label>
-                <!-- @change="updateselectSystem"  -->
-
+                <label for="material">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
             <div class="w-128 flex flex-col gap-2">
-                <label for="material">Adhesive Material</label>
+                <!-- @input="updateMF" -->
+                <label for="material">Tile Adhesive Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
         </div>
-        <!-- <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
-            <div class="w-56 flex flex-col gap-2">
-                <label for="material"> Material</label>
-                <Select v-model="selectedpaddies" :options="tilenoas.paddies" placeholder="" @click="checkMaterial" />
-            </div>
-        </div> -->
 
         <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
             <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
@@ -659,7 +684,7 @@ function updateselectSystemE() {
                                             <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
                                             <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
                                             <td>
-                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
+                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" @change="updateMF" />
                                             </td>
                                         </tr>
 
@@ -670,7 +695,7 @@ function updateselectSystemE() {
                                             <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
                                             <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
                                             <td>
-                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
+                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" @change="updateMF" />
                                             </td>
                                         </tr>
 
@@ -681,7 +706,7 @@ function updateselectSystemE() {
                                             <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
                                             <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
                                             <td>
-                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
+                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" @change="updateMF" />
                                             </td>
                                         </tr>
                                         <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
@@ -694,54 +719,5 @@ function updateselectSystemE() {
             </div>
         </div>
     </div>
-    <!-- <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
-        <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
-            <table width="100%" align="left">
-                <tbody>
-                    <tr>
-                        <td valign="middle">
-                            <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
-                                <tbody>
-                                    <tr>
-                                        <td>Zone 1:</td>
-                                        <td><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
-                                        <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
-                                        <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
-                                        <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
-                                        <td>
-                                            <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Zone 2:</td>
-                                        <td><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
-                                        <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
-                                        <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
-                                        <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
-                                        <td>
-                                            <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Zone 3:</td>
-                                        <td><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
-                                        <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
-                                        <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
-                                        <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
-                                        <td>
-                                            <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
-                                        </td>
-                                    </tr>
-                                    <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div> -->
 </template>
 <style scoped></style>

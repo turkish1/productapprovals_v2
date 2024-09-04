@@ -48,17 +48,17 @@ const generatePdf = () => {
     const savePdfBlobSilently = async (blob) => {
         try {
             // Use the File System Access API to request a file handle
-            // const fileHandle = await window.showSaveFilePicker({
-            //     suggestedName: 'generated.pdf',
-            //     types: [
-            //         {
-            //             description: 'PDF file',
-            //             accept: {
-            //                 'application/pdf': ['.pdf']
-            //             }
-            //         }
-            //     ]
-            // });
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: 'generated.pdf',
+                types: [
+                    {
+                        description: 'PDF file',
+                        accept: {
+                            'application/pdf': ['.pdf']
+                        }
+                    }
+                ]
+            });
 
             // Create a writable stream
             const writable = await fileHandle.createWritable();
