@@ -2,13 +2,17 @@
 import useInputpoly from '@/composables/use-Inputpoly';
 import useSystemf from '@/composables/use-Inputsystemf';
 import { useRoofListStore } from '@/stores/roofList';
+import { invoke, until } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 // import { logicOr } from '@vueuse/math';
 // import { whenever } from '@vueuse/core';
+
 import useInputs from '@/composables/use-Inputs';
 import useSlope from '@/composables/use-updateSlope';
 import { usePolyStore } from '@/stores/polyStore';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 // import { useSbsStore } from '@/stores/sbsStore';
 import { useShingleStore } from '@/stores/shingleStore';
 import Divider from 'primevue/divider';
@@ -97,6 +101,7 @@ const { inputsystem, takef } = useSystemf();
 const { inp, takp } = useInputpoly();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const descSystem = ref([]);
+const pdfcleared = ref(false);
 const whatChanged = computed(() => {
     checkInput();
 
@@ -198,6 +203,7 @@ function checkInput() {
             shingles.manufacturer = item.shingleData.applicant;
             shingles.material = item.shingleData.material;
             shingles.description = item.shingleData.description;
+            pdfcleared.value = true;
         });
     }
 }
@@ -295,9 +301,64 @@ function valueEntered() {
         console.log('Not Mounted');
     }
 }
+
+const generatePdf = () => {
+    const element = document.getElementById('generalpg');
+    console.log(element);
+    // Use html2canvas to capture the element as a canvas
+    html2canvas(element).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+
+        // Create a new jsPDF instance
+        const pdf = new jsPDF();
+
+        // Add the captured image data to the PDF
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+        const pdfBlob = pdf.output('blob');
+
+        // Save the PDF Blob using the File System Access API
+        savePdfBlobSilently(pdfBlob);
+    });
+
+    const savePdfBlobSilently = async (blob) => {
+        try {
+            // Use the File System Access API to request a file handle
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: `${process.value}-general-page.pdf`,
+                types: [
+                    {
+                        description: 'PDF file',
+                        accept: {
+                            'application/pdf': ['.pdf']
+                        }
+                    }
+                ]
+            });
+
+            // Create a writable stream
+            const writable = await fileHandle.createWritable();
+
+            // Write the Blob data to the file
+            await writable.write(blob);
+
+            // Close the writable stream
+            await writable.close();
+
+            console.log('PDF saved successfully without popping download dialog!');
+        } catch (error) {
+            console.error('Error saving file:', error);
+        }
+    };
+};
+invoke(async () => {
+    await until(pdfcleared).changed();
+    generatePdf();
+    alert('Generated, PDF!');
+});
 </script>
 <template>
-    <div class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div id="shingle" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>

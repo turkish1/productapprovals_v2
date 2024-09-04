@@ -5,6 +5,9 @@ import usecreateAccount from '@/composables/Authentication/use-createAccount';
 // import { useGlobalState } from '@/stores/accountsStore';
 import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
+import { tryOnUnmounted } from '@vueuse/core';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref, toRefs, watch } from 'vue';
@@ -136,7 +139,58 @@ export default {
         const trades = ref(null);
         const dropdownItemst = ref(null);
         const dropdownItemct = ref(null);
+        const generatePdf = () => {
+            const element = document.getElementById('shingle');
+            console.log(element);
+            // Use html2canvas to capture the element as a canvas
+            html2canvas(element).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
 
+                // Create a new jsPDF instance
+                const pdf = new jsPDF();
+
+                // Add the captured image data to the PDF
+                pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+                const pdfBlob = pdf.output('blob');
+
+                // Save the PDF Blob using the File System Access API
+                savePdfBlobSilently(pdfBlob);
+            });
+
+            const savePdfBlobSilently = async (blob) => {
+                try {
+                    // Use the File System Access API to request a file handle
+                    const fileHandle = await window.showSaveFilePicker({
+                        suggestedName: 'permitapp.pdf',
+                        types: [
+                            {
+                                description: 'PDF file',
+                                accept: {
+                                    'application/pdf': ['.pdf']
+                                }
+                            }
+                        ]
+                    });
+
+                    // Create a writable stream
+                    const writable = await fileHandle.createWritable();
+
+                    // Write the Blob data to the file
+                    await writable.write(blob);
+
+                    // Close the writable stream
+                    await writable.close();
+
+                    console.log('PDF saved successfully without popping download dialog!');
+                } catch (error) {
+                    console.error('Error saving file:', error);
+                }
+            };
+        };
+        tryOnUnmounted(generatePdf, () => {
+            console.log('Called Unmounted');
+        });
         return {
             formDatas,
             ...toRefs(formDatas),

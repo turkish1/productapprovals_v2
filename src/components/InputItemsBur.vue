@@ -2,6 +2,9 @@
 import useburAxios from '@/composables/use-burAxios';
 import { useBurStore } from '@/stores/burStore';
 import { useRoofListStore } from '@/stores/roofList';
+import { invoke, until } from '@vueuse/shared';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
 import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
@@ -134,12 +137,68 @@ function updateselectSystem() {
         if (sp1[4] === '¹') {
             primeone.value = Perimeters.p1_one;
             primethree.value = Perimeters.p2_one;
+            pdfcleared.value = true;
         }
     });
 }
+
+const generatePdf = () => {
+    const element = document.getElementById('bur');
+    console.log(element);
+    // Use html2canvas to capture the element as a canvas
+    html2canvas(element).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+
+        // Create a new jsPDF instance
+        const pdf = new jsPDF();
+
+        // Add the captured image data to the PDF
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+        const pdfBlob = pdf.output('blob');
+
+        // Save the PDF Blob using the File System Access API
+        savePdfBlobSilently(pdfBlob);
+    });
+
+    const savePdfBlobSilently = async (blob) => {
+        try {
+            // Use the File System Access API to request a file handle
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: 'bur.pdf',
+                types: [
+                    {
+                        description: 'PDF file',
+                        accept: {
+                            'application/pdf': ['.pdf']
+                        }
+                    }
+                ]
+            });
+
+            // Create a writable stream
+            const writable = await fileHandle.createWritable();
+
+            // Write the Blob data to the file
+            await writable.write(blob);
+
+            // Close the writable stream
+            await writable.close();
+
+            console.log('PDF saved successfully without popping download dialog!');
+        } catch (error) {
+            console.error('Error saving file:', error);
+        }
+    };
+};
+invoke(async () => {
+    await until(pdfcleared).changed();
+    generatePdf();
+    alert('Generated, PDF!');
+});
 </script>
 <template>
-    <div class="flex flex-col w-3/4 gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
+    <div id="bur" class="flex flex-col w-3/4 gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
         <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope>
 
         <div class="card flex flex-col gap-2">

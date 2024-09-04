@@ -3,12 +3,14 @@ import useExposurec from '@/composables/Tiletables/exposure_c';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 // import { useRoofListStore } from '@/stores/roofList';
-import { watchImmediate } from '@vueuse/core';
-
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
 import { useGlobalState } from '@/stores/exposurecStore';
+import { watchImmediate } from '@vueuse/core';
+import { invoke, until } from '@vueuse/shared';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
@@ -82,6 +84,7 @@ let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 let datasystemf = ref();
 let datatilenoa = ref(tileData);
 let datasystemE = ref();
+const pdfcleared = ref(false);
 let saInput = ref(null);
 let tilenoaInput = ref(null);
 const selectedDeck = ref();
@@ -425,30 +428,8 @@ function updateMF() {
             zonethree.mf3 = vals.value[0];
         }
 
-        // for (let i = 0; i < k.length; i++) {
-        //     let index = i;
-        //     let value = k[i];
-        //     maps.value.push([index, value]);
-        // }
-        // console.log(maps.value);
+        pdfcleared.value = true;
         // 23052403
-        // console.log(maps.value[0][1], maps.value[1][1]);
-        // console.log(maps.value[2][1], maps.value[3][1]);
-
-        // console.log(tilenoas.material[0], tilenoas.material[1]);
-        // if (maps.value[0][1] === tilenoas.material[0]) {
-        //     console.log('Is true Polyset', maps.value[0][1]);
-        //     zoneone.mf1 = maps.value[1][1];
-        //     zonetwo.mf2 = maps.value[1][1];
-        //     zonethree.mf3 = maps.value[1][1];
-        // }
-
-        // if (k[0] === tilenoas.material[1]) {
-        //     console.log('Is true TileBond', k[1]);
-        //     zoneone.mf1 = k[1];
-        //     zonetwo.mf2 = k[1];
-        //     zonethree.mf3 = k[1];
-        // }
     });
 }
 watchImmediate(zoneone.mf1, zonetwo.mf2, zonethree.mf3, (updated) => {
@@ -540,9 +521,64 @@ function updateselectSystemE() {
         }
     });
 }
+
+const generatePdf = () => {
+    const element = document.getElementById('tile');
+    console.log(element);
+    // Use html2canvas to capture the element as a canvas
+    html2canvas(element).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+
+        // Create a new jsPDF instance
+        const pdf = new jsPDF();
+
+        // Add the captured image data to the PDF
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+        const pdfBlob = pdf.output('blob');
+
+        // Save the PDF Blob using the File System Access API
+        savePdfBlobSilently(pdfBlob);
+    });
+
+    const savePdfBlobSilently = async (blob) => {
+        try {
+            // Use the File System Access API to request a file handle
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: 'tile.pdf',
+                types: [
+                    {
+                        description: 'PDF file',
+                        accept: {
+                            'application/pdf': ['.pdf']
+                        }
+                    }
+                ]
+            });
+
+            // Create a writable stream
+            const writable = await fileHandle.createWritable();
+
+            // Write the Blob data to the file
+            await writable.write(blob);
+
+            // Close the writable stream
+            await writable.close();
+
+            console.log('PDF saved successfully without popping download dialog!');
+        } catch (error) {
+            console.error('Error saving file:', error);
+        }
+    };
+};
+invoke(async () => {
+    await until(pdfcleared).changed();
+    generatePdf();
+    alert('Generated, PDF!');
+});
 </script>
 <template>
-    <div class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
+    <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>

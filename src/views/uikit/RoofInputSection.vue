@@ -70,7 +70,7 @@ function updateNode() {
                         <shingles v-if="!isValidshingle" />
                     </div>
 
-                    <div class="flex pt-6 justify-end" style="margin-top: 550px">
+                    <div class="flex pt-6 justify-end" style="margin-top: 150px">
                         <Button
                             label="Next"
                             severity="contrast"
@@ -85,7 +85,7 @@ function updateNode() {
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
-                    <div class="flex flex-col h-108">
+                    <div class="flex flex-col h-96">
                         <!-- v-if="values === 3" -->
                         <LowSlope v-if="!isValidbur" />
                     </div>
@@ -100,7 +100,7 @@ function updateNode() {
                         <Tile />
                     </div>
                     <div class="pt-6">
-                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 550px" />
+                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 750px" />
                     </div>
                 </StepPanel>
             </StepPanels>

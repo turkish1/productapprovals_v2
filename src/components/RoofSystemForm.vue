@@ -1,14 +1,13 @@
 <script setup>
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-import { tryOnMounted } from '@vueuse/core';
+import { invoke, tryOnMounted, until } from '@vueuse/core';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import { ref } from 'vue';
-
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
@@ -115,6 +114,11 @@ function clear() {
 
     selectedItem.value = '';
 }
+invoke(async () => {
+    await until(pdfcleared).changed();
+    generatePdf();
+    alert('Generated, PDF!');
+});
 </script>
 <template>
     <div id="roofselect" class="card flex justify-center">

@@ -12,9 +12,7 @@ import { reactive, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
 // import useaccountStore from '@/stores/accountStore';
-
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
+import { invoke, until } from '@vueuse/core';
 const a = ref(1);
 
 export default {
@@ -28,7 +26,6 @@ export default {
         const { accountUsers, getUser, addUser } = useGlobalState();
         console.log(accountUsers._value[0]);
 
-        watch(() => {});
         // const useacctStore = useaccountStore();
         // const { accountinput } = storeToRefs(useacctStore);
         const prefix = ref('me');
@@ -50,6 +47,7 @@ export default {
         const phone = ref('');
         const licenseStatus = ref('');
         const dba = ref('');
+
         tryOnMounted(() => {
             if (accountUsers._value[0].name === '') {
                 return router.push('/');
@@ -62,56 +60,7 @@ export default {
                 console.log(accountUsers._value[0]);
             }
         });
-
-        const generatePdf = () => {
-            const element = document.getElementById('roofselect');
-            console.log(element);
-            // Use html2canvas to capture the element as a canvas
-            html2canvas(element).then((canvas) => {
-                const imgData = canvas.toDataURL('image/png');
-
-                // Create a new jsPDF instance
-                const pdf = new jsPDF();
-
-                // Add the captured image data to the PDF
-                pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-
-                const pdfBlob = pdf.output('blob');
-
-                // Save the PDF Blob using the File System Access API
-                savePdfBlobSilently(pdfBlob);
-            });
-
-            const savePdfBlobSilently = async (blob) => {
-                try {
-                    // Use the File System Access API to request a file handle
-                    const fileHandle = await window.showSaveFilePicker({
-                        suggestedName: 'generated.pdf',
-                        types: [
-                            {
-                                description: 'PDF file',
-                                accept: {
-                                    'application/pdf': ['.pdf']
-                                }
-                            }
-                        ]
-                    });
-
-                    // Create a writable stream
-                    const writable = await fileHandle.createWritable();
-
-                    // Write the Blob data to the file
-                    await writable.write(blob);
-
-                    // Close the writable stream
-                    await writable.close();
-
-                    console.log('PDF saved successfully without popping download dialog!');
-                } catch (error) {
-                    console.error('Error saving file:', error);
-                }
-            };
-        };
+        const pdfcleared = ref(false);
         const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
@@ -148,13 +97,13 @@ export default {
 
             procReceive(formData);
             // if checkMB.value === 13 after number conversion disable shingle roof.
+
             setTimeout(() => {
                 loading.value = false;
             }, 2000);
         };
 
         const onSubmit = async () => {
-            generatePdf();
             procReceive(formData);
         };
 
@@ -179,17 +128,74 @@ export default {
             store.addSystem(formdt, permType, checkMB.value);
             // area.value = '';
             // type.value = '';
+            pdfcleared.value = true;
             console.log(formdt, permType, checkMB.value, 'System added');
         }
 
+        const generatePdf = () => {
+            const element = document.getElementById('permitapp');
+            console.log(element);
+            // Use html2canvas to capture the element as a canvas
+            html2canvas(element).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+
+                // Create a new jsPDF instance
+                const pdf = new jsPDF();
+
+                // Add the captured image data to the PDF
+                pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+                const pdfBlob = pdf.output('blob');
+
+                // Save the PDF Blob using the File System Access API
+                savePdfBlobSilently(pdfBlob);
+            });
+
+            const savePdfBlobSilently = async (blob) => {
+                try {
+                    // Use the File System Access API to request a file handle
+                    const fileHandle = await window.showSaveFilePicker({
+                        suggestedName: 'permitapp.pdf',
+                        types: [
+                            {
+                                description: 'PDF file',
+                                accept: {
+                                    'application/pdf': ['.pdf']
+                                }
+                            }
+                        ]
+                    });
+
+                    // Create a writable stream
+                    const writable = await fileHandle.createWritable();
+
+                    // Write the Blob data to the file
+                    await writable.write(blob);
+
+                    // Close the writable stream
+                    await writable.close();
+                    responseMessage.value = 'saved Pdf';
+                    console.log('PDF saved successfully without popping download dialog!');
+                } catch (error) {
+                    console.error('Error saving file:', error);
+                }
+            };
+        };
+        invoke(async () => {
+            await until(pdfcleared).changed();
+            generatePdf();
+            alert('Generated, PDF!');
+        });
         watch(() => {});
         return {
+            pdfcleared,
             generatePdf,
             onSubmit,
             accountUsers,
             getUser,
             email,
             dba,
+            invoke,
             phone,
             contractor,
             licenseStatus,
@@ -216,7 +222,7 @@ export default {
 </script>
 
 <template>
-    <div id="content" ref="permitapp" class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
+    <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
         <div class="md:w-2/3">
             <!-- <div class="card flex flex-col gap-4"> -->
             <div class="container">
@@ -293,7 +299,7 @@ export default {
 
                                         <br />
 
-                                        <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(generatePdf, formData, selectedApplication)" />
+                                        <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" />
                                     </form>
                                     <p v-if="responseMessage">{{ responseMessage }}</p>
                                     <!-- <Drop /> -->

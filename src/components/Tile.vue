@@ -12,7 +12,7 @@ function checkSlope() {
 }
 </script>
 <template>
-    <div class="card w-full space-y-1" style="margin-left: 20px">
+    <div id="tile" class="card w-full space-y-1" style="margin-left: 20px">
         <input-tile :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-tile>
     </div>
 </template>

@@ -2,11 +2,15 @@
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
+import { invoke, until } from '@vueuse/core';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
+
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
 const store = useRoofListStore();
@@ -81,7 +85,7 @@ onMounted(() => {
 
     roofArea();
 });
-
+const checked = ref(false);
 function roofArea() {
     let l1 = Number(low1.value);
 
@@ -97,14 +101,69 @@ function roofArea() {
     console.log(steep1.value);
     total.value = lowslope.value + steep.value;
 }
+const pdfcleared = ref(false);
+const generatePdf = () => {
+    const element = document.getElementById('generalpg');
+    console.log(element);
+    // Use html2canvas to capture the element as a canvas
+    html2canvas(element).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
 
+        // Create a new jsPDF instance
+        const pdf = new jsPDF();
+
+        // Add the captured image data to the PDF
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+        const pdfBlob = pdf.output('blob');
+
+        // Save the PDF Blob using the File System Access API
+        savePdfBlobSilently(pdfBlob);
+    });
+
+    const savePdfBlobSilently = async (blob) => {
+        try {
+            // Use the File System Access API to request a file handle
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: `${process.value}-general-page.pdf`,
+                types: [
+                    {
+                        description: 'PDF file',
+                        accept: {
+                            'application/pdf': ['.pdf']
+                        }
+                    }
+                ]
+            });
+
+            // Create a writable stream
+            const writable = await fileHandle.createWritable();
+
+            // Write the Blob data to the file
+            await writable.write(blob);
+
+            // Close the writable stream
+            await writable.close();
+
+            console.log('PDF saved successfully without popping download dialog!');
+        } catch (error) {
+            console.error('Error saving file:', error);
+        }
+    };
+};
 const navigateNext = () => {
+    pdfcleared.value = true;
     router.push('/roofinputsection');
 };
+invoke(async () => {
+    await until(pdfcleared).changed();
+    generatePdf();
+    alert('Generated, PDF!');
+});
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-8" style="margin-left: 320px">
+    <div id="generalpg" class="flex flex-col md:flex-row gap-8" style="margin-left: 320px">
         <div class="md:w-3/4">
             <div class="card flex flex-col gap-4">
                 <div class="container">
@@ -144,11 +203,13 @@ const navigateNext = () => {
                     </div>
                     <div class="card flex flex-wrap justify-center gap-16">
                         <div class="flex items-center">
-                            <Checkbox v-model="newroof" inputId="newroof" name="newroof" value="newroof" />
+                            <!-- v-model="newroof" -->
+
+                            <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
                             <label for="newroof" class="ml-2"> New Roof</label>
                         </div>
                         <div class="flex items-center">
-                            <Checkbox v-model="reroof" inputId="reroof" name="reroof" value="reroof" />
+                            <Checkbox v-model="checked" :invalid="!checked" inputId="reroof" name="checked" value="reroof" />
                             <label for="reroof" class="ml-2"> Re-Roof</label>
                         </div>
                     </div>
