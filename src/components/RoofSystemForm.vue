@@ -1,9 +1,8 @@
 <script setup>
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, tryOnMounted, until } from '@vueuse/core';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { tryOnMounted } from '@vueuse/core';
+
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
@@ -15,8 +14,8 @@ const { permitapp } = storeToRefs(permitStore);
 console.log(permitapp._object);
 const area = ref('');
 const selectedItem = ref('');
-const type = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Asphalt Shingle' }, { name: 'Mechanical Fastened Tile' }, { name: 'Mortar/Adhesive Tile' }, { name: 'Metal Panel' }]);
-const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Mortar/Adhesive Tile' }, { name: 'Metal Panel' }]);
+const type = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Asphalt Shingle' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
+const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
 
 tryOnMounted(usePermitappStore, () => {
     console.log(permitapp);
@@ -24,56 +23,6 @@ tryOnMounted(usePermitappStore, () => {
 function clearSelected() {
     store.$reset();
 }
-
-const generatePdf = () => {
-    const element = document.getElementById('roofselect');
-    console.log(element);
-    // Use html2canvas to capture the element as a canvas
-    html2canvas(element).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-
-        // Create a new jsPDF instance
-        const pdf = new jsPDF();
-
-        // Add the captured image data to the PDF
-        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-
-        const pdfBlob = pdf.output('blob');
-
-        // Save the PDF Blob using the File System Access API
-        savePdfBlobSilently(pdfBlob);
-    });
-
-    const savePdfBlobSilently = async (blob) => {
-        try {
-            // Use the File System Access API to request a file handle
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: 'generated.pdf',
-                types: [
-                    {
-                        description: 'PDF file',
-                        accept: {
-                            'application/pdf': ['.pdf']
-                        }
-                    }
-                ]
-            });
-
-            // Create a writable stream
-            const writable = await fileHandle.createWritable();
-
-            // Write the Blob data to the file
-            await writable.write(blob);
-
-            // Close the writable stream
-            await writable.close();
-
-            console.log('PDF saved successfully without popping download dialog!');
-        } catch (error) {
-            console.error('Error saving file:', error);
-        }
-    };
-};
 
 const isMiamiBeachValid = ref(false);
 function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
@@ -96,7 +45,7 @@ function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
 
         store.addSystemMTile(item, dim3);
     }
-    if (item === 'Mortar/Adhesive Tile') {
+    if (item === 'Adhesive Set Tile') {
         dim4 = area.value;
         store.addSystemATile(item, dim4);
     }
@@ -114,11 +63,6 @@ function clear() {
 
     selectedItem.value = '';
 }
-invoke(async () => {
-    await until(pdfcleared).changed();
-    generatePdf();
-    alert('Generated, PDF!');
-});
 </script>
 <template>
     <div id="roofselect" class="card flex justify-center">

@@ -6,24 +6,6 @@ import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-// const generatePdf = () => {
-//     const element = document.getElementById('content');
-//     console.log(element);
-//     // Use html2canvas to capture the element as a canvas
-//     html2canvas(element).then((canvas) => {
-//         const imgData = canvas.toDataURL('image/png');
-
-//         // Create a new jsPDF instance
-//         const pdf = new jsPDF();
-
-//         // Add the captured image data to the PDF
-//         pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-
-//         // Save the generated PDF
-//         pdf.save('generated.pdf');
-//     });
-// };
-
 const username = ref('');
 const password = ref('');
 const checked = ref(false);
@@ -35,6 +17,7 @@ const acctCompare = ref([]);
 let accountUser = reactive({
     dba: '',
     email: '',
+    cphone: '',
     expiration_date: '',
     name: '',
     projects: [],
@@ -44,7 +27,9 @@ let accountUser = reactive({
 // const store = useLoginStore();
 
 // const { login } = storeToRefs(dataStore);
-
+function clearSelected() {
+    store.$reset();
+}
 async function submit() {
     let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/getaccounts';
 
@@ -62,6 +47,7 @@ async function submit() {
     });
 }
 // const status = ref('');
+
 watch(checkAuth, () => {});
 const { accountUsers, getUser, addUser } = useGlobalState();
 function checkAuth() {
@@ -69,11 +55,11 @@ function checkAuth() {
         for (let i = 0; i < item.length; i++) {
             if (username.value === item[i].password) {
                 acctCompare.value.push(item[i]);
-                console.log(item[i].dba, accountUser.dba, accountUser.name);
+                console.log(item[i].dba, accountUser.dba, accountUser);
                 accountUser.email = item[i].email;
                 accountUser.name = item[i].name;
                 accountUser.dba = item[i].dba;
-                accountUser.phone = item[i].phone;
+                accountUser.phone = item[i].cphone;
                 accountUser.expiration_date = item[i].expiration_date;
                 accountUser.projects = item[i].projects;
                 accountUser.secondary_status = item[i].secondary_status;

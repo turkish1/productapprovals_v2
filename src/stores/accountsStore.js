@@ -12,6 +12,10 @@ export const useGlobalState = createGlobalState(() => {
     function addUser(account) {
         accountUsers.value.push(account);
     }
-
-    return { accountUsers, getUser, addUser };
+    class reset {
+        constructor() {
+            this.accountUsers = [];
+        }
+    }
+    return { reset, accountUsers, getUser, addUser };
 });

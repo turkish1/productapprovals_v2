@@ -6,16 +6,15 @@ import { usetilesysfStore } from '@/stores/tilesysfStore';
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
+import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import { useGlobalState } from '@/stores/exposurecStore';
-import { watchImmediate } from '@vueuse/core';
 import { invoke, until } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { computed, reactive, ref, watch, watchEffect } from 'vue';
-import DripEdgeComponent from './DripEdgeComponent.vue';
-
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
+import { computed, reactive, ref, watch, watchEffect } from 'vue';
+import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
@@ -26,7 +25,7 @@ const { takef } = useTileSystemF();
 const { getV } = useTileSystemE();
 // const storeroof = useRoofListStore();
 // const { tilefinput } = storeToRefs(ftileStore);
-
+const { getTilenoas } = usetileInputsingle();
 const { zones } = useGlobalState();
 const tilenoas = reactive({
     manufacturer: '',
@@ -139,6 +138,7 @@ const zonethree = reactive({
     mr3: '',
     mf3: ''
 });
+
 watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 
 function EcheckInput() {
@@ -254,18 +254,22 @@ function checkMaterial() {
         zoneone.mg1 = tileData.Table3.two.Direct_Deck;
         zonetwo.mg2 = tileData.Table3.two.Direct_Deck;
         zonethree.mg3 = tileData.Table3.two.Direct_Deck;
-    } else if (slopeRange < slopeOptions.four) {
+    } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
         console.log('Is Less');
         zoneone.mg1 = tileData.Table3.three.Direct_Deck;
         zonetwo.mg2 = tileData.Table3.three.Direct_Deck;
         zonethree.mg3 = tileData.Table3.three.Direct_Deck;
-    } else if (slopeRange < slopeOptions.five) {
+    } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
         zoneone.mg1 = tileData.Table3.four.Direct_Deck;
         zonetwo.mg2 = tileData.Table3.four.Direct_Deck;
         zonethree.mg3 = tileData.Table3.four.Direct_Deck;
-    } else if (slopeRange <= slopeOptions.six) {
+    } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
         console.log('Is Less');
+        zoneone.mg1 = tileData.Table3.five.Direct_Deck;
+        zonetwo.mg2 = tileData.Table3.five.Direct_Deck;
+        zonethree.mg3 = tileData.Table3.five.Direct_Deck;
+    } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
         zoneone.mg1 = tileData.Table3.six.Direct_Deck;
         zonetwo.mg2 = tileData.Table3.six.Direct_Deck;
         zonethree.mg3 = tileData.Table3.six.Direct_Deck;
@@ -365,14 +369,19 @@ watch(
     },
     { immediate: true }
 );
-function grabInput() {
+function grabInput(event) {
+    console.log(typeof event.target.value);
     datatilenoa.value = tilenoaInput.value;
     datasystemf.value = saInput.value;
     datasystemE.value = udlInput.value;
     if (datatilenoa.value !== null) {
         // 18061905
 
-        getTilenoa(datatilenoa.value);
+        console.log(selectedOption.value, 'Outside');
+        if (selectedOption.value === 'single') {
+            console.log(selectedOption.value, 'Entered');
+            getTilenoas(datatilenoa.value);
+        } else getTilenoa(datatilenoa.value);
     }
     if (saInput.value !== null) {
         takef(datasystemf.value);
@@ -406,50 +415,37 @@ function checkInput() {
 }
 const maps = ref([]);
 const vals = ref([]);
-function updateMF() {
+function updateMF(event) {
     // tileData.selection;
+    console.log(event.value);
     let mat = tileData.selection;
 
-    console.log(mat, tileData.material);
     resistanceCheck.value = Object.entries(tileData.selection).map((obj) => {
         const k = obj[0];
         const v = obj[1];
 
         maps.value.push(k);
         vals.value.push(v);
-        console.log(vals.value);
+        console.log(v, k);
+        console.log(maps.value, vals.value);
+        console.log(vals.value[0], vals.value[1]);
 
         console.log(maps.value);
 
-        if (maps.value[0] === 'ICP APOC Polyset AH-160') {
-            console.log('Is true');
-            zoneone.mf1 = vals.value[0];
-            zonetwo.mf2 = vals.value[0];
-            zonethree.mf3 = vals.value[0];
-        }
-
-        pdfcleared.value = true;
+        // pdfcleared.value = true;
         // 23052403
     });
+    for (let i = 0; i < maps.value.length; i++) {
+        console.log(maps.value[i], vals.value[i], i);
+        if (maps.value[i] === event.value) {
+            console.log(maps.value[i], vals.value[i]);
+            zoneone.mf1 = vals.value[i];
+            zonetwo.mf2 = vals.value[i];
+            zonethree.mf3 = vals.value[i];
+        }
+    }
 }
-watchImmediate(zoneone.mf1, zonetwo.mf2, zonethree.mf3, (updated) => {
-    console.log(updated);
-    if (maps.value[1] === 'TILE BOND™ Roof Tile Adhesive') {
-        console.log('Second entry');
-        zoneone.mf1 = vals.value[1];
-        zonetwo.mf2 = vals.value[1];
-        zonethree.mf3 = vals.value[1];
-    }
-});
 
-const checkValues = computed(() => {
-    if (maps.value[1] === 'TILE BOND™ Roof Tile Adhesive') {
-        console.log('Second entry');
-        zoneone.mf1 = vals.value[1];
-        zonetwo.mf2 = vals.value[1];
-        zonethree.mf3 = vals.value[1];
-    }
-});
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedsystemf).map((obj) => {
         const val = obj[1];
@@ -489,7 +485,6 @@ function updateselectSystemE() {
     selSytemE.value = Object.entries(selectedsystemE).map((obj) => {
         const val = obj[1];
         console.log(obj[1]);
-        // console.log(val, typeof selfadhered.Description_F1, selfadhered.Description_F1, selfAdData.value);
 
         if (val === 'E1' || val === 'E8') {
             udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E1;
@@ -590,16 +585,12 @@ invoke(async () => {
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @keydown.enter="setRoofInputs" />
+            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @change="setRoofInputs" />
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
-        <!-- <div class="w-64 mt-6 gap-2" style="margin-left: 20px">
-            <label for="area">Area</label>
-            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
-        </div> -->
 
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label for="perimeter">Roof Permeter(a) = 4h</label>
@@ -650,10 +641,10 @@ invoke(async () => {
             </div>
         </div>
 
-        <div v-show="isTileValid" class="w-96" style="margin-left: 2px">
-            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
-                <label for="tilenoa">Tile Noa</label>
-                <InputText id="tilenoa" v-tooltip.bottom="'Press Enter after value'" v-model="tilenoaInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
+        <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
+            <div class="w-64 gap-4 mt-1 space-y-1 mb-2" style="margin-left: 20px">
+                <label for="tilenoa">Tile Noas</label>
+                <InputText id="tilenoa" v-tooltip.bottom="'Press Enter after value'" v-model="tilenoaInput" placeholder="00000000" @change="grabInput" @click="checkInput" />
             </div>
         </div>
     </div>
@@ -738,7 +729,7 @@ invoke(async () => {
             <div class="w-128 flex flex-col gap-2">
                 <!-- @input="updateMF" -->
                 <label for="material">Tile Adhesive Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" @input="checkValues" />
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
         </div>
 

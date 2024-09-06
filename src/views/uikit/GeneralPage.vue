@@ -170,16 +170,16 @@ invoke(async () => {
                     <div class="row">
                         <div class="card flex flex-col gap-4">
                             <!-- <div class="font-semibold text-xl">2023 HVHZ</div> -->
-                            <div class="grid grid-cols-1 gap-1 place-content-center h-8 ...">
+                            <div class="grid grid-cols-1 gap-1 place-content-center h-6 ...">
                                 <p class="text-center font-semibold text-xl">2023 HVHZ</p>
                             </div>
-                            <div class="grid grid-cols-1 gap-1 place-content-center h-7 ...">
+                            <div class="grid grid-cols-1 gap-1 place-content-center h-5 ...">
                                 <p class="text-center italic font-semibold text-xl">mEPermit</p>
                             </div>
-                            <div class="grid grid-cols-1 gap-1 place-content-center h-6 ...">
+                            <div class="grid grid-cols-1 gap-1 place-content-center h-4 ...">
                                 <p class="text-center font-semibold text-xl">General Information Page</p>
                             </div>
-                            <div class="flex flex-wrap gap-8 columns-3">
+                            <div class="flex flex-wrap gap-5 columns-3">
                                 <div class="flex flex-col grow basis-0 gap-3">
                                     <label for="master">Master Permit</label>
                                     <InputText id="master" v-model="master" type="text" planceholder="permit number" />
@@ -224,7 +224,7 @@ invoke(async () => {
                         </div>
                         <div class="flex items-center">
                             <Checkbox v-model="checkedadtile" inputId="adtile1" name="adtile" value="Mortar/Adhesive Set Tile" severity="contrast" :binary="true" />
-                            <label for="adtile1" class="ml-2"> Mortar/Adhesive Set Tile </label>
+                            <label for="adtile1" class="ml-2"> Adhesive Set Tile </label>
                         </div>
                         <br />
                         <label></label>

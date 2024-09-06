@@ -57,7 +57,8 @@ export default {
                 phone.value = accountUsers._value[0].phone;
                 licenseStatus.value = accountUsers._value[0].secondary_status;
                 dba.value = accountUsers._value[0].dba;
-                console.log(accountUsers._value[0]);
+                console.log(accountUsers._value[0].phone);
+                // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
             }
         });
         const pdfcleared = ref(false);
@@ -155,7 +156,7 @@ export default {
                 try {
                     // Use the File System Access API to request a file handle
                     const fileHandle = await window.showSaveFilePicker({
-                        suggestedName: 'permitapp.pdf',
+                        suggestedName: `${formData.processNumber}-permitapp.pdf`,
                         types: [
                             {
                                 description: 'PDF file',
