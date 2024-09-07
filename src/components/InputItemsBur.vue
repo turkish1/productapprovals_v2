@@ -1,6 +1,6 @@
 <script setup>
 import useburAxios from '@/composables/use-burAxios';
-import { useBurStore } from '@/stores/burStore';
+
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, until } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
@@ -10,19 +10,11 @@ import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const { bMaters, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
-const storebur = useBurStore();
+
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
-const { burinput } = storeToRefs(storebur);
-let isDialog = ref(false);
-const roofType = ref('lowslope');
+
 const factor = ref(0.6);
-const perimeter = ref();
-const agreement = onMounted(() => {
-    // if (roofType.value === 'lowslope') {
-    isDialog = true;
-    // }
-});
 
 const props = defineProps({
     roofType: {
@@ -32,7 +24,7 @@ const props = defineProps({
     }
 });
 let slope = ref(null);
-let roofArea = ref(roofList._object.roofList[0].dim2);
+// let roofArea = ref(roofList._object.roofList[0].dim2);
 let isSlopeValid = ref(true);
 let isHeightValid = ref(true);
 const dims = reactive({
@@ -41,7 +33,7 @@ const dims = reactive({
     height: ''
 });
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
-const checkSys = ref('');
+
 const selectedBur = ref();
 const mat = ref();
 const selectedSystem = ref();
@@ -54,20 +46,31 @@ const primethree = ref();
 const sB = ref('');
 let selSytem = ref('');
 const maps = ref([]);
+const pdfcleared = ref(false);
+let slopeModel = ref('');
+let heightModel = ref('');
+
 function setRoofInputs() {
-    dims.area = roofArea.value;
-    perimeter.value = dims.height * factor;
-    dims.per = perimeter.value.toFixed(2);
+    dims.height = heightModel.value;
+    dims.slope = slopeModel.value;
+    dims.per = (dims.height * factor.value).toFixed(2);
 }
-const dimensions = onMounted(() => {
-    setRoofInputs();
-});
 
 function findSelected() {
     mat.value = bMaters.value;
 }
-watch(dimensions, setRoofInputs, validateRoofSlope, findSelected, updateselection, updateselectSystem, syst, dims.per, selSytem, type, () => {});
-watchEffect(dimensions, setRoofInputs, sB, syst, selectedSystem, () => {});
+watch(setRoofInputs, validateRoofSlope, findSelected, updateselection, updateselectSystem, syst, dims.per, selSytem, type, () => {});
+watchEffect(setRoofInputs, sB, syst, selectedSystem, () => {});
+
+onMounted(() => {
+    roofList.value.forEach((item, index) => {
+        console.log(item.item, index);
+        if (item.item === 'Low Slope') {
+            console.log(item.dim2);
+            dims.area = item.dim2;
+        }
+    });
+});
 
 function updateselection() {
     sB.value = Object.entries(selectedBur).map((obj) => {
@@ -194,12 +197,11 @@ const generatePdf = () => {
 invoke(async () => {
     await until(pdfcleared).changed();
     generatePdf();
-    alert('Generated, PDF!');
 });
 </script>
 <template>
     <div id="bur" class="flex flex-col w-3/4 gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
-        <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope>
+        <!-- <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope> -->
 
         <div class="card flex flex-col gap-2">
             <div class="w-128 gap-4" style="margin-left: 12px">

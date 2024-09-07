@@ -65,6 +65,7 @@ export default {
         const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
+        phone.value = accountUsers._value[0].phone;
         const permitapp = ref(null);
         const checkMB = ref('');
         const checkV = ref('');
@@ -185,7 +186,6 @@ export default {
         invoke(async () => {
             await until(pdfcleared).changed();
             generatePdf();
-            alert('Generated, PDF!');
         });
         watch(() => {});
         return {

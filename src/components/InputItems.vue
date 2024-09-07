@@ -62,7 +62,7 @@ let datamounted = ref(inputshingle._object.inputshingle);
 
 let polydatamt = ref(polyinput._object.polyinput);
 let systemdatamt = ref(usesystemfStore.store.$state.systeminput);
-let roofArea = ref(roofList._object.roofList);
+// let roofArea = ref(roofList._object.roofList);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isShingleValid = ref(false);
@@ -207,11 +207,19 @@ function checkInput() {
         });
     }
 }
-
-function setRoofInputs() {
-    roofArea.value.forEach((item, index) => {
-        dims.area = item.dim1;
+onMounted(() => {
+    roofList.value.forEach((item, index) => {
+        console.log(item.item, index);
+        if (item.item === 'Asphalt Shingle') {
+            console.log(item.dim1);
+            dims.area = item.dim1;
+        }
     });
+});
+function setRoofInputs() {
+    // roofArea.value.forEach((item, index) => {
+    //     dims.area = item.dim1;
+    // });
 }
 const dimensions = onMounted(() => {
     setRoofInputs();
@@ -227,7 +235,7 @@ watch(
     noaInput,
     whatChanged,
     udlInput,
-    roofArea,
+
     dimensions,
     grabInput,
     useInputs,

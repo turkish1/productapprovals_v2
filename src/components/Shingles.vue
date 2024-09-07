@@ -1,11 +1,12 @@
 <script setup>
 import { useRoofListStore } from '@/stores/roofList';
-
 import { onMounted, ref } from 'vue';
 import AgreementsDialogShingle from './AgreementsDialogShingle.vue';
 import InputItems from './InputItems.vue';
 
+// import { storeToRefs } from 'pinia';
 const store = useRoofListStore();
+
 const isDialog = ref(false);
 
 const roofType = ref(store.$state.roofList[0].item);
@@ -15,7 +16,16 @@ function checkState() {
     } else isDialog.value = false;
 }
 
-console.log(roofType);
+// function checkState() {
+//     // roofList.value.forEach((item, index) => {
+//     //     console.log(item, index);
+//     //     if (item.item === 'Asphalt Shingle') {
+//     //         isDialog.value = true;
+//     //     } else isDialog.value = false;
+//     //     console.log(item.item);
+//     // });
+// }
+
 onMounted(() => {
     checkState();
 });

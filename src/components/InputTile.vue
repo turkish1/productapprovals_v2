@@ -8,12 +8,14 @@ import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import { useGlobalState } from '@/stores/exposurecStore';
+import { useRoofListStore } from '@/stores/roofList';
 import { invoke, until } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
-import { computed, reactive, ref, watch, watchEffect } from 'vue';
+import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const selectedOption = ref(null);
@@ -34,6 +36,18 @@ const tilenoas = reactive({
     resistance: [],
     Table2: [],
     Table3: []
+});
+const storeroof = useRoofListStore();
+const { roofList } = storeToRefs(storeroof);
+
+onMounted(() => {
+    roofList.value.forEach((item, index) => {
+        console.log(item.item, index);
+        if (item.item === 'Adhesive Set Tile') {
+            console.log(item.dim4);
+            dims.area = item.dim4;
+        }
+    });
 });
 
 const saTiles = reactive({

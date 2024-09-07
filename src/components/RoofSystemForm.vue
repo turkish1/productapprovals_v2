@@ -14,7 +14,7 @@ const { permitapp } = storeToRefs(permitStore);
 console.log(permitapp._object);
 const area = ref('');
 const selectedItem = ref('');
-const type = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Asphalt Shingle' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
+const type = ref([{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
 const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
 
 tryOnMounted(usePermitappStore, () => {

@@ -22,7 +22,7 @@ export default function usecreateAccount() {
         projects: [],
         password: '',
         cphone: '',
-        phone: '',
+        bphone: '',
         email: '',
         date: new Date()
     });
@@ -52,5 +52,5 @@ export default function usecreateAccount() {
 
     // 18061905
 
-    return { takp, noaNum, error, accountUsers, getUser, addUser, accountUsers, results, responseMessage, ...toRefs(Data) };
+    return { takp, noaNum, formData, error, accountUsers, getUser, addUser, accountUsers, results, responseMessage, ...toRefs(Data) };
 }

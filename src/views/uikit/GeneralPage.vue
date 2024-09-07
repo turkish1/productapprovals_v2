@@ -61,12 +61,12 @@ onMounted(() => {
         }
 
         if (item.item === 'Mechanical Fastened Tile') {
-            steep1.value = item.dim4;
+            steep1.value = item.dim3;
             checkedmtile.value = true;
         }
 
         if (item.item === 'Adhesive Set Tile') {
-            steep2.value = item.dim3;
+            steep2.value = item.dim4;
             checkedadtile.value = true;
         }
         if (item.item === 'Metal Panel') {
@@ -161,7 +161,6 @@ const navigateNext = () => {
 invoke(async () => {
     await until(pdfcleared).changed();
     generatePdf();
-    alert('Generated, PDF!');
 });
 </script>
 

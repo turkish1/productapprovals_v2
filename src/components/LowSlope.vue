@@ -1,23 +1,48 @@
 <script setup>
 import { useRoofListStore } from '@/stores/roofList';
 
+// import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import AgreementsDialogLowslope from './AgreementsDialogLowslope.vue';
 import InputItemsBur from './InputItemsBur.vue';
-
 const store = useRoofListStore();
+// const { roofList } = storeToRefs(store);
 const isDialog = ref(false);
-invoke(async () => {
-    await until(isDialog).toBe(true);
-});
-const roofType = ref(store.$state.roofList[0].item);
+const roofType = ref(store.$state.roofList);
+console.log(roofType.value);
+// function checkState() {
+// roofList.value.forEach((item, index) => {
+//     console.log(item, index);
+//     if (item.item === 'Low Slope') {
+//         isDialog.value = true;
+//     } else isDialog.value = false;
+//     console.log(item.item);
+//     // });
+// }
 function checkState() {
-    if (roofType.value === 'Low Slope') {
-        isDialog.value = true;
-    } else isDialog.value = false;
-}
+    console.log(roofType.value, roofType._value);
 
-console.log(roofType);
+    for (let i = 0; i < roofType.value.length; i++) {
+        console.log(roofType.value[i].item);
+        if (roofType.value[i].item === 'Low Slope') {
+            console.log('I am in', roofType.value[i].item);
+            isDialog.value = true;
+            console.log(isDialog.value);
+        }
+    }
+    // roofType.value.forEach((item, index) => {
+    //     console.log(item);
+    //     if (item === 'Low Slope') {
+    //         console.log('I am in', item);
+    //         isDialog.value = true;
+    //         console.log(isDialog.value);
+    //     }
+    // });
+
+    // if (roofType.value === 'Tile') {
+    //     isValidtile.value = true;
+    // }
+}
 onMounted(() => {
     checkState();
 });
