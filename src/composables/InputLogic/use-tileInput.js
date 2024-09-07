@@ -63,41 +63,5 @@ export default function usetileInputs() {
         });
     }
 
-    // const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: true });
-
-    //
-    // input.value = number;
-    // console.log(input.value);
-    // const result = execute().then((result) => {
-    //     noaNum.value = data.value.result;
-
-    //     results.value = noaNum.value.forEach((item, index) => {
-    //         let num = Number(input.value);
-
-    //         if (item.NOA === num) {
-    //             console.log('In am In...');
-    //             tileData.applicant = item.applicant;
-    //             tileData.material = item.AdhesiveMaterial;
-    //             tileData.selection = item.AdhesiveMaterials;
-    //             tileData.description = item.description;
-    //             tileData.Table2 = item.Table2;
-    //             tileData.Table3 = item.Table3;
-    //             tileData.resistance = item.Resistance;
-    //             console.log(item.AdhesiveMaterial);
-    //             if (tileData.length === 0) {
-    //                 return;
-    //             }
-    //             addNoa(tileData);
-
-    //             // area.value = '';
-    //             // type.value = '';
-    //             console.log(tileData, 'System added');
-    //         }
-    // });
-    //     return results;
-    // });
-
-    // 18061905 input,
-
     return { getTilenoa, tilenoa, getNoa, addNoa, responseMessage, noaNum, error, results, tileData };
 }

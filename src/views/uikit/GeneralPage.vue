@@ -2,6 +2,8 @@
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
+
+// import primeEditor from '@/components/Editor/primeEditor.vue';
 import { invoke, until } from '@vueuse/core';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -10,6 +12,7 @@ import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
+// Import Pintura styles
 
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
@@ -190,18 +193,18 @@ invoke(async () => {
                                     <InputText id="process" v-model="process" type="text" planceholder="mEProcess" />
                                 </div>
 
-                                <div class="flex flex-col grow basis-0 gap-3">
+                                <div class="flex flex-col grow basis-0 gap-2">
                                     <label for="email1">Job Address</label>
                                     <InputText id="jobaddress" v-model="jobaddress" type="text" planceholder="" />
                                 </div>
-                                <div class="flex flex-col min-w-96 gap-2">
-                                    <label for="dba">Licensed DBA Name </label>
-                                    <InputText id="dba" v-model="dba" type="text" />
-                                </div>
+                            </div>
+                            <div class="flex flex-col md:w-1/2 gap-2">
+                                <label for="dba">Licensed DBA Name </label>
+                                <InputText id="dba" v-model="dba" type="text" />
                             </div>
                         </div>
                     </div>
-                    <div class="card flex flex-wrap justify-center gap-16">
+                    <div class="card flex flex-wrap justify-center gap-8">
                         <div class="flex items-center">
                             <!-- v-model="newroof" -->
 
@@ -260,11 +263,15 @@ invoke(async () => {
                             <InputText v-model="total" placeholder="Total" />
                         </InputGroup>
                     </div>
+                    <!-- <primeEditor /> -->
 
-                    <div class="card md:w-1/3 flex flex-col gap-4">
+                    <div class="card md:w-1/2 flex flex-col gap-4">
+                        <file-saver />
+
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
-                    <file-saver />
+
+                    <!-- <file-saver /> -->
                 </div>
             </div>
         </div>
@@ -295,5 +302,35 @@ invoke(async () => {
     border-color: blue;
     margin-left: 20px;
     padding-bottom: 30px;
+}
+
+.pintura-editor {
+    --color-background: 255, 255, 255;
+    --color-foreground: 0, 0, 0;
+    /* --color-background: 255, 255, 255;
+    --color-foreground: 10, 10, 10; */
+    --editor-max-width: 50em;
+    --editor-max-height: 40em;
+    --color-preview-outline: 255, 0, 0;
+    --color-primary: #2990ff;
+    --color-primary-dark: #1a80ec;
+    --color-primary-text: #fff;
+    --color-secondary: #03a9f4;
+    --color-secondary-dark: #046bbf;
+    --color-focus: 255, 0, 0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+    html {
+        color: #fff;
+        background: #fff;
+    }
+
+    .pintura-editor {
+        --color-background: 10, 10, 10;
+        --color-foreground: 255, 255, 255;
+        box-shadow: 0 0 0 1px rgba(238, 233, 233, 0.1);
+    }
 }
 </style>

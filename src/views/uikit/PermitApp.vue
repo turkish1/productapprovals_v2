@@ -223,22 +223,22 @@ export default {
 </script>
 
 <template>
-    <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-4" style="margin-left: 220px">
-        <div class="md:w-2/3">
+    <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px">
+        <div class="md:w-1/2">
             <!-- <div class="card flex flex-col gap-4"> -->
             <div class="container">
                 <form>
                     <div class="row">
-                        <div class="card flex flex-col gap-2">
+                        <div class="card flex flex-col gap-1">
                             <div class="font-semibold text-xl">Permit Application</div>
                             <div class="card flex justify-center">
                                 <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" />
                             </div>
 
-                            <div class="card flex flex-col gap-4">
-                                <div class="flex flex-wrap gap-4">
+                            <div class="card flex flex-col gap-2">
+                                <div class="flex flex-wrap gap-2">
                                     <form class="w-3/4" @submit="onSubmit">
-                                        <div class="flex flex-col grow basis-0 gap-3">
+                                        <div class="flex flex-col grow basis-0 gap-2">
                                             <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                                 <label for="license">License Status</label>
                                                 <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
@@ -299,12 +299,14 @@ export default {
                                         </div>
 
                                         <br />
+                                        <file-saver class="w-1/2"></file-saver>
 
+                                        <!-- <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" /> -->
+
+                                        <p v-if="responseMessage">{{ responseMessage }}</p>
+                                        <!-- <Drop /> -->
                                         <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" />
                                     </form>
-                                    <p v-if="responseMessage">{{ responseMessage }}</p>
-                                    <!-- <Drop /> -->
-                                    <file-saver></file-saver>
                                     <!-- <drop-area></drop-area> -->
                                 </div>
                             </div>

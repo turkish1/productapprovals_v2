@@ -9,7 +9,7 @@ export const useGlobalState = createGlobalState(() => {
 
     // getters
     const getSlopes = computed(() => slopes.value);
-    const getHeight = computed(() => height.value);
+    const getHeight = computed(() => heights.value);
     const getZones = computed(() => zones.value);
 
     const getNumber = computed(() => tilenoa.value);

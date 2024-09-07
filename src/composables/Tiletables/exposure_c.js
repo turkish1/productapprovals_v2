@@ -41,7 +41,8 @@ export default function useExposurec() {
         twenty: 20,
         twentyfive: 25,
         thirty: 30,
-        thirtyfive: 35
+        thirtyfive: 35,
+        forty: 40
     };
 
     const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
@@ -113,6 +114,39 @@ export default function useExposurec() {
         processData(zones);
         // }
     }
+    // function lessthanfifteen(z) {
+    //     const z1 = z;
+    //     const fifteen = Number(heightOptions.fifteen);
+    //     console.log('if 15 statement was executed');
+    //     Object.entries(zones).map((obj) => {
+    //         zones = z1.lessfifteen;
+    //         console.log('Object statement was executed');
+    //         const key = obj[0];
+    //         const val = obj[1];
+
+    //         tables.zones.lessfifteen.push(val);
+    //     });
+    //     tb = tables.zones.lessfifteen;
+    //     console.log(tb);
+    //     addDimzones(tb);
+    // }
+    // function fifteenormore(z) {
+    //     const z1 = z;
+    //     const fifteen = Number(heightOptions.fifteen);
+    //     console.log('if 15 statement was executed');
+    //     Object.entries(zones).map((obj) => {
+    //         zones = z1.fifteen;
+    //         console.log('Object statement was executed');
+    //         const key = obj[0];
+    //         const val = obj[1];
+
+    //         tables.zones.fifteen.push(val);
+    //     });
+    //     tb = tables.zones.fifteen;
+    //     console.log(tb);
+    //     addDimzones(tb);
+    // }
+    // I need to work on the less than greater than conditions
     function processData(z) {
         const z1 = z;
         const fifteen = Number(heightOptions.fifteen);
@@ -120,9 +154,12 @@ export default function useExposurec() {
         const twentyfive = Number(heightOptions.twentyfive);
         const thirty = Number(heightOptions.thirty);
         const thirtyfive = Number(heightOptions.thirtyfive);
+        const forty = Number(heightOptions.forty);
+        console.log(typeof newHgt.value, newHgt.value, typeof twenty, twenty, typeof twentyfive, twentyfive);
         if (newHgt.value < fifteen) {
             zones = z1.lessfifteen;
             console.log('if 15 statement was executed');
+            // lessthanfifteen(zones);
             Object.entries(zones).map((obj) => {
                 console.log('Object statement was executed');
                 const key = obj[0];
@@ -133,9 +170,12 @@ export default function useExposurec() {
             tb = tables.zones.lessfifteen;
             console.log(tb);
             addDimzones(tb);
-        } else if (fifteen <= newHgt.value < twenty) {
+        } else if (newHgt.value >= fifteen && newHgt.value < twenty) {
+            console.log(newHgt.value, twenty, fifteen);
+            // fifteen <= newHgt.value ||
             zones = z1.fifteen;
-            console.log('if 20 statement was executed');
+            console.log('if statement for 15 to 20 was executed');
+            // fifteenormore(zones);
             Object.entries(zones).map((obj) => {
                 console.log('Object statement was executed');
                 const key = obj[0];
@@ -146,22 +186,24 @@ export default function useExposurec() {
             tb = tables.zones.fifteen;
             console.log(tb);
             addDimzones(tb);
-        } else if (twenty <= newHgt.value < twentyfive) {
+        } else if (newHgt.value < twentyfive && newHgt.value >= twenty) {
+            // || newHgt.value < twentyfive
+            console.log(newHgt.value, twenty, twentyfive);
             zones = z1.twenty;
-            console.log('if 25 statement was executed');
+            console.log('if 22 statement was executed');
             Object.entries(zones).map((obj) => {
-                console.log('Object statement was executed');
                 const key = obj[0];
                 const val = obj[1];
 
                 tables.zones.twenty.push(val);
             });
-            tb = z1.twenty;
+            tb = tables.zones.twenty;
             console.log(tb);
             addDimzones(tb);
-        } else if (twentyfive <= newHgt.value < thirty) {
+        } else if (newHgt.value < thirty && newHgt.value >= twentyfive) {
+            console.log(newHgt.value, thirty, twentyfive);
             zones = z1.twentyfive;
-            console.log('if statement was executed');
+            console.log('if 25 statement was executed');
             Object.entries(zones).map((obj) => {
                 console.log('Object statement was executed');
                 const key = obj[0];
@@ -172,9 +214,9 @@ export default function useExposurec() {
             tb = tables.zones.twentyfive;
             console.log(tb);
             addDimzones(tb);
-        } else if (thirty <= newHgt.value < thirtyfive) {
+        } else if (newHgt.value < thirtyfive && newHgt.value >= thirty) {
             zones = z1.thirty;
-            console.log('if statement was executed');
+            console.log('if statement 32 was executed');
             Object.entries(zones).map((obj) => {
                 console.log('Object statement was executed');
                 const key = obj[0];
@@ -185,9 +227,9 @@ export default function useExposurec() {
             tb = tables.zones.thirty;
             console.log(tb);
             addDimzones(tb);
-        } else if (thirtyfive <= newHgt.value) {
+        } else if (newHgt.value < forty && newHgt.value >= thirtyfive) {
             zones = z1.thirtyfive;
-            console.log('if statement was executed');
+            console.log(newHgt.value, thirty, thirtyfive);
             Object.entries(zones).map((obj) => {
                 console.log('Object statement was executed');
                 const key = obj[0];

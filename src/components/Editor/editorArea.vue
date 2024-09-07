@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 40vh; width: 40vh; margin-left: 450px; margin-top: 3px">
+    <div style="height: 40vh; width: 40vh">
         <!-- @pintura:load="handleLoad($event)" @pintura:process="handleProcess($event)" -->
         <!-- v-bind="props" :src="src" -->
         <PinturaEditor v-bind="editorDefaults" src="image.jpeg" />
@@ -38,7 +38,7 @@ export default {
             editorDefaults: getEditorDefaults({
                 imageWriter: {
                     // We instruct the editor to post the file object to the server
-                    store: './api/upload'
+                    store: '../../../public'
                 }
             })
         };

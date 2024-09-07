@@ -1,12 +1,12 @@
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
 import Aura from '@primevue/themes/aura';
+
 import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
-
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';

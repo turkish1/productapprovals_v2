@@ -6,11 +6,11 @@
             <p class="mt-6 mb-0" @upload="onTemplatedUpload($event)">Drag and drop files to here to upload.</p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <div v-for="(file, index) of files" :key="index + file.type + file.size" class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
+            <div v-for="(file, index) of files" :key="index + file.url + file.size" class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
                 <div>
                     <Button @click="uploadEvent()" icon="pi pi-cloud-upload" rounded outlined severity="success" :disabled="!files || files.length === 0"></Button>
 
-                    <img role="presentation" :alt="file.name" :src="file.objectURL" width="100" height="50" />
+                    <img role="presentation" :alt="file.name" :src="file.type" width="100" height="50" />
                 </div>
 
                 <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
@@ -60,6 +60,7 @@ const onDrop = async (event) => {
     // Save each file locally
     for (const file of files.value) {
         await saveFileLocally(file);
+        console.log(file);
     }
 };
 
@@ -77,6 +78,7 @@ const saveFileLocally = async (file) => {
     if (window.showSaveFilePicker) {
         try {
             // Create a file handle
+
             const handle = await window.showSaveFilePicker({
                 suggestedName: file.name,
                 types: [
@@ -88,7 +90,7 @@ const saveFileLocally = async (file) => {
                     }
                 ]
             });
-
+            console.log(handle);
             // Create a writable stream
             const writable = await handle.createWritable();
 
