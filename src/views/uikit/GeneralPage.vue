@@ -2,7 +2,6 @@
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-
 // import primeEditor from '@/components/Editor/primeEditor.vue';
 import { invoke, until } from '@vueuse/core';
 import html2canvas from 'html2canvas';
@@ -12,7 +11,6 @@ import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
-// Import Pintura styles
 
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
@@ -269,10 +267,11 @@ invoke(async () => {
 
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
-
+                    <!-- -->
                     <!-- <file-saver /> -->
                 </div>
             </div>
+            <!-- <cadEditor /> -->
         </div>
     </div>
 </template>

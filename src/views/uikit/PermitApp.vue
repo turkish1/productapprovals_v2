@@ -8,7 +8,7 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { reactive, ref, toRefs, watch } from 'vue';
+import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
 // import useaccountStore from '@/stores/accountStore';
@@ -19,6 +19,7 @@ export default {
     setup() {
         const responseMessage = ref('');
         const router = useRouter();
+        const isDialog = ref(false);
         const content = ref();
         const canvas = ref();
         const doc = ref();
@@ -52,6 +53,7 @@ export default {
             if (accountUsers._value[0].name === '') {
                 return router.push('/');
             } else {
+                isDialog.value = true;
                 contractor.value = accountUsers._value[0].name;
                 email.value = accountUsers._value[0].email;
                 phone.value = accountUsers._value[0].phone;
@@ -69,6 +71,10 @@ export default {
         const permitapp = ref(null);
         const checkMB = ref('');
         const checkV = ref('');
+
+        onMounted(() => {
+            isDialog.value = true;
+        });
         // const getData = reactive(accountinput);
         const load = async () => {
             const addr = ref(formData.address);
@@ -189,6 +195,7 @@ export default {
         });
         watch(() => {});
         return {
+            isDialog,
             pdfcleared,
             generatePdf,
             onSubmit,
@@ -224,6 +231,7 @@ export default {
 
 <template>
     <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px">
+        <PermitInitalAgreement v-if="isDialog" />
         <div class="md:w-1/2">
             <!-- <div class="card flex flex-col gap-4"> -->
             <div class="container">

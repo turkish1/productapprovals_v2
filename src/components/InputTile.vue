@@ -398,7 +398,8 @@ function checkInput() {
         });
     }
 }
-
+const ismrValid = ref(false);
+const ismrInvalid = ref(false);
 function checkMaterial() {
     console.log(tileData, tileDatas);
     tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
@@ -451,11 +452,15 @@ function checkMaterial() {
 
     zoneone.mr1 = computed(() => result1.value - zoneone.mg1);
     zonetwo.mr2 = computed(() => result2.value - zonetwo.mg2);
-    zonethree.mr3 = computed(() => result2.value - zonethree.mg3);
+    zonethree.mr3 = computed(() => result3.value - zonethree.mg3);
 
-    if (zoneone.mr1 < zoneone.mf1) {
-        visible.value = true;
-    }
+    // if (zoneone.mr1 < zoneone.mf1 || zonetwo.mr2 < zonetwo.mf2 || zonethree.mr3 < zonethree.mf3) {
+    //     ismrValid.value = true;
+    //     visible.value = true;
+    // }
+    // if (zoneone.mr1 > zoneone.mf1 || zonetwo.mr2 > zonetwo.mf2 || zonethree.mr3 > zonethree.mf3) {
+    //     ismrInvalid = true;
+    // }
 }
 const maps = ref([]);
 const vals = ref([]);
@@ -486,6 +491,14 @@ function updateMF(event) {
             zoneone.mf1 = vals.value[i];
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
+        }
+        if (zoneone.mr1 < zoneone.mf1 || event.value || zonetwo.mr2 < zonetwo.mf2 || zonethree.mr3 < zonethree.mf3) {
+            ismrValid.value = true;
+            console.log('I am in mr1', ismrValid.value);
+            visible.value = true;
+        } else if (zoneone.mr1 > zoneone.mf1 || event.value || zonetwo.mr2 > zonetwo.mf2 || zonethree.mr3 > zonethree.mf3) {
+            console.log('I am in mr greater', ismrInvalid.value);
+            ismrInvalid = true;
         }
     }
 }
@@ -791,9 +804,9 @@ invoke(async () => {
                                             <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
                                             <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
-                                            <td>
-                                                <input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" />
-                                            </td>
+                                            <td><input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" /> &nbsp;</td>
+                                            <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
+                                            <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
                                         </tr>
 
                                         <tr>
@@ -802,9 +815,9 @@ invoke(async () => {
                                             <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
                                             <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
-                                            <td>
-                                                <input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />
-                                            </td>
+                                            <td><input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />&nbsp;</td>
+                                            <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
+                                            <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
                                         </tr>
 
                                         <tr>
@@ -813,9 +826,9 @@ invoke(async () => {
                                             <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
                                             <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
-                                            <td>
-                                                <input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />
-                                            </td>
+                                            <td><input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />&nbsp;</td>
+                                            <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
+                                            <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
                                         </tr>
                                         <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
                                     </tbody>

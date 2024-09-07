@@ -1,9 +1,9 @@
 <script setup>
 // import pdfGen from '@/composables/pdfGen/pdfGen.vue';
 import { useGlobalState } from '@/stores/accountsStore';
+import { useAuthStore } from '@/stores/auth';
 import { useAxios } from '@vueuse/integrations/useAxios';
-
-import { reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const username = ref('');
@@ -25,11 +25,15 @@ let accountUser = reactive({
     license: ''
 });
 // const store = useLoginStore();
-
+const store = useAuthStore();
 // const { login } = storeToRefs(dataStore);
 function clearSelected() {
     store.$reset();
 }
+
+onMounted(clearSelected, () => {
+    console.log(store.$reset);
+});
 async function submit() {
     let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/getaccounts';
 
@@ -90,7 +94,7 @@ function register() {
 }
 
 const navigateNext = () => {
-    router.push('/dashboard');
+    router.push('/permitapp');
 };
 </script>
 

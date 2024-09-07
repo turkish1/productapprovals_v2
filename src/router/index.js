@@ -22,6 +22,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/RegistrationForm.vue')
                 },
                 {
+                    path: '/dock',
+                    name: 'dock',
+                    component: () => import('@/views/uikit/Dock.vue')
+                },
+                {
                     path: '/dashboard',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
