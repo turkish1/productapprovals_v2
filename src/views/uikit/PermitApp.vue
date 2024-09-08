@@ -100,7 +100,7 @@ export default {
             formData.processNumber = prefix.value.concat(createStr);
             console.log(formData.processNumber);
             checkV.value = formData.folio;
-            checkMB.value = checkV.value.substring(0, 2);
+            checkMB.value = checkV.value.substring(1, 2);
             console.log(checkMB.value);
 
             procReceive(formData);
@@ -307,7 +307,7 @@ export default {
                                         </div>
 
                                         <br />
-                                        <file-saver class="w-1/2"></file-saver>
+                                        <file-saver class="w-1/3"></file-saver>
 
                                         <!-- <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" /> -->
 

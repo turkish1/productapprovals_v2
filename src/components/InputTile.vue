@@ -202,10 +202,12 @@ watch(selectedUnderlayment, () => {
         isUDLNOAValid.value = false;
         isSAValid.value = false;
     } else if (save.value === 2) {
+        isTileValid.value = true;
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = true;
     } else if (save.value === 3) {
+        isTileValid.value = true;
         isUDLValid.value = true;
         isUDLNOAValid.value = true;
         isSAValid.value = false;
@@ -289,8 +291,6 @@ function checkInputSystem() {
             addFSystem();
         } else {
             saTiles.system = item.systemData.system;
-            saTiles.description = item.systemData.description;
-            saTiles.designpressure = item.systemData.designPressure;
         }
     });
 }
@@ -448,9 +448,9 @@ function checkMaterial() {
 
     console.log(result1.value, result2.value, result3.value);
 
-    zoneone.mr1 = computed(() => result1.value - zoneone.mg1);
-    zonetwo.mr2 = computed(() => result2.value - zonetwo.mg2);
-    zonethree.mr3 = computed(() => result3.value - zonethree.mg3);
+    zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+    zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+    zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
 }
 const maps = ref([]);
 const vals = ref([]);
@@ -527,7 +527,8 @@ function updateselectSystem() {
         }
         if (val === 'F2') {
             saTiles.description = saTiles.Description_F2;
-            saTiles.designpressure = saTiles.arrDesignPressure[1];
+            saTiles.designpressure = saTiles.arrDesignPressure[1] === null ? saTiles.arrDesignPressure[0] : saTiles.arrDesignPressure[1];
+            // isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
             console.log(saTiles.arrDesignPressure);
         }
         if (val === 'F3') {

@@ -2,7 +2,7 @@
     <div class="editor-container">
         <!-- Editor Drop Zone -->
         <div class="drop-zone" @dragover.prevent @dragenter.prevent="onDragEnter" @dragleave="onDragLeave" @drop.prevent="onDrop">
-            <p v-if="!images.length && !dragging" class="instructions">Drag and drop images here</p>
+            <p v-if="!images.length && !dragging" class="instructions">Drag and drop plans here</p>
             <p v-if="dragging" class="instructions dragging">Release to drop the images</p>
         </div>
 
@@ -59,7 +59,7 @@ function onDrop(event) {
 <style scoped>
 .editor-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     width: 100%;
 }
@@ -106,8 +106,8 @@ function onDrop(event) {
 }
 
 .image-wrapper {
-    width: 150px;
-    height: 150px;
+    width: 250px;
+    height: 250px;
     overflow: hidden;
 }
 

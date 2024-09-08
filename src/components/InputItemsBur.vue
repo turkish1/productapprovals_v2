@@ -203,10 +203,8 @@ invoke(async () => {
 </script>
 <template>
     <div id="bur" class="flex flex-col w-3/4 gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
-        <!-- <agreements-dialog-lowslope v-if="isDialog !== true"></agreements-dialog-lowslope> -->
-
         <div class="card flex flex-col gap-2">
-            <div class="w-128 gap-4" style="margin-left: 12px">
+            <div class="w-128 gap-2" style="margin-left: 12px">
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" />
             </div>
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
@@ -236,7 +234,7 @@ invoke(async () => {
             </div>
 
             <DripEdgeComponent />
-            <div class="card grid gap-3 grid-cols-1">
+            <div class="card lg:w-full grid gap-2 grid-cols-1">
                 <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
                 <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
                 <label for="system" style="color: red">Type of Low Slope BUR System: *</label>

@@ -124,7 +124,7 @@ const navigateNext = () => {
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
                         <!-- as="router-link" to="/roofsystem" @change="checkAu"-->
-                        <Button label="Sign In" severity="contrast" class="w-full" @keyup.enter="submit"></Button>
+                        <Button label="Sign In" severity="contrast" class="w-full" @click="submit" @keyup.enter="submit"></Button>
                     </div>
                     <pdfGen />
                 </div>

@@ -1,7 +1,7 @@
 <script setup>
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-import { tryOnMounted } from '@vueuse/core';
+import { tryOnMounted, useToNumber } from '@vueuse/core';
 
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -11,20 +11,27 @@ import { ref } from 'vue';
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
 const { permitapp } = storeToRefs(permitStore);
-console.log(permitapp._object);
+const MB = ref(permitStore.$state.permitapp);
+
 const area = ref('');
 const selectedItem = ref('');
 const type = ref([{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
 const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
+const isMiamiBeachValid = ref(false);
+const mbVal = ref(2);
+const convertMB = useToNumber(MB._value[0].miamibeach);
 
-tryOnMounted(usePermitappStore, () => {
-    console.log(permitapp);
+tryOnMounted(() => {
+    if (convertMB.value === mbVal.value) {
+        console.log('Entry');
+        isMiamiBeachValid.value = true;
+        console.log(isMiamiBeachValid.value);
+    }
 });
 function clearSelected() {
     store.$reset();
 }
 
-const isMiamiBeachValid = ref(false);
 function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     item = selectedItem.value.name;
 
@@ -34,6 +41,7 @@ function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     if (item === 'Asphalt Shingle') {
         dim1 = area.value;
         store.addSystemShingle(item, dim1);
+        console.log(item, dim1);
     }
     if (item === 'Low Slope') {
         dim2 = area.value;
@@ -70,7 +78,7 @@ function clear() {
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
         <form>
-            <div class="card flex flex-col gap-4">
+            <div v-show="!isMiamiBeachValid" class="card flex flex-col gap-4">
                 <h1 class="h1">Select System</h1>
 
                 <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />

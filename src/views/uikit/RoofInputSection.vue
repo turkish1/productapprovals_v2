@@ -81,54 +81,52 @@ function updateNode() {
             </StepList>
             <StepPanels class="object-scale-down h-700 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
-                    <div class="flex flex-col h-16 w-1024">
+                    <div class="flex flex-col h-48 w-1024">
                         <shingles v-if="!isValidshingle" />
-                    </div>
-
-                    <div class="flex pt-6 justify-end" style="margin-top: 150px">
-                        <Button
-                            label="Next"
-                            severity="contrast"
-                            icon="pi pi-arrow-right"
-                            @click="
-                                activateCallback('2');
-                                isValidbur = true;
-                                updateNode;
-                            "
-                        />
+                        <div class="flex pt-6 justify-end">
+                            <Button
+                                label="Next"
+                                severity="contrast"
+                                icon="pi pi-arrow-right"
+                                @click="
+                                    activateCallback('2');
+                                    isValidbur = true;
+                                    updateNode;
+                                "
+                            />
+                        </div>
                     </div>
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
-                    <div class="flex flex-col h-96">
+                    <div class="flex flex-col h-48 w-600">
                         <!-- v-if="values === 3" -->
                         <LowSlope v-if="isValidbur" />
-                    </div>
-                    <div class="flex pt-6 justify-between">
-                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" style="margin-top: 650px" />
-                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" style="margin-top: 650px" />
+                        <div class="flex pt-6 justify-between">
+                            <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" />
+                            <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" />
+                        </div>
                     </div>
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="3">
                     <!-- flex flex-row -->
-                    <div class="flex flex-col h-48 w-1024">
+                    <div class="flex flex-col h-48 w-1224">
                         <Tile />
+                        <div class="flex pt-6 justify-between">
+                            <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" />
+                            <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('4')" />
+                        </div>
                     </div>
-                    <div class="pt-6">
-                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 650px" />
-                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('4')" style="margin-top: 650px" />
-                        <!-- <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 750px" /> -->
-                        <!-- <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" style="margin-top: 650px" /> -->
-                    </div>
+                    <!--  style="margin-top: 650px" -->
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="4">
                     <!-- flex flex-row -->
                     <div class="flex flex-col h-48 w-1024">
                         <Checkout />
-                    </div>
-                    <div class="pt-6">
-                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('3')" style="margin-top: 750px" />
-                        <Button label="Submit" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('5')" style="margin-top: 750px" />
+                        <div class="flex pt-6 justify-between">
+                            <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('3')" />
+                            <Button label="Submit" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('5')" />
+                        </div>
                     </div>
                 </StepPanel>
             </StepPanels>

@@ -41,7 +41,7 @@ watchEffect(checkValue, getdripSize, () => {});
 
 <template>
     <!-- flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800 card w-96 grid gap-4 grid-cols-1-->
-    <div class="flex flex-col w-96 mb-8 gap-4" style="margin-left: 20px">
+    <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
         <label>Drip Edge Material</label>
         <Select ref="selectedValue" v-model="selectDripEdge" :options="types" placeholder="make selection" @click="checkValue" />
 

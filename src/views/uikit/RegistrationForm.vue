@@ -1,5 +1,4 @@
 <script>
-import Drop from '@/components/DropZone/Drop.vue';
 import usecreateAccount from '@/composables/Authentication/use-createAccount';
 // import useGlobalState from '@/composables/Authentication/use-createAccount';
 // import { useGlobalState } from '@/stores/accountsStore';
@@ -12,6 +11,7 @@ import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
 
 export default {
     setup() {
@@ -308,19 +308,11 @@ export default {
                     <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
                 </div>
             </div>
-            <div class="flex flex-col items-center gap-2">
-                <span class="text-xl font-medium">Scroll Down</span>
-                <span class="slidedown-icon h-8 w-8 bg-primary text-primary-contrast rounded-full inline-flex items-center justify-center">
-                    <i class="pi pi-arrow-down" />
-                </span>
-            </div>
 
-            <div class="card md:w-1/3 flex flex-col gap-3">
+            <div class="card md:w-1/3 flex flex-col gap-2">
                 <label for="addr">Upload Insurance Information</label>
                 <Toast />
-                <Drop />
-                <!-- <FileUpload ref="fileupload" mode="basic" name="demo[]" url="http://localhost:8080/upload" accept="*" :maxFileSize="10000000000" @upload="onUpload" />
-                <Button label="Upload" @click="upload" severity="contrast" :disabled="disabled" /> -->
+                <file-saver class="w-2/3"></file-saver>
             </div>
         </div>
     </form>

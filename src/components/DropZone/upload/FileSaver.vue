@@ -10,10 +10,10 @@
                 <div>
                     <Button @click="uploadEvent()" icon="pi pi-cloud-upload" rounded outlined severity="success" :disabled="!files || files.length === 0"></Button>
 
-                    <img role="presentation" :alt="file.name" :src="file.type" width="100" height="50" />
+                    <!-- <img role="presentation" :alt="file.name" :src="file.type" width="200" height="200" /> -->
                 </div>
 
-                <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
+                <span class="font-semibold text-ellipsis max-w-300 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
                 <div>{{ formatSize(file.size) }}</div>
                 <Badge value="Completed" class="mt-4" severity="success" />
                 <Button icon="pi pi-times" @click="removeFile(index)" outlined rounded severity="danger" />
@@ -120,13 +120,13 @@ const saveFileLocally = async (file) => {
 
 <style>
 .dropzone {
-    width: 100%;
+    width: 150%;
     height: 200px;
     border: 2px dashed #ccc;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px 0;
+    margin: 10px 0;
     cursor: pointer;
 }
 </style>

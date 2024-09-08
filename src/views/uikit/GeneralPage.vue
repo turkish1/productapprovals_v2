@@ -10,7 +10,6 @@ import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
 
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
@@ -244,9 +243,7 @@ invoke(async () => {
 
                         <InputGroup>
                             <InputText v-model="lowslope" placeholder="Low Slope" @change="roofArea" />
-                            <InputGroupAddon>
-                                <i class="pi pi-angle-down"></i>
-                            </InputGroupAddon>
+                            <InputGroupAddon> </InputGroupAddon>
                         </InputGroup>
                         <div class="ml-1 text-left"><label for="">Steep Slope </label></div>
                         <InputGroup>
@@ -260,18 +257,14 @@ invoke(async () => {
                             <InputText v-model="total" placeholder="Total" />
                         </InputGroup>
                     </div>
-                    <!-- <primeEditor /> -->
 
                     <div class="card md:w-1/2 flex flex-col gap-4">
-                        <file-saver />
+                        <CadViewer />
 
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
-                    <!-- -->
-                    <CadViewer />
                 </div>
             </div>
-            <!-- <cadEditor /> -->
         </div>
     </div>
 </template>
