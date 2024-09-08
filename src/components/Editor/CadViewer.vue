@@ -1,112 +1,120 @@
 <template>
-    <div class="viewer-container">
-        <!-- File Upload for Images -->
-        <input type="file" accept="image/*" @change="onImageUpload" />
+    <div class="editor-container">
+        <!-- Editor Drop Zone -->
+        <div class="drop-zone" @dragover.prevent @dragenter.prevent="onDragEnter" @dragleave="onDragLeave" @drop.prevent="onDrop">
+            <p v-if="!images.length && !dragging" class="instructions">Drag and drop images here</p>
+            <p v-if="dragging" class="instructions dragging">Release to drop the images</p>
+        </div>
 
-        <!-- CAD Viewer Canvas -->
-        <div ref="canvasContainer" class="canvas-container"></div>
-
-        <!-- Display Uploaded Image -->
-        <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" class="uploaded-image" />
+        <!-- Display Uploaded Images -->
+        <div class="image-gallery" v-if="images.length">
+            <h3>Uploaded Images</h3>
+            <div class="images-grid">
+                <div v-for="(image, index) in images" :key="index" class="image-wrapper">
+                    <img :src="image" alt="Uploaded Image" class="uploaded-image" />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import * as THREE from 'three';
-import { onMounted, ref } from 'vue';
-use;
+import { ref } from 'vue';
 
-const canvasContainer = ref(null);
-const imageUrl = ref(null); // Holds the URL of the uploaded image
+// Reactive variables
+const images = ref([]); // Stores the image URLs
+const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
 
-onMounted(() => {
-    // Set up three.js scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xdddddd);
+// Handle drag events
+function onDragEnter() {
+    dragging.value = true; // Change state when the user drags files over the zone
+}
 
-    // Camera setup
-    const camera = new THREE.PerspectiveCamera(75, canvasContainer.value.clientWidth / canvasContainer.value.clientHeight, 0.1, 100);
-    camera.position.z = 5;
+function onDragLeave() {
+    dragging.value = false; // Reset the state when the user leaves the zone
+}
 
-    // const container = document.getElementById('viewer-container');
+// Handle drop event
+function onDrop(event) {
+    dragging.value = false; // Reset dragging state
 
-    // const display = new Display(container, options);
-    // Renderer setup
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(canvasContainer.value.clientWidth, canvasContainer.value.clientHeight);
-    canvasContainer.value.appendChild(renderer.domElement);
+    // Get dropped files
+    const droppedFiles = event.dataTransfer.files;
 
-    // Add 3D object (cube)
-    // const geometry = new THREE.BoxGeometry(1, 1, 1);
-    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
+    // Loop through each file and process if it's an image
+    for (const file of droppedFiles) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
 
-    // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
-    scene.add(ambientLight);
+            reader.onload = (e) => {
+                images.value.push(e.target.result); // Add the image to the gallery
+            };
 
-    // Animation loop
-    // function animate() {
-    //     requestAnimationFrame(animate);
-
-    //     // Rotate the cube
-    //     cube.rotation.x += 0.01;
-    //     cube.rotation.y += 0.01;
-
-    //     renderer.render(scene, camera);
-    // }
-
-    animate();
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        const width = canvasContainer.value.clientWidth;
-        const height = canvasContainer.value.clientHeight;
-
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-    });
-});
-
-// Handle image upload
-function onImageUpload(event) {
-    const file = event.target.files[0];
-
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-
-        // Read the uploaded file
-        reader.onload = (e) => {
-            imageUrl.value = e.target.result;
-        };
-
-        reader.readAsDataURL(file);
-    } else {
-        alert('Please upload a valid image.');
+            reader.readAsDataURL(file); // Read the file as a data URL for display
+        }
     }
 }
 </script>
 
 <style scoped>
-.viewer-container {
+.editor-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
-.canvas-container {
+.drop-zone {
     width: 100%;
-    height: 500px;
-    background-color: #f0f0f0;
-    margin-top: 10px;
+    max-width: 500px;
+    height: 300px;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+}
+
+.drop-zone.dragging {
+    background-color: #e0e0e0;
+    border-color: #666;
+}
+
+.instructions {
+    color: #999;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.instructions.dragging {
+    color: #333;
+}
+
+.image-gallery {
+    width: 100%;
+    max-width: 800px;
+}
+
+.images-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.image-wrapper {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
 }
 
 .uploaded-image {
-    margin-top: 20px;
-    max-width: 100%;
-    max-height: 300px;
-    border: 2px solid #ccc;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
 }
 </style>

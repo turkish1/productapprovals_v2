@@ -1,14 +1,14 @@
 <script setup>
-import useExposurec from '@/composables/Tiletables/exposure_c';
-import { usetilesysEStore } from '@/stores/tilesysEStore';
-import { usetilesysfStore } from '@/stores/tilesysfStore';
-// import { useRoofListStore } from '@/stores/roofList';
 import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
+import useExposurec from '@/composables/Tiletables/exposure_c';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useRoofListStore } from '@/stores/roofList';
+import { usetilesysEStore } from '@/stores/tilesysEStore';
+import { usetilesysfStore } from '@/stores/tilesysfStore';
+import { useToNumber } from '@vueuse/core';
 import { invoke, until } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -184,8 +184,6 @@ let isUDLValid = ref('');
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
-
-watch(checkInputSystem, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 
 let selectedUnderlayment = ref();
 const underlaymentType = ref([
@@ -398,8 +396,8 @@ function checkInput() {
         });
     }
 }
-const ismrValid = ref(false);
-const ismrInvalid = ref(false);
+let ismrValid = ref(false);
+let ismrInvalid = ref(false);
 function checkMaterial() {
     console.log(tileData, tileDatas);
     tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
@@ -453,14 +451,6 @@ function checkMaterial() {
     zoneone.mr1 = computed(() => result1.value - zoneone.mg1);
     zonetwo.mr2 = computed(() => result2.value - zonetwo.mg2);
     zonethree.mr3 = computed(() => result3.value - zonethree.mg3);
-
-    // if (zoneone.mr1 < zoneone.mf1 || zonetwo.mr2 < zonetwo.mf2 || zonethree.mr3 < zonethree.mf3) {
-    //     ismrValid.value = true;
-    //     visible.value = true;
-    // }
-    // if (zoneone.mr1 > zoneone.mf1 || zonetwo.mr2 > zonetwo.mf2 || zonethree.mr3 > zonethree.mf3) {
-    //     ismrInvalid = true;
-    // }
 }
 const maps = ref([]);
 const vals = ref([]);
@@ -492,14 +482,38 @@ function updateMF(event) {
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
         }
-        if (zoneone.mr1 < zoneone.mf1 || event.value || zonetwo.mr2 < zonetwo.mf2 || zonethree.mr3 < zonethree.mf3) {
-            ismrValid.value = true;
-            console.log('I am in mr1', ismrValid.value);
-            visible.value = true;
-        } else if (zoneone.mr1 > zoneone.mf1 || event.value || zonetwo.mr2 > zonetwo.mf2 || zonethree.mr3 > zonethree.mf3) {
+
+        const mfcheck1 = useToNumber(zoneone.mf1);
+        const mfcheck2 = useToNumber(zoneone.mf2);
+        const mfcheck3 = useToNumber(zoneone.mf3);
+
+        console.log(mfcheck1.value);
+        if (zoneone.mr1 > mfcheck1.value || event.value) {
             console.log('I am in mr greater', ismrInvalid.value);
             ismrInvalid = true;
         }
+        if (zoneone.mr1 < mfcheck1.value || event.value) {
+            ismrValid.value = true;
+            ismrInvalid = false;
+        }
+        if (zonetwo.mr2 > mfcheck2.value) {
+            console.log('I am in mr greater', ismrInvalid.value);
+            ismrInvalid = true;
+        } else {
+            ismrValid.value = true;
+            ismrInvalid = false;
+        }
+        if (zonethree.mr3 > mfcheck3.modelValue) {
+            console.log('I am in mr greater', ismrInvalid.value);
+            ismrInvalid = true;
+        } else {
+            ismrValid.value = true;
+            ismrInvalid = false;
+        }
+        // } else if (zoneone.mr1 < mfcheck1 || event.value || zonetwo.mr2 < mfcheck2 || zonethree.mr3 < mfcheck3) {
+        //     ismrValid.value = true;
+        //     console.log('I am in mr1', ismrValid.value);
+        //     visible.value = true;
     }
 }
 
@@ -628,6 +642,8 @@ invoke(async () => {
     generatePdf();
     alert('Generated, PDF!');
 });
+
+watch(checkInputSystem, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">

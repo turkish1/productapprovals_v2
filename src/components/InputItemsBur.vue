@@ -52,6 +52,8 @@ let heightModel = ref('');
 
 function setRoofInputs() {
     dims.height = heightModel.value;
+
+    console.log(typeof h);
     dims.slope = slopeModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
 }
@@ -218,7 +220,7 @@ invoke(async () => {
 
             <div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="height" style="color: red">Height *</label>
-                <InputText id="height" v-model="dims.height" type="text" placeholder="height" @input="setRoofInputs" @change="validateRoofSlope" />
+                <InputText id="height" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateRoofSlope" />
             </div>
             <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
                 <Message w-64 severity="error" :life="2000">Enter a Valid Height</Message>

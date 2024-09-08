@@ -1,6 +1,7 @@
 <script setup>
 // import LowSlope from '@/components/LowSlope.vue';
 // import Shingles from '@/components/Shingles.vue';
+import Checkout from '@/components/Summary/Checkout.vue';
 import Tile from '@/components/Tile.vue';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
@@ -76,6 +77,7 @@ function updateNode() {
                 <Step value="1">Shingles</Step>
                 <Step value="2">Low Slope</Step>
                 <Step value="3">Tile</Step>
+                <Step value="4">Summary</Step>
             </StepList>
             <StepPanels class="object-scale-down h-700 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
@@ -113,7 +115,20 @@ function updateNode() {
                         <Tile />
                     </div>
                     <div class="pt-6">
-                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 750px" />
+                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 650px" />
+                        <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('4')" style="margin-top: 650px" />
+                        <!-- <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" style="margin-top: 750px" /> -->
+                        <!-- <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" style="margin-top: 650px" /> -->
+                    </div>
+                </StepPanel>
+                <StepPanel v-slot="{ activateCallback }" value="4">
+                    <!-- flex flex-row -->
+                    <div class="flex flex-col h-48 w-1024">
+                        <Checkout />
+                    </div>
+                    <div class="pt-6">
+                        <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('3')" style="margin-top: 750px" />
+                        <Button label="Submit" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('5')" style="margin-top: 750px" />
                     </div>
                 </StepPanel>
             </StepPanels>

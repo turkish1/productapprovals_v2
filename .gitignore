@@ -5,6 +5,7 @@ coverage
 .nitro
 .cache
 .output
+.npmrc
 .env
 notes.t
 .DS_Store

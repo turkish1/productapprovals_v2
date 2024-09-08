@@ -16,26 +16,40 @@
                     </template>
                     <template #content>
                         <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-sm" />
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
-                            neque quas!
-                        </p>
+                        <p>The roof systems you selected</p>
                         <Button label="Read more" text></Button>
                     </template>
                 </Card>
             </template>
         </Timeline>
     </div>
+    <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
+        <div class="flex mb-4">
+            <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
+            <div>
+                <Skeleton width="10rem" class="mb-2"></Skeleton>
+                <Skeleton width="5rem" class="mb-2"></Skeleton>
+                <Skeleton height=".5rem"></Skeleton>
+            </div>
+        </div>
+        <Skeleton width="100%" height="150px"></Skeleton>
+        <div class="flex justify-between mt-4">
+            <Skeleton width="4rem" height="2rem"></Skeleton>
+            <Skeleton width="4rem" height="2rem"></Skeleton>
+        </div>
+    </div>
 </template>
 
 <script setup>
+import { useRoofListStore } from '@/stores/roofList';
 import { ref } from 'vue';
-
+const store = useRoofListStore();
+const roofType = ref(store.$state.roofList);
 const events = ref([
-    { status: 'Ordered', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: 'game-controller.jpg' },
-    { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
-    { status: 'Shipped', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800' },
-    { status: 'Delivered', date: '16/10/2020 10:00', icon: 'pi pi-check', color: '#607D8B' }
+    { status: 'RoofSystems', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: '/src/assets/img/roofing_tile.jpg' },
+    { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
+    // { status: 'Shipped', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800' },
+    // { status: 'Delivered', date: '16/10/2020 10:00', icon: 'pi pi-check', color: '#607D8B' }
 ]);
 </script>
 

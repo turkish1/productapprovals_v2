@@ -1,8 +1,8 @@
 <script setup>
+import CadViewer from '@/components/Editor/CadViewer.vue';
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-// import primeEditor from '@/components/Editor/primeEditor.vue';
 import { invoke, until } from '@vueuse/core';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -268,7 +268,7 @@ invoke(async () => {
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
                     <!-- -->
-                    <!-- <file-saver /> -->
+                    <CadViewer />
                 </div>
             </div>
             <!-- <cadEditor /> -->
