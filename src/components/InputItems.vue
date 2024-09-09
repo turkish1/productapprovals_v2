@@ -2,7 +2,7 @@
 import useInputpoly from '@/composables/use-Inputpoly';
 import useSystemf from '@/composables/use-Inputsystemf';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke } from '@vueuse/core';
+import { invoke, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
@@ -98,7 +98,8 @@ const desc = ref(false);
 const { inputsystem, takef } = useSystemf();
 const { inp, takp } = useInputpoly();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
-
+const heightmin = ref(10);
+const heightmax = ref(33);
 const pdfcleared = ref(false);
 const whatChanged = computed(() => {
     checkInput();
@@ -106,9 +107,13 @@ const whatChanged = computed(() => {
     validateHeight();
     checkInputPoly();
 });
-const isHeightValid = ref(true);
+const isHeightValid = ref(false);
 function validateHeight() {
-    if (dims.height >= 10 || dims.height <= 33) {
+    console.log(typeof dims.height, typeof heightmax.value);
+    const height = useToNumber(dims.height);
+    console.log(typeof height.value);
+    if (height.value > heightmin.value || height.value <= heightmax.value) {
+        console.log(height.value, heightmax.value, heightmax.value);
         isHeightValid.value = true;
     } else {
         isHeightValid.value = false;
@@ -394,11 +399,11 @@ invoke(async () => {
         </div>
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label>
-            <!-- <label class="px-1" style="color: red">*</label> -->
+            <!-- @change="validateHeight" <label class="px-1" style="color: red">*</label> -->
             <InputText id="height" v-model="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
         </div>
-        <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
-            <Message w-64 severity="error" :life="3000" @change="validateHeight">Enter a Valid Height</Message>
+        <div v-if="isHeightValid" class="card flex flex-wrap gap-1 justify-left">
+            <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
         </div>
         <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">
             <label for="area">Area</label>
@@ -438,7 +443,7 @@ invoke(async () => {
     <Divider />
     <Divider />
 
-    <div class="card md:w-full gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="card gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
@@ -456,8 +461,8 @@ invoke(async () => {
             </div>
         </div>
 
-        <div class="flex flex-row space-x-12 space-y-6" style="margin-left: 2px">
-            <div v-show="isSAValid" class="flex flex-row space-x-20">
+        <div v-show="isSAValid" class="card gap-4 mt-10 space-x-10 space-y-6">
+            <div class="flex flex-row space-x-20">
                 <div class="flex flex-col gap-2">
                     <label for="saapplicant">S/A Applicant</label>
                     <InputText id="saapplicant" v-model="selfadhered.samanufacturer" />
@@ -471,15 +476,10 @@ invoke(async () => {
                     <label style="color: red">Select System F *</label>
                     <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
                 </div>
-                <div class="w-128 flex flex-col gap-2">
-                    <label for="sadescription">S/A Description</label>
-                    <InputText id="sadescription" v-model="selfadhered.sadescription" />
-                </div>
-
-                <!-- <div class="flex shrink flex-col gap-2">
-                    <label for="expiredate_sa">Expiration Date:</label>
-                    <InputText id="expiredate_sa" v-model="expiredate_sa" />
-                </div> -->
+            </div>
+            <div class="w-196 flex flex-col gap-2">
+                <label for="sadescription">S/A Description</label>
+                <InputText id="sadescription" v-model="selfadhered.sadescription" />
             </div>
         </div>
 

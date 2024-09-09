@@ -9,7 +9,7 @@ import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { useToNumber } from '@vueuse/core';
-import { invoke, until } from '@vueuse/shared';
+import { invoke } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
@@ -174,6 +174,7 @@ const whatChanged = computed(() => {
     EcheckInput();
     setRoofInputs();
     selectPaddy();
+    validateHeight();
 });
 const selectedsystemf = ref(null);
 const selectedsysNoa = ref(null);
@@ -272,8 +273,10 @@ function checkDatas() {
         isDataValid.value = false;
     }
 }
-const visible = ref(false);
 
+const visible = ref(false);
+const heightmin = ref(10);
+const heightmax = ref(40);
 function checkInputSystem() {
     // 23061202 23070604
 
@@ -377,17 +380,31 @@ function grabInput(event) {
 }
 
 let isSlopeValid = ref(true);
-let isHeightValid = ref(true);
-function validateRoofSlope() {
-    if (slope.value > 2 || slope.value <= 12) {
-        isSlopeValid.value = true;
-    } else isSlopeValid.value = false;
 
-    if ((dims.height <= 30 && dims.height >= 10) || dims.height === '') {
+const isHeightValid = ref(false);
+function validateHeight() {
+    console.log(typeof dims.height, typeof heightmax.value);
+    const height = useToNumber(dims.height);
+    console.log(typeof height.value);
+    if (height.value >= heightmin.value || height.value <= heightmax.value) {
+        console.log(height.value, heightmax.value, heightmax.value);
         isHeightValid.value = true;
     } else {
         isHeightValid.value = false;
     }
+}
+
+function validateRoofSlope() {
+    const slp = useToNumber(dims.slope);
+    if (slp.value > 2 && slp.value <= 12) {
+        isSlopeValid.value = true;
+    } else isSlopeValid.value = false;
+
+    // if ((dims.height <= 30 && dims.height >= 10) || dims.height === '') {
+    //     isHeightValid.value = true;
+    // } else {
+    //     isHeightValid.value = false;
+    // }
 }
 
 function checkInput() {
@@ -653,12 +670,12 @@ const generatePdf = () => {
     };
 };
 invoke(async () => {
-    await until(pdfcleared).changed();
-    generatePdf();
-    alert('Generated, PDF!');
+    // await until(pdfcleared).changed();
+    // generatePdf();
+    // alert('Generated, PDF!');
 });
 
-watch(checkInputSystem, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(checkInputSystem, validateHeight, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -678,9 +695,9 @@ watch(checkInputSystem, ismrInvalid, ismrValid, checkMaterial, updateselectSyste
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateRoofSlope" />
+            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
         </div>
-        <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
+        <div v-if="isHeightValid" class="card flex flex-wrap gap-1 justify-left">
             <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">

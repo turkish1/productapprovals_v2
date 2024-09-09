@@ -1,6 +1,16 @@
 <template>
     <div class="card flex justify-center .">
         <Dialog v-model:visible="visible" modal header="Terms Of Use" :style="{ width: '70rem' }">
+            <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
+                <p style="color: black">The use of the mePermit Application system is limited to properly licensed & insured Roofing Contractors.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
+                <p style="color: black">This application is only valid for residential work or commercial work subsidiary to a master building permit.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
+                <p style="color: black">Roofing permits cannot be issued for mobile homes (approved by the State of Florida Department of Motor Vehicles).</p>
+            </div>
+
             <div class="grid grid-cols-1 gap-2 place-content-center h-8 ...">
                 <p style="color: black">It is the applicant's responsiblity to complete this application correctly.</p>
             </div>
@@ -22,15 +32,6 @@
             </div>
             <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
                 <p style="color: black">The permit applicant agrees to comply with these terms of use requirements when obtaining this permit electronically.</p>
-            </div>
-            <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
-                <p style="color: black">The use of the mePermit Application system is limited to properly licensed & insured Roofing Contractors.</p>
-            </div>
-            <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
-                <p style="color: black">This application is only valid for residential work or commercial work subsidiary to a master building permit.</p>
-            </div>
-            <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
-                <p style="color: black">Roofing permits cannot be issued for mobile homes (approved by the State of Florida Department of Motor Vehicles).</p>
             </div>
 
             <div class="flex justify-end gap-2">

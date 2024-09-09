@@ -17,7 +17,7 @@ const Shingles = defineAsyncComponent(() => import('@/components/Shingles.vue'))
 
 const props = defineProps(['page']);
 const page = computed(() => props.page);
-console.log(page);
+
 const values = ref(1);
 const isMiamiBeachValid = ref(false);
 const mbVal = ref(2);

@@ -2,7 +2,7 @@
 import useburAxios from '@/composables/use-burAxios';
 
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, until } from '@vueuse/shared';
+import { invoke, until, useToNumber } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
@@ -90,15 +90,20 @@ function updateselection() {
         }
     });
 }
-
-function validateHeight(event) {
-    console.log(event.target);
-    if (dims.height >= 10 || dims.height <= 30) {
+const heightmin = ref(10);
+const heightmax = ref(30);
+function validateHeight() {
+    console.log(typeof dims.height, typeof heightmax.value);
+    const height = useToNumber(dims.height);
+    console.log(typeof height.value);
+    if (height.value >= heightmin.value || height.value <= heightmax.value) {
+        console.log(height.value, heightmax.value, heightmax.value);
         isHeightValid.value = true;
     } else {
         isHeightValid.value = false;
     }
 }
+
 function validateRoofSlope() {
     if (slope.value <= 2) {
         isSlopeValid.value = true;
@@ -204,7 +209,7 @@ invoke(async () => {
 });
 </script>
 <template>
-    <div id="bur" class="flex flex-col w-3/4 gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
+    <div id="bur" class="flex flex-col lg:w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
         <div class="card flex flex-col gap-2">
             <div class="w-128 gap-2" style="margin-left: 12px">
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" />
@@ -222,9 +227,9 @@ invoke(async () => {
 
             <div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="height" style="color: red">Height *</label>
-                <InputText id="height" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @update="validateHeight" @change="validateHeight" />
+                <InputText id="height" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
             </div>
-            <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
+            <div v-if="isHeightValid" class="card flex flex-wrap gap-1 justify-left">
                 <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
             </div>
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 20px">

@@ -77,38 +77,42 @@ export default {
         });
         // const getData = reactive(accountinput);
         const load = async () => {
-            const addr = ref(formData.address);
-            const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
+            try {
+                const addr = ref(formData.address);
+                const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
 
-            const url = `${baseURL}&myAddress=${encodeURIComponent(addr.value)}&to=200`;
-            const response = await fetch(url);
-            loading.value = true;
+                const url = `${baseURL}&myAddress=${encodeURIComponent(addr.value)}&to=200`;
+                const response = await fetch(url);
+                loading.value = true;
 
-            const data = await response.json();
-            console.log(data);
+                const data = await response.json();
+                console.log(data);
 
-            formData.muni = data.MinimumPropertyInfos[0].Municipality;
+                formData.muni = data.MinimumPropertyInfos[0].Municipality;
 
-            formData.folio = data.MinimumPropertyInfos[0].Strap;
-            let strLength = String(lastNum.value);
-            console.log(lastNum.value.length, lastNum.value, strLength);
-            let newNumber = strLength.substring(2, 13);
+                formData.folio = data.MinimumPropertyInfos[0].Strap;
+                let strLength = String(lastNum.value);
+                console.log(lastNum.value.length, lastNum.value, strLength);
+                let newNumber = strLength.substring(2, 13);
 
-            const number = useToNumber(newNumber);
-            let addNumber = number.value + 1;
-            let createStr = String(addNumber);
-            formData.processNumber = prefix.value.concat(createStr);
-            console.log(formData.processNumber);
-            checkV.value = formData.folio;
-            checkMB.value = checkV.value.substring(1, 2);
-            console.log(checkMB.value);
+                const number = useToNumber(newNumber);
+                let addNumber = number.value + 1;
+                let createStr = String(addNumber);
+                formData.processNumber = prefix.value.concat(createStr);
+                console.log(formData.processNumber);
+                checkV.value = formData.folio;
+                checkMB.value = checkV.value.substring(1, 2);
+                console.log(checkMB.value);
 
-            procReceive(formData);
-            // if checkMB.value === 13 after number conversion disable shingle roof.
+                procReceive(formData);
+                // if checkMB.value === 13 after number conversion disable shingle roof.
 
-            setTimeout(() => {
-                loading.value = false;
-            }, 2000);
+                setTimeout(() => {
+                    loading.value = false;
+                }, 2000);
+            } catch (error) {
+                alert(error);
+            }
         };
 
         const onSubmit = async () => {
