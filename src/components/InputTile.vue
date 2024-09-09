@@ -39,7 +39,7 @@ const tilenoas = reactive({
 });
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
-
+const errors = ref({});
 onMounted(() => {
     roofList.value.forEach((item, index) => {
         console.log(item.item, index);
@@ -175,6 +175,7 @@ const whatChanged = computed(() => {
     setRoofInputs();
     selectPaddy();
     validateHeight();
+    validateRoofSlope();
 });
 const selectedsystemf = ref(null);
 const selectedsysNoa = ref(null);
@@ -379,32 +380,43 @@ function grabInput(event) {
     }
 }
 
-let isSlopeValid = ref(true);
+let isSlopeValid = ref(false);
 
-const isHeightValid = ref(false);
-function validateHeight() {
-    console.log(typeof dims.height, typeof heightmax.value);
-    const height = useToNumber(dims.height);
-    console.log(typeof height.value);
-    if (height.value >= heightmin.value || height.value <= heightmax.value) {
-        console.log(height.value, heightmax.value, heightmax.value);
-        isHeightValid.value = true;
-    } else {
-        isHeightValid.value = false;
-    }
-}
+const minSlope = ref(2);
+const maxSlope = ref(12);
+// const isEmailValid = computed(() => form.email.value.includes('@'));
 
 function validateRoofSlope() {
-    const slp = useToNumber(dims.slope);
-    if (slp.value > 2 && slp.value <= 12) {
+    const slp = useToNumber(slopeModel.value);
+
+    console.log(slp.value, minSlope.value, slopeModel.value);
+    if (slp.value <= minSlope.value && slp.value <= maxSlope.value) {
         isSlopeValid.value = true;
+        console.log(isSlopeValid.value);
+        console.log(maxSlope.value);
     } else isSlopeValid.value = false;
+    console.log(isSlopeValid.value);
 
     // if ((dims.height <= 30 && dims.height >= 10) || dims.height === '') {
     //     isHeightValid.value = true;
     // } else {
     //     isHeightValid.value = false;
     // }
+}
+
+const isHeightValid = ref(false);
+function validateHeight() {
+    console.log(dims.height, heightmax.value);
+    const height = useToNumber(dims.height);
+    console.log(height.value);
+    if (height.value >= heightmin.value && height.value <= heightmax.value) {
+        console.log(height.value, heightmax.value, heightmax.value);
+        isHeightValid.value = true;
+        console.log(isHeightValid.value);
+    } else {
+        isHeightValid.value = false;
+        console.log(isHeightValid.value);
+    }
 }
 
 function checkInput() {
@@ -675,7 +687,7 @@ invoke(async () => {
     // alert('Generated, PDF!');
 });
 
-watch(checkInputSystem, validateHeight, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -689,17 +701,14 @@ watch(checkInputSystem, validateHeight, ismrInvalid, ismrValid, checkMaterial, u
             <InputText id="slope" v-model="slopeModel" type="text" placeholder="slope" :invalid="slope === null" @change="validateRoofSlope" />
         </div>
         <!-- <Button size="small" v-show="isSlopeValid" icon="pi pi-check" severity="success" @change="valueEntered" />&nbsp; -->
+        <!-- <Message v-if="isSlopeValid" class="w-56" severity="error" :life="3000" style="margin-left: 20px">Enter a Valid Slope</Message> -->
 
-        <div v-if="!isSlopeValid" class="card flex flex-wrap gap-1 justify-left">
-            <Message w-64 severity="error" :life="2000">Enter a Valid Slope</Message>
-        </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
             <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
         </div>
-        <div v-if="isHeightValid" class="card flex flex-wrap gap-1 justify-left">
-            <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
-        </div>
+        <Message v-if="isHeightValid" class="w-56" severity="error" :life="4000" style="margin-left: 20px">Enter a Valid Height</Message>
+
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
@@ -783,7 +792,7 @@ watch(checkInputSystem, validateHeight, ismrInvalid, ismrValid, checkMaterial, u
                 </div>
             </div>
         </div>
-        <div class="w-full flex flex-row space-x-30 space-y-12" style="margin-left: 2px">
+        <div class="w-full flex flex-row space-x-30 space-y-8" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-8 space-y-4" style="margin-left: 2px">
                 <div class="w-56 flex flex-col gap-2 mt-3">
                     <label style="color: red">Select System E *</label>
@@ -801,31 +810,31 @@ watch(checkInputSystem, validateHeight, ismrInvalid, ismrValid, checkMaterial, u
             </div>
         </div>
 
-        <div class="flex flex-row space-x-12 space-y-6" style="margin-left: 2px">
-            <div v-show="isSAValid" class="flex flex-row space-x-20">
-                <div class="flex flex-col gap-2">
+        <div class="card gap-4 mt-10 space-x-10 space-y-6">
+            <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
+                <div class="w-128 flex flex-col gap-2">
                     <label for="saapplicant">S/A Applicant</label>
                     <InputText id="saapplicant" v-model="saTiles.manufacturer" />
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="w-128 flex flex-col gap-2">
                     <label for="samaterial">S/A Material Type</label>
                     <InputText id="saaterial" v-model="saTiles.material" />
                 </div>
 
-                <div class="flex flex-col gap-2">
+                <div class="w-72 flex flex-col gap-2">
                     <label style="color: red">Select System F *</label>
                     <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
                 </div>
 
-                <div class="w-128 flex flex-col gap-2">
-                    <label for="sadescription">S/A Description</label>
-                    <InputText id="capsheetdescription" v-model="saTiles.description" />
-                </div>
-                <div class="flex flex-col gap-2">
+                <div class="w-72 flex flex-col gap-2">
                     <label for="designpressure">Design psf:</label>
-                    <InputText id="designpressure" v-model="saTiles.designpressure" aria-describedby="username-help" />
+                    <InputText id="designpressure" v-model="saTiles.designpressure" />
                 </div>
+            </div>
+            <div v-show="isSAValid" class="max-w-screen-lg gap-2 flex flex-col gap-2">
+                <label for="sadescription">S/A Description</label>
+                <InputText id="capsheetdescription" v-model="saTiles.description" />
             </div>
         </div>
 

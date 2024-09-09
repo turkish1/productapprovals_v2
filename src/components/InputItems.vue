@@ -394,17 +394,13 @@ invoke(async () => {
             <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" @change="validateRoofSlope" />
             <!-- <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p> -->
         </div>
-        <div v-if="!isSlopeValid" class="card flex flex-wrap gap-1 justify-left">
-            <Message w-64 severity="error" :life="3000">Enter a Valid Slope</Message>
-        </div>
+
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label>
             <!-- @change="validateHeight" <label class="px-1" style="color: red">*</label> -->
             <InputText id="height" v-model="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
         </div>
-        <div v-if="isHeightValid" class="card flex flex-wrap gap-1 justify-left">
-            <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
-        </div>
+
         <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">
             <label for="area">Area</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
@@ -443,7 +439,7 @@ invoke(async () => {
     <Divider />
     <Divider />
 
-    <div class="card gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="card gap-2 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
@@ -483,19 +479,19 @@ invoke(async () => {
             </div>
         </div>
 
-        <div class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
-            <div class="flex flex-col gap-2">
+        <div class="max-w-screen-xl flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+            <div class="w-128 flex flex-col gap-2">
                 <label for="manufacturer">Applicant</label>
                 <InputText id="manufacturer" v-model="shingles.manufacturer" />
             </div>
-            <div class="flex flex-col gap-2">
+            <div class="w-128 flex flex-col gap-2">
                 <label for="material"> Material</label>
                 <InputText id="material" v-model="shingles.material" />
             </div>
-            <div class="w-128 flex flex-col gap-2">
-                <label for="description">Description</label>
-                <InputText id="description" v-model="shingles.description" />
-            </div>
+        </div>
+        <div class="w-128 flex flex-col gap-2">
+            <label for="description">Description</label>
+            <InputText id="description" v-model="shingles.description" />
         </div>
     </div>
 </template>

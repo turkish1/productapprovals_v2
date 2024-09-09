@@ -61,7 +61,7 @@ function onDrop(event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 100px;
+    margin-left: 140px;
     width: 110%;
 }
 
