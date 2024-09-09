@@ -53,7 +53,6 @@ let heightModel = ref('');
 function setRoofInputs() {
     dims.height = heightModel.value;
 
-    console.log(typeof h);
     dims.slope = slopeModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
 }
@@ -61,8 +60,8 @@ function setRoofInputs() {
 function findSelected() {
     mat.value = bMaters.value;
 }
-watch(setRoofInputs, validateRoofSlope, findSelected, updateselection, updateselectSystem, syst, dims.per, selSytem, type, () => {});
-watchEffect(setRoofInputs, sB, syst, selectedSystem, () => {});
+watch(setRoofInputs, validateRoofSlope, findSelected, updateselection, updateselectSystem, validateHeight, syst, dims.per, selSytem, type, () => {});
+watchEffect(setRoofInputs, sB, syst, selectedSystem, validateHeight, () => {});
 
 onMounted(() => {
     roofList.value.forEach((item, index) => {
@@ -91,16 +90,19 @@ function updateselection() {
         }
     });
 }
-function validateRoofSlope() {
-    if (slope.value <= 2) {
-        isSlopeValid.value = true;
-    } else isSlopeValid.value = false;
 
-    if ((dims.height <= 30 && dims.height >= 10) || dims.height === '') {
+function validateHeight(event) {
+    console.log(event.target);
+    if (dims.height >= 10 || dims.height <= 30) {
         isHeightValid.value = true;
     } else {
         isHeightValid.value = false;
     }
+}
+function validateRoofSlope() {
+    if (slope.value <= 2) {
+        isSlopeValid.value = true;
+    } else isSlopeValid.value = false;
 }
 function selectSystem() {
     for (let i = 0; i < syst.value.length; i++) {
@@ -212,16 +214,18 @@ invoke(async () => {
 
                 <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" @input="validateRoofSlope" />
             </div>
+            <!-- <Button size="small" v-show="isSlopeValid" icon="pi pi-check" severity="success" @change="valueEntered" />&nbsp; -->
+
             <div v-if="!isSlopeValid" class="card flex flex-wrap gap-1 justify-left">
-                <Message w-64 severity="error" :life="1000">Enter a Valid Slope</Message>
+                <Message w-64 severity="error" :life="3000">Enter a Valid Slope</Message>
             </div>
 
             <div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="height" style="color: red">Height *</label>
-                <InputText id="height" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateRoofSlope" />
+                <InputText id="height" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @update="validateHeight" @change="validateHeight" />
             </div>
             <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
-                <Message w-64 severity="error" :life="2000">Enter a Valid Height</Message>
+                <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
             </div>
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 20px">
                 <label for="area">Area</label>

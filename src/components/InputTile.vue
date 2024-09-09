@@ -375,7 +375,21 @@ function grabInput(event) {
         getV(datasystemE.value);
     }
 }
-// 21062906
+
+let isSlopeValid = ref(true);
+let isHeightValid = ref(true);
+function validateRoofSlope() {
+    if (slope.value > 2 || slope.value <= 12) {
+        isSlopeValid.value = true;
+    } else isSlopeValid.value = false;
+
+    if ((dims.height <= 30 && dims.height >= 10) || dims.height === '') {
+        isHeightValid.value = true;
+    } else {
+        isHeightValid.value = false;
+    }
+}
+
 function checkInput() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
@@ -655,11 +669,19 @@ watch(checkInputSystem, ismrInvalid, ismrValid, checkMaterial, updateselectSyste
             <!-- @input="setRoofInputs" -->
             <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
 
-            <InputText id="slope" v-model="slopeModel" type="text" placeholder="slope" :invalid="slope === null" />
+            <InputText id="slope" v-model="slopeModel" type="text" placeholder="slope" :invalid="slope === null" @change="validateRoofSlope" />
+        </div>
+        <!-- <Button size="small" v-show="isSlopeValid" icon="pi pi-check" severity="success" @change="valueEntered" />&nbsp; -->
+
+        <div v-if="!isSlopeValid" class="card flex flex-wrap gap-1 justify-left">
+            <Message w-64 severity="error" :life="2000">Enter a Valid Slope</Message>
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @change="setRoofInputs" />
+            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateRoofSlope" />
+        </div>
+        <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
+            <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="area">Area of Tile</label>

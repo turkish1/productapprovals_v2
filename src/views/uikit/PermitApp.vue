@@ -307,7 +307,7 @@ export default {
                                         </div>
 
                                         <br />
-                                        <file-saver class="w-1/3"></file-saver>
+                                        <file-saver></file-saver>
 
                                         <!-- <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" /> -->
 

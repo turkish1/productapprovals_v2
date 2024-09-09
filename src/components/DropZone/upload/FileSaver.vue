@@ -13,7 +13,7 @@
                     <!-- <img role="presentation" :alt="file.name" :src="file.type" width="200" height="200" /> -->
                 </div>
 
-                <span class="font-semibold text-ellipsis max-w-300 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
+                <span class="font-semibold text-ellipsis max-w-250 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
                 <div>{{ formatSize(file.size) }}</div>
                 <Badge value="Completed" class="mt-4" severity="success" />
                 <Button icon="pi pi-times" @click="removeFile(index)" outlined rounded severity="danger" />
@@ -120,7 +120,7 @@ const saveFileLocally = async (file) => {
 
 <style>
 .dropzone {
-    width: 150%;
+    width: 120%;
     height: 200px;
     border: 2px dashed #ccc;
     display: flex;

@@ -15,7 +15,7 @@
                         {{ slotProps.item.date }}
                     </template>
                     <template #content>
-                        <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-sm" />
+                        <!-- <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-sm" /> -->
                         <p>The roof systems you selected</p>
                         <Button label="Read more" text></Button>
                     </template>
@@ -29,7 +29,7 @@
             <div>
                 <Skeleton width="10rem" class="mb-2"></Skeleton>
                 <Skeleton width="5rem" class="mb-2"></Skeleton>
-                <Skeleton height=".5rem"></Skeleton>
+                <Skeleton height="2.5rem" width="30rem" v-model="dba">{{ dba }}</Skeleton>
             </div>
         </div>
         <Skeleton width="100%" height="150px"></Skeleton>
@@ -41,8 +41,30 @@
 </template>
 
 <script setup>
+import { useGlobalState } from '@/stores/accountsStore';
 import { useRoofListStore } from '@/stores/roofList';
-import { ref } from 'vue';
+
+import { onMounted, ref, watch } from 'vue';
+
+const { accountUsers } = useGlobalState();
+
+const dba = ref('');
+const name = ref('');
+const license = ref('');
+const status = ref('');
+function displayUserInfo() {
+    accountUsers.value.forEach((item, index) => {
+        console.log(item);
+        dba.value = item.dba;
+        console.log(dba.value);
+    });
+}
+
+onMounted(() => {
+    displayUserInfo();
+});
+watch(displayUserInfo, () => {});
+console.log(accountUsers);
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const events = ref([

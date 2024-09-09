@@ -5,8 +5,6 @@ import { useRoofListStore } from '@/stores/roofList';
 import { invoke, until } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
-// import { logicOr } from '@vueuse/math';
-// import { whenever } from '@vueuse/core';
 
 import useInputs from '@/composables/use-Inputs';
 import useSlope from '@/composables/use-updateSlope';
@@ -84,12 +82,12 @@ const dims = reactive({
 });
 
 const selSytem = ref();
-const selfAdData = ref([]);
+
 //  This goes in the systemtype ref({ name: array })
 const array = ref([]);
 const selectedsystemf = ref(null);
 const systemtype = ref(selfadhered.system);
-const descriptionSAdata = ref([]);
+
 let slopetypemore = ref(slopeCondition.slope_more_4);
 let slopetypeless = ref(slopeCondition.slope_less_4);
 const selectedSlopehigh = ref();
@@ -100,14 +98,28 @@ const desc = ref(false);
 const { inputsystem, takef } = useSystemf();
 const { inp, takp } = useInputpoly();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
-const descSystem = ref([]);
+
 const pdfcleared = ref(false);
 const whatChanged = computed(() => {
     checkInput();
-
+    validateRoofSlope();
+    validateHeight();
     checkInputPoly();
 });
+const isHeightValid = ref(true);
+function validateHeight() {
+    if (dims.height >= 10 || dims.height <= 30) {
+        isHeightValid.value = true;
+    } else {
+        isHeightValid.value = false;
+    }
+}
 
+function validateRoofSlope() {
+    if (slope.value > 2 && slope.value <= 12) {
+        isSlopeValid = true;
+    } else isSlopeValid = false;
+}
 function grabInput() {
     data.value = noaInput.value;
     datasbs.value = saInput.value;
@@ -170,7 +182,6 @@ function addFSystem() {
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedsystemf).map((obj) => {
         const val = obj[1];
-        // console.log(val, typeof selfadhered.Description_F1, selfadhered.Description_F1, selfAdData.value);
 
         if (val === 'F1') {
             selfadhered.sadescription = selfadhered.Description_F1;
@@ -216,18 +227,19 @@ onMounted(() => {
         }
     });
 });
-function setRoofInputs() {
-    // roofArea.value.forEach((item, index) => {
-    //     dims.area = item.dim1;
-    // });
-}
+// function setRoofInputs() {
+//     // roofArea.value.forEach((item, index) => {
+//     //     dims.area = item.dim1;
+//     // });
+// }
 const dimensions = onMounted(() => {
-    setRoofInputs();
+    // setRoofInputs();
 });
 
-watchEffect(selectedsystemf, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, setRoofInputs, grabInput, () => {});
+watchEffect(selectedsystemf, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInput, () => {});
 
 watch(
+    validateHeight,
     checkInputSystem,
     addFSystem,
     updateselectSystem,
@@ -249,7 +261,7 @@ watch(
 
     checkInputPoly,
     checkInput,
-    setRoofInputs,
+    // setRoofInputs,
 
     () => {}
 );
@@ -374,13 +386,19 @@ invoke(async () => {
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Slope *</label>
 
-            <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" />
-            <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p>
+            <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" @change="validateRoofSlope" />
+            <!-- <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p> -->
+        </div>
+        <div v-if="!isSlopeValid" class="card flex flex-wrap gap-1 justify-left">
+            <Message w-64 severity="error" :life="3000">Enter a Valid Slope</Message>
         </div>
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label>
             <!-- <label class="px-1" style="color: red">*</label> -->
-            <InputText id="height" v-model="dims.height" type="text" placeholder="height" :invalid="height === null" />
+            <InputText id="height" v-model="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
+        </div>
+        <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
+            <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
         </div>
         <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">
             <label for="area">Area</label>
