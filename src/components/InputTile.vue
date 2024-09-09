@@ -707,7 +707,7 @@ watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrVali
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
             <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
         </div>
-        <Message v-if="isHeightValid" class="w-56" severity="error" :life="4000" style="margin-left: 20px">Enter a Valid Height</Message>
+        <!-- <Message v-if="isHeightValid" class="w-56" severity="error" :life="4000" style="margin-left: 20px">Enter a Valid Height</Message> -->
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="area">Area of Tile</label>
@@ -719,7 +719,7 @@ watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrVali
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
 
-        <div class="card md:w-1/2 grid gap-1 grid-cols-1">
+        <div class="card md:w-3/4 grid gap-1 grid-cols-1">
             <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @click="checkInputSystem" />
         </div>
@@ -728,13 +728,13 @@ watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrVali
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @input="grabInput" @change="EcheckInput" />
+                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @input="grabInput" @click="EcheckInput" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
+                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @input="grabInput" @click="checkInput" />
             </div>
         </div>
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
