@@ -29,7 +29,7 @@
             <div>
                 <Skeleton width="10rem" class="mb-2"></Skeleton>
                 <Skeleton width="5rem" class="mb-2"></Skeleton>
-                <Skeleton height="2.5rem" width="30rem" v-model="dba">{{ dba }}</Skeleton>
+                <Skeleton height="2.5rem" width="30rem" v-model="dba">{{ db }}</Skeleton>
             </div>
         </div>
         <Skeleton width="100%" height="150px"></Skeleton>

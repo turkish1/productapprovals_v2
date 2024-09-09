@@ -4,14 +4,14 @@
         <div class="drop-zone" @dragover.prevent @dragenter.prevent="onDragEnter" @dragleave="onDragLeave" @drop.prevent="onDrop">
             <p v-if="!images.length && !dragging" class="instructions">Drag and drop plans here</p>
             <p v-if="dragging" class="instructions dragging">Release to drop the images</p>
-        </div>
 
-        <!-- Display Uploaded Images -->
-        <div class="image-gallery" v-if="images.length">
-            <h3>Uploaded Images</h3>
-            <div class="images-grid">
-                <div v-for="(image, index) in images" :key="index" class="image-wrapper">
-                    <img :src="image" alt="Uploaded Image" class="uploaded-image" />
+            <!-- Display Uploaded Images -->
+            <div class="image-gallery" v-if="images.length">
+                <h3>Uploaded Images</h3>
+                <div class="images-grid">
+                    <div v-for="(image, index) in images" :key="index" class="image-wrapper">
+                        <img :src="image" alt="Uploaded Image" class="uploaded-image" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -59,15 +59,16 @@ function onDrop(event) {
 <style scoped>
 .editor-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
+    margin-left: 150px;
     width: 100%;
 }
 
 .drop-zone {
-    width: 100%;
-    max-width: 500px;
-    height: 300px;
+    width: 180%;
+    /* max-width: 1000px; */
+    height: 500px;
     border: 2px dashed #ccc;
     border-radius: 10px;
     display: flex;
@@ -75,6 +76,7 @@ function onDrop(event) {
     align-items: center;
     background-color: #f9f9f9;
     margin-bottom: 20px;
+    margin-left: 350px;
     transition: background-color 0.3s;
 }
 
@@ -94,7 +96,7 @@ function onDrop(event) {
 }
 
 .image-gallery {
-    width: 100%;
+    width: 150%;
     max-width: 800px;
 }
 
@@ -106,14 +108,14 @@ function onDrop(event) {
 }
 
 .image-wrapper {
-    width: 250px;
-    height: 250px;
+    width: 850px;
+    height: 350px;
     overflow: hidden;
 }
 
 .uploaded-image {
-    width: 100%;
-    height: 100%;
+    width: 150%;
+    height: 120%;
     object-fit: cover;
     border-radius: 8px;
 }

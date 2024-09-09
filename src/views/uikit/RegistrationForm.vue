@@ -66,6 +66,7 @@ export default {
             navigateNext();
         };
         function checkLicense() {
+            // if(events.value === '' || events.value === 'invalid'){}
             events.value.forEach((item) => {
                 // CRC002120 CRC026270
                 dataLic.value = formDatas.license.toUpperCase();

@@ -232,7 +232,7 @@ export default {
 <template>
     <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px">
         <PermitInitalAgreement v-if="isDialog" />
-        <div class="md:w-1/2">
+        <div class="md:w-3/4">
             <!-- <div class="card flex flex-col gap-4"> -->
             <div class="container">
                 <form>

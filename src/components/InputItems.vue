@@ -108,7 +108,7 @@ const whatChanged = computed(() => {
 });
 const isHeightValid = ref(true);
 function validateHeight() {
-    if (dims.height >= 10 || dims.height <= 30) {
+    if (dims.height >= 10 || dims.height <= 33) {
         isHeightValid.value = true;
     } else {
         isHeightValid.value = false;
@@ -398,7 +398,7 @@ invoke(async () => {
             <InputText id="height" v-model="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
         </div>
         <div v-if="!isHeightValid" class="card flex flex-wrap gap-1 justify-left">
-            <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
+            <Message w-64 severity="error" :life="3000" @change="validateHeight">Enter a Valid Height</Message>
         </div>
         <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">
             <label for="area">Area</label>
