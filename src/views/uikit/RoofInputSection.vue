@@ -1,13 +1,17 @@
 <script setup>
 // import LowSlope from '@/components/LowSlope.vue';
 // import Shingles from '@/components/Shingles.vue';
+import { usePermitappStore } from '@/stores/permitapp';
+
 import Checkout from '@/components/Summary/Checkout.vue';
 import Tile from '@/components/Tile.vue';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, tryOnMounted, until } from '@vueuse/core';
+import { invoke, tryOnMounted, until, useToNumber } from '@vueuse/core';
 // import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
+const permitStore = usePermitappStore();
 
+const MB = ref(permitStore.$state.permitapp);
 const LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
 const Shingles = defineAsyncComponent(() => import('@/components/Shingles.vue'));
 
@@ -15,11 +19,22 @@ const props = defineProps(['page']);
 const page = computed(() => props.page);
 console.log(page);
 const values = ref(1);
-
+const isMiamiBeachValid = ref(false);
+const mbVal = ref(2);
+const convertMB = useToNumber(MB._value[0].miamibeach);
 const store = useRoofListStore();
 const isValidshingle = ref(false);
 const isValidbur = ref(false);
 const isValidtile = ref(false);
+
+tryOnMounted(() => {
+    if (convertMB.value === mbVal.value) {
+        console.log('Entry');
+        isMiamiBeachValid.value = true;
+        isValidshingle.value = true;
+        console.log(isMiamiBeachValid.value, isValidshingle.value);
+    }
+});
 
 // const { roofList } = storeToRefs(store);
 invoke(async () => {

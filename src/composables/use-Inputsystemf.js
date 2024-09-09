@@ -45,6 +45,7 @@ export default function useSystemf() {
                 let num = Number(inputsystem.value);
 
                 if (item.NOA === num) {
+                    console.log(item);
                     systemData.manufacturer = item.Manufacturer;
                     systemData.material = item.Material;
                     systemData.Description_F1 = item.Description_F1;
@@ -55,10 +56,10 @@ export default function useSystemf() {
                     systemData.Description_F6 = item.Description_F6;
                     systemData.Description_F7 = item.Description_F7;
                     systemData.systemCheck = item.System;
-                    console.log(systemData.systemCheck, item.System, systemData.systemCheck.length);
                     if (systemData.systemCheck.length >= 3) {
                         console.log('Maps created');
                         systemData.maps = item.maps;
+                        console.log(item.maps);
                         for (const [key] of Object.entries(systemData.maps)) {
                             systemData.arraySystem.push(`${key}`);
                             console.log(`${key}`);

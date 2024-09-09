@@ -61,14 +61,15 @@ function onDrop(event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 150px;
-    width: 100%;
+    margin-left: 100px;
+    width: 110%;
 }
 
 .drop-zone {
     width: 180%;
+
     /* max-width: 1000px; */
-    height: 500px;
+    height: 600px;
     border: 2px dashed #ccc;
     border-radius: 10px;
     display: flex;
@@ -76,7 +77,7 @@ function onDrop(event) {
     align-items: center;
     background-color: #f9f9f9;
     margin-bottom: 20px;
-    margin-left: 350px;
+    margin-left: 200px;
     transition: background-color 0.3s;
 }
 
@@ -96,7 +97,7 @@ function onDrop(event) {
 }
 
 .image-gallery {
-    width: 150%;
+    width: 140%;
     max-width: 800px;
 }
 
@@ -108,14 +109,14 @@ function onDrop(event) {
 }
 
 .image-wrapper {
-    width: 850px;
-    height: 350px;
+    width: 550px;
+    height: 450px;
     overflow: hidden;
 }
 
 .uploaded-image {
     width: 150%;
-    height: 120%;
+    height: 400px;
     object-fit: cover;
     border-radius: 8px;
 }

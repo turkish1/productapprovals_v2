@@ -2,7 +2,7 @@
 import useInputpoly from '@/composables/use-Inputpoly';
 import useSystemf from '@/composables/use-Inputsystemf';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, until } from '@vueuse/core';
+import { invoke } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
@@ -152,6 +152,7 @@ function checkInputPoly() {
 }
 function checkInputSystem() {
     systemdatamt.value.forEach((item, index) => {
+        console.log(item);
         selfadhered.samanufacturer = item.systemData.manufacturer;
         selfadhered.samaterial = item.systemData.material;
         selfadhered.Description_F1 = item.systemData.Description_F1;
@@ -372,9 +373,8 @@ const generatePdf = () => {
     };
 };
 invoke(async () => {
-    await until(pdfcleared).changed();
-    generatePdf();
-    alert('Generated, PDF!');
+    // await until(pdfcleared).changed();
+    // generatePdf();
 });
 </script>
 <template>
@@ -415,7 +415,7 @@ invoke(async () => {
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="00000000" @input="grabInput" />
+                <InputText id="saInput" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInputSystem" />
             </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
