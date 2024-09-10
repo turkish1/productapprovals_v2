@@ -3,14 +3,13 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 
-import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import { ref } from 'vue';
 
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
-const { permitapp } = storeToRefs(permitStore);
+
 const MB = ref(permitStore.$state.permitapp);
 
 const area = ref('');

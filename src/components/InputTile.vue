@@ -101,6 +101,7 @@ let datasystemE = ref();
 const pdfcleared = ref(false);
 let saInput = ref(null);
 let tilenoaInput = ref(null);
+let udlInput = ref(null);
 const selectedDeck = ref();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const save = ref([]);
@@ -355,12 +356,13 @@ watch(
     { immediate: true }
 );
 
-function grabInput(event) {
-    console.log(typeof event.target.value);
+function grabInput() {
     datatilenoa.value = tilenoaInput.value;
     datatilenoas.value = tilenoaInput.value;
     datasystemf.value = saInput.value;
     datasystemE.value = udlInput.value;
+
+    console.log(udlInput.value, datasystemE.value, tilenoaInput.value);
     if (datatilenoa.value !== null) {
         // 18061905
 
@@ -375,7 +377,7 @@ function grabInput(event) {
     }
     if (udlInput.value !== null) {
         //  17040522
-
+        console.log(udlInput.value);
         getV(datasystemE.value);
     }
 }
@@ -728,13 +730,13 @@ watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrVali
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @input="grabInput" @click="EcheckInput" />
+                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @click="EcheckInput" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @input="grabInput" @click="checkInput" />
+                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @change="grabInput" @click="checkInput" />
             </div>
         </div>
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">

@@ -46,10 +46,11 @@ export default function useTileSystemE() {
 
     function getV(saNo) {
         inputsystem.value = saNo;
-        console.log(inputsystem.value);
+        console.log(inputsystem.value, saNo);
 
         const result = execute().then((result) => {
             noaNum.value = data.value;
+            console.log(noaNum.value);
 
             Object.entries(noaNum.value.result).map((obj) => {
                 let num = Number(inputsystem.value);

@@ -44,14 +44,12 @@ invoke(async () => {
 });
 const roofType = ref(store.$state.roofList);
 function checkState() {
-    console.log(roofType.value, roofType._value);
     if (roofType.value === 'Asphalt Shingle') {
         isValidshingle.value = true;
         console.log(isValidshingle.value);
     }
     if (roofType.value === 'Low Slope') {
         isValidbur.value = true;
-        console.log(isValidbur.value);
     }
     // if (roofType.value === 'Tile') {
     //     isValidtile.value = true;
