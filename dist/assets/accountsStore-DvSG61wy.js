@@ -1,0 +1,1 @@
+import{c as o}from"./index-C90Xl4fM.js";import{r as c,a3 as u}from"./index-BuNhBjhO.js";const m=o(()=>{const t=c([]),e=u(()=>t.value);function r(s){t.value.push(s)}class a{constructor(){this.accountUsers=[]}}return{reset:a,accountUsers:t,getUser:e,addUser:r}});export{m as u};
