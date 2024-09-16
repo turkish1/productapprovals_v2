@@ -8,9 +8,9 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { onMounted, reactive, ref, toRefs, watch } from 'vue';
+import { onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
-import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
+// import MapBox from '../../components/Maps/MapBox.vue';
 // import useaccountStore from '@/stores/accountStore';
 import { invoke, until } from '@vueuse/core';
 const a = ref(1);
@@ -67,6 +67,7 @@ export default {
         const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
+        // fix the phone error with if statement and validation
         phone.value = accountUsers._value[0].phone;
         const permitapp = ref(null);
         const checkMB = ref('');
@@ -122,7 +123,6 @@ export default {
         const selectedApplication = ref();
 
         const type = ref([
-            { name: '', code: ' ' },
             { name: 'Roofing Permit', code: 'RP' },
             { name: 'Doors Permit', code: 'DP' },
             { name: 'Windows Permit', code: 'WP' }
@@ -154,50 +154,63 @@ export default {
                 // Create a new jsPDF instance
                 const pdf = new jsPDF();
 
+                // Add some content
+                pdf.text(`${formData.processNumber}`, 20, 30);
+
+                // Set the opacity for the watermark text
+                pdf.setGState(new pdf.GState({ opacity: 0.4 })); // Adjust opacity
+
+                // Set font size, alignment, and rotation for the watermark
+                pdf.setFontSize(24);
+                pdf.setTextColor(150, 150, 150); // Light gray color for watermark
+                pdf.text('DigitalSolutions', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() / 2, {
+                    angle: 0, // Rotate watermark text
+                    align: 'left',
+                    baseline: 'bottom',
+                    renderingMode: 'fill'
+                });
+                console.log(pdf.text);
                 // Add the captured image data to the PDF
                 pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+                // Reset the opacity for the rest of the content
+                pdf.setGState(new pdf.GState({ opacity: 1 }));
 
                 const pdfBlob = pdf.output('blob');
-
+                console.log(pdfBlob);
                 // Save the PDF Blob using the File System Access API
                 savePdfBlobSilently(pdfBlob);
             });
-
             const savePdfBlobSilently = async (blob) => {
                 try {
                     // Use the File System Access API to request a file handle
-                    const fileHandle = await window.showSaveFilePicker({
-                        suggestedName: `${formData.processNumber}-permitapp.pdf`,
-                        types: [
-                            {
-                                description: 'PDF file',
-                                accept: {
-                                    'application/pdf': ['.pdf']
-                                }
-                            }
-                        ]
-                    });
+                    const fileContents = blob;
+                    const blobs = new Blob([fileContents], { type: 'application/pdf' });
 
-                    // Create a writable stream
-                    const writable = await fileHandle.createWritable();
+                    // Step 2: Create a temporary link element
+                    const link = document.createElement('a');
 
-                    // Write the Blob data to the file
-                    await writable.write(blob);
+                    // Step 3: Create a URL for the blob and set it as the link href
+                    link.href = URL.createObjectURL(blobs);
+                    link.download = `${formData.processNumber}-permitapp.pdf`; // Specify the filename
 
-                    // Close the writable stream
-                    await writable.close();
-                    responseMessage.value = 'saved Pdf';
+                    // Step 4: Programmatically click the link to trigger the download
+                    link.click();
+
+                    // Step 5: Clean up the URL object
+                    URL.revokeObjectURL(link.href);
+
                     console.log('PDF saved successfully without popping download dialog!');
                 } catch (error) {
                     console.error('Error saving file:', error);
                 }
             };
         };
+
         invoke(async () => {
             await until(pdfcleared).changed();
             generatePdf();
         });
-        watch(() => {});
+
         return {
             isDialog,
             pdfcleared,
@@ -289,7 +302,7 @@ export default {
                                         <div class="flex flex-col mt-3 grow basis-0 gap-3">
                                             <label for="Email">Email</label>
                                             <!-- label="Email" type="email" v-model="email"  id="email1" v-model="email" :error="emailError" type="text"-->
-                                            <InputText v-model="email" :invalid="email === null" />
+                                            <InputText v-model="email" :invalid="email === null" :error="emailError" />
                                             <!-- <Message v-if="invalid" severity="error">Email is required</Message> @click="navigateNext"-->
                                         </div>
                                         <div class="flex flex-col mt-3 grow basis-0 gap-3">
@@ -319,7 +332,7 @@ export default {
                                         <!-- <Drop /> -->
                                         <Button type="submit" label="Submit" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" />
                                     </form>
-                                    <!-- <drop-area></drop-area> -->
+                                    <!-- <MapBox /> -->
                                 </div>
                             </div>
                         </div>

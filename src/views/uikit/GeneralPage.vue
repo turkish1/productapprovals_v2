@@ -17,7 +17,7 @@ const store = useRoofListStore();
 const { roofList } = storeToRefs(store);
 const router = useRouter();
 
-const { accountUsers, getUser, addUser } = useGlobalState();
+const { accountUsers } = useGlobalState();
 let total = ref('');
 let low1 = ref('');
 let steep1 = ref('');
@@ -111,9 +111,27 @@ const generatePdf = () => {
 
         // Create a new jsPDF instance
         const pdf = new jsPDF();
+        pdf.text(`${process.value}`, 20, 30);
 
+        // Set the opacity for the watermark text
+        pdf.setGState(new pdf.GState({ opacity: 0.4 })); // Adjust opacity
+
+        // Set font size, alignment, and rotation for the watermark
+        pdf.setFontSize(24);
+        pdf.setTextColor(150, 150, 150); // Light gray color for watermark
+        pdf.text('DigitalSolutions', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() / 2, {
+            angle: 0, // Rotate watermark text
+            align: 'left',
+            baseline: 'bottom',
+            renderingMode: 'fill'
+        });
+        console.log(pdf.text);
         // Add the captured image data to the PDF
         pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+        // Reset the opacity for the rest of the content
+        pdf.setGState(new pdf.GState({ opacity: 1 }));
+
+        // Add the captured image data to the PDF
 
         const pdfBlob = pdf.output('blob');
 
@@ -124,26 +142,21 @@ const generatePdf = () => {
     const savePdfBlobSilently = async (blob) => {
         try {
             // Use the File System Access API to request a file handle
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: `${process.value}-general-page.pdf`,
-                types: [
-                    {
-                        description: 'PDF file',
-                        accept: {
-                            'application/pdf': ['.pdf']
-                        }
-                    }
-                ]
-            });
+            const fileContents = blob;
+            const blobs = new Blob([fileContents], { type: 'application/pdf' });
 
-            // Create a writable stream
-            const writable = await fileHandle.createWritable();
+            // Step 2: Create a temporary link element
+            const link = document.createElement('a');
 
-            // Write the Blob data to the file
-            await writable.write(blob);
+            // Step 3: Create a URL for the blob and set it as the link href
+            link.href = URL.createObjectURL(blobs);
+            link.download = `${process.value}-general-page.pdf`; // Specify the filename
 
-            // Close the writable stream
-            await writable.close();
+            // Step 4: Programmatically click the link to trigger the download
+            link.click();
+
+            // Step 5: Clean up the URL object
+            URL.revokeObjectURL(link.href);
 
             console.log('PDF saved successfully without popping download dialog!');
         } catch (error) {
@@ -151,6 +164,7 @@ const generatePdf = () => {
         }
     };
 };
+
 const navigateNext = () => {
     pdfcleared.value = true;
     router.push('/roofinputsection');
@@ -257,9 +271,11 @@ invoke(async () => {
                             <InputText v-model="total" placeholder="Total" />
                         </InputGroup>
                     </div>
-
-                    <div class="card md:w-1/2 flex flex-col gap-4">
+                    <div class="card md:w-1/2 bg-local hover:bg-fixed gap-4">
                         <CadViewer />
+                    </div>
+                    <div class="card md:w-1/3 flex flex-col gap-4">
+                        <!-- <CadViewer /> -->
 
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>

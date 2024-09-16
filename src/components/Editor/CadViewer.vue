@@ -77,7 +77,7 @@ function onDrop(event) {
     align-items: center;
     background-color: #f9f9f9;
     margin-bottom: 20px;
-    margin-left: 200px;
+    margin-left: 140px;
     transition: background-color 0.3s;
 }
 

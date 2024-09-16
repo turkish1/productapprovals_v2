@@ -1,13 +1,15 @@
 <script setup>
-import useTileSystemE from '@/composables/InputLogic/tileSystemEInput';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputs from '@/composables/InputLogic/use-tileInput';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
+import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
+import { useHeightValidation } from '@/composables/Validation/use-Height';
+import { useNumberValidation } from '@/composables/Validation/use-Slope';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useRoofListStore } from '@/stores/roofList';
-import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
+
 import { useToNumber } from '@vueuse/core';
 import { invoke } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
@@ -20,13 +22,12 @@ import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
-const etileStore = usetilesysEStore();
+// const etileStore = usetilesysEStore();
 const { getTilenoa, tileData } = usetileInputs();
-
+const { EcheckInput, Edatamounted, etileStore, getV, systemDataE } = useUDL();
 const { takef } = useTileSystemF();
-const { getV } = useTileSystemE();
-// const storeroof = useRoofListStore();
-// const { tilefinput } = storeToRefs(ftileStore);
+// const { getV } = useTileSystemE();
+
 const { getTilenoas, tileDatas } = usetileInputsingle();
 const { zones } = useGlobalState();
 const tilenoas = reactive({
@@ -39,10 +40,11 @@ const tilenoas = reactive({
 });
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
-const errors = ref({});
+
 onMounted(() => {
     roofList.value.forEach((item, index) => {
         console.log(item.item, index);
+
         if (item.item === 'Adhesive Set Tile') {
             console.log(item.dim4);
             dims.area = item.dim4;
@@ -66,7 +68,7 @@ const saTiles = reactive({
     arrDesignPressure: []
 });
 
-const udlTiles = reactive({
+const udlTile = reactive({
     noa: '',
     manufacturer: '',
     material: '',
@@ -92,7 +94,7 @@ const udlTiles = reactive({
     arrDesignPressure: []
 });
 let datamounted = ref(ftileStore.$state.tilefinput);
-let Edatamounted = ref(etileStore.$state.tilesysEinput);
+// let Edatamounted = ref(etileStore.$state.tilesysEinput);
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 let datasystemf = ref();
 let datatilenoa = ref(tileData);
@@ -117,7 +119,7 @@ const factor = ref(0.4);
 
 function setRoofInputs() {
     dims.height = heightModel.value;
-    dims.slope = slopeModel.value;
+    // lope = slopeModel.value;    dims.s
     dims.per = (dims.height * factor.value).toFixed(2);
 
     getData(dims.slope, dims.height);
@@ -157,16 +159,16 @@ const zonethree = reactive({
 
 watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 
-function EcheckInput() {
-    if (Edatamounted.value.length !== null) {
-        Edatamounted.value.forEach((item, index) => {
-            udlTiles.manufacturer = item.systemDataE.manufacturer;
-            udlTiles.material = item.systemDataE.material;
-            udlTiles.system = item.systemDataE.system;
-            udlTiles.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
-        });
-    }
-}
+// function EcheckInput() {
+//     if (Edatamounted.value.length !== null) {
+//         Edatamounted.value.forEach((item, index) => {
+//             udlTiles.manufacturer = item.systemDataE.manufacturer;
+//             udlTiles.material = item.systemDataE.material;
+//             udlTiles.system = item.systemDataE.system;
+//             udlTiles.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
+//         });
+//     }
+// }
 
 const selSytemE = ref();
 const selSytem = ref();
@@ -255,6 +257,7 @@ function checkData() {
         isDataValid.value = false;
     }
 }
+
 function checkDatas() {
     if (tileDatas.Table3.two.Direct_Deck === 'N/A') {
         isDataValid.value = false;
@@ -277,8 +280,7 @@ function checkDatas() {
 }
 
 const visible = ref(false);
-const heightmin = ref(10);
-const heightmax = ref(40);
+
 function checkInputSystem() {
     // 23061202 23070604
 
@@ -303,31 +305,31 @@ function EcheckInputSystem() {
     // 23111506
 
     datamountedsystemE.value.forEach((item, index) => {
-        udlTiles.Maps = item.systemDataE.Maps;
-        udlTiles.Anchor_Base_Sheet_E1 = item.systemDataE.Anchor_Base_Sheet_E1;
-        udlTiles.Anchor_Base_Sheet_E2 = item.systemDataE.Anchor_Base_Sheet_E2;
-        udlTiles.Anchor_Base_Sheet_E3 = item.systemDataE.Anchor_Base_Sheet_E3;
-        udlTiles.Anchor_Base_Sheet_E4 = item.systemDataE.Anchor_Base_Sheet_E4;
-        udlTiles.Anchor_Base_Sheet_E5 = item.systemDataE.Anchor_Base_Sheet_E5;
-        udlTiles.Anchor_Base_Sheet_E6 = item.systemDataE.Anchor_Base_Sheet_E6;
-        udlTiles.Anchor_Base_Sheet_E7 = item.systemDataE.Anchor_Base_Sheet_E7;
+        udlTile.Maps = item.systemDataE.Maps;
+        udlTile.Anchor_Base_Sheet_E1 = item.systemDataE.Anchor_Base_Sheet_E1;
+        udlTile.Anchor_Base_Sheet_E2 = item.systemDataE.Anchor_Base_Sheet_E2;
+        udlTile.Anchor_Base_Sheet_E3 = item.systemDataE.Anchor_Base_Sheet_E3;
+        udlTile.Anchor_Base_Sheet_E4 = item.systemDataE.Anchor_Base_Sheet_E4;
+        udlTile.Anchor_Base_Sheet_E5 = item.systemDataE.Anchor_Base_Sheet_E5;
+        udlTile.Anchor_Base_Sheet_E6 = item.systemDataE.Anchor_Base_Sheet_E6;
+        udlTile.Anchor_Base_Sheet_E7 = item.systemDataE.Anchor_Base_Sheet_E7;
 
-        udlTiles.TileCap_Sheet_Description_E1 = item.systemDataE.TileCap_Sheet_Description_E1;
-        udlTiles.TileCap_Sheet_Description_E2 = item.systemDataE.TileCap_Sheet_Description_E2;
-        udlTiles.TileCap_Sheet_Description_E3 = item.systemDataE.TileCap_Sheet_Description_E3;
-        udlTiles.TileCap_Sheet_Description_E4 = item.systemDataE.TileCap_Sheet_Description_E4;
-        udlTiles.TileCap_Sheet_Description_E5 = item.systemDataE.TileCap_Sheet_Description_E5;
-        udlTiles.TileCap_Sheet_Description_E6 = item.systemDataE.TileCap_Sheet_Description_E6;
-        udlTiles.TileCap_Sheet_Description_E7 = item.systemDataE.TileCap_Sheet_Description_E7;
+        udlTile.TileCap_Sheet_Description_E1 = item.systemDataE.TileCap_Sheet_Description_E1;
+        udlTile.TileCap_Sheet_Description_E2 = item.systemDataE.TileCap_Sheet_Description_E2;
+        udlTile.TileCap_Sheet_Description_E3 = item.systemDataE.TileCap_Sheet_Description_E3;
+        udlTile.TileCap_Sheet_Description_E4 = item.systemDataE.TileCap_Sheet_Description_E4;
+        udlTile.TileCap_Sheet_Description_E5 = item.systemDataE.TileCap_Sheet_Description_E5;
+        udlTile.TileCap_Sheet_Description_E6 = item.systemDataE.TileCap_Sheet_Description_E6;
+        udlTile.TileCap_Sheet_Description_E7 = item.systemDataE.TileCap_Sheet_Description_E7;
 
-        udlTiles.arrDesignPressure = item.systemDataE.designPressure;
+        udlTile.arrDesignPressure = item.systemDataE.designPressure;
 
         if (item.systemDataE.system.length > 1) {
         } else {
-            udlTiles.system = item.systemDataE.system;
+            udlTile.system = item.systemDataE.system;
             // selfAdData.value = item.systemData.description;
-            udlTiles.description = item.systemDataE.description;
-            udlTiles.designPressure = item.systemDataE.designPressure;
+            udlTile.description = item.systemDataE.description;
+            udlTile.designPressure = item.systemDataE.designPressure;
         }
     });
 }
@@ -339,7 +341,6 @@ const isSinglepaddyValid = ref(false);
 const paddySeleted = ref('');
 const resistanceCheck = ref(null);
 function selectPaddy() {
-    console.log(selectedOption.value);
     if (selectedOption.value === 'single') {
         isSinglepaddyValid.value = true;
     }
@@ -362,7 +363,7 @@ function grabInput() {
     datasystemf.value = saInput.value;
     datasystemE.value = udlInput.value;
 
-    console.log(udlInput.value, datasystemE.value, tilenoaInput.value);
+    console.log(udlInput.value, datasystemE.value);
     if (datatilenoa.value !== null) {
         // 18061905
 
@@ -382,43 +383,36 @@ function grabInput() {
     }
 }
 
-let isSlopeValid = ref(false);
+// let isSlopeValid = ref(false);
 
-const minSlope = ref(2);
-const maxSlope = ref(12);
-// const isEmailValid = computed(() => form.email.value.includes('@'));
+const { errorMessage, validateNumber } = useNumberValidation({
+    min: 2,
+    max: 12,
+    required: true
+});
+
+const { errorHeightMessage, validateTileHeight } = useHeightValidation({
+    min: 10,
+    max: 40,
+    required: true
+});
 
 function validateRoofSlope() {
-    const slp = useToNumber(slopeModel.value);
-
-    console.log(slp.value, minSlope.value, slopeModel.value);
-    if (slp.value <= minSlope.value && slp.value <= maxSlope.value) {
-        isSlopeValid.value = true;
-        console.log(isSlopeValid.value);
-        console.log(maxSlope.value);
-    } else isSlopeValid.value = false;
-    console.log(isSlopeValid.value);
-
-    // if ((dims.height <= 30 && dims.height >= 10) || dims.height === '') {
-    //     isHeightValid.value = true;
-    // } else {
-    //     isHeightValid.value = false;
-    // }
+    validateInput();
 }
+const validateInput = () => {
+    validateNumber(dims.slope);
+    console.log(errorMessage.value);
+};
 
-const isHeightValid = ref(false);
+const validateHeightInput = () => {
+    validateTileHeight(dims.height);
+    console.log(errorHeightMessage.value);
+};
+
 function validateHeight() {
-    console.log(dims.height, heightmax.value);
-    const height = useToNumber(dims.height);
+    validateHeightInput();
     console.log(height.value);
-    if (height.value >= heightmin.value && height.value <= heightmax.value) {
-        console.log(height.value, heightmax.value, heightmax.value);
-        isHeightValid.value = true;
-        console.log(isHeightValid.value);
-    } else {
-        isHeightValid.value = false;
-        console.log(isHeightValid.value);
-    }
 }
 
 function checkInput() {
@@ -499,6 +493,7 @@ function checkMaterial() {
 }
 const maps = ref([]);
 const vals = ref([]);
+
 function updateMF(event) {
     // tileData.selection;
     console.log(event.value);
@@ -604,31 +599,31 @@ function updateselectSystemE() {
         console.log(obj[1]);
 
         if (val === 'E1' || val === 'E8') {
-            udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E1;
-            udlTiles.designPressure = udlTiles.arrDesignPressure[0];
+            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E1;
+            udlTile.designPressure = udlTile.arrDesignPressure[0];
         }
         if (val === 'E2' || val === 'E9') {
-            udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E2;
-            udlTiles.designPressure = udlTiles.arrDesignPressure[1];
+            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E2;
+            udlTile.designPressure = udlTile.arrDesignPressure[1];
         }
         if (val === 'E3' || val === 'E10') {
-            udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E3;
-            udlTiles.designPressure = udlTiles.arrDesignPressure[2];
+            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E3;
+            udlTile.designPressure = udlTile.arrDesignPressure[2];
         }
         if (val === 'E4' || val === 'E11') {
-            udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E4;
-            udlTiles.designPressure = udlTiles.arrDesignPressure[3];
+            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E4;
+            udlTile.designPressure = udlTile.arrDesignPressure[3];
         }
         if (val === 'E5' || val === 'E12') {
-            udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E5;
-            udlTiles.designPressure = udlTiles.arrDesignPressure[4];
+            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E5;
+            udlTile.designPressure = udlTile.arrDesignPressure[4];
         }
         if (val === 'E6' || val === 'E13') {
-            udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E6;
-            udlTiles.designPressure = udlTiles.arrDesignPressure[5];
+            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E6;
+            udlTile.designPressure = udlTile.arrDesignPressure[5];
             if (val === 'E7' || val === 'E14') {
-                udlTiles.TileCap_Sheet_Description = udlTiles.TileCap_Sheet_Description_E7;
-                udlTiles.designPressure = udlTiles.arrDesignPressure[6];
+                udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E7;
+                udlTile.designPressure = udlTile.arrDesignPressure[6];
             }
         }
     });
@@ -683,13 +678,14 @@ const generatePdf = () => {
         }
     };
 };
+
 invoke(async () => {
     // await until(pdfcleared).changed();
     // generatePdf();
     // alert('Generated, PDF!');
 });
 
-watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -697,20 +693,17 @@ watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrVali
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
-            <!-- @input="setRoofInputs" -->
             <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
-
-            <InputText id="slope" v-model="slopeModel" type="text" placeholder="slope" :invalid="slope === null" @change="validateRoofSlope" />
+            <InputText id="slope" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />
+            <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
-        <!-- <Button size="small" v-show="isSlopeValid" icon="pi pi-check" severity="success" @change="valueEntered" />&nbsp; -->
-        <!-- <Message v-if="isSlopeValid" class="w-56" severity="error" :life="3000" style="margin-left: 20px">Enter a Valid Slope</Message> -->
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+            <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
-        <!-- <Message v-if="isHeightValid" class="w-56" severity="error" :life="4000" style="margin-left: 20px">Enter a Valid Height</Message> -->
-
+        <div></div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
@@ -781,16 +774,16 @@ watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrVali
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
                     <label for="manufacturer">(UDL) NOA Applicant</label>
-                    <InputText id="manufacturer" v-model="udlTiles.manufacturer" />
+                    <InputText id="manufacturer" v-model="udlTile.manufacturer" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="material">(UDL) Material</label>
-                    <InputText id="material" v-model="udlTiles.material" />
+                    <InputText id="material" v-model="udlTile.material" />
                 </div>
                 <div class="w-128 flex flex-col gap-2">
                     <label for="anchor">Anchor Base Sheet</label>
-                    <!-- <InputText id="anchor" v-model="udlTiles.Anchor_Base_Sheet" /> -->
-                    <Select v-model="selectedAnchor" :options="udlTiles.Anchor_Base_Sheet" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
+                    <!-- <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" /> -->
+                    <Select v-model="selectedAnchor" :options="udlTile.Anchor_Base_Sheet" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
                 </div>
             </div>
         </div>
@@ -799,15 +792,15 @@ watch(checkInputSystem, validateRoofSlope, validateHeight, ismrInvalid, ismrVali
                 <div class="w-56 flex flex-col gap-2 mt-3">
                     <label style="color: red">Select System E *</label>
                     <!-- @click="checkInputSystem" @change="updateselectSystem" -->
-                    <Select v-model="selectedsystemE" :options="udlTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystemE" />
+                    <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="checkInputSystem" @change="updateselectSystemE" />
                 </div>
                 <div class="w-128 flex flex-col gap-2">
                     <label for="description">(UDL) Description</label>
-                    <InputText id="description" v-model="udlTiles.TileCap_Sheet_Description" @change="updateselectSystemE" />
+                    <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" @change="updateselectSystemE" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="designPressure">Design psf:</label>
-                    <InputText id="designPressure" v-model="udlTiles.designPressure" @change="updateselectSystemE" />
+                    <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
                 </div>
             </div>
         </div>

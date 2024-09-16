@@ -85,10 +85,8 @@ export default function useTileSystemE() {
                     console.log('System added');
                 }
             });
-
-            return res;
         });
     }
     // 18061905
-    return { inputsystem, getV, noaNum, error, res, ...toRefs(systemDataE), store };
+    return { inputsystem, getV, noaNum, error, ...toRefs(systemDataE), store };
 }

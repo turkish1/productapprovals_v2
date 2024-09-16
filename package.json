@@ -15,6 +15,8 @@
     "@tiptap/pm": "^2.6.6",
     "@tiptap/starter-kit": "^2.6.6",
     "@tiptap/vue-3": "^2.6.6",
+    "@vee-validate/valibot": "^4.13.2",
+    "@vee-validate/zod": "^4.13.2",
     "@vueup/vue-quill": "^1.2.0",
     "@vueuse/core": "^10.11.1",
     "@vueuse/integrations": "^10.11.1",
@@ -23,14 +25,17 @@
     "aws-sdk": "^2.1684.0",
     "axios": "^1.7.5",
     "chart.js": "3.3.2",
+    "dotenv": "^16.4.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
+    "nvm": "^0.0.4",
     "pinia": "^2.2.0",
     "pinia-plugin-persistedstate": "^3.2.1",
     "primeicons": "^6.0.1",
     "primevue": "^4.0.0",
     "three": "^0.168.0",
     "three-cad-viewer": "^3.1.6",
+    "vee-validate": "^3.4.15",
     "vue": "^3.4.34",
     "vue-router": "^4.4.0",
     "vue3-html2pdf": "^1.1.2",
@@ -54,5 +59,6 @@
     "tailwindcss-primeui": "^0.3.2",
     "unplugin-vue-components": "^0.27.3",
     "vite": "^5.3.1"
-  }
+  },
+  "packageManager": "pnpm@8.15.4+sha1.c85a4305534f76d461407b59277b954bac97b5c4"
 }

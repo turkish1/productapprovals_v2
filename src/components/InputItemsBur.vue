@@ -1,16 +1,17 @@
 <script setup>
 import useburAxios from '@/composables/use-burAxios';
-
+import { useburValidation } from '@/composables/Validation/use-burHeight';
+import { useburSlopeValidation } from '@/composables/Validation/use-burSlope';
+// import useInput from '@/composables/use-input';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, until, useToNumber } from '@vueuse/shared';
+import { invoke, until } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
-import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
+import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const { bMaters, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
-
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 
@@ -23,17 +24,20 @@ const props = defineProps({
         default: 'LowSlope'
     }
 });
-let slope = ref(null);
-// let roofArea = ref(roofList._object.roofList[0].dim2);
-let isSlopeValid = ref(true);
-let isHeightValid = ref(true);
+
 const dims = reactive({
     area: '',
     per: '',
-    height: ''
+    height: '',
+    slope: ''
 });
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
+const whatChanged = computed(() => {
+    setRoofInputs();
 
+    validateHeight();
+    validateRoofSlope();
+});
 const selectedBur = ref();
 const mat = ref();
 const selectedSystem = ref();
@@ -51,17 +55,14 @@ let slopeModel = ref('');
 let heightModel = ref('');
 
 function setRoofInputs() {
-    dims.height = heightModel.value;
+    console.log(slopeModel, heightModel);
 
-    dims.slope = slopeModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
 }
 
 function findSelected() {
     mat.value = bMaters.value;
 }
-watch(setRoofInputs, validateRoofSlope, findSelected, updateselection, updateselectSystem, validateHeight, syst, dims.per, selSytem, type, () => {});
-watchEffect(setRoofInputs, sB, syst, selectedSystem, validateHeight, () => {});
 
 onMounted(() => {
     roofList.value.forEach((item, index) => {
@@ -90,25 +91,36 @@ function updateselection() {
         }
     });
 }
-const heightmin = ref(10);
-const heightmax = ref(30);
-function validateHeight() {
-    console.log(typeof dims.height, typeof heightmax.value);
-    const height = useToNumber(dims.height);
-    console.log(typeof height.value);
-    if (height.value >= heightmin.value || height.value <= heightmax.value) {
-        console.log(height.value, heightmax.value, heightmax.value);
-        isHeightValid.value = true;
-    } else {
-        isHeightValid.value = false;
-    }
-}
+
+const { errorburMessage, validateburSlope } = useburSlopeValidation({
+    min: 0.128,
+    max: 2,
+    required: true
+});
+
+const { errorburHeightMessage, validateburHeight } = useburValidation({
+    min: 10,
+    max: 30,
+    required: true
+});
 
 function validateRoofSlope() {
-    if (slope.value <= 2) {
-        isSlopeValid.value = true;
-    } else isSlopeValid.value = false;
+    validateInput();
 }
+const validateInput = () => {
+    validateburSlope(dims.slope);
+    console.log(errorburMessage.value);
+};
+
+const validateHeightInput = () => {
+    validateburHeight(dims.height);
+    console.log(errorburHeightMessage.value);
+};
+function validateHeight() {
+    validateHeightInput();
+    console.log(dims.height);
+}
+
 function selectSystem() {
     for (let i = 0; i < syst.value.length; i++) {
         let index = i;
@@ -164,6 +176,22 @@ const generatePdf = () => {
         // Create a new jsPDF instance
         const pdf = new jsPDF();
 
+        // Add some content
+        pdf.text('This is a sample PDF with a watermark', 20, 30);
+
+        // Set the opacity for the watermark text
+        pdf.setGState(new pdf.GState({ opacity: 0.2 })); // Adjust opacity
+
+        // Set font size, alignment, and rotation for the watermark
+        pdf.setFontSize(50);
+        pdf.setTextColor(150, 150, 150); // Light gray color for watermark
+        pdf.text('WATERMARK', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() / 2, {
+            angle: 45, // Rotate watermark text
+            align: 'center'
+        });
+
+        // Reset the opacity for the rest of the content
+        pdf.setGState(new pdf.GState({ opacity: 1 }));
         // Add the captured image data to the PDF
         pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
 
@@ -207,6 +235,8 @@ invoke(async () => {
     await until(pdfcleared).changed();
     generatePdf();
 });
+watch(setRoofInputs, validateRoofSlope, validateHeight, slope, findSelected, updateselection, updateselectSystem, syst, dims.per, selSytem, type, () => {});
+watchEffect(setRoofInputs, sB, whatChanged, syst, selectedSystem, validateRoofSlope, () => {});
 </script>
 <template>
     <div id="bur" class="flex flex-col lg:w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
@@ -217,21 +247,16 @@ invoke(async () => {
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="slope" style="color: red">Slope *</label>
 
-                <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @change="valueEntered" @input="validateRoofSlope" />
+                <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :invalid="slope === null" @change="validateRoofSlope" />
+                <Message v-if="errorburMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorburMessage }}</Message>
             </div>
-            <!-- <Button size="small" v-show="isSlopeValid" icon="pi pi-check" severity="success" @change="valueEntered" />&nbsp; -->
-
-            <!-- <div v-if="!isSlopeValid" class="card flex flex-wrap gap-1 justify-left">
-                <Message w-64 severity="error" :life="3000">Enter a Valid Slope</Message>
-            </div> -->
 
             <div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="height" style="color: red">Height *</label>
-                <InputText id="height" v-model="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+                <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+                <Message v-if="errorburHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorburHeightMessage }}</Message>
             </div>
-            <!-- <div v-if="isHeightValid" class="card flex flex-wrap gap-1 justify-left">
-                <Message w-64 severity="error" :life="3000">Enter a Valid Height</Message>
-            </div> -->
+
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 20px">
                 <label for="area">Area</label>
                 <InputText id="area" v-model="dims.area" type="text" placeholder="area" />

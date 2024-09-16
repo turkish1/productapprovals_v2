@@ -1,16 +1,14 @@
 <script setup>
+import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
+import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import useInputpoly from '@/composables/use-Inputpoly';
-import useSystemf from '@/composables/use-Inputsystemf';
-import { useRoofListStore } from '@/stores/roofList';
-import { invoke, useToNumber } from '@vueuse/core';
-import { storeToRefs } from 'pinia';
-import DripEdgeComponent from './DripEdgeComponent.vue';
-
 import useInputs from '@/composables/use-Inputs';
+import useSystemf from '@/composables/use-Inputsystemf';
 import useSlope from '@/composables/use-updateSlope';
 import { usePolyStore } from '@/stores/polyStore';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { useRoofListStore } from '@/stores/roofList';
+import { storeToRefs } from 'pinia';
+import DripEdgeComponent from './DripEdgeComponent.vue';
 // import { useSbsStore } from '@/stores/sbsStore';
 import { useShingleStore } from '@/stores/shingleStore';
 import Divider from 'primevue/divider';
@@ -104,27 +102,11 @@ const pdfcleared = ref(false);
 const whatChanged = computed(() => {
     checkInput();
     validateRoofSlope();
+
     validateHeight();
     checkInputPoly();
 });
-const isHeightValid = ref(false);
-function validateHeight() {
-    console.log(typeof dims.height, typeof heightmax.value);
-    const height = useToNumber(dims.height);
-    console.log(typeof height.value);
-    if (height.value > heightmin.value || height.value <= heightmax.value) {
-        console.log(height.value, heightmax.value, heightmax.value);
-        isHeightValid.value = true;
-    } else {
-        isHeightValid.value = false;
-    }
-}
 
-function validateRoofSlope() {
-    if (slope.value > 2 && slope.value <= 12) {
-        isSlopeValid = true;
-    } else isSlopeValid = false;
-}
 function grabInput() {
     data.value = noaInput.value;
     datasbs.value = saInput.value;
@@ -233,19 +215,17 @@ onMounted(() => {
         }
     });
 });
-// function setRoofInputs() {
-//     // roofArea.value.forEach((item, index) => {
-//     //     dims.area = item.dim1;
-//     // });
-// }
+
 const dimensions = onMounted(() => {
     // setRoofInputs();
 });
-
-watchEffect(selectedsystemf, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInput, () => {});
+watch(slope, (newVal, oldVal) => {
+    console.log('Slope change from', oldVal, 'to', typeof newVal);
+    validateInput(newVal);
+});
+watchEffect(selectedsystemf, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInput, () => {});
 
 watch(
-    validateHeight,
     checkInputSystem,
     addFSystem,
     updateselectSystem,
@@ -271,6 +251,36 @@ watch(
 
     () => {}
 );
+
+const { errorshingleMessage, validateShingleSlope } = useShingleValidation({
+    min: 2,
+    max: 12,
+    required: true
+});
+
+const { errorshHeightMessage, validateShingleHeight } = useShingleHghtValidation({
+    min: 10,
+    max: 30,
+    required: true
+});
+
+function validateRoofSlope() {
+    validateInput();
+}
+const validateInput = () => {
+    console.log(slope.value);
+    validateShingleSlope(slope.value);
+    console.log(errorshingleMessage.value);
+};
+
+const validateshHeightInput = () => {
+    validateShingleHeight(dims.height);
+    console.log(errorshHeightMessage.value);
+};
+
+function validateHeight() {
+    validateshHeightInput();
+}
 
 function getIndexs() {
     console.log(selectedSlopelow);
@@ -377,10 +387,10 @@ const generatePdf = () => {
         }
     };
 };
-invoke(async () => {
-    // await until(pdfcleared).changed();
-    // generatePdf();
-});
+// invoke(async () => {
+//     // await until(pdfcleared).changed();
+//     // generatePdf();
+// });
 </script>
 <template>
     <div id="shingle" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
@@ -391,14 +401,14 @@ invoke(async () => {
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Slope *</label>
 
-            <InputText id="slope" v-model="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" @change="validateRoofSlope" />
-            <!-- <p v-if="!isSlopeValid" style="color: red">Enter Valid Slope</p> -->
+            <InputText id="slope" v-model.number="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" @change="validateRoofSlope" />
+            <Message v-if="errorshingleMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorshingleMessage }}</Message>
         </div>
 
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label>
-            <!-- @change="validateHeight" <label class="px-1" style="color: red">*</label> -->
-            <InputText id="height" v-model="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
+            <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
+            <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
         </div>
 
         <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">

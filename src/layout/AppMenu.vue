@@ -12,6 +12,7 @@ const model = ref([
         label: 'UI Components',
         items: [
             { label: 'Dashboard', icon: 'pi pi-fw pi-id-card', to: '/dashboard' },
+            { label: 'Login', icon: 'pi pi-fw pi-id-card', to: '/logins' },
             // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
             { label: 'Registration Form', icon: 'pi pi-fw pi-id-card', to: '/registration' },
             { label: 'Dock', icon: 'pi pi-fw pi-id-card', to: '/dock' },
@@ -21,8 +22,8 @@ const model = ref([
             { label: 'Roof Input Section', icon: 'pi pi-fw pi-clone', to: '/roofinputsection' },
             { label: 'Shingles', icon: 'pi pi-fw pi-circle', to: '/shingles' },
             { label: 'Tile', icon: 'pi pi-fw pi-list', to: '/tile' },
-            { label: 'Lowslope', icon: 'pi pi-fw pi-check-square', to: '/lowslope' }
-            // { label: 'UseAxios', icon: 'pi pi-fw pi-check-square', to: '/useaxios' }
+            { label: 'Lowslope', icon: 'pi pi-fw pi-check-square', to: '/lowslope' },
+            { label: 'UserLanding', icon: 'pi pi-fw pi-check-square', to: '/userlanding' }
 
             // { label: 'Panel', icon: 'pi pi-fw pi-tablet', to: '/uikit/panel' },
             // { label: 'Overlay', icon: 'pi pi-fw pi-clone', to: '/uikit/overlay' },

@@ -1,17 +1,15 @@
 <script setup>
 // import LowSlope from '@/components/LowSlope.vue';
 // import Shingles from '@/components/Shingles.vue';
-import { usePermitappStore } from '@/stores/permitapp';
-
 import Checkout from '@/components/Summary/Checkout.vue';
 import Tile from '@/components/Tile.vue';
+import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, useToNumber } from '@vueuse/core';
 // import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
 const permitStore = usePermitappStore();
 
-const MB = ref(permitStore.$state.permitapp);
 const LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
 const Shingles = defineAsyncComponent(() => import('@/components/Shingles.vue'));
 
@@ -19,16 +17,22 @@ const props = defineProps(['page']);
 const page = computed(() => props.page);
 
 const values = ref(1);
-const isMiamiBeachValid = ref(false);
+let isMiamiBeachValid = ref(false);
 const mbVal = ref(2);
-const convertMB = useToNumber(MB._value[0].miamibeach);
+if (permitStore.$state.permitapp.length !== 0) {
+    isMiamiBeachValid = true;
+}
+const MB = ref(permitStore.$state.permitapp);
 const store = useRoofListStore();
 const isValidshingle = ref(false);
 const isValidbur = ref(false);
 const isValidtile = ref(false);
 
+const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
 tryOnMounted(() => {
-    if (convertMB.value === mbVal.value) {
+    if (convertMB.value === null || convertMB.value === NaN) {
+        return true;
+    } else if (convertMB.value === mbVal.value) {
         console.log('Entry');
         isMiamiBeachValid.value = true;
         isValidshingle.value = true;
@@ -44,6 +48,7 @@ invoke(async () => {
 });
 const roofType = ref(store.$state.roofList);
 function checkState() {
+    console.log(roofType);
     if (roofType.value === 'Asphalt Shingle') {
         isValidshingle.value = true;
         console.log(isValidshingle.value);
@@ -73,7 +78,7 @@ function checkState() {
 tryOnMounted(() => {
     checkState();
 });
-watch(() => {});
+watch(updateNode, () => {});
 function updateNode() {
     console.log(isValidbur.value, isValidshingle.value);
     isValidbur.value = true;
@@ -95,7 +100,7 @@ function updateNode() {
             <StepPanels class="object-scale-down h-700 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
                     <div class="flex flex-col h-48 w-1024">
-                        <shingles v-if="!isValidshingle" />
+                        <shingles v-if="isValidshingle" />
                         <div class="flex pt-6 justify-end">
                             <Button
                                 label="Next"

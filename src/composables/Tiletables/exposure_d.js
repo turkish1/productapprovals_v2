@@ -18,7 +18,7 @@ export default function useExposurec(fn1, fn2) {
     const zoneData = ref();
 
     loading.value = true;
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/zonec2023';
+    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/zoned2023';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 

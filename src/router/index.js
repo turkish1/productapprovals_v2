@@ -17,6 +17,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/auth/Login.vue')
                 },
                 {
+                    path: '/logins',
+                    name: 'logins',
+                    component: () => import('@/views/pages/auth/LoginValidate.vue')
+                },
+                {
                     path: '/registration',
                     name: 'registration',
                     component: () => import('@/views/uikit/RegistrationForm.vue')
@@ -30,6 +35,11 @@ const router = createRouter({
                     path: '/dashboard',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
+                },
+                {
+                    path: '/userlanding',
+                    name: 'userland',
+                    component: () => import('@/components/UserLanding/UserDash.vue')
                 },
                 // {
                 //     path: '/useaxios',

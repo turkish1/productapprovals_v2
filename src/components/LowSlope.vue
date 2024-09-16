@@ -1,26 +1,17 @@
 <script setup>
 import { useRoofListStore } from '@/stores/roofList';
 
-// import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import AgreementsDialogLowslope from './AgreementsDialogLowslope.vue';
 import InputItemsBur from './InputItemsBur.vue';
 const store = useRoofListStore();
-// const { roofList } = storeToRefs(store);
+const { roofList } = storeToRefs(store);
 const isDialog = ref(false);
 const roofType = ref(store.$state.roofList);
-console.log(roofType.value);
-// function checkState() {
-// roofList.value.forEach((item, index) => {
-//     console.log(item, index);
-//     if (item.item === 'Low Slope') {
-//         isDialog.value = true;
-//     } else isDialog.value = false;
-//     console.log(item.item);
-//     // });
-// }
+// temp disabled
 function checkState() {
-    console.log(roofType.value, roofType._value);
+    // console.log(roofType.value, roofType._value);
 
     for (let i = 0; i < roofType.value.length; i++) {
         console.log(roofType.value[i].item);

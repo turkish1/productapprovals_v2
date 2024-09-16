@@ -3,6 +3,7 @@
 import { useGlobalState } from '@/stores/accountsStore';
 import { useAuthStore } from '@/stores/auth';
 import { useAxios } from '@vueuse/integrations/useAxios';
+
 import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -93,19 +94,16 @@ const navigateNext = () => {
     <FloatingConfigurator />
     <div id="content" class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
-            <!-- <div>
-                <Button severity="contrast" class="w-2/3" @click="generatePDF">Generate PDF</Button>
-            </div> -->
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
-                    <div class="card flex justify-center"></div>
+                    <!-- <div class="card flex justify-center"></div> -->
                     <div>
                         <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" severity="secondary" raised style="margin-left: 150px" @click="register" />
                         <label for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
-                        <InputText id="username" type="text" placeholder="username" class="w-full md:w-[30rem] mb-8" v-model="username" />
+                        <InputText id="username" type="text" placeholder="username" class="w-full md:w-[30rem] mb-8" v-model="username" :error="userError" />
 
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                        <Password id="password1" v-tooltip.bottom="'Press Enter after value'" v-model="password" placeholder="Password" :toggleMask="true" class="mb-4" @keyup.enter="submit" fluid :feedback="false"></Password>
+                        <Password id="password1" v-tooltip.bottom="'Press Enter after value'" v-model="password" :error="errorMessage" placeholder="Password" :toggleMask="true" class="mb-4" @keyup.enter="submit" fluid :feedback="false"></Password>
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">

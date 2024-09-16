@@ -17,22 +17,23 @@ function checkState() {
 }
 
 // function checkState() {
-//     // roofList.value.forEach((item, index) => {
-//     //     console.log(item, index);
-//     //     if (item.item === 'Asphalt Shingle') {
-//     //         isDialog.value = true;
-//     //     } else isDialog.value = false;
-//     //     console.log(item.item);
-//     // });
+//     roofList.value.forEach((item, index) => {
+//         console.log(item, index);
+//         if (item.item === 'Asphalt Shingle') {
+//             isDialog.value = true;
+//         } else isDialog.value = false;
+//         console.log(item.item);
+//     });
 // }
 
 onMounted(() => {
+    // this was disabled for testing
     checkState();
 });
 
 let slope = ref(null);
 
-const MiamiBC = ref(false);
+// const MiamiBC = ref(false);
 
 function checkSlope() {
     console.log(slope);
