@@ -224,34 +224,6 @@ watch(slope, (newVal, oldVal) => {
     console.log('Slope change from', oldVal, 'to', typeof newVal);
     validateInput(newVal);
 });
-watchEffect(selectedsystemf, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInput, () => {});
-
-watch(
-    checkInputSystem,
-    addFSystem,
-    updateselectSystem,
-    valueEntered,
-    noaInput,
-    whatChanged,
-    udlInput,
-
-    dimensions,
-    grabInput,
-    useInputs,
-
-    inputshingle,
-    inputsystem,
-    datamounted,
-
-    datasbs,
-    datapoly,
-
-    checkInputPoly,
-    checkInput,
-    // setRoofInputs,
-
-    () => {}
-);
 
 const { errorshingleMessage, validateShingleSlope } = useShingleValidation({
     min: 2,
@@ -391,10 +363,34 @@ const generatePdf = () => {
 function clearSelected() {
     store.$reset();
 }
-// invoke(async () => {
-//     // await until(pdfcleared).changed();
-//     // generatePdf();
-// });
+watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInput, () => {});
+
+watch(
+    checkInputSystem,
+    addFSystem,
+    updateselectSystem,
+    valueEntered,
+    noaInput,
+    whatChanged,
+    udlInput,
+
+    dimensions,
+    grabInput,
+    useInputs,
+
+    inputshingle,
+    inputsystem,
+    datamounted,
+
+    datasbs,
+    datapoly,
+
+    checkInputPoly,
+    checkInput,
+    // setRoofInputs,
+
+    () => {}
+);
 </script>
 <template>
     <div id="shingle" class="flex flex-col w-full gap-1 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">

@@ -10,11 +10,8 @@ const { roofList } = storeToRefs(store);
 
 const isDialog = ref(false);
 const roofType = ref(store.$state.roofList);
-// const roofType = ref(store.$state.roofList[0].item);
+
 function checkState() {
-    // if (roofType.value === 'Asphalt Shingle') {
-    //     isDialog.value = true;
-    // } else isDialog.value = false;
     for (let i = 0; i < roofType.value.length; i++) {
         console.log(roofType.value[i].item);
         if (roofType.value[i].item === 'Asphalt Shingle') {
@@ -24,16 +21,6 @@ function checkState() {
         }
     }
 }
-
-// function checkState() {
-//     roofList.value.forEach((item, index) => {
-//         console.log(item, index);
-//         if (item.item === 'Asphalt Shingle') {
-//             isDialog.value = true;
-//         } else isDialog.value = false;
-//         console.log(item.item);
-//     });
-// }
 
 onMounted(() => {
     // this was disabled for testing

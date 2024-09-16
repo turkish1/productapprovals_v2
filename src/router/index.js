@@ -159,4 +159,12 @@ const router = createRouter({
     ]
 });
 
+router.beforeEach((to, from, next) => {
+    if (to.name === 'Low Slope') {
+        console.log('You are on the Low Slope Page');
+    } else {
+        console.log('Not on low slope');
+    }
+    next(); //always call next to allow navigation
+});
 export default router;

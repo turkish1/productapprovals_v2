@@ -16,6 +16,7 @@
     "@tiptap/starter-kit": "^2.6.6",
     "@tiptap/vue-3": "^2.6.6",
     "@vueup/vue-quill": "^1.2.0",
+    "@vueuse/components": "^11.1.0",
     "@vueuse/core": "^10.11.1",
     "@vueuse/integrations": "^10.11.1",
     "@vueuse/math": "^11.0.3",

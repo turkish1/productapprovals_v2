@@ -2,17 +2,18 @@
 // import LowSlope from '@/components/LowSlope.vue';
 // import Shingles from '@/components/Shingles.vue';
 import Checkout from '@/components/Summary/Checkout.vue';
-import Tile from '@/components/Tile.vue';
+// import Tile from '@/components/Tile.vue';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
+
 const permitStore = usePermitappStore();
 
 const LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
 const Shingles = defineAsyncComponent(() => import('@/components/Shingles.vue'));
-
+const Tile = defineAsyncComponent(() => import('@/components/Tile.vue'));
 const props = defineProps(['page']);
 const page = computed(() => props.page);
 // const childRef = ref(Shingles);
@@ -27,9 +28,8 @@ const store = useRoofListStore();
 const isValidshingle = ref(false);
 const isValidbur = ref(false);
 const isValidtile = ref(false);
-// const logChildState = () => {
-//     console.log('Child state:', childRef.value.shingleStore);
-// };
+
+// Here we check for folios with restriction
 const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
 tryOnMounted(() => {
     if (convertMB.value === null || convertMB.value === NaN) {
@@ -38,56 +38,43 @@ tryOnMounted(() => {
         console.log('Entry');
         isMiamiBeachValid.value = true;
         isValidshingle.value = true;
-        console.log(isMiamiBeachValid.value, isValidshingle.value);
     }
 });
 
 const { roofList } = storeToRefs(store);
-invoke(async () => {
-    await until(isValidshingle).toBe(true);
-    await until(isValidbur).toBe(true);
-    // await until(isValidtile).toBe(true);
-});
-// const roofType = ref(store.$state.roofList);
-// function checkState() {
-//     console.log(roofType);
-//     if (roofType.value === 'Asphalt Shingle') {
-//         isValidshingle.value = true;
-//         console.log(isValidshingle.value);
-//     }
-//     if (roofType.value === 'Low Slope') {
-//         isValidbur.value = true;
-//     }
-//     // if (roofType.value === 'Tile') {
-//     //     isValidtile.value = true;
-//     // }
-// }
 
+// This check will have asphalt dialog pop up
 function checkState() {
     roofList.value.forEach((item, index) => {
         console.log(item, index);
         if (item.item === 'Asphalt Shingle') {
             isValidshingle.value = true;
+            console.log(isValidshingle, item.item);
         }
-        if (item.item === 'Low Slope') {
-            isValidbur.value = true;
-        }
-        // if (item.item === 'Adhesive Set Tile') {
-        //      isValidtile.value = true;
-        // }
     });
 }
 
 tryOnMounted(() => {
     checkState();
 });
-watch(updateNode, () => {});
-function updateNode() {
-    console.log(isValidbur.value, isValidshingle.value);
+
+// This function is tied to the next button on the breadcrumb page.
+function updateBur() {
     isValidbur.value = true;
-    isValidshingle.value = true;
 }
-watch(Shingles, LowSlope, () => {});
+
+function updateTile() {
+    isValidtile.value = true;
+    console.log(isValidtile);
+}
+
+invoke(async () => {
+    await until(isValidshingle).toBe(true);
+    await until(isValidbur).toBe(true);
+    await until(isValidtile).toBe(true);
+});
+// This is to minimize data not returning in the panel view.
+watch(Shingles, LowSlope, Tile, () => {});
 </script>
 
 <template>
@@ -113,7 +100,7 @@ watch(Shingles, LowSlope, () => {});
                                 @click="
                                     activateCallback('2');
                                     isValidbur = true;
-                                    updateNode;
+                                    updateBur;
                                 "
                             />
                         </div>
@@ -126,14 +113,14 @@ watch(Shingles, LowSlope, () => {});
                         <LowSlope v-if="isValidbur" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" />
-                            <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" />
+                            <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3'), (isValidtile = true), updateTile" />
                         </div>
                     </div>
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="3">
                     <!-- flex flex-row -->
                     <div class="flex flex-col h-48 w-1224">
-                        <Tile />
+                        <Tile v-if="isValidtile" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" />
                             <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('4')" />
