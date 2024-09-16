@@ -1,8 +1,8 @@
 <script setup>
 import { useRoofListStore } from '@/stores/roofList';
-
+import { tryOnMounted } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import AgreementsDialogLowslope from './AgreementsDialogLowslope.vue';
 import InputItemsBur from './InputItemsBur.vue';
 const store = useRoofListStore();
@@ -11,7 +11,7 @@ const isDialog = ref(false);
 const roofType = ref(store.$state.roofList);
 // temp disabled
 function checkState() {
-    // console.log(roofType.value, roofType._value);
+    console.log(roofType.value, roofType._value);
 
     for (let i = 0; i < roofType.value.length; i++) {
         console.log(roofType.value[i].item);
@@ -25,7 +25,7 @@ function checkState() {
     //     console.log(item);
     //     if (item === 'Low Slope') {
     //         console.log('I am in', item);
-    //         isDialog.value = true;
+    //         isDialog = true;
     //         console.log(isDialog.value);
     //     }
     // });
@@ -34,7 +34,7 @@ function checkState() {
     //     isValidtile.value = true;
     // }
 }
-onMounted(() => {
+tryOnMounted(() => {
     checkState();
 });
 </script>

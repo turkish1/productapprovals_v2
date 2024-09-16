@@ -275,8 +275,6 @@ invoke(async () => {
                         <CadViewer />
                     </div>
                     <div class="card md:w-1/3 flex flex-col gap-4">
-                        <!-- <CadViewer /> -->
-
                         <Button type="submit" label="Submit" severity="contrast" raised @click="navigateNext" />
                     </div>
                 </div>

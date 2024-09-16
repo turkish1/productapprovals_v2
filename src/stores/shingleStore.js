@@ -6,7 +6,9 @@ export const useShingleStore = defineStore('inputshingle', {
         inputshingle: [],
         id: 0
     }),
-
+    reset() {
+        this.inputshingle = [];
+    },
     //actions
     actions: {
         addShingle(shingleData) {

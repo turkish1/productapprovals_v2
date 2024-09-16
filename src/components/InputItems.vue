@@ -101,8 +101,9 @@ const heightmax = ref(33);
 const pdfcleared = ref(false);
 const whatChanged = computed(() => {
     checkInput();
-    validateRoofSlope();
 
+    validateRoofSlope();
+    grabInput();
     validateHeight();
     checkInputPoly();
 });
@@ -387,17 +388,22 @@ const generatePdf = () => {
         }
     };
 };
+function clearSelected() {
+    store.$reset();
+}
 // invoke(async () => {
 //     // await until(pdfcleared).changed();
 //     // generatePdf();
 // });
 </script>
 <template>
-    <div id="shingle" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
+    <div id="shingle" class="flex flex-col w-full gap-1 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <div class="w-64 gap-1 mt-3" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
-
+        <!-- <div class="refresh"> -->
+        <Button plain text><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 400px; margin-top: 90px" @click="clearSelected"></i></Button>
+        <!-- </div> -->
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Slope *</label>
 
@@ -467,7 +473,7 @@ const generatePdf = () => {
             </div>
         </div>
 
-        <div v-show="isSAValid" class="card gap-4 mt-10 space-x-10 space-y-6">
+        <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6">
             <div class="flex flex-row space-x-20">
                 <div class="flex flex-col gap-2">
                     <label for="saapplicant">S/A Applicant</label>
@@ -499,7 +505,7 @@ const generatePdf = () => {
                 <InputText id="material" v-model="shingles.material" />
             </div>
         </div>
-        <div class="w-128 flex flex-col gap-2">
+        <div class="w-196 flex flex-col gap-2">
             <label for="description">Description</label>
             <InputText id="description" v-model="shingles.description" />
         </div>

@@ -6,7 +6,7 @@ import Tile from '@/components/Tile.vue';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, useToNumber } from '@vueuse/core';
-// import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
 const permitStore = usePermitappStore();
 
@@ -15,7 +15,7 @@ const Shingles = defineAsyncComponent(() => import('@/components/Shingles.vue'))
 
 const props = defineProps(['page']);
 const page = computed(() => props.page);
-
+// const childRef = ref(Shingles);
 const values = ref(1);
 let isMiamiBeachValid = ref(false);
 const mbVal = ref(2);
@@ -27,7 +27,9 @@ const store = useRoofListStore();
 const isValidshingle = ref(false);
 const isValidbur = ref(false);
 const isValidtile = ref(false);
-
+// const logChildState = () => {
+//     console.log('Child state:', childRef.value.shingleStore);
+// };
 const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
 tryOnMounted(() => {
     if (convertMB.value === null || convertMB.value === NaN) {
@@ -40,40 +42,41 @@ tryOnMounted(() => {
     }
 });
 
-// const { roofList } = storeToRefs(store);
+const { roofList } = storeToRefs(store);
 invoke(async () => {
     await until(isValidshingle).toBe(true);
     await until(isValidbur).toBe(true);
     // await until(isValidtile).toBe(true);
 });
-const roofType = ref(store.$state.roofList);
-function checkState() {
-    console.log(roofType);
-    if (roofType.value === 'Asphalt Shingle') {
-        isValidshingle.value = true;
-        console.log(isValidshingle.value);
-    }
-    if (roofType.value === 'Low Slope') {
-        isValidbur.value = true;
-    }
-    // if (roofType.value === 'Tile') {
-    //     isValidtile.value = true;
-    // }
-}
+// const roofType = ref(store.$state.roofList);
 // function checkState() {
-//     roofList.value.forEach((item, index) => {
-//         console.log(item, index);
-//         if (item.item === 'Asphalt Shingle') {
-//             isValidshingle.value = true;
-//         }
-//         if (item.item === 'Low Slope') {
-//             isValidbur.value = true;
-//         }
-//         // if (item.item === 'Adhesive Set Tile') {
-//         //      isValidtile.value = true;
-//         // }
-//     });
+//     console.log(roofType);
+//     if (roofType.value === 'Asphalt Shingle') {
+//         isValidshingle.value = true;
+//         console.log(isValidshingle.value);
+//     }
+//     if (roofType.value === 'Low Slope') {
+//         isValidbur.value = true;
+//     }
+//     // if (roofType.value === 'Tile') {
+//     //     isValidtile.value = true;
+//     // }
 // }
+
+function checkState() {
+    roofList.value.forEach((item, index) => {
+        console.log(item, index);
+        if (item.item === 'Asphalt Shingle') {
+            isValidshingle.value = true;
+        }
+        if (item.item === 'Low Slope') {
+            isValidbur.value = true;
+        }
+        // if (item.item === 'Adhesive Set Tile') {
+        //      isValidtile.value = true;
+        // }
+    });
+}
 
 tryOnMounted(() => {
     checkState();
@@ -84,6 +87,7 @@ function updateNode() {
     isValidbur.value = true;
     isValidshingle.value = true;
 }
+watch(Shingles, LowSlope, () => {});
 </script>
 
 <template>

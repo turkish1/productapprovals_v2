@@ -177,6 +177,7 @@ const whatChanged = computed(() => {
     EcheckInput();
     setRoofInputs();
     selectPaddy();
+    grabInput();
     validateHeight();
     validateRoofSlope();
 });

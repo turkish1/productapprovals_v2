@@ -4,16 +4,25 @@ import { onMounted, ref } from 'vue';
 import AgreementsDialogShingle from './AgreementsDialogShingle.vue';
 import InputItems from './InputItems.vue';
 
-// import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia';
 const store = useRoofListStore();
+const { roofList } = storeToRefs(store);
 
 const isDialog = ref(false);
-
-const roofType = ref(store.$state.roofList[0].item);
+const roofType = ref(store.$state.roofList);
+// const roofType = ref(store.$state.roofList[0].item);
 function checkState() {
-    if (roofType.value === 'Asphalt Shingle') {
-        isDialog.value = true;
-    } else isDialog.value = false;
+    // if (roofType.value === 'Asphalt Shingle') {
+    //     isDialog.value = true;
+    // } else isDialog.value = false;
+    for (let i = 0; i < roofType.value.length; i++) {
+        console.log(roofType.value[i].item);
+        if (roofType.value[i].item === 'Asphalt Shingle') {
+            console.log('I am in', roofType.value[i].item);
+            isDialog.value = true;
+            console.log(isDialog.value);
+        }
+    }
 }
 
 // function checkState() {
@@ -38,6 +47,10 @@ let slope = ref(null);
 function checkSlope() {
     console.log(slope);
 }
+
+// expose({
+//     shingleStore
+// });
 </script>
 <template>
     <AgreementsDialogShingle v-show="isDialog === true"></AgreementsDialogShingle>
