@@ -1,7 +1,6 @@
 <script>
 import usecreateAccount from '@/composables/Authentication/use-createAccount';
-// import useGlobalState from '@/composables/Authentication/use-createAccount';
-// import { useGlobalState } from '@/stores/accountsStore';
+
 import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
 import { tryOnUnmounted } from '@vueuse/core';
@@ -11,7 +10,6 @@ import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import FileSaver from '../../components/DropZone/upload/FileSaver.vue';
 
 export default {
     setup() {

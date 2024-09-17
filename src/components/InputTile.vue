@@ -346,6 +346,7 @@ function selectPaddy() {
         isSinglepaddyValid.value = true;
     }
 }
+
 watch(
     selectPaddy,
 
@@ -415,8 +416,7 @@ function validateHeight() {
     validateHeightInput();
     console.log(height.value);
 }
-
-function checkInput() {
+function checkInputSA() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
             saTiles.manufacturer = item.systemData.manufacturer;
@@ -424,6 +424,9 @@ function checkInput() {
             saTiles.system = item.systemData.system;
         });
     }
+}
+
+function checkInput() {
     if (datatilenoa.value.length !== null) {
         tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
         tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
@@ -717,22 +720,23 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
 
         <div class="card md:w-3/4 grid gap-1 grid-cols-1">
             <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
-            <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @click="checkInputSystem" />
+            <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
         <DripEdgeComponent />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @click="EcheckInput" />
+                <InputText id="udlInput" v-tooltip.bottom="'Press Tab after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab="EcheckInput" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @change="grabInput" @click="checkInput" />
+                <InputText id="saInput" v-tooltip.bottom="'Press Tab after value'" v-model="saInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInputSA" />
             </div>
         </div>
+        <!--  @click="checkInput" -->
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
             <label style="color: red">Select Exposure</label>
             <div class="flex items-center space-x-2">
@@ -762,7 +766,7 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
         <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
             <div class="w-64 gap-4 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="tilenoa">Tile Noas</label>
-                <InputText id="tilenoa" v-tooltip.bottom="'Press Enter after value'" v-model="tilenoaInput" placeholder="00000000" @change="grabInput" @click="checkInput" />
+                <InputText id="tilenoa" v-tooltip.bottom="'Press Tab after value'" v-model="tilenoaInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInput" />
             </div>
         </div>
     </div>

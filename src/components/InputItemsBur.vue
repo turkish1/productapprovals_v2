@@ -94,7 +94,7 @@ function updateselection() {
 
 const { errorburMessage, validateburSlope } = useburSlopeValidation({
     min: 0.128,
-    max: 2,
+    max: 2.1,
     required: true
 });
 

@@ -422,19 +422,19 @@ watch(
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @input="grabInput" @change="checkInputPoly" />
+                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInputPoly" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="00000000" @input="grabInput" @change="checkInputSystem" />
+                <InputText id="saInput" v-model="saInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInputSystem" />
             </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="shinglenoa">Shingle Noa</label>
-                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @input="grabInput" @change="checkInput" />
+                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInput" />
             </div>
         </div>
         <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">

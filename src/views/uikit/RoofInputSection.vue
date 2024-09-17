@@ -1,8 +1,6 @@
 <script setup>
-// import LowSlope from '@/components/LowSlope.vue';
-// import Shingles from '@/components/Shingles.vue';
 import Checkout from '@/components/Summary/Checkout.vue';
-// import Tile from '@/components/Tile.vue';
+
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, useToNumber } from '@vueuse/core';
@@ -100,7 +98,6 @@ watch(Shingles, LowSlope, Tile, () => {});
                                 @click="
                                     activateCallback('2');
                                     isValidbur = true;
-                                    updateBur;
                                 "
                             />
                         </div>
@@ -113,7 +110,16 @@ watch(Shingles, LowSlope, Tile, () => {});
                         <LowSlope v-if="isValidbur" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" />
-                            <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3'), (isValidtile = true), updateTile" />
+                            <Button
+                                label="Next"
+                                severity="contrast"
+                                icon="pi pi-arrow-right"
+                                iconPos="right"
+                                @click="
+                                    activateCallback('3');
+                                    isValidtile = true;
+                                "
+                            />
                         </div>
                     </div>
                 </StepPanel>
