@@ -8,12 +8,13 @@ export default function useSbs() {
     const inputs = ref();
     const effort = ref([]);
     const noaNum = ref([]);
+    const num = ref();
     let results = ref([]);
     const store = useSbsStore();
 
     const error = ref('');
 
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/shinglesbs';
+    let url = 'https://3z97hfdsmb.execute-api.us-east-1.amazonaws.com/sbsapi/sbsapi';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -27,28 +28,28 @@ export default function useSbs() {
     function takeValues(saNoa) {
         inputs.value = saNoa;
         console.log(inputs.value);
-        const result = execute().then((result) => {
+        num.value = Number(inputs.value);
+        const result = execute({ params: { noa: num.value } }).then((result) => {
             noaNum.value = data.value;
             console.log(noaNum.value, data.value);
 
-            results.value = noaNum.value.forEach((item, index) => {
-                let num = Number(inputs.value);
+            // results.value = noaNum.value.forEach((item, index) => {
 
-                if (item.noa === num) {
-                    sbsData.applicant = item.applicant;
-                    sbsData.material = item.material;
-                    sbsData.description = item.description;
-
-                    console.log(sbsData.applicant);
-                    if (sbsData.length === 0) {
-                        return;
-                    }
-                    store.addData(sbsData);
-                    // area.value = '';
-                    // type.value = '';
-                    console.log(sbsData, 'System added');
-                }
-            });
+            //     if (item.noa === num) {
+            sbsData.applicant = noaNum.value[0].applicant;
+            sbsData.material = noaNum.value[0].material;
+            sbsData.description = noaNum.value[0].description;
+            sbsData.expiration_date = noaNum.value[0].expiration_date;
+            console.log(sbsData.applicant);
+            if (sbsData.length === 0) {
+                return;
+            }
+            store.addData(sbsData);
+            // area.value = '';
+            // type.value = '';
+            console.log(sbsData, 'System added');
+            //     }
+            // });
             return results;
         });
     }

@@ -9,10 +9,10 @@ export default function usePoly() {
     const noaNum = ref([]);
     let results = ref([]);
     const store = usePolyStore();
-
+    const num = ref();
     const error = ref('');
 
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/shinglepoly';
+    let url = 'https://o2cmgq2w4l.execute-api.us-east-1.amazonaws.com/shinglepoly/shinglepoly';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -26,27 +26,31 @@ export default function usePoly() {
     function takp(udlInput) {
         inp.value = udlInput;
         console.log(inp.value);
-        const result = execute().then((result) => {
+        num.value = Number(inp.value);
+        const result = execute({ params: { noa: num.value } }).then((result) => {
             noaNum.value = data.value;
-            console.log([noaNum.value], data.value);
+            console.log(noaNum.value);
 
-            results.value = noaNum.value.forEach((item, index) => {
-                let num = Number(inp.value);
+            // results.value = noaNum.value.forEach((item, index) => {
 
-                if (item.noa === num) {
-                    polyData.applicant = item.applicant;
-                    polyData.material = item.material;
-                    polyData.description = item.description;
+            polyData.applicant = noaNum.value[0].applicant;
+            polyData.material = noaNum.value[0].material;
+            polyData.description = noaNum.value[0].description;
+            polyData.expiration_date = noaNum.value[0].expiration_date;
+            // if (item.noa === num) {
+            // polyData.applicant = item.applicant;
+            // polyData.material = item.material;
+            // polyData.description = item.description;
 
-                    if (polyData.length === 0) {
-                        return;
-                    }
-                    store.addData(polyData);
-                    // area.value = '';
-                    // type.value = '';
-                    console.log(polyData, 'System added');
-                }
-            });
+            if (polyData.length === 0) {
+                return;
+            }
+            store.addData(polyData);
+            // area.value = '';
+            // type.value = '';
+            console.log(polyData, 'System added');
+            // }
+            // });
             return results;
         });
     }
