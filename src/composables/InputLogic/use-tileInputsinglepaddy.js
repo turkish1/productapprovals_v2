@@ -6,14 +6,14 @@ import { reactive, ref } from 'vue';
 
 export default function usetileInputsingle() {
     const input = ref();
-    const effort = ref([]);
+
     const noaNum = ref([]);
     let results = ref([]);
-    // const store = usetileStore();
+    const num = ref();
     const responseMessage = ref('');
     const error = ref('');
     const { tilenoas, getNoa, addNoa } = useGlobalState();
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/tilenoasingle';
+    let url = 'https://q5vantupjl.execute-api.us-east-1.amazonaws.com/singlepd/singlepd';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: true });
 
@@ -30,36 +30,27 @@ export default function usetileInputsingle() {
     });
 
     function getTilenoas(number) {
-        console.log(number);
-        //
         input.value = number;
         console.log(input.value);
-        const result = execute().then((result) => {
-            noaNum.value = data.value.result;
+        num.value = Number(input.value);
+        const result = execute({ params: { NOA: num.value } }).then((result) => {
+            noaNum.value = data.value;
+            console.log(noaNum.value[0]);
+            tileDatas.applicant = noaNum.value[0].applicant;
+            tileDatas.material = noaNum.value[0].AdhesiveMaterial;
+            tileDatas.selection = noaNum.value[0].AdhesiveMaterials;
+            tileDatas.description = noaNum.value[0].description;
+            tileDatas.Table2 = noaNum.value[0].Table2;
+            tileDatas.Table3 = noaNum.value[0].Table3;
+            tileDatas.resistance = noaNum.value[0].Resistance;
+            console.log(noaNum.value[0].AdhesiveMaterial);
 
-            results.value = noaNum.value.forEach((item, index) => {
-                let num = Number(input.value);
+            addNoa(tileDatas);
 
-                if (item.NOA === num) {
-                    console.log('In am In...');
-                    tileDatas.applicant = item.applicant;
-                    tileDatas.material = item.AdhesiveMaterial;
-                    tileDatas.selection = item.AdhesiveMaterials;
-                    tileDatas.description = item.description;
-                    tileDatas.Table2 = item.Table2;
-                    tileDatas.Table3 = item.Table3;
-                    tileDatas.resistance = item.Resistance;
-                    console.log(item.AdhesiveMaterial);
-                    if (tileDatas.length === 0) {
-                        return;
-                    }
-                    addNoa(tileDatas);
+            // area.value = '';
+            // type.value = '';
+            console.log(tileDatas, 'System added');
 
-                    // area.value = '';
-                    // type.value = '';
-                    console.log(tileDatas, 'System added');
-                }
-            });
             return results;
         });
     }

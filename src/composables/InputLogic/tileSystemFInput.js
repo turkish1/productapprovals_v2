@@ -5,14 +5,14 @@ import { reactive, ref, toRefs } from 'vue';
 
 export default function useTileSystemF() {
     const inputsystem = ref();
-    const effort = ref([]);
+    const num = ref();
     const noaNum = ref();
     let results = ref([]);
     const store = usetilesysfStore();
 
     const error = ref('');
 
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/tilesystemf';
+    let url = 'https://9vevtvy376.execute-api.us-east-1.amazonaws.com/systemf/systemf';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -37,32 +37,32 @@ export default function useTileSystemF() {
     const systemCheck = ref([]);
     function takef(saNoa) {
         inputsystem.value = saNoa;
-
-        const result = execute().then((result) => {
+        num.value = Number(inputsystem.value);
+        const result = execute({ params: { NOA: num.value } }).then((result) => {
             noaNum.value = data.value;
+            console.log(noaNum.value[0]);
+            // Object.entries(noaNum.value.result).map((obj) => {
+            //     let num = Number(inputsystem.value);
+            //     //     // 23061202
+            //     if (noaNum.value[0].NOA === num) {
+            systemData.manufacturer = noaNum.value[0].Manufacturer;
+            systemData.material = noaNum.value[0].Material;
 
-            Object.entries(noaNum.value.result).map((obj) => {
-                let num = Number(inputsystem.value);
-                //     // 23061202
-                if (obj[1].NOA === num) {
-                    systemData.manufacturer = obj[1].Manufacturer;
-                    systemData.material = obj[1].Material;
-
-                    systemData.Description_F1 = obj[1].TileCap_Sheet_Description_F1;
-                    systemData.Description_F2 = obj[1].TileCap_Sheet_Description_F2;
-                    systemData.Description_F3 = obj[1].TileCap_Sheet_Description_F3;
-                    systemData.Description_F4 = obj[1].TileCap_Sheet_Description_F4;
-                    systemData.Description_F5 = obj[1].TileCap_Sheet_Description_F5;
-                    systemData.Description_F6 = obj[1].TileCap_Sheet_Description_F6;
-                    systemData.Description_F7 = obj[1].TileCap_Sheet_Description_F7;
-                    systemData.designPressure = obj[1].DesignPressure;
-                    systemData.system = obj[1].System;
-                    store.addData(systemData);
-                    // area.value = '';
-                    // type.value = '';
-                    console.log('System added');
-                }
-            });
+            systemData.Description_F1 = noaNum.value[0].TileCap_Sheet_Description_F1;
+            systemData.Description_F2 = noaNum.value[0].TileCap_Sheet_Description_F2;
+            systemData.Description_F3 = noaNum.value[0].TileCap_Sheet_Description_F3;
+            systemData.Description_F4 = noaNum.value[0].TileCap_Sheet_Description_F4;
+            systemData.Description_F5 = noaNum.value[0].TileCap_Sheet_Description_F5;
+            systemData.Description_F6 = noaNum.value[0].TileCap_Sheet_Description_F6;
+            systemData.Description_F7 = noaNum.value[0].TileCap_Sheet_Description_F7;
+            systemData.designPressure = noaNum.value[0].DesignPressure;
+            systemData.system = noaNum.value[0].System;
+            store.addData(systemData);
+            // area.value = '';
+            // type.value = '';
+            console.log('System added');
+            //     }
+            // });
 
             return results;
         });

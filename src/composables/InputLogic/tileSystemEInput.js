@@ -5,14 +5,14 @@ import { reactive, ref, toRefs } from 'vue';
 
 export default function useTileSystemE() {
     const inputsystem = ref();
-    const effort = ref([]);
+    const num = ref();
     const noaNum = ref([]);
     let res = ref([]);
     const store = usetilesysEStore();
 
     const error = ref('');
 
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/tilesysteme';
+    let url = 'https://q7pzfsbv8f.execute-api.us-east-1.amazonaws.com/systeme/systeme';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -47,44 +47,43 @@ export default function useTileSystemE() {
     function getV(saNo) {
         inputsystem.value = saNo;
         console.log(inputsystem.value, saNo);
-
-        const result = execute().then((result) => {
+        num.value = Number(inputsystem.value);
+        const result = execute({ params: { NOA: num.value } }).then((result) => {
             noaNum.value = data.value;
-            console.log(noaNum.value);
 
-            Object.entries(noaNum.value.result).map((obj) => {
-                let num = Number(inputsystem.value);
-                //     // 23061202
-                if (obj[1].NOA === num) {
-                    systemDataE.manufacturer = obj[1].Manufacturer;
-                    systemDataE.material = obj[1].Material;
-                    systemDataE.Anchor_Base_Sheet_E1 = obj[1].Anchor_Base_Sheet_E1;
-                    systemDataE.Anchor_Base_Sheet_E1 = obj[1].Anchor_Base_Sheet_E1;
-                    systemDataE.Anchor_Base_Sheet_E2 = obj[1].Anchor_Base_Sheet_E2;
-                    systemDataE.Anchor_Base_Sheet_E3 = obj[1].Anchor_Base_Sheet_E3;
-                    systemDataE.Anchor_Base_Sheet_E4 = obj[1].Anchor_Base_Sheet_E4;
-                    systemDataE.Anchor_Base_Sheet_E5 = obj[1].Anchor_Base_Sheet_E5;
-                    systemDataE.Anchor_Base_Sheet_E6 = obj[1].Anchor_Base_Sheet_E6;
-                    systemDataE.Anchor_Base_Sheet_E7 = obj[1].Anchor_Base_Sheet_E7;
+            // Object.entries(noaNum.value.result).map((obj) => {
+            // let num = Number(inputsystem.value);
+            //     // 23061202
+            // if (noaNum.value[0].NOA === num) {
+            systemDataE.manufacturer = noaNum.value[0].Manufacturer;
+            systemDataE.material = noaNum.value[0].Material;
+            systemDataE.Anchor_Base_Sheet_E1 = noaNum.value[0].Anchor_Base_Sheet_E1;
+            systemDataE.Anchor_Base_Sheet_E1 = noaNum.value[0].Anchor_Base_Sheet_E1;
+            systemDataE.Anchor_Base_Sheet_E2 = noaNum.value[0].Anchor_Base_Sheet_E2;
+            systemDataE.Anchor_Base_Sheet_E3 = noaNum.value[0].Anchor_Base_Sheet_E3;
+            systemDataE.Anchor_Base_Sheet_E4 = noaNum.value[0].Anchor_Base_Sheet_E4;
+            systemDataE.Anchor_Base_Sheet_E5 = noaNum.value[0].Anchor_Base_Sheet_E5;
+            systemDataE.Anchor_Base_Sheet_E6 = noaNum.value[0].Anchor_Base_Sheet_E6;
+            systemDataE.Anchor_Base_Sheet_E7 = noaNum.value[0].Anchor_Base_Sheet_E7;
 
-                    systemDataE.TileCap_Sheet_Description_E1 = obj[1].TileCap_Sheet_Description_E1;
-                    systemDataE.TileCap_Sheet_Description_E2 = obj[1].TileCap_Sheet_Description_E2;
-                    systemDataE.TileCap_Sheet_Description_E3 = obj[1].TileCap_Sheet_Description_E3;
-                    systemDataE.TileCap_Sheet_Description_E4 = obj[1].TileCap_Sheet_Description_E4;
-                    systemDataE.TileCap_Sheet_Description_E5 = obj[1].TileCap_Sheet_Description_E5;
-                    systemDataE.TileCap_Sheet_Description_E6 = obj[1].TileCap_Sheet_Description_E6;
-                    systemDataE.TileCap_Sheet_Description_E7 = obj[1].TileCap_Sheet_Description_E7;
-                    systemDataE.system = obj[1].System;
-                    systemDataE.designPressure = obj[1].DesignPressure;
-                    systemDataE.Maps = obj[1].Maps;
-                    systemDataE.Anchor_Base_Sheet = obj[1].Anchor_Base_Sheet;
-                    systemDataE.TileCap_Sheet_Description = obj[1].TileCap_Sheet_Description;
-                    store.addData(systemDataE);
-                    // area.value = '';
-                    // type.value = '';
-                    console.log('System added');
-                }
-            });
+            systemDataE.TileCap_Sheet_Description_E1 = noaNum.value[0].TileCap_Sheet_Description_E1;
+            systemDataE.TileCap_Sheet_Description_E2 = noaNum.value[0].TileCap_Sheet_Description_E2;
+            systemDataE.TileCap_Sheet_Description_E3 = noaNum.value[0].TileCap_Sheet_Description_E3;
+            systemDataE.TileCap_Sheet_Description_E4 = noaNum.value[0].TileCap_Sheet_Description_E4;
+            systemDataE.TileCap_Sheet_Description_E5 = noaNum.value[0].TileCap_Sheet_Description_E5;
+            systemDataE.TileCap_Sheet_Description_E6 = noaNum.value[0].TileCap_Sheet_Description_E6;
+            systemDataE.TileCap_Sheet_Description_E7 = noaNum.value[0].TileCap_Sheet_Description_E7;
+            systemDataE.system = noaNum.value[0].System;
+            systemDataE.designPressure = noaNum.value[0].DesignPressure;
+            systemDataE.Maps = noaNum.value[0].Maps;
+            systemDataE.Anchor_Base_Sheet = noaNum.value[0].Anchor_Base_Sheet;
+            systemDataE.TileCap_Sheet_Description = noaNum.value[0].TileCap_Sheet_Description;
+            store.addData(systemDataE);
+            // area.value = '';
+            // type.value = '';
+            console.log('System added');
+            //     }
+            // });
         });
     }
     // 18061905
