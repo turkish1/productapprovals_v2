@@ -176,6 +176,7 @@ const whatChanged = computed(() => {
     setRoofInputs();
     selectPaddy();
     grabInput();
+
     validateHeight();
     validateRoofSlope();
 });
@@ -326,9 +327,6 @@ function EcheckInputSystem() {
         if (item.systemDataE.system.length > 1) {
         } else {
             udlTile.system = item.systemDataE.system;
-            // selfAdData.value = item.systemData.description;
-            // udlTile.description = item.systemDataE.description;
-            // udlTile.designPressure = item.systemDataE.designPressure;
         }
     });
 }
@@ -344,7 +342,11 @@ function selectPaddy() {
         isSinglepaddyValid.value = true;
     }
 }
-
+const MF = computed(updateMF, () => {
+    zoneone.mf1 = mfupdate.value;
+    zonetwo.mf2 = mfupdate.value;
+    zonethree.mf3 = mfupdate.value;
+});
 watch(
     selectPaddy,
 
@@ -451,15 +453,16 @@ function checkMaterial() {
     const slopeRange = clampNumber1(2, Number(dims.slope), 12);
     console.log(slopeRange);
     if (slopeRange <= slopeOptions.three) {
-        console.log('Is Less');
+        console.log('Is Less then three');
         zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
         zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
         zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
     } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-        console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
+        console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three, tileData.Table3.three);
+
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three.Direct_Deck;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three.Direct_Deck;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three.Direct_Deck;
     } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
         zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four.Direct_Deck;
@@ -495,12 +498,12 @@ function checkMaterial() {
 }
 const maps = ref([]);
 const vals = ref([]);
-
+const mfupdate = ref();
 function updateMF(event) {
     // tileData.selection;
     console.log(event.value);
     let mat = isSinglepaddyValid.value === true ? tileDatas.selection : tileData.selection;
-
+    console.log(mat);
     resistanceCheck.value = Object.entries(mat).map((obj) => {
         const k = obj[0];
         const v = obj[1];
@@ -508,18 +511,17 @@ function updateMF(event) {
         maps.value.push(k);
         vals.value.push(v);
         console.log(v, k);
-        console.log(maps.value, vals.value);
-        console.log(vals.value[0], vals.value[1]);
 
-        console.log(maps.value);
+        console.log(vals.value[0], vals.value[1]);
 
         // pdfcleared.value = true;
         // 23052403
     });
     for (let i = 0; i < maps.value.length; i++) {
-        console.log(maps.value[i], vals.value[i], i);
+        console.log(vals.value[i]);
+        mfupdate.value = vals.value[i];
         if (maps.value[i] === event.value) {
-            console.log(maps.value[i], vals.value[i]);
+            console.log(vals.value[i]);
             zoneone.mf1 = vals.value[i];
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
@@ -531,7 +533,7 @@ function updateMF(event) {
 
         console.log(mfcheck1.value);
         if (zoneone.mr1 > mfcheck1.value || event.value) {
-            console.log('I am in mr greater', ismrInvalid.value);
+            console.log('I am in mr greater', ismrInvalid);
             ismrInvalid = true;
         }
         if (zoneone.mr1 < mfcheck1.value || event.value) {
@@ -882,7 +884,6 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
             <div class="w-128 flex flex-col gap-2">
-                <!-- @input="updateMF" -->
                 <label for="material">Tile Adhesive Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
@@ -902,7 +903,7 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
                                             <td><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
                                             <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
-                                            <td><input v-model="zoneone.mf1" readonly="" size="4" name="mf1" value="" /> &nbsp;</td>
+                                            <td><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
                                             <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
                                             <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
                                         </tr>
@@ -913,7 +914,7 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
                                             <td><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
                                             <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
-                                            <td><input v-model="zonetwo.mf2" readonly="" size="4" name="mf32" value="" />&nbsp;</td>
+                                            <td><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
                                             <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
                                             <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
                                         </tr>
@@ -924,7 +925,7 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
                                             <td><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
                                             <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
                                             <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
-                                            <td><input v-model="zonethree.mf3" readonly="" size="4" name="mf3" value="" />&nbsp;</td>
+                                            <td><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
                                             <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
                                             <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
                                         </tr>
