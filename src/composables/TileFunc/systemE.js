@@ -36,6 +36,7 @@ export default function useUDL() {
     function EcheckInput() {
         if (Edatamounted.value.length !== null) {
             Edatamounted.value.forEach((item, index) => {
+                console.log(item);
                 udlTiles.manufacturer = item.systemDataE.manufacturer;
                 udlTiles.material = item.systemDataE.material;
                 udlTiles.system = item.systemDataE.system;

@@ -50,14 +50,10 @@ export default function useTileSystemE() {
         num.value = Number(inputsystem.value);
         const result = execute({ params: { NOA: num.value } }).then((result) => {
             noaNum.value = data.value;
-
-            // Object.entries(noaNum.value.result).map((obj) => {
-            // let num = Number(inputsystem.value);
-            //     // 23061202
-            // if (noaNum.value[0].NOA === num) {
+            console.log(data.value);
+            console.log(noaNum.value[0]);
             systemDataE.manufacturer = noaNum.value[0].Manufacturer;
             systemDataE.material = noaNum.value[0].Material;
-            systemDataE.Anchor_Base_Sheet_E1 = noaNum.value[0].Anchor_Base_Sheet_E1;
             systemDataE.Anchor_Base_Sheet_E1 = noaNum.value[0].Anchor_Base_Sheet_E1;
             systemDataE.Anchor_Base_Sheet_E2 = noaNum.value[0].Anchor_Base_Sheet_E2;
             systemDataE.Anchor_Base_Sheet_E3 = noaNum.value[0].Anchor_Base_Sheet_E3;

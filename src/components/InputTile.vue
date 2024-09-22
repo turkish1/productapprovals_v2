@@ -43,10 +43,7 @@ const { roofList } = storeToRefs(storeroof);
 
 onMounted(() => {
     roofList.value.forEach((item, index) => {
-        console.log(item.item, index);
-
         if (item.item === 'Adhesive Set Tile') {
-            console.log(item.dim4);
             dims.area = item.dim4;
         }
     });
@@ -159,22 +156,23 @@ const zonethree = reactive({
 
 watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 
-// function EcheckInput() {
-//     if (Edatamounted.value.length !== null) {
-//         Edatamounted.value.forEach((item, index) => {
-//             udlTiles.manufacturer = item.systemDataE.manufacturer;
-//             udlTiles.material = item.systemDataE.material;
-//             udlTiles.system = item.systemDataE.system;
-//             udlTiles.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
-//         });
-//     }
-// }
+function sysEcheckInput() {
+    console.log(Edatamounted.value);
+    if (Edatamounted.value.length !== null) {
+        Edatamounted.value.forEach((item, index) => {
+            udlTile.manufacturer = item.systemDataE.manufacturer;
+            udlTile.material = item.systemDataE.material;
+            udlTile.system = item.systemDataE.system;
+            udlTile.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
+        });
+    }
+}
 
 const selSytemE = ref();
 const selSytem = ref();
 const whatChanged = computed(() => {
     checkInput();
-    EcheckInput();
+    sysEcheckInput();
     setRoofInputs();
     selectPaddy();
     grabInput();
@@ -329,8 +327,8 @@ function EcheckInputSystem() {
         } else {
             udlTile.system = item.systemDataE.system;
             // selfAdData.value = item.systemData.description;
-            udlTile.description = item.systemDataE.description;
-            udlTile.designPressure = item.systemDataE.designPressure;
+            // udlTile.description = item.systemDataE.description;
+            // udlTile.designPressure = item.systemDataE.designPressure;
         }
     });
 }
@@ -597,42 +595,77 @@ function updateselectSystem() {
         }
     });
 }
-function updateselectSystemE() {
-    selSytemE.value = Object.entries(selectedsystemE).map((obj) => {
-        const val = obj[1];
-        console.log(obj[1]);
-
-        if (val === 'E1' || val === 'E8') {
-            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E1;
-            udlTile.designPressure = udlTile.arrDesignPressure[0];
-        }
-        if (val === 'E2' || val === 'E9') {
-            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E2;
-            udlTile.designPressure = udlTile.arrDesignPressure[1];
-        }
-        if (val === 'E3' || val === 'E10') {
-            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E3;
-            udlTile.designPressure = udlTile.arrDesignPressure[2];
-        }
-        if (val === 'E4' || val === 'E11') {
-            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E4;
-            udlTile.designPressure = udlTile.arrDesignPressure[3];
-        }
-        if (val === 'E5' || val === 'E12') {
-            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E5;
-            udlTile.designPressure = udlTile.arrDesignPressure[4];
-        }
-        if (val === 'E6' || val === 'E13') {
-            udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E6;
-            udlTile.designPressure = udlTile.arrDesignPressure[5];
-            if (val === 'E7' || val === 'E14') {
-                udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E7;
-                udlTile.designPressure = udlTile.arrDesignPressure[6];
-            }
-        }
+const keyValueSystemEPairsValues = ref({});
+const keyValueSystemEPairsKeys = ref({});
+function updateselectSystemE(selectedsystemE) {
+    let sys = udlTile.system;
+    let dp = udlTile.arrDesignPressure;
+    let key = sys;
+    console.log(selectedsystemE.value);
+    sys.forEach((key, index) => {
+        keyValueSystemEPairsValues.value[key] = dp[index];
     });
-}
+    key.forEach((key, index) => {
+        keyValueSystemEPairsKeys.value[key] = sys[index];
+    });
+    console.log(keyValueSystemEPairsValues.value.E2, keyValueSystemEPairsValues.value.E3);
 
+    // if (keyValueSystemEPairsValues.value.E1 !== null && selectedsystemE.value !== null) {
+    //     udlDescPressure();
+    // }
+    if (keyValueSystemEPairsValues.value.E2 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E3 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E4 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E5 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E6 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E7 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+}
+function udlDescPressure() {
+    if (selectedsystemE.value === 'E1') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E1;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E1;
+    }
+    if (selectedsystemE.value === 'E2') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E2;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E2;
+    }
+    if (selectedsystemE.value === 'E3') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E3;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E3;
+    }
+    if (selectedsystemE.value === 'E4') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E4;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E4;
+    }
+    if (selectedsystemE.value === 'E5') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E5;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E5;
+    }
+    if (selectedsystemE.value === 'E7') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E7;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E7;
+    }
+    if (selectedsystemE.value === 'E6') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E6;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E6;
+    }
+    if (selectedsystemE.value === 'E7') {
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E7;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E7;
+    }
+}
 const generatePdf = () => {
     const element = document.getElementById('tile');
     console.log(element);
@@ -727,7 +760,7 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-tooltip.bottom="'Press Tab after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab="EcheckInput" />
+                <InputText id="udlInput" v-tooltip.bottom="'Press Tab after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab="sysEcheckInput" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">

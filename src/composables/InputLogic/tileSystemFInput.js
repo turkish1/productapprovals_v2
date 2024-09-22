@@ -41,10 +41,7 @@ export default function useTileSystemF() {
         const result = execute({ params: { NOA: num.value } }).then((result) => {
             noaNum.value = data.value;
             console.log(noaNum.value[0]);
-            // Object.entries(noaNum.value.result).map((obj) => {
-            //     let num = Number(inputsystem.value);
-            //     //     // 23061202
-            //     if (noaNum.value[0].NOA === num) {
+
             systemData.manufacturer = noaNum.value[0].Manufacturer;
             systemData.material = noaNum.value[0].Material;
 
@@ -61,8 +58,6 @@ export default function useTileSystemF() {
             // area.value = '';
             // type.value = '';
             console.log('System added');
-            //     }
-            // });
 
             return results;
         });
