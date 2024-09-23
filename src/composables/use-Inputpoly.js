@@ -27,35 +27,38 @@ export default function usePoly() {
         inp.value = udlInput;
         console.log(inp.value);
         num.value = Number(inp.value);
-        const result = execute({ params: { noa: num.value } }).then((result) => {
-            noaNum.value = data.value;
-            console.log(noaNum.value);
-
-            // results.value = noaNum.value.forEach((item, index) => {
-
-            polyData.applicant = noaNum.value[0].applicant;
-            polyData.material = noaNum.value[0].material;
-            polyData.description = noaNum.value[0].description;
-            polyData.expiration_date = noaNum.value[0].expiration_date;
-            // if (item.noa === num) {
-            // polyData.applicant = item.applicant;
-            // polyData.material = item.material;
-            // polyData.description = item.description;
-
-            if (polyData.length === 0) {
-                return;
-            }
-            store.addData(polyData);
-            // area.value = '';
-            // type.value = '';
-            console.log(polyData, 'System added');
-            // }
-            // });
-            return results;
-        });
+        fetchData();
     }
+    const fetchData = async () => {
+        try {
+            const response = await execute({ params: { noa: num.value } }).then((response) => {
+                noaNum.value = data.value;
+                console.log(noaNum.value);
+                return noaNum.value;
+            });
+            console.log(response);
+            if (response.length === 0) {
+                alert('No data found!');
+            } else {
+                polyData.applicant = noaNum.value[0].applicant;
+                polyData.material = noaNum.value[0].material;
+                polyData.description = noaNum.value[0].description;
+                polyData.expiration_date = noaNum.value[0].expiration_date;
+                if (polyData.length === 0) {
+                    return;
+                }
+                store.addData(polyData);
 
+                console.log(polyData, 'System added');
+            }
+        } catch (error) {
+            console.log('Error, fectching data', error);
+            alert('An error occurred while fetching data.');
+        }
+
+        return results;
+    };
     // 18061905
 
-    return { inp, takp, noaNum, error, results, ...toRefs(polyData), store };
+    return { inp, fetchData, takp, noaNum, error, results, ...toRefs(polyData), store };
 }

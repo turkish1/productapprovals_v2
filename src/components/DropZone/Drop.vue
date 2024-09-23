@@ -1,5 +1,5 @@
 <template>
-    <div class="card object-cover h-128 w-128 ..." style="margin-right: 250px; margin-top: 1px">
+    <div class="card object-cover h-128 w-128 ..." style="margin-right: 220px; margin-top: 1px">
         <Toast />
         <!-- onTemplatedUpload($event) -->
         <!-- http://127.0.0.1:5173/upload   http://localhost:8080/upload http://acs.amazonaws.com/groups/global/AllUsers :auto="true" s3://digitalsolutionsroofs/permitfolder/-->

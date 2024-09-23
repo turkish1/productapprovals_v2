@@ -6,7 +6,7 @@ import { reactive, ref, toRefs } from 'vue';
 
 export default function useSbs() {
     const inputs = ref();
-    const effort = ref([]);
+
     const noaNum = ref([]);
     const num = ref();
     let results = ref([]);
@@ -29,32 +29,38 @@ export default function useSbs() {
         inputs.value = saNoa;
         console.log(inputs.value);
         num.value = Number(inputs.value);
-        const result = execute({ params: { noa: num.value } }).then((result) => {
-            noaNum.value = data.value;
-            console.log(noaNum.value, data.value);
-
-            // results.value = noaNum.value.forEach((item, index) => {
-
-            //     if (item.noa === num) {
-            sbsData.applicant = noaNum.value[0].applicant;
-            sbsData.material = noaNum.value[0].material;
-            sbsData.description = noaNum.value[0].description;
-            sbsData.expiration_date = noaNum.value[0].expiration_date;
-            console.log(sbsData.applicant);
-            if (sbsData.length === 0) {
-                return;
-            }
-            store.addData(sbsData);
-            // area.value = '';
-            // type.value = '';
-            console.log(sbsData, 'System added');
-            //     }
-            // });
-            return results;
-        });
+        fetchData();
     }
+    const fetchData = async () => {
+        try {
+            const response = await execute({ params: { noa: num.value } }).then((response) => {
+                noaNum.value = data.value;
+                console.log(noaNum.value);
+                return noaNum.value;
+            });
+            console.log(response);
+            if (response.length === 0) {
+                alert('No data found!');
+            } else {
+                sbsData.applicant = noaNum.value[0].applicant;
+                sbsData.material = noaNum.value[0].material;
+                sbsData.description = noaNum.value[0].description;
+                sbsData.expiration_date = noaNum.value[0].expiration_date;
+                console.log(sbsData.applicant);
+                if (sbsData.length === 0) {
+                    return;
+                }
+                store.addData(sbsData);
 
+                console.log(sbsData, 'System added');
+            }
+        } catch (error) {
+            console.log('Error, fectching data', error);
+            alert('An error occurred while fetching data.');
+        }
+        return results;
+    };
     // 18061905
 
-    return { inputs, takeValues, noaNum, error, results, ...toRefs(sbsData), store };
+    return { inputs, takeValues, fetchData, noaNum, error, results, ...toRefs(sbsData), store };
 }

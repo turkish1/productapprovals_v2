@@ -104,10 +104,17 @@ const whatChanged = computed(() => {
 
     validateRoofSlope();
     grabInput();
+    onKeydown();
     validateHeight();
     checkInputPoly();
 });
-
+// const onKeydown = (event) => {
+//     console.log(event);
+//     if (event.key === 'Tab') {
+//         event.preventDefault();
+//         grabInput();
+//     }
+// };
 function grabInput() {
     data.value = noaInput.value;
     datasbs.value = saInput.value;
@@ -118,6 +125,7 @@ function grabInput() {
         // 18061905
 
         takeValue(data.value);
+        checkInput();
     }
     if (saInput.value !== null) {
         takef(datasystemf.value);
@@ -140,7 +148,7 @@ function checkInputPoly() {
 }
 function checkInputSystem() {
     systemdatamt.value.forEach((item, index) => {
-        console.log(item);
+        console.log(item.systemData.Description_F1, item.systemData.Description_F2);
         selfadhered.samanufacturer = item.systemData.manufacturer;
         selfadhered.samaterial = item.systemData.material;
         selfadhered.Description_F1 = item.systemData.Description_F1;
@@ -151,49 +159,39 @@ function checkInputSystem() {
         selfadhered.Description_F6 = item.systemData.Description_F6;
         selfadhered.Description_F7 = item.systemData.Description_F7;
         selfadhered.arrSystem = item.systemData.arraySystem;
-        console.log(selfadhered.arrSystem.length);
-        if (selfadhered.arrSystem.length > 1) {
-            //    23111506
-            addFSystem();
-            console.log('condition met');
-        } else {
-            selfadhered.system = item.systemData.system;
+        selfadhered.system = item.systemData.system;
 
-            selfadhered.Description_F1 = item.systemData.description;
-        }
+        console.log(selfadhered.Description_F1, selfadhered.Description_F2);
     });
 }
 
-function addFSystem() {
-    selfadhered.system = selfadhered.arrSystem;
-}
+function updateselectSystem(selectedsystemf) {
+    console.log(typeof selectedsystemf.value);
 
-function updateselectSystem() {
-    selSytem.value = Object.entries(selectedsystemf).map((obj) => {
-        const val = obj[1];
+    if (selectedsystemf.value === 'F1') {
+        console.log(selfadhered.Description_F1);
+        selfadhered.sadescription = selfadhered.Description_F1;
+    }
+    if (selectedsystemf.value === 'F2') {
+        selfadhered.sadescription = selfadhered.Description_F2;
+    }
 
-        if (val === 'F1') {
-            selfadhered.sadescription = selfadhered.Description_F1;
-        }
-        if (val === 'F2') {
-            selfadhered.sadescription = selfadhered.Description_F2;
-        }
-        if (val === 'F3') {
-            selfadhered.sadescription = selfadhered.Description_F3;
-        }
-        if (val === 'F4') {
-            selfadhered.sadescription = selfadhered.Description_F4;
-        }
-        if (val === 'F5') {
-            selfadhered.sadescription = selfadhered.Description_F5;
-        }
-        if (val === 'F6') {
-            selfadhered.sadescription = selfadhered.Description_F6;
-        }
-        if (val === 'F7') {
-            selfadhered.sadescription = selfadhered.Description_F7;
-        }
-    });
+    if (selectedsystemf.value === 'F3') {
+        selfadhered.sadescription = selfadhered.Description_F3;
+    }
+    if (selectedsystemf.value === 'F4') {
+        selfadhered.sadescription = selfadhered.Description_F4;
+    }
+    if (selectedsystemf.value === 'F5') {
+        selfadhered.sadescription = selfadhered.Description_F5;
+    }
+    if (selectedsystemf.value === 'F6') {
+        selfadhered.sadescription = selfadhered.Description_F6;
+    }
+    if (selectedsystemf.value === 'F7') {
+        selfadhered.sadescription = selfadhered.Description_F7;
+    }
+    // });
 }
 
 function checkInput() {
@@ -367,7 +365,7 @@ watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChan
 
 watch(
     checkInputSystem,
-    addFSystem,
+
     updateselectSystem,
     valueEntered,
     noaInput,
@@ -398,7 +396,7 @@ watch(
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
         <!-- <div class="refresh"> -->
-        <Button plain text><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 400px; margin-top: 90px" @click="clearSelected"></i></Button>
+        <!-- <Button plain text><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 400px; margin-top: 90px" @click="clearSelected"></i></Button> -->
         <!-- </div> -->
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Slope *</label>
@@ -422,19 +420,20 @@ watch(
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInputPoly" />
+                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab.exact.stop="checkInputPoly" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInputSystem" />
+                <InputText id="saInput" v-model="saInput" placeholder="00000000" @change="grabInput" @keydown.tab.exact.stop="checkInputSystem" />
             </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="shinglenoa">Shingle Noa</label>
-                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInput" />
+                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @change="grabInput" @keydown.tab.exact.stop="checkInput" />
+                <!-- @change="grabInput" "checkInput"-->
             </div>
         </div>
         <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">
