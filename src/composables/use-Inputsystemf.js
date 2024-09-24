@@ -30,6 +30,11 @@ export default function useSystemf() {
         Description_F5: '',
         Description_F6: '',
         Description_F7: '',
+        Description_F8: '',
+        Description_F9: '',
+        Description_F10: '',
+        Description_F11: '',
+
         arraySystem: [],
         maps: [],
         systemCheck: []
@@ -62,6 +67,11 @@ export default function useSystemf() {
                 systemData.Description_F5 = noaNum.value[0].Description_F5;
                 systemData.Description_F6 = noaNum.value[0].Description_F6;
                 systemData.Description_F7 = noaNum.value[0].Description_F7;
+                systemData.Description_F8 = noaNum.value[0].Description_F8;
+                systemData.Description_F9 = noaNum.value[0].Description_F9;
+                systemData.Description_F10 = noaNum.value[0].Description_F10;
+                systemData.Description_F11 = noaNum.value[0].Description_F11;
+
                 systemData.system = noaNum.value[0].System;
                 systemData.systemCheck = noaNum.value[0].System;
                 if (systemData.systemCheck.length >= 2) {

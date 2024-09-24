@@ -49,6 +49,10 @@ const selfadhered = reactive({
     Description_F5: '',
     Description_F6: '',
     Description_F7: '',
+    Description_F8: '',
+    Description_F9: '',
+    Description_F10: '',
+    Description_F11: '',
     system: [],
     maps: [],
     arrSystem: []
@@ -101,7 +105,7 @@ const heightmax = ref(33);
 const pdfcleared = ref(false);
 const whatChanged = computed(() => {
     checkInput();
-
+    clearSelected();
     validateRoofSlope();
     grabInput();
     onKeydown();
@@ -152,10 +156,12 @@ function checkInputSystem() {
         selfadhered.Description_F5 = item.systemData.Description_F5;
         selfadhered.Description_F6 = item.systemData.Description_F6;
         selfadhered.Description_F7 = item.systemData.Description_F7;
+        selfadhered.Description_F8 = item.systemData.Description_F8;
+        selfadhered.Description_F9 = item.systemData.Description_F9;
+        selfadhered.Description_F10 = item.systemData.Description_F10;
+        selfadhered.Description_F11 = item.systemData.Description_F11;
         selfadhered.arrSystem = item.systemData.arraySystem;
         selfadhered.system = item.systemData.system;
-        console.log(selfadhered.arrSystem, selfadhered.system);
-        console.log(selfadhered.Description_F1, selfadhered.Description_F2);
     });
 }
 
@@ -184,6 +190,18 @@ function updateselectSystem(selectedsystemf) {
     }
     if (selectedsystemf.value === 'F7') {
         selfadhered.sadescription = selfadhered.Description_F7;
+    }
+    if (selectedsystemf.value === 'F8') {
+        selfadhered.sadescription = selfadhered.Description_F8;
+    }
+    if (selectedsystemf.value === 'F9') {
+        selfadhered.sadescription = selfadhered.Description_F9;
+    }
+    if (selectedsystemf.value === 'F10') {
+        selfadhered.sadescription = selfadhered.Description_F10;
+    }
+    if (selectedsystemf.value === 'F11') {
+        selfadhered.sadescription = selfadhered.Description_F11;
     }
     // });
 }
@@ -354,6 +372,8 @@ const generatePdf = () => {
 };
 function clearSelected() {
     store.$reset();
+    polyStore.$reset();
+    // usesystemfStore.$reset();
 }
 watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInputSA, grabInputUDL, grabInput, () => {});
 
@@ -391,9 +411,9 @@ watch(
         <div class="w-64 gap-1 mt-3" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
-        <!-- <div class="refresh"> -->
-        <!-- <Button plain text><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 400px; margin-top: 90px" @click="clearSelected"></i></Button> -->
-        <!-- </div> -->
+        <!-- <div class="refresh">
+            <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 400px; margin-top: 90px" @click="clearSelected"></i></Button>
+        </div> -->
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Slope *</label>
 
@@ -464,7 +484,7 @@ watch(
             </div>
         </div>
 
-        <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6">
+        <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
             <div class="flex flex-row space-x-20">
                 <div class="flex flex-col gap-2">
                     <label for="saapplicant">S/A Applicant</label>
@@ -480,7 +500,7 @@ watch(
                     <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
                 </div>
             </div>
-            <div class="w-196 flex flex-col gap-2">
+            <div class="w-196 flex flex-col gap-2" style="margin-left: 1px">
                 <label for="sadescription">S/A Description</label>
                 <InputText id="sadescription" v-model="selfadhered.sadescription" />
             </div>

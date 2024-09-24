@@ -12,8 +12,11 @@ export const usePolyStore = defineStore('polyinput', {
         addData(polyData) {
             this.polyinput.push({ polyData, completed: false });
         }
-    }
+    },
 
+    reset() {
+        this.polyinput = [];
+    }
     //getters
     // getters: {
     //     noaInfo(state) {

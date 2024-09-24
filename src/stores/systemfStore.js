@@ -18,6 +18,9 @@ export const usesystemfStore = defineStore('systeminput', {
     //getters
     getters: {
         sysData: (state) => state.systemData
+    },
+    reset() {
+        this.systeminput = [];
     }
     // persist: true
 });

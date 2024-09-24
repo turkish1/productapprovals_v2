@@ -17,6 +17,9 @@ export const useSbsStore = defineStore('sbsinput', {
     //getters
     getters: {
         sbsDb: (state) => state.sbsData
+    },
+    reset() {
+        this.sbsinput = [];
     }
     // persist: true
 });
