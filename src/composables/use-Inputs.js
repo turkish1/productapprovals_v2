@@ -31,7 +31,6 @@ export default function useInputs() {
         try {
             const response = await execute({ params: { noa: num.value } }).then((response) => {
                 noaNum.value = data.value;
-                console.log(noaNum.value);
 
                 return noaNum.value;
             });

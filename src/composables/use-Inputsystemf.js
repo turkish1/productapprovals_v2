@@ -46,14 +46,13 @@ export default function useSystemf() {
         try {
             const response = await execute({ params: { NOA: num.value } }).then((response) => {
                 noaNum.value = data.value;
-                console.log(noaNum.value);
+
                 return noaNum.value;
             });
-            console.log(response);
+
             if (response.length === 0) {
                 alert('No data found!');
             } else {
-                console.log(noaNum.value);
                 systemData.manufacturer = noaNum.value[0].Manufacturer;
                 systemData.material = noaNum.value[0].Material;
                 systemData.Description_F1 = noaNum.value[0].Description_F1;
@@ -63,24 +62,20 @@ export default function useSystemf() {
                 systemData.Description_F5 = noaNum.value[0].Description_F5;
                 systemData.Description_F6 = noaNum.value[0].Description_F6;
                 systemData.Description_F7 = noaNum.value[0].Description_F7;
+                systemData.system = noaNum.value[0].System;
                 systemData.systemCheck = noaNum.value[0].System;
-                if (systemData.systemCheck.length >= 3) {
-                    console.log('Maps created');
+                if (systemData.systemCheck.length >= 2) {
                     systemData.maps = noaNum.value[0].Maps;
-                    console.log(noaNum.value[0].Maps);
+
                     for (const [key] of Object.entries(systemData.maps)) {
                         systemData.arraySystem.push(`${key}`);
                         console.log(`${key}`);
                     }
-                    console.log(systemData.arraySystem);
                 } else {
                     systemData.system = noaNum.value[0].System;
                     systemData.description = noaNum.value[0].Description;
                 }
 
-                // systemData.expiration_date = noaNum.value[0].Expiration_Date;
-                // systemData.System_F1 = noaNum.value[0];
-                // System_F1.Underlayment_Uplift_Design_Pressure;
                 store.addData(systemData);
 
                 console.log(systemData, 'System added');
@@ -91,7 +86,6 @@ export default function useSystemf() {
         }
         return results;
     };
-    // 18061905
 
     return { inputsystem, fetchData, takef, noaNum, error, results, ...toRefs(systemData), store };
 }

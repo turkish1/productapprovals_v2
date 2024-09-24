@@ -271,7 +271,7 @@ invoke(async () => {
                             <InputText v-model="total" placeholder="Total" />
                         </InputGroup>
                     </div>
-                    <div class="card md:w-1/2 bg-local hover:bg-fixed gap-4" style="margin-left: 150px">
+                    <div class="card md:w-1/2 bg-local hover:bg-fixed gap-4" style="margin-left: 10px">
                         <CadViewer />
                     </div>
                     <div class="card md:w-1/3 flex flex-col gap-4">

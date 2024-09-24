@@ -108,31 +108,25 @@ const whatChanged = computed(() => {
     validateHeight();
     checkInputPoly();
 });
-// const onKeydown = (event) => {
-//     console.log(event);
-//     if (event.key === 'Tab') {
-//         event.preventDefault();
-//         grabInput();
-//     }
-// };
+
 function grabInput() {
     data.value = noaInput.value;
-    datasbs.value = saInput.value;
-    datapoly.value = udlInput.value;
-    datasystemf.value = saInput.value;
 
     if (noaInput.value !== null) {
-        // 18061905
-
         takeValue(data.value);
-        checkInput();
     }
+}
+
+function grabInputSA() {
+    datasbs.value = saInput.value;
+    datasystemf.value = saInput.value;
     if (saInput.value !== null) {
         takef(datasystemf.value);
     }
+}
+function grabInputUDL() {
+    datapoly.value = udlInput.value;
     if (udlInput.value !== null) {
-        //  17040522
-
         takp(datapoly.value);
     }
 }
@@ -160,7 +154,7 @@ function checkInputSystem() {
         selfadhered.Description_F7 = item.systemData.Description_F7;
         selfadhered.arrSystem = item.systemData.arraySystem;
         selfadhered.system = item.systemData.system;
-
+        console.log(selfadhered.arrSystem, selfadhered.system);
         console.log(selfadhered.Description_F1, selfadhered.Description_F2);
     });
 }
@@ -179,13 +173,13 @@ function updateselectSystem(selectedsystemf) {
     if (selectedsystemf.value === 'F3') {
         selfadhered.sadescription = selfadhered.Description_F3;
     }
-    if (selectedsystemf.value === 'F4') {
+    if (selectedsystemf.value === 'F4' || selectedsystemf.value === 'E4') {
         selfadhered.sadescription = selfadhered.Description_F4;
     }
-    if (selectedsystemf.value === 'F5') {
+    if (selectedsystemf.value === 'F5' || selectedsystemf.value === 'E5') {
         selfadhered.sadescription = selfadhered.Description_F5;
     }
-    if (selectedsystemf.value === 'F6') {
+    if (selectedsystemf.value === 'F6' || selectedsystemf.value === 'E6') {
         selfadhered.sadescription = selfadhered.Description_F6;
     }
     if (selectedsystemf.value === 'F7') {
@@ -361,7 +355,7 @@ const generatePdf = () => {
 function clearSelected() {
     store.$reset();
 }
-watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInput, () => {});
+watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInputSA, grabInputUDL, grabInput, () => {});
 
 watch(
     checkInputSystem,
@@ -374,12 +368,14 @@ watch(
 
     dimensions,
     grabInput,
+    grabInputSA,
+    grabInputUDL,
     useInputs,
 
     inputshingle,
     inputsystem,
     datamounted,
-
+    data,
     datasbs,
     datapoly,
 
@@ -420,13 +416,13 @@ watch(
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab.exact.stop="checkInputPoly" />
+                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @change="grabInputUDL" @keydown.tab.exact.stop="checkInputPoly" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="00000000" @change="grabInput" @keydown.tab.exact.stop="checkInputSystem" />
+                <InputText id="saInput" v-model="saInput" placeholder="00000000" @change="grabInputSA" @keydown.tab.exact.stop="checkInputSystem" />
             </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
