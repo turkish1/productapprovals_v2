@@ -30,6 +30,8 @@ export default function useTileSystemF() {
         Description_F5: '',
         Description_F6: '',
         Description_F7: '',
+        Description_F8: '',
+        Description_F9: '',
         arraySystem: [],
         // maps: [],
         systemCheck: []
@@ -38,30 +40,50 @@ export default function useTileSystemF() {
     function takef(saNoa) {
         inputsystem.value = saNoa;
         num.value = Number(inputsystem.value);
-        const result = execute({ params: { NOA: num.value } }).then((result) => {
-            noaNum.value = data.value;
-            console.log(noaNum.value[0]);
 
-            systemData.manufacturer = noaNum.value[0].Manufacturer;
-            systemData.material = noaNum.value[0].Material;
-
-            systemData.Description_F1 = noaNum.value[0].TileCap_Sheet_Description_F1;
-            systemData.Description_F2 = noaNum.value[0].TileCap_Sheet_Description_F2;
-            systemData.Description_F3 = noaNum.value[0].TileCap_Sheet_Description_F3;
-            systemData.Description_F4 = noaNum.value[0].TileCap_Sheet_Description_F4;
-            systemData.Description_F5 = noaNum.value[0].TileCap_Sheet_Description_F5;
-            systemData.Description_F6 = noaNum.value[0].TileCap_Sheet_Description_F6;
-            systemData.Description_F7 = noaNum.value[0].TileCap_Sheet_Description_F7;
-            systemData.designPressure = noaNum.value[0].DesignPressure;
-            systemData.system = noaNum.value[0].System;
-            store.addData(systemData);
-            // area.value = '';
-            // type.value = '';
-            console.log('System added');
-
-            return results;
-        });
+        console.log(num.value);
+        fetchData();
     }
+
+    const fetchData = async () => {
+        try {
+            const response = await execute({ params: { NOA: num.value } }).then((response) => {
+                noaNum.value = data.value;
+
+                return noaNum.value;
+            });
+
+            console.log(response.length);
+            if (response.length === 0) {
+                alert('No data found!');
+            } else {
+                console.log(noaNum.value);
+
+                systemData.manufacturer = noaNum.value[0].Manufacturer;
+                systemData.material = noaNum.value[0].Material;
+
+                systemData.Description_F1 = noaNum.value[0].TileCap_Sheet_Description_F1;
+                systemData.Description_F2 = noaNum.value[0].TileCap_Sheet_Description_F2;
+                systemData.Description_F3 = noaNum.value[0].TileCap_Sheet_Description_F3;
+                systemData.Description_F4 = noaNum.value[0].TileCap_Sheet_Description_F4;
+                systemData.Description_F5 = noaNum.value[0].TileCap_Sheet_Description_F5;
+                systemData.Description_F6 = noaNum.value[0].TileCap_Sheet_Description_F6;
+                systemData.Description_F7 = noaNum.value[0].TileCap_Sheet_Description_F7;
+                systemData.Description_F8 = noaNum.value[0].TileCap_Sheet_Description_F8;
+                systemData.Description_F9 = noaNum.value[0].TileCap_Sheet_Description_F9;
+                systemData.designPressure = noaNum.value[0].DesignPressure;
+                systemData.system = noaNum.value[0].System;
+                store.addData(systemData);
+                // area.value = '';
+                // type.value = '';
+                console.log('System added');
+            }
+        } catch (error) {
+            console.log('Error, fectching data', error);
+            alert('An error occurred while fetching data.');
+        }
+        return results;
+    };
 
     // 18061905
 

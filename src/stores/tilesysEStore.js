@@ -11,6 +11,9 @@ export const usetilesysEStore = defineStore('tilesysEinput', {
     actions: {
         addData(systemDataE) {
             this.tilesysEinput.push({ systemDataE, completed: false });
+        },
+        reset() {
+            this.$reset();
         }
     },
 

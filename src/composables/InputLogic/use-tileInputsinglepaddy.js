@@ -15,7 +15,7 @@ export default function usetileInputsingle() {
     const { tilenoas, getNoa, addNoa } = useGlobalState();
     let url = 'https://q5vantupjl.execute-api.us-east-1.amazonaws.com/singlepd/singlepd';
 
-    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: true });
+    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     const tileDatas = reactive({
         noa: '',

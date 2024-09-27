@@ -30,6 +30,12 @@ export default function useTileSystemE() {
         Anchor_Base_Sheet_E5: '',
         Anchor_Base_Sheet_E6: '',
         Anchor_Base_Sheet_E7: '',
+        Anchor_Base_Sheet_E8: '',
+        Anchor_Base_Sheet_E9: '',
+        Anchor_Base_Sheet_E10: '',
+        Anchor_Base_Sheet_E11: '',
+        Anchor_Base_Sheet_E12: '',
+        Anchor_Base_Sheet_E13: '',
         TileCap_Sheet_Description: [],
         TileCap_Sheet_Description_E1: '',
         TileCap_Sheet_Description_E2: '',
@@ -61,6 +67,12 @@ export default function useTileSystemE() {
             systemDataE.Anchor_Base_Sheet_E5 = noaNum.value[0].Anchor_Base_Sheet_E5;
             systemDataE.Anchor_Base_Sheet_E6 = noaNum.value[0].Anchor_Base_Sheet_E6;
             systemDataE.Anchor_Base_Sheet_E7 = noaNum.value[0].Anchor_Base_Sheet_E7;
+            systemDataE.Anchor_Base_Sheet_E8 = noaNum.value[0].Anchor_Base_Sheet_E8;
+            systemDataE.Anchor_Base_Sheet_E9 = noaNum.value[0].Anchor_Base_Sheet_E9;
+            systemDataE.Anchor_Base_Sheet_E10 = noaNum.value[0].Anchor_Base_Sheet_E10;
+            systemDataE.Anchor_Base_Sheet_E11 = noaNum.value[0].Anchor_Base_Sheet_E11;
+            systemDataE.Anchor_Base_Sheet_E12 = noaNum.value[0].Anchor_Base_Sheet_E12;
+            systemDataE.Anchor_Base_Sheet_E13 = noaNum.value[0].Anchor_Base_Sheet_E13;
 
             systemDataE.TileCap_Sheet_Description_E1 = noaNum.value[0].TileCap_Sheet_Description_E1;
             systemDataE.TileCap_Sheet_Description_E2 = noaNum.value[0].TileCap_Sheet_Description_E2;
@@ -69,10 +81,17 @@ export default function useTileSystemE() {
             systemDataE.TileCap_Sheet_Description_E5 = noaNum.value[0].TileCap_Sheet_Description_E5;
             systemDataE.TileCap_Sheet_Description_E6 = noaNum.value[0].TileCap_Sheet_Description_E6;
             systemDataE.TileCap_Sheet_Description_E7 = noaNum.value[0].TileCap_Sheet_Description_E7;
+            systemDataE.TileCap_Sheet_Description_E8 = noaNum.value[0].TileCap_Sheet_Description_E8;
+            systemDataE.TileCap_Sheet_Description_E9 = noaNum.value[0].TileCap_Sheet_Description_E9;
+            systemDataE.TileCap_Sheet_Description_E10 = noaNum.value[0].TileCap_Sheet_Description_E10;
+            systemDataE.TileCap_Sheet_Description_E11 = noaNum.value[0].TileCap_Sheet_Description_E11;
+            systemDataE.TileCap_Sheet_Description_E12 = noaNum.value[0].TileCap_Sheet_Description_E12;
+            systemDataE.TileCap_Sheet_Description_E13 = noaNum.value[0].TileCap_Sheet_Description_E13;
+
             systemDataE.system = noaNum.value[0].System;
             systemDataE.designPressure = noaNum.value[0].DesignPressure;
             systemDataE.Maps = noaNum.value[0].Maps;
-            systemDataE.Anchor_Base_Sheet = noaNum.value[0].Anchor_Base_Sheet;
+
             systemDataE.TileCap_Sheet_Description = noaNum.value[0].TileCap_Sheet_Description;
             store.addData(systemDataE);
             // area.value = '';

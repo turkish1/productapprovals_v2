@@ -5,7 +5,7 @@ import { reactive, ref, toRefs } from 'vue';
 
 export default function useInputs() {
     const input = ref();
-    const effort = ref([]);
+
     const noaNum = ref([]);
     let results = ref([]);
     const store = useShingleStore();
@@ -23,7 +23,7 @@ export default function useInputs() {
     });
     function takeValue(inputNoa) {
         input.value = inputNoa;
-        console.log(input.value);
+
         num.value = Number(input.value);
         fetchData();
     }
@@ -36,7 +36,7 @@ export default function useInputs() {
             });
             console.log(response.length);
             if (response.length === 0) {
-                alert('No data found!');
+                // alert('No data found!');
             } else {
                 console.log(noaNum.value);
                 shingleData.applicant = noaNum.value[0].applicant;
@@ -50,7 +50,7 @@ export default function useInputs() {
             }
         } catch (error) {
             console.log('Error, fectching data', error);
-            alert('An error occurred while fetching data.');
+            // alert('An error occurred while fetching data.');
         }
         return results;
     };

@@ -1,6 +1,6 @@
 <script setup>
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
-import usetileInputs from '@/composables/InputLogic/use-tileInput';
+import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
@@ -23,7 +23,7 @@ import DripEdgeComponent from './DripEdgeComponent.vue';
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
 // const etileStore = usetilesysEStore();
-const { getTilenoa, tileData } = usetileInputs();
+const { getTilenoa, tileData } = usetileInputdouble();
 const { EcheckInput, Edatamounted, etileStore, getV, systemDataE } = useUDL();
 const { takef } = useTileSystemF();
 // const { getV } = useTileSystemE();
@@ -80,6 +80,12 @@ const udlTile = reactive({
     Anchor_Base_Sheet_E5: '',
     Anchor_Base_Sheet_E6: '',
     Anchor_Base_Sheet_E7: '',
+    Anchor_Base_Sheet_E8: '',
+    Anchor_Base_Sheet_E9: '',
+    Anchor_Base_Sheet_E10: '',
+    Anchor_Base_Sheet_E11: '',
+    Anchor_Base_Sheet_E12: '',
+    Anchor_Base_Sheet_E13: '',
     TileCap_Sheet_Description: [],
     TileCap_Sheet_Description_E1: '',
     TileCap_Sheet_Description_E2: '',
@@ -88,6 +94,12 @@ const udlTile = reactive({
     TileCap_Sheet_Description_E5: '',
     TileCap_Sheet_Description_E6: '',
     TileCap_Sheet_Description_E7: '',
+    TileCap_Sheet_Description_E8: '',
+    TileCap_Sheet_Description_E9: '',
+    TileCap_Sheet_Description_E10: '',
+    TileCap_Sheet_Description_E11: '',
+    TileCap_Sheet_Description_E12: '',
+    TileCap_Sheet_Description_E13: '',
     arrDesignPressure: []
 });
 let datamounted = ref(ftileStore.$state.tilefinput);
@@ -163,7 +175,7 @@ function sysEcheckInput() {
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;
-            udlTile.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
+            // udlTile.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
         });
     }
 }
@@ -292,6 +304,8 @@ function checkInputSystem() {
         saTiles.Description_F5 = item.systemData.Description_F5;
         saTiles.Description_F6 = item.systemData.Description_F6;
         saTiles.Description_F7 = item.systemData.Description_F7;
+        saTiles.Description_F8 = item.systemData.Description_F8;
+        saTiles.Description_F9 = item.systemData.Description_F9;
         saTiles.arrDesignPressure = item.systemData.designPressure;
 
         if (item.systemData.system.length > 1) {
@@ -301,19 +315,41 @@ function checkInputSystem() {
         }
     });
 }
+const Anchor_Base = reactive({
+    Anchor_Base_Sheet_E1: '',
+    Anchor_Base_Sheet_E2: '',
+    Anchor_Base_Sheet_E3: '',
+    Anchor_Base_Sheet_E4: '',
+    Anchor_Base_Sheet_E5: '',
+    Anchor_Base_Sheet_E6: '',
+    Anchor_Base_Sheet_E7: '',
+    Anchor_Base_Sheet_E8: '',
+    Anchor_Base_Sheet_E9: '',
+    Anchor_Base_Sheet_E10: '',
+    Anchor_Base_Sheet_E11: '',
+    Anchor_Base_Sheet_E12: '',
+    Anchor_Base_Sheet_E13: ''
+});
 function EcheckInputSystem() {
     // 23111506
 
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
-        udlTile.Anchor_Base_Sheet_E1 = item.systemDataE.Anchor_Base_Sheet_E1;
-        udlTile.Anchor_Base_Sheet_E2 = item.systemDataE.Anchor_Base_Sheet_E2;
-        udlTile.Anchor_Base_Sheet_E3 = item.systemDataE.Anchor_Base_Sheet_E3;
-        udlTile.Anchor_Base_Sheet_E4 = item.systemDataE.Anchor_Base_Sheet_E4;
-        udlTile.Anchor_Base_Sheet_E5 = item.systemDataE.Anchor_Base_Sheet_E5;
-        udlTile.Anchor_Base_Sheet_E6 = item.systemDataE.Anchor_Base_Sheet_E6;
-        udlTile.Anchor_Base_Sheet_E7 = item.systemDataE.Anchor_Base_Sheet_E7;
 
+        Anchor_Base.Anchor_Base_Sheet_E1 = item.systemDataE.Anchor_Base_Sheet_E1;
+        Anchor_Base.Anchor_Base_Sheet_E2 = item.systemDataE.Anchor_Base_Sheet_E2;
+        Anchor_Base.Anchor_Base_Sheet_E3 = item.systemDataE.Anchor_Base_Sheet_E3;
+        Anchor_Base.Anchor_Base_Sheet_E4 = item.systemDataE.Anchor_Base_Sheet_E4;
+        Anchor_Base.Anchor_Base_Sheet_E5 = item.systemDataE.Anchor_Base_Sheet_E5;
+        Anchor_Base.Anchor_Base_Sheet_E6 = item.systemDataE.Anchor_Base_Sheet_E6;
+        Anchor_Base.Anchor_Base_Sheet_E7 = item.systemDataE.Anchor_Base_Sheet_E7;
+        Anchor_Base.Anchor_Base_Sheet_E8 = item.systemDataE.Anchor_Base_Sheet_E8;
+        Anchor_Base.Anchor_Base_Sheet_E9 = item.systemDataE.Anchor_Base_Sheet_E9;
+        Anchor_Base.Anchor_Base_Sheet_E10 = item.systemDataE.Anchor_Base_Sheet_E10;
+        Anchor_Base.Anchor_Base_Sheet_E11 = item.systemDataE.Anchor_Base_Sheet_E11;
+        Anchor_Base.Anchor_Base_Sheet_E12 = item.systemDataE.Anchor_Base_Sheet_E12;
+        Anchor_Base.Anchor_Base_Sheet_E13 = item.systemDataE.Anchor_Base_Sheet_E13;
+        console.log(Anchor_Base.Anchor_Base_Sheet_E2, item.systemDataE.Anchor_Base_Sheet_E1);
         udlTile.TileCap_Sheet_Description_E1 = item.systemDataE.TileCap_Sheet_Description_E1;
         udlTile.TileCap_Sheet_Description_E2 = item.systemDataE.TileCap_Sheet_Description_E2;
         udlTile.TileCap_Sheet_Description_E3 = item.systemDataE.TileCap_Sheet_Description_E3;
@@ -321,18 +357,24 @@ function EcheckInputSystem() {
         udlTile.TileCap_Sheet_Description_E5 = item.systemDataE.TileCap_Sheet_Description_E5;
         udlTile.TileCap_Sheet_Description_E6 = item.systemDataE.TileCap_Sheet_Description_E6;
         udlTile.TileCap_Sheet_Description_E7 = item.systemDataE.TileCap_Sheet_Description_E7;
+        udlTile.TileCap_Sheet_Description_E8 = item.systemDataE.TileCap_Sheet_Description_E8;
+        udlTile.TileCap_Sheet_Description_E9 = item.systemDataE.TileCap_Sheet_Description_E9;
+        udlTile.TileCap_Sheet_Description_E10 = item.systemDataE.TileCap_Sheet_Description_E10;
+        udlTile.TileCap_Sheet_Description_E11 = item.systemDataE.TileCap_Sheet_Description_E11;
 
+        udlTile.TileCap_Sheet_Description_E12 = item.systemDataE.TileCap_Sheet_Description_E12;
+        udlTile.TileCap_Sheet_Description_E13 = item.systemDataE.TileCap_Sheet_Description_E13;
         udlTile.arrDesignPressure = item.systemDataE.designPressure;
 
         if (item.systemDataE.system.length > 1) {
         } else {
             udlTile.system = item.systemDataE.system;
         }
+        //  updateselectSystemE();
     });
 }
 function addFSystem() {
     saTiles.system = saTiles.system;
-    // console.log(typeof selfadhered.arrSystem, typeof selfadhered.system);
 }
 const isSinglepaddyValid = ref(false);
 const paddySeleted = ref('');
@@ -419,6 +461,7 @@ function validateHeight() {
 function checkInputSA() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
+            console.log(item);
             saTiles.manufacturer = item.systemData.manufacturer;
             saTiles.material = item.systemData.material;
             saTiles.system = item.systemData.system;
@@ -454,34 +497,34 @@ function checkMaterial() {
     console.log(slopeRange);
     if (slopeRange <= slopeOptions.three) {
         console.log('Is Less then three');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two.Direct_Deck;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two : tileData.Table3.two;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two : tileData.Table3.two;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two : tileData.Table3.two;
     } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
         console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three, tileData.Table3.three);
 
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three.Direct_Deck;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three.Direct_Deck;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three.Direct_Deck;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three : tileData.Table3.three;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three : tileData.Table3.three;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three : tileData.Table3.three;
     } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four.Direct_Deck;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four.Direct_Deck;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four.Direct_Deck;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four : tileData.Table3.four;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four : tileData.Table3.four;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four : tileData.Table3.four;
     } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five.Direct_Deck;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five.Direct_Deck;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five.Direct_Deck;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five : tileData.Table3.five;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five : tileData.Table3.five;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five : tileData.Table3.five;
     } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six.Direct_Deck;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six.Direct_Deck;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six.Direct_Deck;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six : tileData.Table3.six;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six : tileData.Table3.six;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six : tileData.Table3.six;
     } else if (slopeRange >= slopeOptions.seven) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven.Direct_Deck;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven.Direct_Deck;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven.Direct_Deck;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven : tileData.Table3.seven;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven : tileData.Table3.seven;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven : tileData.Table3.seven;
     }
 
     const result1 = computed(() => zoneone.zone * zoneone.lambda1);
@@ -533,8 +576,8 @@ function updateMF(event) {
 
         console.log(mfcheck1.value);
         if (zoneone.mr1 > mfcheck1.value || event.value) {
-            console.log('I am in mr greater', ismrInvalid);
-            ismrInvalid = true;
+            console.log('I am in mr greater', ismrInvalid, event.value);
+            ismrInvalid = false;
         }
         if (zoneone.mr1 < mfcheck1.value || event.value) {
             ismrValid.value = true;
@@ -590,10 +633,18 @@ function updateselectSystem() {
         if (val === 'F6') {
             saTiles.description = saTiles.Description_F6;
             saTiles.designpressure = saTiles.arrDesignPressure[5];
-            if (val === 'F7') {
-                saTiles.description = saTiles.Description_F7;
-                saTiles.designpressure = saTiles.arrDesignPressure[6];
-            }
+        }
+        if (val === 'F7') {
+            saTiles.description = saTiles.Description_F7;
+            saTiles.designpressure = saTiles.arrDesignPressure[6];
+        }
+        if (val === 'F8') {
+            saTiles.description = saTiles.Description_F8;
+            saTiles.designpressure = saTiles.arrDesignPressure[7];
+        }
+        if (val === 'F9') {
+            saTiles.description = saTiles.Description_F9;
+            saTiles.designpressure = saTiles.arrDesignPressure[8];
         }
     });
 }
@@ -603,18 +654,15 @@ function updateselectSystemE(selectedsystemE) {
     let sys = udlTile.system;
     let dp = udlTile.arrDesignPressure;
     let key = sys;
-    console.log(selectedsystemE.value);
     sys.forEach((key, index) => {
         keyValueSystemEPairsValues.value[key] = dp[index];
     });
     key.forEach((key, index) => {
         keyValueSystemEPairsKeys.value[key] = sys[index];
     });
-    console.log(keyValueSystemEPairsValues.value.E2, keyValueSystemEPairsValues.value.E3);
-
-    // if (keyValueSystemEPairsValues.value.E1 !== null && selectedsystemE.value !== null) {
-    //     udlDescPressure();
-    // }
+    if (keyValueSystemEPairsValues.value.E1 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
     if (keyValueSystemEPairsValues.value.E2 !== null && selectedsystemE.value !== null) {
         udlDescPressure();
     }
@@ -633,39 +681,93 @@ function updateselectSystemE(selectedsystemE) {
     if (keyValueSystemEPairsValues.value.E7 !== null && selectedsystemE.value !== null) {
         udlDescPressure();
     }
+    if (keyValueSystemEPairsValues.value.E8 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E9 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E10 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E11 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E12 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemEPairsValues.value.E13 !== null && selectedsystemE.value !== null) {
+        udlDescPressure();
+    }
 }
 function udlDescPressure() {
     if (selectedsystemE.value === 'E1') {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E1;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E1;
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E1;
     }
     if (selectedsystemE.value === 'E2') {
+        console.log(selectedsystemE.value, typeof selectedsystemE);
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E2;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E2;
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E2;
+        console.log(udlTile.TileCap_Sheet_Description_E2, keyValueSystemEPairsValues.value.E2, Anchor_Base.Anchor_Base_Sheet_E2);
     }
     if (selectedsystemE.value === 'E3') {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E3;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E3;
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E3;
     }
     if (selectedsystemE.value === 'E4') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E4;
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E4;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E4;
     }
     if (selectedsystemE.value === 'E5') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E5;
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E5;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E5;
     }
-    if (selectedsystemE.value === 'E7') {
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E7;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E7;
-    }
+
     if (selectedsystemE.value === 'E6') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E6;
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E6;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E6;
     }
     if (selectedsystemE.value === 'E7') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E7;
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E7;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E7;
+    }
+    if (selectedsystemE.value === 'E8') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E8;
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E8;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E8;
+    }
+    if (selectedsystemE.value === 'E9') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E9;
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E9;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E9;
+    }
+    if (selectedsystemE.value === 'E10') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E10;
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E10;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E10;
+    }
+    if (selectedsystemE.value === 'E11') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E11;
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E11;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E11;
+    }
+    if (selectedsystemE.value === 'E12') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E12;
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E12;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E12;
+    }
+    if (selectedsystemE.value === 'E13') {
+        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E13;
+        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E13;
+        udlTile.designPressure = keyValueSystemEPairsValues.value.E13;
     }
 }
 const generatePdf = () => {
@@ -724,7 +826,7 @@ invoke(async () => {
     // alert('Generated, PDF!');
 });
 
-watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -762,13 +864,13 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
-                <InputText id="udlInput" v-tooltip.bottom="'Press Tab after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @keydown.tab="sysEcheckInput" />
+                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @keypress="sysEcheckInput" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-tooltip.bottom="'Press Tab after value'" v-model="saInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInputSA" />
+                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @change="grabInput" @keypress="checkInputSA" />
             </div>
         </div>
         <!--  @click="checkInput" -->
@@ -801,7 +903,7 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
         <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
             <div class="w-64 gap-4 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="tilenoa">Tile Noas</label>
-                <InputText id="tilenoa" v-tooltip.bottom="'Press Tab after value'" v-model="tilenoaInput" placeholder="00000000" @change="grabInput" @keydown.tab="checkInput" />
+                <InputText id="tilenoa" v-tooltip.bottom="'Press Enter after value'" v-model="tilenoaInput" placeholder="00000000" @change="grabInput" @keypress="checkInput" />
             </div>
         </div>
     </div>
@@ -820,19 +922,20 @@ watch(checkInputSystem, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial
                     <label for="material">(UDL) Material</label>
                     <InputText id="material" v-model="udlTile.material" />
                 </div>
-                <div class="w-128 flex flex-col gap-2">
-                    <label for="anchor">Anchor Base Sheet</label>
-                    <!-- <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" /> -->
-                    <Select v-model="selectedAnchor" :options="udlTile.Anchor_Base_Sheet" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
+                <div class="w-56 flex flex-col gap-1">
+                    <label style="color: red">Select System E *</label>
+                    <!-- @click="checkInputSystem" @change="updateselectSystem" -->
+                    <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
                 </div>
             </div>
         </div>
-        <div class="w-full flex flex-row space-x-30 space-y-8" style="margin-left: 2px">
-            <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-8 space-y-4" style="margin-left: 2px">
-                <div class="w-56 flex flex-col gap-2 mt-3">
-                    <label style="color: red">Select System E *</label>
-                    <!-- @click="checkInputSystem" @change="updateselectSystem" -->
-                    <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="checkInputSystem" @change="updateselectSystemE" />
+        <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
+            <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 2px">
+                <div class="w-128 flex flex-col gap-2">
+                    <label class="mt-3" for="anchor">Anchor Base Sheet</label>
+                    <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE, updateselectSystemE" />
+                    <!-- @click="EcheckInputSystem" -->
+                    <!-- <Select v-model="selectedAnchor" :options="udlTile.Anchor_Base_Sheet" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" /> -->
                 </div>
                 <div class="w-128 flex flex-col gap-2">
                     <label for="description">(UDL) Description</label>

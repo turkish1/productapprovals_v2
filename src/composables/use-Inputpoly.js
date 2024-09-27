@@ -38,7 +38,7 @@ export default function usePoly() {
             });
             console.log(response);
             if (response.length === 0) {
-                alert('No data found!');
+                // alert('No data found!');
             } else {
                 polyData.applicant = noaNum.value[0].applicant;
                 polyData.material = noaNum.value[0].material;
@@ -53,7 +53,7 @@ export default function usePoly() {
             }
         } catch (error) {
             console.log('Error, fectching data', error);
-            alert('An error occurred while fetching data.');
+            // alert('An error occurred while fetching data.');
         }
 
         return results;

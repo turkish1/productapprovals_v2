@@ -5,3 +5,12 @@
 
 
 
+// function grabInput() {
+//     data.value = noaInput.value;
+
+//     if (noaInput.value !== null) {
+//         takeValue(data.value);
+//         checkInput();
+//     }
+//     // console.log(useInputwFetch());
+// }

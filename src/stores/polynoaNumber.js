@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
 
-export const useSbsStore = defineStore('sbsinput', {
+export const usePolynoaStore = defineStore('noapoly', {
     //state
     state: () => ({
-        sbsinput: [],
+        noapoly: [],
         id: 0
     }),
 
     //actions
     actions: {
-        addData(sbsData) {
-            this.sbsinput.push({ sbsData, completed: false });
+        addData(polyNoaNumber) {
+            this.noapoly.push({ polyNoaNumber, completed: false });
         },
         reset() {
             this.$reset();
@@ -18,8 +18,9 @@ export const useSbsStore = defineStore('sbsinput', {
     },
 
     //getters
+
     getters: {
-        sbsDb: (state) => state.sbsData
+        polyNoaNumber: (state) => state.polyNoaNumber
     }
 
     // persist: true

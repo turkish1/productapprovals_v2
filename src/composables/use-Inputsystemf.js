@@ -56,7 +56,7 @@ export default function useSystemf() {
             });
 
             if (response.length === 0) {
-                alert('No data found!');
+                // alert('No data found!');
             } else {
                 systemData.manufacturer = noaNum.value[0].Manufacturer;
                 systemData.material = noaNum.value[0].Material;
@@ -92,7 +92,7 @@ export default function useSystemf() {
             }
         } catch (error) {
             console.log('Error, fectching data', error);
-            alert('An error occurred while fetching data.');
+            // alert('An error occurred while fetching data.');
         }
         return results;
     };

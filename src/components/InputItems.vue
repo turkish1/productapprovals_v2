@@ -1,6 +1,7 @@
 <script setup>
 import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
+
 import useInputpoly from '@/composables/use-Inputpoly';
 import useInputs from '@/composables/use-Inputs';
 import useSystemf from '@/composables/use-Inputsystemf';
@@ -13,6 +14,9 @@ import DripEdgeComponent from './DripEdgeComponent.vue';
 import { useShingleStore } from '@/stores/shingleStore';
 import Divider from 'primevue/divider';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
+import AutoComplete from './roofSystems/AutoComplete.vue';
+import AutoCompletePoly from './roofSystems/AutoCompletePoly.vue';
+import AutoCompleteSA from './roofSystems/AutoCompleteSA.vue';
 
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
@@ -23,7 +27,7 @@ const store = useShingleStore();
 const usesystemfStore = useSystemf();
 const { inputshingle } = storeToRefs(store);
 
-const evaluating = ref(false);
+// const evaluating = ref(false);
 const { polyinput } = storeToRefs(polyStore);
 
 const shingles = reactive({
@@ -59,7 +63,7 @@ const selfadhered = reactive({
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
-
+console.log(datamounted.value);
 let polydatamt = ref(polyinput._object.polyinput);
 let systemdatamt = ref(usesystemfStore.store.$state.systeminput);
 // let roofArea = ref(roofList._object.roofList);
@@ -83,10 +87,6 @@ const dims = reactive({
     height: ''
 });
 
-const selSytem = ref();
-
-//  This goes in the systemtype ref({ name: array })
-const array = ref([]);
 const selectedsystemf = ref(null);
 const systemtype = ref(selfadhered.system);
 
@@ -99,6 +99,7 @@ const { input, takeValue } = useInputs();
 const desc = ref(false);
 const { inputsystem, takef } = useSystemf();
 const { inp, takp } = useInputpoly();
+
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const heightmin = ref(10);
 const heightmax = ref(33);
@@ -107,33 +108,25 @@ const whatChanged = computed(() => {
     checkInput();
     clearSelected();
     validateRoofSlope();
-    grabInput();
+
     onKeydown();
     validateHeight();
     checkInputPoly();
 });
 
-function grabInput() {
-    data.value = noaInput.value;
-
-    if (noaInput.value !== null) {
-        takeValue(data.value);
-    }
-}
-
-function grabInputSA() {
-    datasbs.value = saInput.value;
-    datasystemf.value = saInput.value;
-    if (saInput.value !== null) {
-        takef(datasystemf.value);
-    }
-}
-function grabInputUDL() {
-    datapoly.value = udlInput.value;
-    if (udlInput.value !== null) {
-        takp(datapoly.value);
-    }
-}
+// function grabInputSA() {
+//     datasbs.value = saInput.value;
+//     datasystemf.value = saInput.value;
+//     if (saInput.value !== null) {
+//         takef(datasystemf.value);
+//     }
+// }
+// function grabInputUDL() {
+//     datapoly.value = udlInput.value;
+//     if (udlInput.value !== null) {
+//         takp(datapoly.value);
+//     }
+// }
 
 function checkInputPoly() {
     if (polydatamt.value.length !== null) {
@@ -207,9 +200,9 @@ function updateselectSystem(selectedsystemf) {
 }
 
 function checkInput() {
+    console.log(datamounted.value);
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
-            console.log(item.shingleData, index);
             shingles.manufacturer = item.shingleData.applicant;
             shingles.material = item.shingleData.material;
             shingles.description = item.shingleData.description;
@@ -370,13 +363,15 @@ const generatePdf = () => {
         }
     };
 };
+
 function clearSelected() {
     store.$reset();
     polyStore.$reset();
     // usesystemfStore.$reset();
 }
-watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, grabInputSA, grabInputUDL, grabInput, () => {});
-
+// grabInput,  grabInputUDL,
+watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, () => {});
+//  grabInput,  grabInputUDL,grabInputSA,
 watch(
     checkInputSystem,
 
@@ -387,9 +382,7 @@ watch(
     udlInput,
 
     dimensions,
-    grabInput,
-    grabInputSA,
-    grabInputUDL,
+
     useInputs,
 
     inputshingle,
@@ -412,6 +405,7 @@ watch(
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
         <!-- <div class="refresh">
+            <span class="pi pi-refresh"></span>
             <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 400px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div> -->
         <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
@@ -431,27 +425,33 @@ watch(
             <label for="area">Area</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
+
         <DripEdgeComponent />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
-            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
+            <AutoCompletePoly @keydown.tab.exact.stop="checkInputPoly"></AutoCompletePoly>
+            <!-- <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="udlInput">Fastened UDL NOA Number</label>
 
                 <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @change="grabInputUDL" @keydown.tab.exact.stop="checkInputPoly" />
-            </div>
+            </div> -->
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
-            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
+            <AutoCompleteSA @keydown.tab.exact.stop="checkInputSystem" />
+            <!-- <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="saInput">S/A Membrane NOA Number</label>
                 <InputText id="saInput" v-model="saInput" placeholder="00000000" @change="grabInputSA" @keydown.tab.exact.stop="checkInputSystem" />
-            </div>
+            </div> -->
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
-            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
-                <label for="shinglenoa">Shingle Noa</label>
-                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @change="grabInput" @keydown.tab.exact.stop="checkInput" />
-                <!-- @change="grabInput" "checkInput"-->
-            </div>
+            <AutoComplete @keydown.tab.exact.stop="checkInput" />
+            <!-- <div class="w-64 gap-2 mt-1 space-y-2 mb-2" style="margin-left: 20px"> -->
+            <!-- <label for="shinglenoa">Shingle Noa</label>
+                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @change="grabInput" @keypress="checkInput" /> -->
+            <!-- @change="grabInput" "checkInput" @keydown.tab.exact="checkInput"-->
+            <!-- </div> -->
         </div>
+        <!-- <Button plain text class="min-w-1 min-h-0" @click="clearSelected"> <span style="font-size: 1.3rem; color: black; margin-left: 100px; margin-top: 90px" class="pi pi-refresh"></span></Button> -->
+
         <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">
             <label style="color: red">Select Underlayment (S/A) *</label>
             <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />

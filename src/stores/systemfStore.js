@@ -12,15 +12,16 @@ export const usesystemfStore = defineStore('systeminput', {
         addData(systemData) {
             this.systeminput.push({ systemData, completed: false });
             console.log(systemData, this.systeminput);
+        },
+        reset() {
+            this.$reset();
         }
     },
 
     //getters
     getters: {
         sysData: (state) => state.systemData
-    },
-    reset() {
-        this.systeminput = [];
     }
+
     // persist: true
 });

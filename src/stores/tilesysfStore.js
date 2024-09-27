@@ -12,6 +12,9 @@ export const usetilesysfStore = defineStore('tilefinput', {
         addData(systemData) {
             this.tilefinput.push({ systemData, completed: false });
             console.log(systemData, this.tilefinput);
+        },
+        reset() {
+            this.$reset();
         }
     },
 
