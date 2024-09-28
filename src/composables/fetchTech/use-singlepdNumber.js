@@ -1,45 +1,42 @@
 // import DataService from '@/services/DataService';
-import { useShinglenoaStore } from '@/stores/shinglenoaNumber';
+import { useSinglepdStore } from '@/stores/singlepdNumber';
 // import { useAxios } from '@vueuse/integrations/useAxios';
 import { useFetch } from '@vueuse/core';
 import { computed, reactive, ref, toRefs } from 'vue';
 
-export default function useInputs() {
+export default function useSingle() {
     const input = ref();
 
-    const noaNum = ref([]);
     let results = ref([]);
-    const noaStore = useShinglenoaStore();
+    const singleStore = useSinglepdStore();
 
     const errors = ref('');
 
-    const shingleNoaNumber = reactive({
+    const singlepdNumber = reactive({
         noa: []
     });
     function callFunction() {
         fetchData();
     }
     const url = computed(() => {
-        return 'https://i88176qin0.execute-api.us-east-1.amazonaws.com/getshinglenoa/getshinglenoa';
+        return 'https://i6qdxr9dsg.execute-api.us-east-1.amazonaws.com/singlepdNumber/singlepdNumber';
     });
     const { data } = useFetch(url).get().json();
 
     const fetchData = async () => {
         // try {
 
-        shingleNoaNumber.noa = data;
+        singlepdNumber.noa = data;
 
         // for (let i = 0;)
         // const response = await execute({ params: { noa: num.value } }).then((response) => {
-        //     noaNum.value = data.value;
 
-        //     return noaNum.value;
         // });
 
-        noaStore.addShingle(shingleNoaNumber);
+        singleStore.addSingle(singlepdNumber);
 
-        console.log(shingleNoaNumber, 'System added');
+        console.log(singlepdNumber, 'System added');
     };
 
-    return { input, fetchData, callFunction, errors, results, ...toRefs(shingleNoaNumber), noaStore };
+    return { input, fetchData, callFunction, errors, results, ...toRefs(singlepdNumber), singleStore };
 }

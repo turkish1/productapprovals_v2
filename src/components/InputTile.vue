@@ -1,4 +1,6 @@
 <script setup>
+import systemENumber from '@/components/roofSystems/systemENumber.vue';
+import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
@@ -9,7 +11,6 @@ import { useNumberValidation } from '@/composables/Validation/use-Slope';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
-
 import { useToNumber } from '@vueuse/core';
 import { invoke } from '@vueuse/shared';
 import html2canvas from 'html2canvas';
@@ -19,12 +20,13 @@ import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
+import paddyselectionNumber from './roofSystems/paddyselectionNumber.vue';
 
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
 // const etileStore = usetilesysEStore();
 const { getTilenoa, tileData } = usetileInputdouble();
-const { EcheckInput, Edatamounted, etileStore, getV, systemDataE } = useUDL();
+const { Edatamounted, etileStore } = useUDL();
 const { takef } = useTileSystemF();
 // const { getV } = useTileSystemE();
 
@@ -62,6 +64,10 @@ const saTiles = reactive({
     Description_F5: '',
     Description_F6: '',
     Description_F7: '',
+    Description_F8: '',
+    Description_F9: '',
+    Description_F10: '',
+    Description_F11: '',
     arrDesignPressure: []
 });
 
@@ -105,7 +111,7 @@ const udlTile = reactive({
 let datamounted = ref(ftileStore.$state.tilefinput);
 // let Edatamounted = ref(etileStore.$state.tilesysEinput);
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
-let datasystemf = ref();
+// let datasystemf = ref();
 let datatilenoa = ref(tileData);
 let datatilenoas = ref(tileDatas);
 let datasystemE = ref();
@@ -180,7 +186,7 @@ function sysEcheckInput() {
     }
 }
 
-const selSytemE = ref();
+// const selSytemE = ref();
 const selSytem = ref();
 const whatChanged = computed(() => {
     checkInput();
@@ -196,7 +202,7 @@ const selectedsystemf = ref(null);
 const selectedsysNoa = ref(null);
 
 const selectedsystemE = ref(null);
-const selectedAnchor = ref(null);
+
 let isUDLValid = ref('');
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
@@ -250,43 +256,43 @@ const isDataValid = ref(true);
 watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, () => {});
 
 function checkData() {
-    if (tileData.Table3.two.Direct_Deck === 'N/A') {
+    if (tileData.Table3.two === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileData.Table3.three.Direct_Deck === 'N/A') {
+    if (tileData.Table3.three === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileData.Table3.four.Direct_Deck === 'N/A') {
+    if (tileData.Table3.four === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileData.Table3.five.Direct_Deck === 'N/A') {
+    if (tileData.Table3.five === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileData.Table3.six.Direct_Deck === 'N/A') {
+    if (tileData.Table3.six === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileData.Table3.seven.Direct_Deck === 'N/A') {
+    if (tileData.Table3.seven === 'N/A') {
         isDataValid.value = false;
     }
 }
 
 function checkDatas() {
-    if (tileDatas.Table3.two.Direct_Deck === 'N/A') {
+    if (tileDatas.Table3.two === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.three.Direct_Deck === 'N/A') {
+    if (tileDatas.Table3.three === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.four.Direct_Deck === 'N/A') {
+    if (tileDatas.Table3.four === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.five.Direct_Deck === 'N/A') {
+    if (tileDatas.Table3.five === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.six.Direct_Deck === 'N/A') {
+    if (tileDatas.Table3.six === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.seven.Direct_Deck === 'N/A') {
+    if (tileDatas.Table3.seven === 'N/A') {
         isDataValid.value = false;
     }
 }
@@ -391,7 +397,6 @@ const MF = computed(updateMF, () => {
 });
 watch(
     selectPaddy,
-
     selectedExposure,
     () => {
         paddySeleted.value = selectedOption.value;
@@ -404,27 +409,23 @@ watch(
 function grabInput() {
     datatilenoa.value = tilenoaInput.value;
     datatilenoas.value = tilenoaInput.value;
-    datasystemf.value = saInput.value;
-    datasystemE.value = udlInput.value;
 
-    console.log(udlInput.value, datasystemE.value);
+    // datasystemE.value = udlInput.value;
+
     if (datatilenoa.value !== null) {
         // 18061905
-
         console.log(selectedOption.value, 'Outside');
         if (selectedOption.value === 'single') {
             console.log(selectedOption.value, 'Entered');
             getTilenoas(datatilenoas.value);
         } else getTilenoa(datatilenoa.value);
     }
-    if (saInput.value !== null) {
-        takef(datasystemf.value);
-    }
-    if (udlInput.value !== null) {
-        //  17040522
-        console.log(udlInput.value);
-        getV(datasystemE.value);
-    }
+
+    // if (udlInput.value !== null) {
+    //     //  17040522
+    //     console.log(udlInput.value);
+    //     getV(datasystemE.value);
+    // }
 }
 
 // let isSlopeValid = ref(false);
@@ -861,17 +862,10 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
         <DripEdgeComponent />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
-            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
-                <label for="udlInput">Fastened UDL NOA Number</label>
-
-                <InputText id="udlInput" v-tooltip.bottom="'Press Enter after value'" v-model="udlInput" placeholder="00000000" @change="grabInput" @keypress="sysEcheckInput" />
-            </div>
+            <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
-            <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
-                <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-tooltip.bottom="'Press Enter after value'" v-model="saInput" placeholder="00000000" @change="grabInput" @keypress="checkInputSA" />
-            </div>
+            <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
         </div>
         <!--  @click="checkInput" -->
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
@@ -901,10 +895,11 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
 
         <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
-            <div class="w-64 gap-4 mt-1 space-y-1 mb-2" style="margin-left: 20px">
+            <paddyselectionNumber @keydown.tab.exact.stop="checkInput" />
+            <!-- <div class="w-64 gap-4 mt-1 space-y-1 mb-2" style="margin-left: 20px">
                 <label for="tilenoa">Tile Noas</label>
                 <InputText id="tilenoa" v-tooltip.bottom="'Press Enter after value'" v-model="tilenoaInput" placeholder="00000000" @change="grabInput" @keypress="checkInput" />
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -933,9 +928,8 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
             <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 2px">
                 <div class="w-128 flex flex-col gap-2">
                     <label class="mt-3" for="anchor">Anchor Base Sheet</label>
-                    <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE, updateselectSystemE" />
+                    <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
                     <!-- @click="EcheckInputSystem" -->
-                    <!-- <Select v-model="selectedAnchor" :options="udlTile.Anchor_Base_Sheet" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" /> -->
                 </div>
                 <div class="w-128 flex flex-col gap-2">
                     <label for="description">(UDL) Description</label>

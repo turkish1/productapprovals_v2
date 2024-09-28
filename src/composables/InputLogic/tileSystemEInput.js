@@ -44,6 +44,12 @@ export default function useTileSystemE() {
         TileCap_Sheet_Description_E5: '',
         TileCap_Sheet_Description_E6: '',
         TileCap_Sheet_Description_E7: '',
+        TileCap_Sheet_Description_E8: '',
+        TileCap_Sheet_Description_E9: '',
+        TileCap_Sheet_Description_E10: '',
+        TileCap_Sheet_Description_E11: '',
+        TileCap_Sheet_Description_E12: '',
+        TileCap_Sheet_Description_E13: '',
         arraySystem: [],
         Maps: [],
         systemCheck: []
