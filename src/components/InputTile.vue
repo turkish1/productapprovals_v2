@@ -313,7 +313,7 @@ function checkInputSystem() {
         saTiles.Description_F8 = item.systemData.Description_F8;
         saTiles.Description_F9 = item.systemData.Description_F9;
         saTiles.arrDesignPressure = item.systemData.designPressure;
-
+        console.log(item.systemData.Description_F9, item.systemData.Description_F9);
         if (item.systemData.system.length > 1) {
             addFSystem();
         } else {
@@ -604,50 +604,55 @@ function updateMF(event) {
         //     visible.value = true;
     }
 }
-
-function updateselectSystem() {
-    selSytem.value = Object.entries(selectedsystemf).map((obj) => {
-        const val = obj[1];
-
-        if (val === 'F1') {
-            saTiles.description = saTiles.Description_F1;
-            saTiles.designpressure = saTiles.arrDesignPressure[0];
-        }
-        if (val === 'F2') {
-            saTiles.description = saTiles.Description_F2;
-            saTiles.designpressure = saTiles.arrDesignPressure[1] === null ? saTiles.arrDesignPressure[0] : saTiles.arrDesignPressure[1];
-            // isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
-            console.log(saTiles.arrDesignPressure);
-        }
-        if (val === 'F3') {
-            saTiles.description = saTiles.Description_F3;
-            saTiles.designpressure = saTiles.arrDesignPressure[2];
-        }
-        if (val === 'F4') {
-            saTiles.description = saTiles.Description_F4;
-            saTiles.designpressure = saTiles.arrDesignPressure[3];
-        }
-        if (val === 'F5') {
-            saTiles.description = saTiles.Description_F5;
-            saTiles.designpressure = saTiles.arrDesignPressure[4];
-        }
-        if (val === 'F6') {
-            saTiles.description = saTiles.Description_F6;
-            saTiles.designpressure = saTiles.arrDesignPressure[5];
-        }
-        if (val === 'F7') {
-            saTiles.description = saTiles.Description_F7;
-            saTiles.designpressure = saTiles.arrDesignPressure[6];
-        }
-        if (val === 'F8') {
-            saTiles.description = saTiles.Description_F8;
-            saTiles.designpressure = saTiles.arrDesignPressure[7];
-        }
-        if (val === 'F9') {
-            saTiles.description = saTiles.Description_F9;
-            saTiles.designpressure = saTiles.arrDesignPressure[8];
-        }
+const keyValueSystemFPairsValues = ref({});
+const keyValueSystemFPairsKeys = ref({});
+function updateselectSystem(selectedsystemf) {
+    let sys = saTiles.system;
+    let dp = saTiles.arrDesignPressure;
+    let key = sys;
+    sys.forEach((key, index) => {
+        keyValueSystemFPairsValues.value[key] = dp[index];
     });
+    key.forEach((key, index) => {
+        keyValueSystemFPairsKeys.value[key] = sys[index];
+    });
+    console.log(sys, key, dp);
+    if (keyValueSystemFPairsValues.value.F1 !== null && selectedsystemf.value !== null) {
+        udlDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F2 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F3 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F4 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F5 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F6 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F7 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F8 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F9 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F10 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F11 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
+    if (keyValueSystemFPairsValues.value.F12 !== null && selectedsystemf.value !== null) {
+        saDescPressure();
+    }
 }
 const keyValueSystemEPairsValues = ref({});
 const keyValueSystemEPairsKeys = ref({});
@@ -769,6 +774,60 @@ function udlDescPressure() {
         udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E13;
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E13;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E13;
+    }
+}
+function saDescPressure() {
+    if (selectedsystemf.value === 'F1') {
+        saTiles.description = saTiles.Description_F1;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F1;
+    }
+    if (selectedsystemf.value === 'F2') {
+        saTiles.description = saTiles.Description_F2;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F2;
+    }
+    if (selectedsystemf.value === 'F3') {
+        saTiles.description = saTiles.Description_F3;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F3;
+        console.log(saTiles.arrDesignPressure);
+    }
+    if (selectedsystemf.value === 'F4') {
+        saTiles.description = saTiles.Description_F4;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F4;
+    }
+    if (selectedsystemf.value === 'F5') {
+        saTiles.description = saTiles.Description_F5;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F5;
+    }
+    if (selectedsystemf.value === 'F6') {
+        saTiles.description = saTiles.Description_F6;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F6;
+    }
+
+    if (selectedsystemf.value === 'F7') {
+        saTiles.description = saTiles.Description_F7;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F7;
+    }
+    if (selectedsystemf.value === 'F8') {
+        saTiles.description = saTiles.Description_F8;
+
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F8;
+    }
+    if (selectedsystemf.value === 'F9') {
+        saTiles.description = saTiles.Description_F9;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F9;
+    }
+
+    if (selectedsystemf.value === 'F10') {
+        saTiles.description = saTiles.Description_F10;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F10;
+    }
+    if (selectedsystemf.value === 'F11') {
+        saTiles.description = saTiles.Description_F11;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F11;
+    }
+    if (selectedsystemf.value === 'F12') {
+        saTiles.description = saTiles.Description_F12;
+        saTiles.designpressure = keyValueSystemFPairsValues.value.F12;
     }
 }
 const generatePdf = () => {
@@ -926,12 +985,12 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
         <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 2px">
-                <div class="w-128 flex flex-col gap-2">
+                <div class="min-w-[680px] flex flex-col gap-2">
                     <label class="mt-3" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
                     <!-- @click="EcheckInputSystem" -->
                 </div>
-                <div class="w-128 flex flex-col gap-2">
+                <div class="min-w-[480px] flex flex-col gap-2">
                     <label for="description">(UDL) Description</label>
                     <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" @change="updateselectSystemE" />
                 </div>
@@ -971,12 +1030,12 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
 
         <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
-            <div class="w-96 flex flex-col gap-2">
+            <div class="min-w-[480px] flex flex-col gap-2">
                 <label for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
-            <div class="w-128 flex flex-col gap-2">
+            <div class="min-w-[480px] flex flex-col gap-2">
                 <label for="material">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>

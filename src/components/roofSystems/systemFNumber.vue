@@ -1,7 +1,6 @@
 <template>
     <div class="autocomplete">
         <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
-            <!-- @keypress="checkInput" -->
             <FloatLabel>
                 <InputText id="sanoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputSA" />
                 <label for="ac">S/A Membrane NOA: 00000000</label>
@@ -23,13 +22,6 @@ import { usetilesysfStore } from '@/stores/tilesysfStore';
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 
 import { computed, defineEmits, onMounted, reactive, ref } from 'vue';
-
-// Receive data from the parent component via the
-// const props = defineProps({
-//     manufacturer: String,
-//     material: String,
-//     description: String
-// });
 
 // Define the emit event to send data to parent
 const emit = defineEmits(['update']);
@@ -95,39 +87,8 @@ function checkInputSA() {
             saTiles.system = item.systemData.system;
         });
     }
-    checkInputSystem();
-}
-function checkInputSystem() {
-    // 23061202 23070604
-
-    datamounted.value.forEach((item, index) => {
-        saTiles.Description_F1 = item.systemData.Description_F1;
-        saTiles.Description_F2 = item.systemData.Description_F2;
-        saTiles.Description_F3 = item.systemData.Description_F3;
-        saTiles.Description_F4 = item.systemData.Description_F4;
-        saTiles.Description_F5 = item.systemData.Description_F5;
-        saTiles.Description_F6 = item.systemData.Description_F6;
-        saTiles.Description_F7 = item.systemData.Description_F7;
-        saTiles.Description_F8 = item.systemData.Description_F8;
-        saTiles.Description_F9 = item.systemData.Description_F9;
-        saTiles.arrDesignPressure = item.systemData.designPressure;
-
-        if (item.systemData.system.length > 1) {
-            addFSystem();
-        } else {
-            saTiles.system = item.systemData.system;
-        }
-    });
 }
 
-function addFSystem() {
-    saTiles.system = saTiles.system;
-}
-// Method to send data back to parent
-// const sendDataToParent = () => {
-//     // Emitting the 'update' event with data
-//     emit('updated', inputData.value);
-// };
 // Method to update the input field with selected suggestion
 const selectSuggestion = (suggestion) => {
     query.value = suggestion;
