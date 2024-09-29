@@ -39,7 +39,7 @@ export default function useInputSA() {
 
         saStore.addData(saNoaNumber);
 
-        console.log(saNoaNumber, 'System added');
+        console.log('System added');
     };
 
     return { input, fetchData, callFunction, errors, results, ...toRefs(saNoaNumber), saStore };

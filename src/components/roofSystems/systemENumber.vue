@@ -109,7 +109,6 @@ function sysEcheckInput() {
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;
-            // udlTile.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
         });
     }
     EcheckInputSystem();

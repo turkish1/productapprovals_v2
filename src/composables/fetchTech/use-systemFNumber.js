@@ -32,7 +32,7 @@ export default function useFNumber() {
 
         systemFStore.addSystem(sysFNumber);
 
-        console.log(sysFNumber, 'System added');
+        console.log('System added');
     };
 
     return { sysFNumber, fetchData, callFunction, errors, results, ...toRefs(sysFNumber), systemFStore };

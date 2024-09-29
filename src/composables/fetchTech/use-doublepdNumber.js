@@ -26,7 +26,7 @@ export default function useDouble() {
         // try {
 
         doublepdNumber.noa = data;
-
+        console.log(doublepdNumber.noa);
         // for (let i = 0;)
         // const response = await execute({ params: { noa: num.value } }).then((response) => {
 

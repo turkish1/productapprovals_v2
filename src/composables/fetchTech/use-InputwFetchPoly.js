@@ -41,7 +41,7 @@ export default function useInputPoly() {
 
         polyStores.addData(polyNoaNumber);
 
-        console.log(polyNoaNumber, 'System added');
+        console.log('System added');
     };
 
     return { input, fetchData, callFunction, errors, results, ...toRefs(polyNoaNumber), polyStores };

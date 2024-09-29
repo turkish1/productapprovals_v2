@@ -32,7 +32,7 @@ export default function useENumber() {
 
         systemEStore.addSystem(sysENumber);
 
-        console.log(sysENumber, 'System added');
+        console.log('System added');
     };
 
     return { sysENumber, fetchData, callFunction, errors, results, ...toRefs(sysENumber), systemEStore };

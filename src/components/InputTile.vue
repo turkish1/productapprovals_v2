@@ -1,7 +1,8 @@
 <script setup>
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
-import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
+import useDouble from '@/composables/fetchTech/use-doublepdNumber';
+import useSingle from '@/composables/fetchTech/use-singlepdNumber';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import useUDL from '@/composables/TileFunc/systemE';
@@ -20,15 +21,22 @@ import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
-import paddyselectionNumber from './roofSystems/paddyselectionNumber.vue';
-
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
-// const etileStore = usetilesysEStore();
+
+// Input query
+const query = ref('');
+const isSinglepaddyValid = ref(false);
+const paddySeleted = ref('');
+// Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
+const suggestions = ref([]);
+// State to control suggestions visibility
+const showSuggestions = ref(false);
+
+const { callFunction, singleStore } = useSingle();
+const { callFunctions, doubleStore } = useDouble();
 const { getTilenoa, tileData } = usetileInputdouble();
 const { Edatamounted, etileStore } = useUDL();
-const { takef } = useTileSystemF();
-// const { getV } = useTileSystemE();
 
 const { getTilenoas, tileDatas } = usetileInputsingle();
 const { zones } = useGlobalState();
@@ -42,6 +50,21 @@ const tilenoas = reactive({
 });
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
+const singles = ref([]);
+const doubles = ref([]);
+
+function selectPaddy() {
+    if (selectedOption.value === 'single') {
+        isSinglepaddyValid.value = true;
+    } else isSinglepaddyValid.value = false;
+}
+onMounted(() => {
+    callFunction();
+    callFunctions();
+
+    singles.value = singleStore.$state.singlepdInput[0].singlepdNumber;
+    doubles.value = doubleStore.$state.doublepdInput[0].doublepdNumber;
+});
 
 onMounted(() => {
     roofList.value.forEach((item, index) => {
@@ -51,6 +74,49 @@ onMounted(() => {
     });
 });
 
+watch(
+    selectPaddy,
+    selectedExposure,
+    grabInput,
+    () => {
+        paddySeleted.value = selectedOption.value;
+    },
+    { immediate: true }
+);
+
+function grabInput() {
+    datatilenoa.value = query.value;
+    datatilenoas.value = query.value;
+
+    if (datatilenoa.value !== null) {
+        // 18061905
+        console.log(selectedOption.value, 'Outside');
+        if (selectedOption.value === 'double') {
+            console.log(selectedOption.value, 'Entered double');
+            callFunctions();
+            getTilenoa(datatilenoa.value);
+        }
+        if (selectedOption.value === 'single') {
+            console.log(selectedOption.value, 'Entered single');
+            callFunction();
+            getTilenoas(datatilenoas.value);
+        }
+    }
+}
+// Computed property to filter suggestions based on user input
+const filteredSuggestions = computed(() => {
+    // if (!query.value) return [];
+    console.log(doubles.value);
+    if (selectedOption.value === 'double') {
+        console.log('double');
+        return (suggestions.value = doubles.value.noa.filter((item) => item.toString().includes(query.value)));
+
+        // [0].singlepdNumber.noa.filter((item) => item.toString().includes(query.value));
+    } else return (suggestions.value = singles.value.noa.filter((item) => item.toString().includes(query.value)));
+
+    // the real solution
+    // return suggestions.value.filter((item) => item.toString().includes(query.value));
+});
 const saTiles = reactive({
     manufacturer: '',
     material: '',
@@ -68,6 +134,7 @@ const saTiles = reactive({
     Description_F9: '',
     Description_F10: '',
     Description_F11: '',
+    Description_F12: '',
     arrDesignPressure: []
 });
 
@@ -111,14 +178,30 @@ const udlTile = reactive({
 let datamounted = ref(ftileStore.$state.tilefinput);
 // let Edatamounted = ref(etileStore.$state.tilesysEinput);
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
-// let datasystemf = ref();
+
 let datatilenoa = ref(tileData);
 let datatilenoas = ref(tileDatas);
-let datasystemE = ref();
+
 const pdfcleared = ref(false);
-let saInput = ref(null);
+
 let tilenoaInput = ref(null);
-let udlInput = ref(null);
+// Method to update the input field with selected suggestion
+const selectSuggestion = (suggestion) => {
+    query.value = suggestion;
+    showSuggestions.value = false;
+};
+
+// Method to handle input change
+const onInput = () => {
+    showSuggestions.value = true;
+};
+
+// Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
+const hideSuggestions = () => {
+    setTimeout(() => {
+        showSuggestions.value = false;
+    }, 200);
+};
 const selectedDeck = ref();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const save = ref([]);
@@ -181,7 +264,6 @@ function sysEcheckInput() {
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;
-            // udlTile.Anchor_Base_Sheet = item.systemDataE.Anchor_Base_Sheet;
         });
     }
 }
@@ -277,22 +359,22 @@ function checkData() {
 }
 
 function checkDatas() {
-    if (tileDatas.Table3.two === 'N/A') {
+    if (tileDatas.Table3.two.Direct_Deck === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.three === 'N/A') {
+    if (tileDatas.Table3.three.Direct_Deck === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.four === 'N/A') {
+    if (tileDatas.Table3.four.Direct_Deck === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.five === 'N/A') {
+    if (tileDatas.Table3.five.Direct_Deck === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.six === 'N/A') {
+    if (tileDatas.Table3.six.Direct_Deck === 'N/A') {
         isDataValid.value = false;
     }
-    if (tileDatas.Table3.seven === 'N/A') {
+    if (tileDatas.Table3.seven.Direct_Deck === 'N/A') {
         isDataValid.value = false;
     }
 }
@@ -382,51 +464,14 @@ function EcheckInputSystem() {
 function addFSystem() {
     saTiles.system = saTiles.system;
 }
-const isSinglepaddyValid = ref(false);
-const paddySeleted = ref('');
+
 const resistanceCheck = ref(null);
-function selectPaddy() {
-    if (selectedOption.value === 'single') {
-        isSinglepaddyValid.value = true;
-    }
-}
+
 const MF = computed(updateMF, () => {
     zoneone.mf1 = mfupdate.value;
     zonetwo.mf2 = mfupdate.value;
     zonethree.mf3 = mfupdate.value;
 });
-watch(
-    selectPaddy,
-    selectedExposure,
-    () => {
-        paddySeleted.value = selectedOption.value;
-
-        console.log(selectedOption.value, selectedExposures.value);
-    },
-    { immediate: true }
-);
-
-function grabInput() {
-    datatilenoa.value = tilenoaInput.value;
-    datatilenoas.value = tilenoaInput.value;
-
-    // datasystemE.value = udlInput.value;
-
-    if (datatilenoa.value !== null) {
-        // 18061905
-        console.log(selectedOption.value, 'Outside');
-        if (selectedOption.value === 'single') {
-            console.log(selectedOption.value, 'Entered');
-            getTilenoas(datatilenoas.value);
-        } else getTilenoa(datatilenoa.value);
-    }
-
-    // if (udlInput.value !== null) {
-    //     //  17040522
-    //     console.log(udlInput.value);
-    //     getV(datasystemE.value);
-    // }
-}
 
 // let isSlopeValid = ref(false);
 
@@ -497,35 +542,36 @@ function checkMaterial() {
     const slopeRange = clampNumber1(2, Number(dims.slope), 12);
     console.log(slopeRange);
     if (slopeRange <= slopeOptions.three) {
-        console.log('Is Less then three');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two : tileData.Table3.two;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two : tileData.Table3.two;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two : tileData.Table3.two;
-    } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-        console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three, tileData.Table3.three);
+        console.log('Is Less then three', tileDatas.Table3.two.Direct_Deck);
 
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three : tileData.Table3.three;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three : tileData.Table3.three;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three : tileData.Table3.three;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
+    } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+        console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, tileData.Table3.three);
+
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
     } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four : tileData.Table3.four;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four : tileData.Table3.four;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four : tileData.Table3.four;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
     } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five : tileData.Table3.five;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five : tileData.Table3.five;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five : tileData.Table3.five;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
     } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six : tileData.Table3.six;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six : tileData.Table3.six;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six : tileData.Table3.six;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
     } else if (slopeRange >= slopeOptions.seven) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven : tileData.Table3.seven;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven : tileData.Table3.seven;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven : tileData.Table3.seven;
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
     }
 
     const result1 = computed(() => zoneone.zone * zoneone.lambda1);
@@ -544,7 +590,6 @@ const maps = ref([]);
 const vals = ref([]);
 const mfupdate = ref();
 function updateMF(event) {
-    // tileData.selection;
     console.log(event.value);
     let mat = isSinglepaddyValid.value === true ? tileDatas.selection : tileData.selection;
     console.log(mat);
@@ -954,11 +999,31 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
 
         <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
-            <paddyselectionNumber @keydown.tab.exact.stop="checkInput" />
-            <!-- <div class="w-64 gap-4 mt-1 space-y-1 mb-2" style="margin-left: 20px">
-                <label for="tilenoa">Tile Noas</label>
-                <InputText id="tilenoa" v-tooltip.bottom="'Press Enter after value'" v-model="tilenoaInput" placeholder="00000000" @change="grabInput" @keypress="checkInput" />
-            </div> -->
+            <div class="autocomplete">
+                <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+                    <!-- @keypress="checkInput" -->
+                    <FloatLabel>
+                        <InputText
+                            id="tilenoa"
+                            v-tooltip.bottom="'Press Tab after value'"
+                            v-model="query"
+                            inputId="ac"
+                            @focus="showSuggestions = true"
+                            @blur="hideSuggestions"
+                            @input="onInput"
+                            @change="grabInput"
+                            @keydown.tab.exact.stop="checkInput"
+                        />
+                        <label for="ac">Tile NOA: 00000000</label>
+                    </FloatLabel>
+                </div>
+                <!-- Suggestions list -->
+                <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
+                    <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
+                        {{ suggestion }}
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -1096,4 +1161,37 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
     </div>
 </template>
-<style scoped></style>
+<style scoped>
+.autocomplete {
+    position: relative;
+    width: 200px;
+}
+
+/* input {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+} */
+
+.suggestions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    position: absolute;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    background: white;
+    z-index: 1000;
+}
+
+.suggestions li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestions li:hover {
+    background-color: #f0f0f0;
+}
+</style>
