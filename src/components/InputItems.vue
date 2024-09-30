@@ -10,7 +10,7 @@ import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
-// import { useSbsStore } from '@/stores/sbsStore';
+
 import { useShingleStore } from '@/stores/shingleStore';
 import Divider from 'primevue/divider';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
@@ -113,20 +113,6 @@ const whatChanged = computed(() => {
     validateHeight();
     checkInputPoly();
 });
-
-// function grabInputSA() {
-//     datasbs.value = saInput.value;
-//     datasystemf.value = saInput.value;
-//     if (saInput.value !== null) {
-//         takef(datasystemf.value);
-//     }
-// }
-// function grabInputUDL() {
-//     datapoly.value = udlInput.value;
-//     if (udlInput.value !== null) {
-//         takp(datapoly.value);
-//     }
-// }
 
 function checkInputPoly() {
     if (polydatamt.value.length !== null) {
@@ -369,9 +355,9 @@ function clearSelected() {
     polyStore.$reset();
     // usesystemfStore.$reset();
 }
-// grabInput,  grabInputUDL,
+
 watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, () => {});
-//  grabInput,  grabInputUDL,grabInputSA,
+
 watch(
     checkInputSystem,
 
@@ -394,7 +380,6 @@ watch(
 
     checkInputPoly,
     checkInput,
-    // setRoofInputs,
 
     () => {}
 );

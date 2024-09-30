@@ -39,8 +39,8 @@ const { callFunctions, doubleStore } = useDouble();
 const { getTilenoa, tileData } = usetileInputdouble();
 const { Edatamounted, etileStore } = useUDL();
 
-const { getTilenoas, tileDatas } = usetileInputsingle();
-const { zones, getZones } = useGlobalState();
+const { getTilenoas, tileDatas, resetSingle } = usetileInputsingle();
+const { zones } = useGlobalState();
 const tilenoas = reactive({
     manufacturer: '',
     material: [],
@@ -422,7 +422,7 @@ function EcheckInputSystem() {
         Anchor_Base.Anchor_Base_Sheet_E11 = item.systemDataE.Anchor_Base_Sheet_E11;
         Anchor_Base.Anchor_Base_Sheet_E12 = item.systemDataE.Anchor_Base_Sheet_E12;
         Anchor_Base.Anchor_Base_Sheet_E13 = item.systemDataE.Anchor_Base_Sheet_E13;
-        console.log(Anchor_Base.Anchor_Base_Sheet_E2, item.systemDataE.Anchor_Base_Sheet_E1);
+
         udlTile.TileCap_Sheet_Description_E1 = item.systemDataE.TileCap_Sheet_Description_E1;
         udlTile.TileCap_Sheet_Description_E2 = item.systemDataE.TileCap_Sheet_Description_E2;
         udlTile.TileCap_Sheet_Description_E3 = item.systemDataE.TileCap_Sheet_Description_E3;
@@ -874,6 +874,9 @@ function saDescPressure() {
         saTiles.designpressure = keyValueSystemFPairsValues.value.F12;
     }
 }
+function callReset() {
+    resetSingle();
+}
 const generatePdf = () => {
     const element = document.getElementById('tile');
     console.log(element);
@@ -937,6 +940,9 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
+        <!-- <div class="refresh">
+            <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1rem; color: black; margin-left: 400px; margin-top: 90px" @click="callReset"></i></Button>
+        </div> -->
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
             <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
             <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />

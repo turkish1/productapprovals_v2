@@ -12,7 +12,7 @@ export default function usetileInputsingle() {
     const num = ref();
     const responseMessage = ref('');
     const error = ref('');
-    const { tilenoas, getNoa, addNoa } = useGlobalState();
+    const { tilenoas, getNoa, addNoa, resetSingle } = useGlobalState();
     let url = 'https://q5vantupjl.execute-api.us-east-1.amazonaws.com/singlepd/singlepd';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
@@ -57,5 +57,5 @@ export default function usetileInputsingle() {
 
     // 18061905 input,
 
-    return { getTilenoas, tilenoas, getNoa, addNoa, responseMessage, noaNum, error, results, tileDatas };
+    return { getTilenoas, tilenoas, getNoa, addNoa, resetSingle, responseMessage, noaNum, error, results, tileDatas };
 }

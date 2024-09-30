@@ -61,7 +61,7 @@ function onDrop(event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 140px;
+    margin-left: 120px;
     width: 110%;
 }
 
@@ -98,7 +98,7 @@ function onDrop(event) {
 
 .image-gallery {
     width: 140%;
-    max-width: 800px;
+    max-width: 850px;
 }
 
 .images-grid {
@@ -110,13 +110,13 @@ function onDrop(event) {
 
 .image-wrapper {
     width: 550px;
-    height: 450px;
+    height: 550px;
     overflow: hidden;
 }
 
 .uploaded-image {
     width: 150%;
-    height: 400px;
+    height: 700px;
     object-fit: cover;
     border-radius: 8px;
 }

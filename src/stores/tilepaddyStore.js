@@ -12,6 +12,9 @@ export const useGlobalState = createGlobalState(() => {
     function addNoa(number) {
         tilenoas.value.push(number);
     }
+    function resetSingle() {
+        tilenoas.value = [];
+    }
 
-    return { tilenoas, getNumber, addNoa };
+    return { tilenoas, getNumber, addNoa, resetSingle };
 });
