@@ -21,6 +21,7 @@ import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
+
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
 
@@ -39,7 +40,7 @@ const { getTilenoa, tileData } = usetileInputdouble();
 const { Edatamounted, etileStore } = useUDL();
 
 const { getTilenoas, tileDatas } = usetileInputsingle();
-const { zones } = useGlobalState();
+const { zones, getZones } = useGlobalState();
 const tilenoas = reactive({
     manufacturer: '',
     material: [],
@@ -52,7 +53,40 @@ const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const singles = ref([]);
 const doubles = ref([]);
+let slopeModel = ref('');
+let heightModel = ref('');
+const dims = reactive({
+    area: '',
+    per: '',
+    height: '',
+    slope: ''
+});
 
+const zoneone = reactive({
+    zone: '',
+    lambda1: '',
+    mg1: '',
+    mr1: '',
+    mf1: ''
+});
+
+const zonetwo = reactive({
+    zone: '',
+    lambda2: '',
+    mg2: '',
+    mr2: '',
+    mf2: ''
+});
+const zonethree = reactive({
+    zone: '',
+    lambda3: '',
+    mg3: '',
+    mr3: '',
+    mf3: ''
+});
+const dimensions = computed(() => {
+    setRoofInputs();
+});
 function selectPaddy() {
     if (selectedOption.value === 'single') {
         isSinglepaddyValid.value = true;
@@ -77,14 +111,16 @@ onMounted(() => {
 watch(
     selectPaddy,
     selectedExposure,
-    grabInput,
+
     () => {
         paddySeleted.value = selectedOption.value;
     },
     { immediate: true }
 );
-
+let datatilenoa = ref(tileData);
+let datatilenoas = ref(tileDatas);
 function grabInput() {
+    console.log(query.value);
     datatilenoa.value = query.value;
     datatilenoas.value = query.value;
 
@@ -98,8 +134,10 @@ function grabInput() {
         }
         if (selectedOption.value === 'single') {
             console.log(selectedOption.value, 'Entered single');
+
             callFunction();
             getTilenoas(datatilenoas.value);
+            console.log('called getTile single paddy');
         }
     }
 }
@@ -179,9 +217,6 @@ let datamounted = ref(ftileStore.$state.tilefinput);
 // let Edatamounted = ref(etileStore.$state.tilesysEinput);
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 
-let datatilenoa = ref(tileData);
-let datatilenoas = ref(tileDatas);
-
 const pdfcleared = ref(false);
 
 let tilenoaInput = ref(null);
@@ -205,55 +240,6 @@ const hideSuggestions = () => {
 const selectedDeck = ref();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const save = ref([]);
-let slopeModel = ref('');
-let heightModel = ref('');
-const dims = reactive({
-    area: '',
-    per: '',
-    height: '',
-    slope: ''
-});
-const factor = ref(0.4);
-
-function setRoofInputs() {
-    dims.height = heightModel.value;
-    // lope = slopeModel.value;    dims.s
-    dims.per = (dims.height * factor.value).toFixed(2);
-
-    getData(dims.slope, dims.height);
-}
-const dimensions = computed(() => {
-    setRoofInputs();
-});
-const selectedExposures = ref(null);
-function selectedExposure() {
-    console.log(selectedExposures.value);
-}
-
-const { tables, getData } = useExposurec();
-
-const zoneone = reactive({
-    zone: '',
-    lambda1: '',
-    mg1: '',
-    mr1: '',
-    mf1: ''
-});
-
-const zonetwo = reactive({
-    zone: '',
-    lambda2: '',
-    mg2: '',
-    mr2: '',
-    mf2: ''
-});
-const zonethree = reactive({
-    zone: '',
-    lambda3: '',
-    mg3: '',
-    mr3: '',
-    mf3: ''
-});
 
 watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 
@@ -395,7 +381,6 @@ function checkInputSystem() {
         saTiles.Description_F8 = item.systemData.Description_F8;
         saTiles.Description_F9 = item.systemData.Description_F9;
         saTiles.arrDesignPressure = item.systemData.designPressure;
-        console.log(item.systemData.Description_F9, item.systemData.Description_F9);
         if (item.systemData.system.length > 1) {
             addFSystem();
         } else {
@@ -492,18 +477,35 @@ function validateRoofSlope() {
 }
 const validateInput = () => {
     validateNumber(dims.slope);
-    console.log(errorMessage.value);
+    console.log(errorMessage.value, dims.slope);
 };
 
 const validateHeightInput = () => {
     validateTileHeight(dims.height);
-    console.log(errorHeightMessage.value);
+    console.log(errorHeightMessage.value, dims.height);
 };
 
 function validateHeight() {
     validateHeightInput();
     console.log(height.value);
 }
+
+const factor = ref(0.4);
+const { tb, getData } = useExposurec();
+function setRoofInputs() {
+    dims.height = heightModel.value;
+    // lope = slopeModel.value;    dims.s
+    dims.per = (dims.height * factor.value).toFixed(2);
+
+    // getData(dims.slope, dims.height);
+    // console.log(tables);
+}
+
+const selectedExposures = ref(null);
+function selectedExposure() {
+    console.log(selectedExposures.value);
+}
+
 function checkInputSA() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
@@ -517,21 +519,20 @@ function checkInputSA() {
 
 function checkInput() {
     if (datatilenoa.value.length !== null) {
+        getData(dims.slope, dims.height);
+
         tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
         tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
-        console.log(zones._value, tilenoas.manufacturer);
-
-        zones._value.forEach((item, index) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
     }
 }
 let ismrValid = ref(false);
 let ismrInvalid = ref(false);
 function checkMaterial() {
-    console.log(tileData, tileDatas);
+    zones.value.forEach((item, index) => {
+        zoneone.zone = item[0];
+        zonetwo.zone = item[1];
+        zonethree.zone = item[2];
+    });
     tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
     tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
     console.log(tilenoas.material, isSinglepaddyValid.value, tileDatas.material);
@@ -575,12 +576,10 @@ function checkMaterial() {
     }
 
     const result1 = computed(() => zoneone.zone * zoneone.lambda1);
-    console.log(result1.value);
-    const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
-    console.log(result2.value);
-    const result3 = computed(() => zonethree.zone * zonethree.lambda3);
 
-    console.log(result1.value, result2.value, result3.value);
+    const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+
+    const result3 = computed(() => zonethree.zone * zonethree.lambda3);
 
     zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
     zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
@@ -622,7 +621,7 @@ function updateMF(event) {
 
         console.log(mfcheck1.value);
         if (zoneone.mr1 > mfcheck1.value || event.value) {
-            console.log('I am in mr greater', ismrInvalid, event.value);
+            console.log('I am in mr greater', ismrInvalid);
             ismrInvalid = false;
         }
         if (zoneone.mr1 < mfcheck1.value || event.value) {
@@ -940,13 +939,13 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
         <div class="w-64 mt-6 ..." style="margin-left: 20px">
             <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
-            <InputText id="slope" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />
+            <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label>
-            <InputText id="height" v-tooltip.bottom="'Press Enter after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
         <div></div>
@@ -959,8 +958,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-
-        <div class="card md:w-3/4 grid gap-1 grid-cols-1">
+        <div class="card md:w-3/4 flex flex-col w-96 mb-4 gap-3">
             <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
@@ -971,7 +969,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
         </div>
-        <!--  @click="checkInput" -->
+
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
             <label style="color: red">Select Exposure</label>
             <div class="flex items-center space-x-2">
@@ -999,30 +997,31 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
         </div>
 
         <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
-            <div class="autocomplete">
-                <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
-                    <!-- @keypress="checkInput" -->
-                    <FloatLabel>
-                        <InputText
-                            id="tilenoa"
-                            v-tooltip.bottom="'Press Tab after value'"
-                            v-model="query"
-                            inputId="ac"
-                            @focus="showSuggestions = true"
-                            @blur="hideSuggestions"
-                            @input="onInput"
-                            @change="grabInput"
-                            @keydown.tab.exact.stop="checkInput"
-                        />
-                        <label for="ac">Tile NOA: 00000000</label>
-                    </FloatLabel>
+            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
+                <div class="autocomplete">
+                    <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+                        <FloatLabel>
+                            <InputText
+                                id="tilenoa"
+                                v-tooltip.bottom="'Press Tab after value'"
+                                v-model="query"
+                                inputId="ac"
+                                @focus="showSuggestions = true"
+                                @blur="hideSuggestions"
+                                @input="onInput"
+                                @click="grabInput"
+                                @keydown.tab.exact.stop="checkInput"
+                            />
+                            <label for="ac">Tile NOA: 00000000</label>
+                        </FloatLabel>
+                    </div>
+                    <!-- Suggestions list -->
+                    <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
+                        <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
+                            {{ suggestion }}
+                        </li>
+                    </ul>
                 </div>
-                <!-- Suggestions list -->
-                <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-                    <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
-                        {{ suggestion }}
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
@@ -1193,5 +1192,24 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
 
 .suggestions li:hover {
     background-color: #f0f0f0;
+}
+@keyframes slidedown-icon {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(20px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.slidedown-icon {
+    animation: slidedown-icon;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
 }
 </style>
