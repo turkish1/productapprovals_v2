@@ -627,7 +627,6 @@ function updateMF(event) {
         console.log(vals.value[i]);
         mfupdate.value = vals.value[i];
         if (maps.value[i] === event.value) {
-            console.log(vals.value[i]);
             zoneone.mf1 = vals.value[i];
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
