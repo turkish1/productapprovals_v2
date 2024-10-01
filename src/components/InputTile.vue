@@ -258,11 +258,14 @@ function sysEcheckInput() {
 const selSytem = ref();
 const whatChanged = computed(() => {
     checkInput();
+    checkMR1();
+    checkMR2();
+    checkMR3();
     sysEcheckInput();
     setRoofInputs();
     selectPaddy();
     grabInput();
-
+    addCheckmarks();
     validateHeight();
     validateRoofSlope();
 });
@@ -321,7 +324,7 @@ const slopeOptions = {
 
 const isDataValid = ref(true);
 
-watchEffect(isTileValid, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, () => {});
+watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, () => {});
 
 function checkData() {
     if (tileData.Table3.two === 'N/A') {
@@ -458,7 +461,7 @@ const MF = computed(updateMF, () => {
     zonethree.mf3 = mfupdate.value;
 });
 
-// let isSlopeValid = ref(false);
+let isvalueValid = ref(false);
 
 const { errorMessage, validateNumber } = useNumberValidation({
     min: 2,
@@ -474,6 +477,7 @@ const { errorHeightMessage, validateTileHeight } = useHeightValidation({
 
 function validateRoofSlope() {
     validateInput();
+    addCheckmarks();
 }
 const validateInput = () => {
     validateNumber(dims.slope);
@@ -485,6 +489,12 @@ const validateHeightInput = () => {
     console.log(errorHeightMessage.value, dims.height);
 };
 
+function addCheckmarks() {
+    if (errorMessage.value === null || errorHeightMessage.value === null) {
+        isvalueValid = true;
+        console.log('Entered checkmarks');
+    }
+}
 function validateHeight() {
     validateHeightInput();
     console.log(height.value);
@@ -525,8 +535,12 @@ function checkInput() {
         tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
     }
 }
-let ismrValid = ref(false);
-let ismrInvalid = ref(false);
+let ismrValidMR1 = ref(false);
+let ismrValidMR2 = ref(false);
+let ismrValidMR3 = ref(false);
+let ismrInvalid1 = ref(false);
+let ismrInvalid2 = ref(false);
+let ismrInvalid3 = ref(false);
 function checkMaterial() {
     zones.value.forEach((item, index) => {
         zoneone.zone = item[0];
@@ -614,38 +628,85 @@ function updateMF(event) {
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
         }
+        console.log(zoneone.mf1);
+        const mfcheck1 = zoneone.mf1.slice(0, 2);
 
-        const mfcheck1 = useToNumber(zoneone.mf1);
-        const mfcheck2 = useToNumber(zoneone.mf2);
-        const mfcheck3 = useToNumber(zoneone.mf3);
+        const mfcheck2 = zonetwo.mf2.slice(0, 2);
+        const mfcheck3 = zonethree.mf3.slice(0, 2);
+        const mfc1 = useToNumber(mfcheck1);
+        const mfc2 = useToNumber(mfcheck2);
+        const mfc3 = useToNumber(mfcheck3);
+        console.log(mfc1.value, mfc2.value, mfc3.value);
+        console.log(typeof mfc1.value, typeof mfc2.value, typeof mfc3.value);
+        const convertmr1 = useToNumber(zoneone.mr1);
+        const convertmr2 = useToNumber(zonetwo.mr2);
+        const convertmr3 = useToNumber(zonethree.mr3);
 
-        console.log(mfcheck1.value);
-        if (zoneone.mr1 > mfcheck1.value || event.value) {
-            console.log('I am in mr greater', ismrInvalid);
-            ismrInvalid = false;
-        }
-        if (zoneone.mr1 < mfcheck1.value || event.value) {
-            ismrValid.value = true;
-            ismrInvalid = false;
-        }
-        if (zonetwo.mr2 > mfcheck2.value) {
-            console.log('I am in mr greater', ismrInvalid.value);
-            ismrInvalid = true;
+        if (convertmr3.value < mfc3.value) {
+            console.log('I am less than MF3', convertmr3.value, mfc3.value);
+            ismrValidMR3 = true;
+            ismrInvalid3 = false;
+            console.log(ismrValidMR3.value);
         } else {
-            ismrValid.value = true;
-            ismrInvalid = false;
+            checkMR3();
+            console.log('Entered Else');
         }
-        if (zonethree.mr3 > mfcheck3.modelValue) {
-            console.log('I am in mr greater', ismrInvalid.value);
-            ismrInvalid = true;
+        if (convertmr1.value < mfc1.value) {
+            console.log('I am less than MF1', convertmr1.value);
+
+            ismrValidMR1 = true;
+            ismrInvalid1 = false;
         } else {
-            ismrValid.value = true;
-            ismrInvalid = false;
+            checkMR1();
+            console.log('entered else');
         }
-        // } else if (zoneone.mr1 < mfcheck1 || event.value || zonetwo.mr2 < mfcheck2 || zonethree.mr3 < mfcheck3) {
-        //     ismrValid.value = true;
-        //     console.log('I am in mr1', ismrValid.value);
-        //     visible.value = true;
+        if (convertmr2.value < mfc2.value) {
+            console.log('I am less than MF2');
+            ismrValidMR2 = true;
+            ismrInvalid1 = false;
+        } else {
+            checkMR2();
+        }
+    }
+}
+
+function checkMR1() {
+    const mfcheck1 = zoneone.mf1.slice(0, 2);
+    console.log(zoneone.mf1.slice(0, 2));
+    const mfc1 = useToNumber(mfcheck1);
+
+    const convertmr1 = useToNumber(zoneone.mr1);
+
+    if (convertmr1.value > mfc1.value) {
+        console.log('I am greater than MF1');
+        ismrInvalid2 = true;
+        ismrValidMR1 = false;
+    }
+}
+
+function checkMR2() {
+    const mfcheck2 = zonetwo.mf2.slice(0, 2);
+    const mfc2 = useToNumber(mfcheck2);
+
+    const convertmr2 = useToNumber(zonetwo.mr2);
+    if (convertmr2.value > mfc2.value) {
+        console.log('I am greater than MF2');
+        ismrInvalid2 = true;
+        ismrValidMR2 = false;
+    }
+}
+
+function checkMR3() {
+    const mfcheck3 = zonethree.mf3.slice(0, 2);
+    const mfc3 = useToNumber(mfcheck3);
+
+    const convertmr3 = useToNumber(zonethree.mr3);
+    console.log(convertmr3.value, mfc3.value);
+    console.log(typeof convertmr3.value, typeof mfc3.value);
+    if (convertmr3.value > mfc3.value) {
+        console.log('I am greater than MF3', convertmr3.value, mfc3.value);
+        ismrInvalid3 = true;
+        ismrValidMR3 = false;
     }
 }
 const keyValueSystemFPairsValues = ref({});
@@ -933,24 +994,22 @@ invoke(async () => {
     // alert('Generated, PDF!');
 });
 
-watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
-        <!-- <div class="refresh">
-            <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1rem; color: black; margin-left: 400px; margin-top: 90px" @click="callReset"></i></Button>
-        </div> -->
-        <div class="w-64 mt-6 ..." style="margin-left: 20px">
-            <label for="slope">Slope</label><label class="px-2" style="color: red">*</label>
+
+        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+            <label for="slope">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="height">Height</label><label class="px-2" style="color: red">*</label>
+            <label for="height">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
@@ -1099,8 +1158,8 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
             </div>
         </div>
 
-        <div v-show="isTileValid" class="flex flex-row mt-8 space-x-20" style="margin-left: 1px">
-            <div class="min-w-[480px] flex flex-col gap-2">
+        <div v-show="isTileValid" class="flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+            <div class="min-w-[500px] flex flex-col gap-2">
                 <label for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
@@ -1130,8 +1189,10 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
                                             <td><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
                                             <td><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
                                             <td><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
-                                            <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
-                                            <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
+                                            <i class="pi pi-check" v-show="ismrValidMR1" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                            >&nbsp;
+                                            <i class="pi pi-times" v-show="ismrInvalid1" style="color: red; font-size: 1.5rem" @change="checkMR1"></i
+                                            >&nbsp;
                                         </tr>
 
                                         <tr>
@@ -1141,8 +1202,10 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
                                             <td><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
                                             <td><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
                                             <td><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
-                                            <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
-                                            <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
+                                            <i class="pi pi-check" v-show="ismrValidMR2" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                            >&nbsp;
+                                            <i class="pi pi-times" v-show="ismrInvalid2" style="color: red; font-size: 1.5rem" @change="checkMR2"></i
+                                            >&nbsp;
                                         </tr>
 
                                         <tr>
@@ -1152,8 +1215,10 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrInvalid, ismrValid, checkMate
                                             <td><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
                                             <td><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
                                             <td><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
-                                            <Button size="small" v-show="ismrValid" icon="pi pi-check" severity="success" @change="updateMF" />&nbsp;
-                                            <Button size="small" v-show="ismrInvalid" icon="pi pi-times" severity="danger" @change="updateMF" />&nbsp;
+                                            <i class="pi pi-check" v-show="ismrValidMR3" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                            >&nbsp;
+                                            <i class="pi pi-times" v-show="ismrInvalid3" style="color: red; font-size: 1.5rem" @change="checkMR3"></i
+                                            >&nbsp;
                                         </tr>
                                         <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
                                     </tbody>

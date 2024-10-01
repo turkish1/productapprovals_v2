@@ -17,3 +17,4 @@ api-generator/typedoc.json
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+notes.t

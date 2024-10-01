@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-
+import storeReset from '@/composables/Reset/reset-store';
+import { createPinia, defineStore } from 'pinia';
 export const useShingleStore = defineStore('inputshingle', {
     //state
     state: () => ({
@@ -11,10 +11,10 @@ export const useShingleStore = defineStore('inputshingle', {
     actions: {
         addShingle(shingleData) {
             this.inputshingle.push({ shingleData, completed: false });
-        },
-        reset() {
-            this.$reset();
         }
+        // reset() {
+        //     this.shingleData = [];
+        // }
     },
 
     //getters
@@ -25,3 +25,8 @@ export const useShingleStore = defineStore('inputshingle', {
 
     // persist: true
 });
+
+const store = createPinia();
+store.use(storeReset);
+console.log(store);
+export default store;

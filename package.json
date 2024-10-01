@@ -27,6 +27,7 @@
     "dotenv": "^16.4.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
+    "lodash.clonedeep": "^4.5.0",
     "nvm": "^0.0.4",
     "pinia": "^2.2.0",
     "pinia-plugin-persistedstate": "^3.2.1",
@@ -40,6 +41,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@playwright/test": "^1.46.1",
     "@primevue/auto-import-resolver": "^4.0.1",
     "@rushstack/eslint-patch": "^1.8.0",

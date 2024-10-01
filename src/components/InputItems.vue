@@ -108,6 +108,7 @@ const whatChanged = computed(() => {
     checkInput();
     clearSelected();
     validateRoofSlope();
+    addCheckmarks();
 
     onKeydown();
     validateHeight();
@@ -206,6 +207,12 @@ onMounted(() => {
     });
 });
 
+const initialShingle = reactive({
+    description: '',
+    manufacturer: '',
+    material: ''
+});
+
 const dimensions = onMounted(() => {
     // setRoofInputs();
 });
@@ -213,7 +220,7 @@ watch(slope, (newVal, oldVal) => {
     console.log('Slope change from', oldVal, 'to', typeof newVal);
     validateInput(newVal);
 });
-
+let isvalueValid = ref(false);
 const { errorshingleMessage, validateShingleSlope } = useShingleValidation({
     min: 2,
     max: 12,
@@ -228,6 +235,7 @@ const { errorshHeightMessage, validateShingleHeight } = useShingleHghtValidation
 
 function validateRoofSlope() {
     validateInput();
+    addCheckmarks();
 }
 const validateInput = () => {
     console.log(slope.value);
@@ -242,8 +250,14 @@ const validateshHeightInput = () => {
 
 function validateHeight() {
     validateshHeightInput();
+    addCheckmarks();
 }
-
+function addCheckmarks() {
+    if (errorshingleMessage.value === null || errorshHeightMessage.value === null) {
+        isvalueValid = true;
+        console.log('Entered checkmarks');
+    }
+}
 function getIndexs() {
     console.log(selectedSlopelow);
 
@@ -350,12 +364,6 @@ const generatePdf = () => {
     };
 };
 
-function clearSelected() {
-    store.$reset();
-    polyStore.$reset();
-    // usesystemfStore.$reset();
-}
-
 watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, () => {});
 
 watch(
@@ -388,20 +396,18 @@ watch(
     <div id="shingle" class="flex flex-col w-full gap-1 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="w-64 gap-1 mt-3" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
+            <!-- <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 220px" @click="store.$reset()"></i></Button> -->
         </div>
-        <!-- <div class="refresh">
-            <span class="pi pi-refresh"></span>
-            <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 400px; margin-top: 90px" @click="clearSelected"></i></Button>
-        </div> -->
-        <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
-            <label for="slope" style="color: red">Slope *</label>
+
+        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+            <label for="slope" style="color: red">Roof Slope *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
 
             <InputText id="slope" v-model.number="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" @change="validateRoofSlope" />
             <Message v-if="errorshingleMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorshingleMessage }}</Message>
         </div>
 
-        <div class="w-64 flex flex-col gap-2" style="margin-left: 20px">
-            <label for="height" style="color: red">Height *</label>
+        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+            <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
         </div>
@@ -413,27 +419,19 @@ watch(
 
         <DripEdgeComponent />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
-            <AutoCompletePoly @keydown.tab.exact.stop="checkInputPoly"></AutoCompletePoly>
-            <!-- <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
-                <label for="udlInput">Fastened UDL NOA Number</label>
-
-                <InputText id="udlInput" v-model="udlInput" placeholder="00000000" @change="grabInputUDL" @keydown.tab.exact.stop="checkInputPoly" />
-            </div> -->
+            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
+                <AutoCompletePoly @keydown.tab.exact.stop="checkInputPoly"></AutoCompletePoly>
+            </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
-            <AutoCompleteSA @keydown.tab.exact.stop="checkInputSystem" />
-            <!-- <div class="w-64 gap-2 mt-1 space-y-1 mb-2" style="margin-left: 20px">
-                <label for="saInput">S/A Membrane NOA Number</label>
-                <InputText id="saInput" v-model="saInput" placeholder="00000000" @change="grabInputSA" @keydown.tab.exact.stop="checkInputSystem" />
-            </div> -->
+            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
+                <AutoCompleteSA @keydown.tab.exact.stop="checkInputSystem" />
+            </div>
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
-            <AutoComplete @keydown.tab.exact.stop="checkInput" />
-            <!-- <div class="w-64 gap-2 mt-1 space-y-2 mb-2" style="margin-left: 20px"> -->
-            <!-- <label for="shinglenoa">Shingle Noa</label>
-                <InputText id="shinglenoa" v-model="noaInput" placeholder="00000000" @change="grabInput" @keypress="checkInput" /> -->
-            <!-- @change="grabInput" "checkInput" @keydown.tab.exact="checkInput"-->
-            <!-- </div> -->
+            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
+                <AutoComplete @click.stop.prevent="checkInput" />
+            </div>
         </div>
         <!-- <Button plain text class="min-w-1 min-h-0" @click="clearSelected"> <span style="font-size: 1.3rem; color: black; margin-left: 100px; margin-top: 90px" class="pi pi-refresh"></span></Button> -->
 
