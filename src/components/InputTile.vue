@@ -1110,6 +1110,10 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                     <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
                 </div>
+                <div class="flex flex-col gap-2">
+                    <label for="designPressure">Design psf:</label>
+                    <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
+                </div>
             </div>
         </div>
         <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
@@ -1122,10 +1126,6 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <div class="min-w-[480px] flex flex-col gap-2">
                     <label for="description">(UDL) Description</label>
                     <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" @change="updateselectSystemE" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label for="designPressure">Design psf:</label>
-                    <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
                 </div>
             </div>
         </div>
@@ -1158,13 +1158,13 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
         </div>
 
-        <div v-show="isTileValid" class="flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div class="min-w-[500px] flex flex-col gap-2">
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+            <div class="min-w-[450px] flex flex-col gap-2">
                 <label for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
-            <div class="min-w-[480px] flex flex-col gap-2">
+            <div class="min-w-[400px] flex flex-col gap-2">
                 <label for="material">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>

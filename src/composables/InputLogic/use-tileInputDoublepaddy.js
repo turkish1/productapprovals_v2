@@ -44,7 +44,7 @@ export default function usetileInputdouble() {
             });
             console.log(response.length);
             if (response.length === 0) {
-                alert('No data found!');
+                // alert('No data found!');
             } else {
                 console.log(noaNum.value);
 
@@ -63,7 +63,7 @@ export default function usetileInputdouble() {
             }
         } catch (error) {
             console.log('Error, fectching data', error);
-            alert('An error occurred while fetching data.');
+            // alert('An error occurred while fetching data.');
         }
         return results;
     };
