@@ -54,7 +54,6 @@ export default function useTileSystemE() {
         Maps: [],
         systemCheck: []
     });
-    const systemCheck = ref([]);
 
     function getV(saNo) {
         inputsystem.value = saNo;

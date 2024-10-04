@@ -12,6 +12,7 @@ const permitStore = usePermitappStore();
 const LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
 const Shingles = defineAsyncComponent(() => import('@/components/Shingles.vue'));
 const Tile = defineAsyncComponent(() => import('@/components/Tile.vue'));
+const Mechanical = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const props = defineProps(['page']);
 const page = computed(() => props.page);
 // const childRef = ref(Shingles);
@@ -26,6 +27,7 @@ const store = useRoofListStore();
 const isValidshingle = ref(false);
 const isValidbur = ref(false);
 const isValidtile = ref(false);
+const isValidmechanical = ref(false);
 
 // Here we check for folios with restriction
 const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
@@ -66,13 +68,19 @@ function updateTile() {
     console.log(isValidtile);
 }
 
+function updateMechanical() {
+    isValidmechanical.value = true;
+    console.log(isValidmechanical);
+}
+
 invoke(async () => {
     await until(isValidshingle).toBe(true);
     await until(isValidbur).toBe(true);
     await until(isValidtile).toBe(true);
+    await until(isValidmechanical).toBe(true);
 });
 // This is to minimize data not returning in the panel view.
-watch(Shingles, LowSlope, Tile, () => {});
+watch(Shingles, LowSlope, Tile, Mechanical, () => {});
 </script>
 
 <template>
@@ -84,7 +92,8 @@ watch(Shingles, LowSlope, Tile, () => {});
                 <Step value="1">Shingles</Step>
                 <Step value="2">Low Slope</Step>
                 <Step value="3">Tile</Step>
-                <Step value="4">Summary</Step>
+                <Step value="4">Mechanical</Step>
+                <Step value="5">Summary</Step>
             </StepList>
             <StepPanels class="object-scale-down h-700 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
@@ -129,18 +138,38 @@ watch(Shingles, LowSlope, Tile, () => {});
                         <Tile v-if="isValidtile" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" />
-                            <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('4')" />
+                            <Button
+                                label="Next"
+                                severity="contrast"
+                                icon="pi pi-arrow-right"
+                                iconPos="right"
+                                @click="
+                                    activateCallback('4');
+                                    isValidmechanical = true;
+                                "
+                            />
                         </div>
                     </div>
                     <!--  style="margin-top: 650px" -->
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="4">
                     <!-- flex flex-row -->
+                    <div class="flex flex-col h-48 w-1224">
+                        <Mechanical v-if="isValidmechanical" />
+                        <div class="flex pt-6 justify-between">
+                            <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('3')" />
+                            <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('5')" />
+                        </div>
+                    </div>
+                    <!--  style="margin-top: 650px" -->
+                </StepPanel>
+                <StepPanel v-slot="{ activateCallback }" value="5">
+                    <!-- flex flex-row -->
                     <div class="flex flex-col h-48 w-1024">
                         <Checkout />
                         <div class="flex pt-6 justify-between">
-                            <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('3')" />
-                            <Button label="Submit" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('5')" />
+                            <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('4')" />
+                            <Button label="Submit" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('6')" />
                         </div>
                     </div>
                 </StepPanel>

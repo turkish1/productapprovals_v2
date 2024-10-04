@@ -37,11 +37,11 @@ const router = createRouter({
                     name: 'userland',
                     component: () => import('@/components/UserLanding/UserDash.vue')
                 },
-                // {
-                //     path: '/useaxios',
-                //     name: 'useaxios',
-                //     component: () => import('@/components/UseAxios.vue')
-                // },
+                {
+                    path: '/doralapp',
+                    name: 'doralapp',
+                    component: () => import('@/components/Summary/DoralPermitApp.vue')
+                },
 
                 {
                     path: '/uikit/formlayout',
@@ -73,6 +73,11 @@ const router = createRouter({
                     path: '/tile',
                     name: 'tile',
                     component: () => import('@/components/Tile.vue')
+                },
+                {
+                    path: '/mechanicaltile',
+                    name: 'mechanical',
+                    component: () => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue')
                 },
                 {
                     path: '/permitapp',

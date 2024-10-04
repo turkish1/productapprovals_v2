@@ -666,7 +666,7 @@ function updateMF(event) {
         if (convertmr2.value < mfc2.value) {
             console.log('I am less than MF2');
             ismrValidMR2 = true;
-            ismrInvalid1 = false;
+            ismrInvalid2 = false;
         } else {
             checkMR2();
         }
@@ -682,7 +682,7 @@ function checkMR1() {
 
     if (convertmr1.value > mfc1.value) {
         console.log('I am greater than MF1');
-        ismrInvalid2 = true;
+        ismrInvalid1 = true;
         ismrValidMR1 = false;
     }
 }
