@@ -17,17 +17,20 @@ export default function useMech() {
     const mechanicalData = reactive({
         noa: '',
         manufacturer: '',
-        material: [],
+        TypeofTile: [],
+        material: '',
         description: '',
         Table2: [],
         Table3: [],
         expiration_date: '',
         resistance: [],
         selection: '',
+        DirectDeck_Maps: [],
         two_ten_d_RS_Nails: null,
         one_number_eight_screw: null,
         two_number_eight_screw: null,
-        mechanicaltilefastener: []
+        mechanicaltilefastener: [],
+        fastenerValues: []
     });
     function takeMechInput(inputMech) {
         input.value = inputMech;
@@ -37,7 +40,7 @@ export default function useMech() {
     }
     const fetchData = async () => {
         try {
-            const response = await execute({ params: { noa: num.value } }).then((response) => {
+            const response = await execute({ params: { NOA: num.value } }).then((response) => {
                 noaNum.value = data.value;
                 console.log(data.value);
                 return noaNum.value;
@@ -51,14 +54,18 @@ export default function useMech() {
                 mechanicalData.material = noaNum.value[0].material;
                 mechanicalData.selection = noaNum.value[0].AdhesiveMaterials;
                 mechanicalData.description = noaNum.value[0].description;
+                mechanicalData.DirectDeck_Maps = noaNum.value[0].DirectDeck_Maps;
+                mechanicalData.TypeofTile = noaNum.value[0].TypeofTile;
                 mechanicalData.Table2 = noaNum.value[0].Table2;
                 mechanicalData.Table3 = noaNum.value[0].Table3;
                 mechanicalData.resistance = noaNum.value[0].Resistance;
+                mechanicalData.expiration_date = noaNum.value[0].expiration_date;
                 mechanicalData.two_ten_d_RS_Nails = noaNum.value[0].two_ten_d_RS_Nails;
                 mechanicalData.one_number_eight_screw = noaNum.value[0].one_number_eight_screw;
                 mechanicalData.two_number_eight_screw = noaNum.value[0].two_number_eight_screw;
                 mechanicalData.mechanicaltilefastener = noaNum.value[0].mechanicaltilefastener;
-                // }
+                mechanicalData.fastenerValues = noaNum.value[0].fastenerValues;
+
                 mechStore.addNoa(mechanicalData);
 
                 console.log(mechanicalData, 'System added');

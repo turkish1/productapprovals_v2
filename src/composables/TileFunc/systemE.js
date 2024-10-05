@@ -32,7 +32,7 @@ export default function useUDL() {
     const etileStore = usetilesysEStore();
     const { inputsystem, getV, noaNum, error, systemDataE } = useTileSystemE();
     let Edatamounted = ref(etileStore.$state.tilesysEinput);
-    console.log(etileStore, noaNum.value);
+
     function EcheckInput() {
         if (Edatamounted.value.length !== null) {
             Edatamounted.value.forEach((item, index) => {

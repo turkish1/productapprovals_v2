@@ -2,11 +2,9 @@
 import DripEdgeComponent from '@/components/DripEdgeComponent.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
-import useDouble from '@/composables/fetchTech/use-doublepdNumber';
-import useSingle from '@/composables/fetchTech/use-singlepdNumber';
+
 import useMechNumber from '@/composables/fetchTech/use-systemMechNumber';
-import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
-import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
+
 import useMech from '@/composables/InputLogic/use-tileMechanical';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
@@ -16,54 +14,51 @@ import { useGlobalState } from '@/stores/exposurecStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { useToNumber } from '@vueuse/core';
-import { invoke } from '@vueuse/shared';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-const selectedOption = ref(null);
+
 const ftileStore = usetilesysfStore();
 
 // Input query
 const query = ref('');
-const isSinglepaddyValid = ref(false);
-const paddySeleted = ref('');
+
+// const paddySeleted = ref('');
 // Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
 const suggestions = ref([]);
 // State to control suggestions visibility
 const showSuggestions = ref(false);
 
-const { callFunction, singleStore } = useSingle();
-const { callFunctions, doubleStore } = useDouble();
 const { callNumber, mechanicalStore } = useMechNumber();
-const { getTilenoa, tileData } = usetileInputdouble();
-const { takeMechInput, mechanicalData } = useMech();
+
+const { takeMechInput, mechanicalData, mechStore } = useMech();
 const { Edatamounted, etileStore } = useUDL();
 
-const { getTilenoas, tileDatas, resetSingle } = usetileInputsingle();
 const { zones } = useGlobalState();
 const tilenoas = reactive({
     manufacturer: '',
-    material: [],
+    TypeofTile: [],
+    material: '',
     description: '',
     Table2: [],
     Table3: [],
     expiration_date: '',
     resistance: [],
     selection: '',
+    DirectDeck_Maps: [],
     two_ten_d_RS_Nails: null,
     one_number_eight_screw: null,
     two_number_eight_screw: null,
-    mechanicaltilefastener: []
+    mechanicaltilefastener: [],
+    fastenerValues: []
 });
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
-const singles = ref([]);
-const doubles = ref([]);
-const mechinal = ref([]);
-let slopeModel = ref('');
+
+const mechanical = ref([]);
+
 let heightModel = ref('');
 const dims = reactive({
     area: '',
@@ -97,18 +92,10 @@ const zonethree = reactive({
 const dimensions = computed(() => {
     setRoofInputs();
 });
-function selectPaddy() {
-    if (selectedOption.value === 'single') {
-        isSinglepaddyValid.value = true;
-    } else isSinglepaddyValid.value = false;
-}
+
 onMounted(() => {
-    callFunction();
-    callFunctions();
     callNumber();
-    mechinal.value = mechanicalStore.$state.tileMechInput[0].tileMechNumber;
-    singles.value = singleStore.$state.singlepdInput[0].singlepdNumber;
-    doubles.value = doubleStore.$state.doublepdInput[0].doublepdNumber;
+    mechanical.value = mechanicalStore.$state.tileMechInput[0].tileMechNumber;
 });
 
 onMounted(() => {
@@ -119,55 +106,25 @@ onMounted(() => {
     });
 });
 
-watch(
-    selectPaddy,
-    selectedExposure,
-
-    () => {
-        paddySeleted.value = selectedOption.value;
-    },
-    { immediate: true }
-);
-let datatilenoa = ref(tileData);
-let datatilenoas = ref(tileDatas);
 let datamechnoas = ref(mechanicalData);
 function grabInput() {
     console.log(query.value);
-    datatilenoa.value = query.value;
-    datatilenoas.value = query.value;
-
-    if (datatilenoa.value !== null) {
+    console.log(datamechnoas);
+    datamechnoas.value = query.value;
+    console.log(query.value, datamechnoas.value);
+    if (datamechnoas.value !== null) {
         // 18061905
-        console.log(selectedOption.value, 'Outside');
-        if (selectedOption.value === 'double') {
-            console.log(selectedOption.value, 'Entered double');
-            // callFunctions();
-            // getTilenoa(datatilenoa.value);
-            callNumber();
-            takeMechInput(datamechnoas.value);
-        }
-        if (selectedOption.value === 'single') {
-            console.log(selectedOption.value, 'Entered single');
 
-            callFunction();
-            getTilenoas(datatilenoas.value);
-            console.log('called getTile single paddy');
-        }
+        takeMechInput(datamechnoas.value);
     }
 }
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
     // if (!query.value) return [];
-    console.log(doubles.value);
-    if (selectedOption.value === 'double') {
-        console.log('double');
-        return (suggestions.value = doubles.value.noa.filter((item) => item.toString().includes(query.value)));
 
-        // [0].singlepdNumber.noa.filter((item) => item.toString().includes(query.value));
-    } else return (suggestions.value = singles.value.noa.filter((item) => item.toString().includes(query.value)));
+    return (suggestions.value = mechanical.value.noa.filter((item) => item.toString().includes(query.value)));
 
-    // the real solution
-    // return suggestions.value.filter((item) => item.toString().includes(query.value));
+    // [0].singlepdNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 const saTiles = reactive({
     manufacturer: '',
@@ -228,12 +185,10 @@ const udlTile = reactive({
     arrDesignPressure: []
 });
 let datamounted = ref(ftileStore.$state.tilefinput);
-// let Edatamounted = ref(etileStore.$state.tilesysEinput);
+
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
+let datamountedMech = ref(mechStore.tilemech.value);
 
-const pdfcleared = ref(false);
-
-let tilenoaInput = ref(null);
 // Method to update the input field with selected suggestion
 const selectSuggestion = (suggestion) => {
     query.value = suggestion;
@@ -268,8 +223,6 @@ function sysEcheckInput() {
     }
 }
 
-// const selSytemE = ref();
-const selSytem = ref();
 const whatChanged = computed(() => {
     checkInput();
     checkMR1();
@@ -277,7 +230,7 @@ const whatChanged = computed(() => {
     checkMR3();
     sysEcheckInput();
     setRoofInputs();
-    selectPaddy();
+
     grabInput();
     addCheckmarks();
     validateHeight();
@@ -288,8 +241,8 @@ const selectedMechanical = ref(null);
 const selectedsysNoa = ref(null);
 
 const selectedsystemE = ref(null);
-
-let isUDLValid = ref('');
+let isTileTypeValid = ref(false);
+let isUDLValid = ref(false);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
@@ -339,7 +292,7 @@ const slopeOptions = {
 
 const isDataValid = ref(true);
 
-watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, () => {});
+watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, () => {});
 
 function checkData() {
     if (mechanicalData.Table3.two === 'N/A') {
@@ -362,32 +315,9 @@ function checkData() {
     }
 }
 
-function checkDatas() {
-    if (tileDatas.Table3.two.Direct_Deck === 'N/A') {
-        isDataValid.value = false;
-    }
-    if (tileDatas.Table3.three.Direct_Deck === 'N/A') {
-        isDataValid.value = false;
-    }
-    if (tileDatas.Table3.four.Direct_Deck === 'N/A') {
-        isDataValid.value = false;
-    }
-    if (tileDatas.Table3.five.Direct_Deck === 'N/A') {
-        isDataValid.value = false;
-    }
-    if (tileDatas.Table3.six.Direct_Deck === 'N/A') {
-        isDataValid.value = false;
-    }
-    if (tileDatas.Table3.seven.Direct_Deck === 'N/A') {
-        isDataValid.value = false;
-    }
-}
-
 const visible = ref(false);
 
 function checkInputSystem() {
-    // 23061202 23070604
-
     datamounted.value.forEach((item, index) => {
         saTiles.Description_F1 = item.systemData.Description_F1;
         saTiles.Description_F2 = item.systemData.Description_F2;
@@ -422,8 +352,6 @@ const Anchor_Base = reactive({
     Anchor_Base_Sheet_E13: ''
 });
 function EcheckInputSystem() {
-    // 23111506
-
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
 
@@ -461,7 +389,6 @@ function EcheckInputSystem() {
         } else {
             udlTile.system = item.systemDataE.system;
         }
-        //  updateselectSystemE();
     });
 }
 function addFSystem() {
@@ -492,7 +419,6 @@ const { errorHeightMessage, validateTileHeight } = useHeightValidation({
 
 function validateRoofSlope() {
     validateInput();
-    addCheckmarks();
 }
 const validateInput = () => {
     validateNumber(dims.slope);
@@ -520,6 +446,7 @@ const { tb, getData } = useExposurec();
 function setRoofInputs() {
     dims.height = heightModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
+    addCheckmarks();
 }
 
 const selectedExposures = ref(null);
@@ -539,11 +466,13 @@ function checkInputSA() {
 }
 
 function checkInput() {
-    if (datatilenoa.value.length !== null) {
+    console.log(datamountedMech.value[0]);
+    if (datamountedMech.value.length !== null) {
         getData(dims.slope, dims.height);
-
-        tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : mechanicalData.applicant;
-        tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : mechanicalData.description;
+        console.log(datamechnoas.value, datamountedMech);
+        tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
+        tilenoas.description = datamountedMech.value[0].description;
+        tilenoas.material = datamountedMech.value[0].material;
     }
 }
 let ismrValidMR1 = ref(false);
@@ -558,51 +487,49 @@ function checkMaterial() {
         zonetwo.zone = item[1];
         zonethree.zone = item[2];
     });
-    tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : mechanicalData.material;
-    // isSinglepaddyValid.value === true ? tileDatas.material :
-    tilenoas.mechanicaltilefastener = mechanicalData.mechanicaltilefastener;
-    tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : mechanicalData.resistance;
-    console.log(mechanicalData.mechanicaltilefastener, isSinglepaddyValid.value, mechanicalData.resistance);
-    zoneone.lambda1 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : mechanicalData.Table2.Direct_Deck;
-    zonetwo.lambda2 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : mechanicalData.Table2.Direct_Deck;
-    zonethree.lambda3 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : mechanicalData.Table2.Direct_Deck;
+
+    tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
+    tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+    zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
+    zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
+    zonethree.lambda3 = datamountedMech.value[0].Table2.Direct_Deck;
     const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
     const slopeRange = clampNumber1(2, Number(dims.slope), 12);
     console.log(slopeRange);
     if (slopeRange <= slopeOptions.three) {
-        console.log('Is Less then three', tileDatas.Table3.two);
+        console.log('Is Less then three');
 
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : mechanicalData.Table3.two;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : mechanicalData.Table3.two;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : mechanicalData.Table3.two;
+        zoneone.mg1 = datamountedMech.value[0].Table3.two;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.two;
+        zonethree.mg3 = datamountedMech.value[0].Table3.two;
         console.log(zonethree.mg3);
     } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-        console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, mechanicalData.Table3.three);
+        console.log('Is Less than four but equal to or higher than three', mechanicalData.Table3.three);
 
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : mechanicalData.Table3.three;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : mechanicalData.Table3.three;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : mechanicalData.Table3.three;
+        zoneone.mg1 = datamountedMech.value[0].Table3.three;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.three;
+        zonethree.mg3 = datamountedMech.value[0].Table3.three;
         console.log(zonethree.mg3);
     } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : mechanicalData.Table3.four;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : mechanicalData.Table3.four;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : mechanicalData.Table3.four;
+        zoneone.mg1 = datamountedMech.value[0].Table3.four;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.four;
+        zonethree.mg3 = datamountedMech.value[0].Table3.four;
     } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : mechanicalData.Table3.five;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : mechanicalData.Table3.five;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : mechanicalData.Table3.five;
+        zoneone.mg1 = datamountedMech.value[0].Table3.five;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.five;
+        zonethree.mg3 = datamountedMech.value[0].Table3.five;
         console.log(zonethree.mg3);
     } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : mechanicalData.Table3.six;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : mechanicalData.Table3.six;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : mechanicalData.Table3.six;
+        zoneone.mg1 = datamountedMech.value[0].Table3.six;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.six;
+        zonethree.mg3 = datamountedMech.value[0].Table3.six;
     } else if (slopeRange >= slopeOptions.seven) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : mechanicalData.Table3.seven;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : mechanicalData.Table3.seven;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : mechanicalData.Table3.seven;
+        zoneone.mg1 = datamountedMech.value[0].Table3.seven;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.seven;
+        zonethree.mg3 = datamountedMech.value[0].Table3.seven;
         console.log(zonethree.mg3);
     }
 
@@ -618,11 +545,16 @@ function checkMaterial() {
 }
 const maps = ref([]);
 const vals = ref([]);
+const v0 = ref(null);
 const mfupdate = ref();
+
 function updateMF(event) {
     console.log(event.value);
-    let mat = isSinglepaddyValid.value === true ? tileDatas.selection : mechanicalData.selection;
+
+    let mat = tilenoas.fastenerValues;
+
     console.log(mat);
+
     resistanceCheck.value = Object.entries(mat).map((obj) => {
         const k = obj[0];
         const v = obj[1];
@@ -632,9 +564,6 @@ function updateMF(event) {
         console.log(v, k);
 
         console.log(vals.value[0], vals.value[1]);
-
-        // pdfcleared.value = true;
-        // 23052403
     });
     for (let i = 0; i < maps.value.length; i++) {
         console.log(vals.value[i]);
@@ -644,15 +573,11 @@ function updateMF(event) {
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
         }
-        console.log(zoneone.mf1);
-        if (!zoneone.mf1.includes('.') || !zonetwo.mf2.includes('.') || !zonethree.mf3.includes('.')) {
-            const superscripts = detectSuperscripts(zoneone.mf1, zonetwo.mf2, zonethree.mf3);
-            console.log(superscripts);
-        } else return;
-        const mfcheck1 = zoneone.mf1.slice(0, 2);
 
-        const mfcheck2 = zonetwo.mf2.slice(0, 2);
-        const mfcheck3 = zonethree.mf3.slice(0, 2);
+        const mfcheck1 = zoneone.mf1;
+
+        const mfcheck2 = zonetwo.mf2;
+        const mfcheck3 = zonethree.mf3;
         const mfc1 = useToNumber(mfcheck1);
         const mfc2 = useToNumber(mfcheck2);
         const mfc3 = useToNumber(mfcheck3);
@@ -689,21 +614,10 @@ function updateMF(event) {
         }
     }
 }
-function detectSuperscripts(str1, str2, str3) {
-    // Define the regular expression to match superscript characters
-    const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
 
-    // Find matches for superscripts
-    const matches1 = str1.match(superscriptRegex);
-    const matches2 = str1.match(superscriptRegex);
-    const matches3 = str1.match(superscriptRegex);
-    console.log(matches1.value, matches2.value, matches3.value);
-    // Return the array of detected superscript characters (or null if none)
-    return matches1, matches2, matches3 || [];
-}
 function checkMR1() {
-    const mfcheck1 = zoneone.mf1.slice(0, 2);
-    console.log(zoneone.mf1.slice(0, 2));
+    const mfcheck1 = zoneone.mf1;
+    console.log(zoneone.mf1);
     const mfc1 = useToNumber(mfcheck1);
 
     const convertmr1 = useToNumber(zoneone.mr1);
@@ -716,7 +630,7 @@ function checkMR1() {
 }
 
 function checkMR2() {
-    const mfcheck2 = zonetwo.mf2.slice(0, 2);
+    const mfcheck2 = zonetwo.mf2;
     const mfc2 = useToNumber(mfcheck2);
 
     const convertmr2 = useToNumber(zonetwo.mr2);
@@ -728,12 +642,11 @@ function checkMR2() {
 }
 
 function checkMR3() {
-    const mfcheck3 = zonethree.mf3.slice(0, 2);
+    const mfcheck3 = zonethree.mf3;
     const mfc3 = useToNumber(mfcheck3);
 
     const convertmr3 = useToNumber(zonethree.mr3);
-    console.log(convertmr3.value, mfc3.value);
-    console.log(typeof convertmr3.value, typeof mfc3.value);
+
     if (convertmr3.value > mfc3.value) {
         console.log('I am greater than MF3', convertmr3.value, mfc3.value);
         ismrInvalid3 = true;
@@ -969,61 +882,6 @@ function saDescPressure() {
 function callReset() {
     resetSingle();
 }
-const generatePdf = () => {
-    const element = document.getElementById('tile');
-    console.log(element);
-    // Use html2canvas to capture the element as a canvas
-    html2canvas(element).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-
-        // Create a new jsPDF instance
-        const pdf = new jsPDF();
-
-        // Add the captured image data to the PDF
-        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-
-        const pdfBlob = pdf.output('blob');
-
-        // Save the PDF Blob using the File System Access API
-        savePdfBlobSilently(pdfBlob);
-    });
-
-    const savePdfBlobSilently = async (blob) => {
-        try {
-            // Use the File System Access API to request a file handle
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: 'tile.pdf',
-                types: [
-                    {
-                        description: 'PDF file',
-                        accept: {
-                            'application/pdf': ['.pdf']
-                        }
-                    }
-                ]
-            });
-
-            // Create a writable stream
-            const writable = await fileHandle.createWritable();
-
-            // Write the Blob data to the file
-            await writable.write(blob);
-
-            // Close the writable stream
-            await writable.close();
-
-            console.log('PDF saved successfully without popping download dialog!');
-        } catch (error) {
-            console.error('Error saving file:', error);
-        }
-    };
-};
-
-invoke(async () => {
-    // await until(pdfcleared).changed();
-    // generatePdf();
-    // alert('Generated, PDF!');
-});
 
 watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
@@ -1054,7 +912,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="card md:w-3/4 flex flex-col w-96 mb-4 gap-3">
+        <div class="card md:w-3/4 flex flex-col w-96 mb-4 gap-2" style="margin-left: 1px">
             <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
@@ -1079,23 +937,12 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 </div>
             </div>
             <Divider />
-            <label style="color: red">Select a Paddy Category</label>
-            <div class="flex items-center">
-                <div class="field-radiobutton space-x-3 gap-2">
-                    <RadioButton inputId="option1" name="options" value="single" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
-                    <label for="option1">Single</label>
-                </div>
-                <div class="field-radiobutton space-x-3 gap-2">
-                    <RadioButton style="margin-left: 5px" inputId="option2" name="options" value="double" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
-                    <label for="option2">Double</label>
-                </div>
-            </div>
         </div>
 
-        <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
+        <div v-show="isTileValid" class="w-128" style="margin-left: 3px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <div class="autocomplete">
-                    <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+                    <div class="w-96 gap-2 mt-3 space-y-2 mb-4" style="margin-left: 20px">
                         <FloatLabel>
                             <InputText
                                 id="tilenoa"
@@ -1136,6 +983,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                     <label for="material">(UDL) Material</label>
                     <InputText id="material" v-model="udlTile.material" />
                 </div>
+
                 <div class="w-56 flex flex-col gap-1">
                     <label style="color: red">Select System E *</label>
                     <!-- @click="checkInputSystem" @change="updateselectSystem" -->
@@ -1194,21 +1042,26 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <label for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
-
+            <div class="w-128 flex flex-col gap-2">
+                <label for="material">Tile Adhesive Material</label>
+                <!-- <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" /> -->
+                <InputText id="description" v-model="tilenoas.material" />
+            </div>
             <div class="min-w-[400px] flex flex-col gap-2">
                 <label for="material">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
         </div>
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div class="w-128 flex flex-col gap-2">
-                <label for="material">Tile Adhesive Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
-            </div>
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10">
             <div class="w-72 flex flex-col gap-2">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
                 <!-- @click="checkInputSystem" @change="updateselectSystem" -->
-                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
+                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @change="updateMF" />
+            </div>
+            <div v-show="isTileTypeValid" class="w-128 flex flex-col gap-2">
+                <label for="material">Tile Type</label>
+                <Select v-model="selectedsysNoa" :options="tilenoas.TypeofTile" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
+                <!-- <InputText id="description" v-model="tilenoas.material" /> -->
             </div>
         </div>
 
