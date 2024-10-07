@@ -8,8 +8,8 @@ import useMechNumber from '@/composables/fetchTech/use-systemMechNumber';
 import useMech from '@/composables/InputLogic/use-tileMechanical';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
-import { useHeightValidation } from '@/composables/Validation/use-Height';
-import { useNumberValidation } from '@/composables/Validation/use-Slope';
+import { useHeightValidation } from '@/composables/Validation/use-mechHeight';
+import { useNumberValidation } from '@/composables/Validation/use-mechSlope';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
@@ -406,7 +406,7 @@ const MF = computed(updateMF, () => {
 let isvalueValid = ref(false);
 
 const { errorMessage, validateNumber } = useNumberValidation({
-    min: 2,
+    min: 4,
     max: 12,
     required: true
 });
@@ -442,7 +442,7 @@ function validateHeight() {
 }
 
 const factor = ref(0.4);
-const { tb, getData } = useExposurec();
+const { getData } = useExposurec();
 function setRoofInputs() {
     dims.height = heightModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);

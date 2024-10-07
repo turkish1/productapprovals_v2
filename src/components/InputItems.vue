@@ -31,6 +31,7 @@ const { inputshingle } = storeToRefs(store);
 const { polyinput } = storeToRefs(polyStore);
 
 const shingles = reactive({
+    noaValue: '',
     manufacturer: '',
     material: '',
     description: ''
@@ -190,6 +191,7 @@ function checkInput() {
     console.log(datamounted.value);
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
+            shingles.noaValue = item.shingleData.noa;
             shingles.manufacturer = item.shingleData.applicant;
             shingles.material = item.shingleData.material;
             shingles.description = item.shingleData.description;
@@ -205,12 +207,6 @@ onMounted(() => {
             dims.area = item.dim1;
         }
     });
-});
-
-const initialShingle = reactive({
-    description: '',
-    manufacturer: '',
-    material: ''
 });
 
 const dimensions = onMounted(() => {
@@ -313,56 +309,6 @@ function valueEntered() {
         console.log('Not Mounted');
     }
 }
-
-const generatePdf = () => {
-    const element = document.getElementById('generalpg');
-    console.log(element);
-    // Use html2canvas to capture the element as a canvas
-    html2canvas(element).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-
-        // Create a new jsPDF instance
-        const pdf = new jsPDF();
-
-        // Add the captured image data to the PDF
-        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-
-        const pdfBlob = pdf.output('blob');
-
-        // Save the PDF Blob using the File System Access API
-        savePdfBlobSilently(pdfBlob);
-    });
-
-    const savePdfBlobSilently = async (blob) => {
-        try {
-            // Use the File System Access API to request a file handle
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: `${process.value}-general-page.pdf`,
-                types: [
-                    {
-                        description: 'PDF file',
-                        accept: {
-                            'application/pdf': ['.pdf']
-                        }
-                    }
-                ]
-            });
-
-            // Create a writable stream
-            const writable = await fileHandle.createWritable();
-
-            // Write the Blob data to the file
-            await writable.write(blob);
-
-            // Close the writable stream
-            await writable.close();
-
-            console.log('PDF saved successfully without popping download dialog!');
-        } catch (error) {
-            console.error('Error saving file:', error);
-        }
-    };
-};
 
 watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, () => {});
 

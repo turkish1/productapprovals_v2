@@ -37,14 +37,15 @@
             <Skeleton width="4rem" height="2rem"></Skeleton>
             <Skeleton width="4rem" height="2rem"></Skeleton>
         </div>
+        <PdfOutput />
     </div>
 </template>
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
 import { useRoofListStore } from '@/stores/roofList';
-
 import { onMounted, ref, watch } from 'vue';
+import PdfOutput from '../jsPDF/PdfOutput.vue';
 
 const { accountUsers } = useGlobalState();
 

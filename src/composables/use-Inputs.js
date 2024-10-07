@@ -39,6 +39,7 @@ export default function useInputs() {
                 // alert('No data found!');
             } else {
                 console.log(noaNum.value);
+                shingleData.applicant = noaNum.value[0].noa;
                 shingleData.applicant = noaNum.value[0].applicant;
                 shingleData.material = noaNum.value[0].material;
                 shingleData.description = noaNum.value[0].description;

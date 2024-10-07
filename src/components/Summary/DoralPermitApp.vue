@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import PdfOutput from '../jsPDF/PdfOutput.vue';
+// import PdfOutput from '../jsPDF/PdfOutput.vue';
 const selectedClass1 = ref();
 const selectedClass2 = ref();
 const selectedClass3 = ref();
@@ -31,8 +31,10 @@ const workthird = ref([
 </script>
 
 <template>
-    <div class="card px-7 py-6 sm:grid sm:grid-cols-2 sm:gap-2 sm:px-0">
-        <label>SELECT APPLICATION TYPE</label>
+    <div class="card px-7 py-6 sm:grid sm:grid-cols-2 sm:gap-2 sm:px-0" style="background-color: darkgray">
+        <div class="flex items-center">
+            <label>SELECT APPLICATION TYPE</label>
+        </div>
         <div class="flex items-center">
             <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
             <label for="newroof" class="ml-2"> MASTER/PRIMARY PERMIT</label>
@@ -86,10 +88,9 @@ const workthird = ref([
             </div>
         </dl>
     </div>
-
-    <div class="card px-7 py-6 sm:grid sm:grid-cols-3 sm:gap-2 sm:px-0">
-        <label>BUILDING PERMIT TYPE(Select master/sub permit type. See below for REVISION DISCIPLINES.)</label>
-
+    <label>BUILDING PERMIT TYPE(Select master/sub permit type. See below for REVISION DISCIPLINES.)</label>
+    <Divider />
+    <div class="card px-7 py-6 sm:grid sm:grid-cols-3 sm:gap-2 sm:px-0" style="background-color: darkgray">
         <div class="flex items-center">
             <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
             <label for="newroof" class="ml-2">BUILDING</label>
@@ -116,18 +117,18 @@ const workthird = ref([
         </div>
     </div>
     <!-- CREATE A SELECT BOX -->
-    <div class="card px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-2 sm:px-0">
-        <div class="card flex justify-center">
+    <div class="card px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-2 sm:px-0" style="background-color: bisque">
+        <div class="card flex justify-center" style="background-color: bisque">
             <Listbox v-model="selectedClass1" :options="workone" multiple optionLabel="name" class="w-full md:w-56" />
         </div>
 
-        <div class="card flex justify-center">
+        <div class="card flex justify-center" style="background-color: bisque">
             <Listbox v-model="selectedClass2" :options="worksecond" multiple optionLabel="name" class="w-full md:w-56" />
         </div>
 
-        <div class="card flex justify-center">
+        <div class="card flex justify-center" style="background-color: bisque">
             <Listbox v-model="selectedClass3" :options="workthird" multiple optionLabel="name" class="w-full md:w-56" />
         </div>
-        <PdfOutput />
+        <!-- <PdfOutput /> -->
     </div>
 </template>

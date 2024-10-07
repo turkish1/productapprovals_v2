@@ -477,7 +477,6 @@ const { errorHeightMessage, validateTileHeight } = useHeightValidation({
 
 function validateRoofSlope() {
     validateInput();
-    addCheckmarks();
 }
 const validateInput = () => {
     validateNumber(dims.slope);
@@ -501,14 +500,12 @@ function validateHeight() {
 }
 
 const factor = ref(0.4);
-const { tb, getData } = useExposurec();
+const { getData } = useExposurec();
 function setRoofInputs() {
     dims.height = heightModel.value;
-    // lope = slopeModel.value;    dims.s
-    dims.per = (dims.height * factor.value).toFixed(2);
 
-    // getData(dims.slope, dims.height);
-    // console.log(tables);
+    dims.per = (dims.height * factor.value).toFixed(2);
+    addCheckmarks();
 }
 
 const selectedExposures = ref(null);
@@ -631,85 +628,148 @@ function updateMF(event) {
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
         }
-        console.log(zoneone.mf1);
-        const mfcheck1 = zoneone.mf1.slice(0, 2);
-
-        const mfcheck2 = zonetwo.mf2.slice(0, 2);
-        const mfcheck3 = zonethree.mf3.slice(0, 2);
-        const mfc1 = useToNumber(mfcheck1);
-        const mfc2 = useToNumber(mfcheck2);
-        const mfc3 = useToNumber(mfcheck3);
-        console.log(mfc1.value, mfc2.value, mfc3.value);
-        console.log(typeof mfc1.value, typeof mfc2.value, typeof mfc3.value);
-        const convertmr1 = useToNumber(zoneone.mr1);
-        const convertmr2 = useToNumber(zonetwo.mr2);
-        const convertmr3 = useToNumber(zonethree.mr3);
-
-        if (convertmr3.value < mfc3.value) {
-            console.log('I am less than MF3', convertmr3.value, mfc3.value);
-            ismrValidMR3 = true;
-            ismrInvalid3 = false;
-            console.log(ismrValidMR3.value);
+        if ((!zoneone.mf1.includes('.') && zoneone.mf1.length === 4) || (!zonetwo.mf2.includes('.') && zonetwo.mf2.length === 4) || (!zonethree.mf3.includes('.') && zonethree.mf3.length === 4)) {
+            const superscripts = detectSuperscripts(zoneone.mf1, zonetwo.mf2, zonethree.mf3);
+            console.log('Entered superscript', superscripts);
         } else {
-            checkMR3();
-            console.log('Entered Else');
-        }
-        if (convertmr1.value < mfc1.value) {
-            console.log('I am less than MF1', convertmr1.value);
+            const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+            const mfcheck1 = zoneone.mf1.replace(superscriptRegex, '');
 
-            ismrValidMR1 = true;
-            ismrInvalid1 = false;
-        } else {
-            checkMR1();
-            console.log('entered else');
-        }
-        if (convertmr2.value < mfc2.value) {
-            console.log('I am less than MF2');
-            ismrValidMR2 = true;
-            ismrInvalid2 = false;
-        } else {
-            checkMR2();
+            const mfcheck2 = zonetwo.mf2.replace(superscriptRegex, '');
+            const mfcheck3 = zonethree.mf3.replace(superscriptRegex, '');
+            const mfc1 = useToNumber(mfcheck1);
+            const mfc2 = useToNumber(mfcheck2);
+            const mfc3 = useToNumber(mfcheck3);
+            console.log(mfc1.value, mfc2.value, mfc3.value);
+            console.log(typeof mfc1.value, typeof mfc2.value, typeof mfc3.value);
+            const convertmr1 = useToNumber(zoneone.mr1);
+            const convertmr2 = useToNumber(zonetwo.mr2);
+            const convertmr3 = useToNumber(zonethree.mr3);
+
+            if (convertmr3.value < mfc3.value) {
+                console.log('I am less than MF3', convertmr3.value, mfc3.value);
+                ismrValidMR3 = true;
+                ismrInvalid3 = false;
+                console.log(ismrValidMR3.value);
+            } else {
+                checkMR3();
+                console.log('Entered Else');
+            }
+            if (convertmr1.value < mfc1.value) {
+                console.log('I am less than MF1', convertmr1.value);
+
+                ismrValidMR1 = true;
+                ismrInvalid1 = false;
+            } else {
+                checkMR1();
+                console.log('entered else');
+            }
+            if (convertmr2.value < mfc2.value) {
+                console.log('I am less than MF2');
+                ismrValidMR2 = true;
+                ismrInvalid2 = false;
+            } else {
+                checkMR2();
+            }
         }
     }
 }
+const matches1 = ref('');
+const matches2 = ref('');
+const matches3 = ref('');
 
+function detectSuperscripts(str1, str2, str3) {
+    // Define the regular expression to match superscript characters
+    const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+
+    // Find matches for superscripts
+    matches1.value = str1.replace(superscriptRegex, '');
+    matches2.value = str2.replace(superscriptRegex, '');
+    matches3.value = str3.replace(superscriptRegex, '');
+    console.log(matches1.value, matches2.value, matches3.value);
+    // Return the array of detected superscript characters (or null if none)
+    checkMR3();
+    checkMR1();
+    checkMR2();
+
+    return matches1, matches2, matches3 || [];
+}
 function checkMR1() {
-    const mfcheck1 = zoneone.mf1.slice(0, 2);
-    console.log(zoneone.mf1.slice(0, 2));
-    const mfc1 = useToNumber(mfcheck1);
+    const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+    if (matches1.value.length === 0) {
+        // const mfcheck1 = zoneone.mf1.slice(0, 1);
+        const mfcheck1 = zoneone.mf1.replace(superscriptRegex, '');
+        console.log(zoneone.mf1.replace(superscriptRegex, ''));
+        const mfc1 = useToNumber(mfcheck1);
 
-    const convertmr1 = useToNumber(zoneone.mr1);
-
-    if (convertmr1.value > mfc1.value) {
-        console.log('I am greater than MF1');
-        ismrInvalid1 = true;
-        ismrValidMR1 = false;
+        const convertmr1 = useToNumber(zoneone.mr1);
+        if (convertmr1.value > mfc1.value) {
+            console.log('I am greater than MF1');
+            ismrInvalid1 = true;
+            ismrValidMR1 = false;
+        }
+    } else {
+        const mfc1 = useToNumber(matches1.value);
+        const convertmr1 = useToNumber(zoneone.mr1);
+        console.log(mfc1.value, convertmr1.value);
+        if (convertmr1.value < mfc1.value) {
+            console.log('I am greater than MF1');
+            ismrInvalid1 = false;
+            ismrValidMR1 = true;
+        }
     }
 }
 
 function checkMR2() {
-    const mfcheck2 = zonetwo.mf2.slice(0, 2);
-    const mfc2 = useToNumber(mfcheck2);
+    const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+    if (matches2.value.length === 0) {
+        const mfcheck2 = zonetwo.mf2.replace(superscriptRegex, '');
+        console.log(zonetwo.mf2.replace(superscriptRegex, ''));
+        const mfc2 = useToNumber(mfcheck2);
 
-    const convertmr2 = useToNumber(zonetwo.mr2);
-    if (convertmr2.value > mfc2.value) {
-        console.log('I am greater than MF2');
-        ismrInvalid2 = true;
-        ismrValidMR2 = false;
+        const convertmr2 = useToNumber(zonetwo.mr2);
+        if (convertmr2.value > mfc2.value) {
+            console.log('I am greater than MF2');
+            ismrInvalid2 = true;
+            ismrValidMR2 = false;
+        }
+    } else {
+        const mfc2 = useToNumber(matches2.value);
+
+        const convertmr2 = useToNumber(zonetwo.mr2);
+        console.log(mfc2.value, convertmr2.value);
+        if (convertmr2.value < mfc2.value) {
+            console.log('I am greater than MF2');
+            ismrInvalid2 = false;
+            ismrValidMR2 = true;
+        }
     }
 }
 
 function checkMR3() {
-    const mfcheck3 = zonethree.mf3.slice(0, 2);
-    const mfc3 = useToNumber(mfcheck3);
+    const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+    if (matches3.value.length === 0) {
+        const mfcheck3 = zonethree.mf3.replace(superscriptRegex, '');
+        console.log('slice', zonethree.mf3.replace(superscriptRegex, ''));
+        const mfc3 = useToNumber(mfcheck3);
 
-    const convertmr3 = useToNumber(zonethree.mr3);
-    console.log(convertmr3.value, mfc3.value);
-    console.log(typeof convertmr3.value, typeof mfc3.value);
-    if (convertmr3.value > mfc3.value) {
-        console.log('I am greater than MF3', convertmr3.value, mfc3.value);
-        ismrInvalid3 = true;
-        ismrValidMR3 = false;
+        const convertmr3 = useToNumber(zonethree.mr3);
+        if (convertmr3.value > mfc3.value) {
+            console.log('I am greater than MF3');
+            ismrInvalid3 = true;
+            ismrValidMR3 = false;
+        }
+    } else {
+        const mfc3 = useToNumber(matches3.value);
+
+        const convertmr3 = useToNumber(zonethree.mr3);
+        console.log(convertmr3.value, mfc3.value);
+        console.log(typeof convertmr3.value, typeof mfc3.value);
+        if (convertmr3.value < mfc3.value) {
+            console.log('I am greater than MF3', convertmr3.value, mfc3.value);
+            ismrInvalid3 = false;
+            ismrValidMR3 = true;
+        }
     }
 }
 const keyValueSystemFPairsValues = ref({});
