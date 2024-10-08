@@ -279,6 +279,7 @@ let isUDLValid = ref('');
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
+let isMultiTileValid = ref(false);
 
 let selectedUnderlayment = ref();
 const underlaymentType = ref([
@@ -528,12 +529,20 @@ function checkInputSA() {
     }
 }
 let isTileSelectionValid = ref(false);
+let showMaterialValid = ref(false);
 function checkInput() {
     if (datatilenoa.value.length !== null) {
         getData(dims.slope, dims.height);
 
         tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
         tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
+        if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple') {
+            isTileSelectionValid = true;
+            showMaterialValid = true;
+        } else {
+            showMaterialValid = true;
+            isTileValid = true;
+        }
     }
 }
 let ismrValidMR1 = ref(false);
@@ -553,7 +562,6 @@ function checkTile() {
         zonethree.zone = item[2];
     });
     if (tileData.Table2.content === 'multiple') {
-        isTileSelectionValid = true;
         workoutData(tileData);
         console.log(multiTiles, multiTiles.select_tile);
         tilenoas.select_tile = multiTiles.select_tile;
@@ -1283,18 +1291,19 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
-            <div class="min-w-[350px] flex flex-col gap-2">
+            <div class="min-w-[770px] flex flex-col gap-2">
                 <label for="material">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
             <!--  -->
-            <div class="w-96 flex flex-col gap-2">
+        </div>
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+            <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
                 <label for="material">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
-        </div>
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div v-show="isTileSelectionValid" class="w-128 flex flex-col gap-2">
+
+            <div v-show="showMaterialValid" class="w-128 flex flex-col gap-2">
                 <label for="material">Tile Adhesive Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>

@@ -212,7 +212,7 @@ const hideSuggestions = () => {
 const selectedDeck = ref();
 const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
 const save = ref([]);
-let isTileSelectionValid = ref(false);
+
 const tileSel = reactive({
     keys: '',
     values: ''
@@ -229,7 +229,6 @@ function checkTile() {
         zonethree.zone = item[2];
     });
     if (tileData.Table2.content === 'multiple') {
-        isTileSelectionValid = true;
         workoutData(tileData);
         console.log(multiTiles, multiTiles.select_tile);
         tilenoas.select_tile = multiTiles.select_tile;
@@ -567,7 +566,8 @@ function checkInputSA() {
         });
     }
 }
-
+let isTileSelectionValid = ref(false);
+let showMaterialValid = ref(false);
 function checkInput() {
     console.log(datamountedMech.value[0]);
     if (datamountedMech.value.length !== null) {
@@ -576,6 +576,14 @@ function checkInput() {
         tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
         tilenoas.description = datamountedMech.value[0].description;
         tilenoas.material = datamountedMech.value[0].material;
+
+        if (datamountedMech.Table2.content === 'multiple') {
+            isTileSelectionValid = true;
+            showMaterialValid = true;
+        } else {
+            showMaterialValid = true;
+            isTileValid = true;
+        }
     }
 }
 let ismrValidMR1 = ref(false);
@@ -1154,7 +1162,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <label for="material">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
-            <div class="w-96 flex flex-col gap-2">
+            <div v-show="isTileSelectionValid" class="w-96 flex flex-col gap-2">
                 <label for="selecttile">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
