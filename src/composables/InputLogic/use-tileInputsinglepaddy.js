@@ -26,7 +26,10 @@ export default function usetileInputsingle() {
         Table3: [],
         expiration_date: '',
         resistance: [],
-        selection: ''
+        selection: '',
+        select_tile: [],
+        tile_map: [],
+        table2_map: []
     });
 
     function getTilenoas(number) {
@@ -36,19 +39,21 @@ export default function usetileInputsingle() {
         const result = execute({ params: { NOA: num.value } }).then((result) => {
             noaNum.value = data.value;
             console.log(noaNum.value[0]);
+            tileDatas.noa = noaNum.value[0].NOA;
             tileDatas.applicant = noaNum.value[0].applicant;
             tileDatas.material = noaNum.value[0].AdhesiveMaterial;
             tileDatas.selection = noaNum.value[0].AdhesiveMaterials;
             tileDatas.description = noaNum.value[0].description;
             tileDatas.Table2 = noaNum.value[0].Table2;
             tileDatas.Table3 = noaNum.value[0].Table3;
+            tileDatas.select_tile = noaNum.value[0].Select_Tile;
+            tileDatas.tile_map = noaNum.value[0].Tile_Map;
+            tileDatas.table2_map = noaNum.value[0].Table2_Map;
             tileDatas.resistance = noaNum.value[0].Resistance;
             console.log(noaNum.value[0].AdhesiveMaterial);
 
             addNoa(tileDatas);
 
-            // area.value = '';
-            // type.value = '';
             console.log(tileDatas, 'System added');
 
             return results;

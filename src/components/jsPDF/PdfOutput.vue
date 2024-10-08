@@ -70,8 +70,8 @@ const generatePDF = () => {
     doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
 
     // Add a paragraph of text
-    const paragraphText = "This PDF contains a watermark that says 'CONFIDENTIAL' across the center of the page. You can adjust the size, rotation, and opacity of the watermark.";
-    const wrappedText = doc.splitTextToSize(paragraphText, 200);
+    // const paragraphText = "This PDF contains a watermark that says 'CONFIDENTIAL' across the center of the page. You can adjust the size, rotation, and opacity of the watermark.";
+    // const wrappedText = doc.splitTextToSize(paragraphText, 200);
     doc.setFontSize(12);
     doc.text(wrappedText, 10, 60);
     // Function to add header

@@ -23,7 +23,10 @@ export default function usetileInputdouble() {
         Table3: [],
         expiration_date: '',
         resistance: [],
-        selection: ''
+        selection: '',
+        select_tile: [],
+        tile_map: [],
+        table2_map: []
     });
 
     function getTilenoa(number) {
@@ -47,13 +50,16 @@ export default function usetileInputdouble() {
                 // alert('No data found!');
             } else {
                 console.log(noaNum.value);
-
+                tileData.noa = noaNum.value[0].NOA;
                 tileData.applicant = noaNum.value[0].applicant;
                 tileData.material = noaNum.value[0].AdhesiveMaterial;
                 tileData.selection = noaNum.value[0].AdhesiveMaterials;
                 tileData.description = noaNum.value[0].description;
                 tileData.Table2 = noaNum.value[0].Table2;
                 tileData.Table3 = noaNum.value[0].Table3;
+                tileData.select_tile = noaNum.value[0].Select_Tile;
+                tileData.tile_map = noaNum.value[0].Tile_Map;
+                tileData.table2_map = noaNum.value[0].Table2_Map;
                 tileData.resistance = noaNum.value[0].Resistance;
                 console.log(noaNum.value[0].AdhesiveMaterial);
 
