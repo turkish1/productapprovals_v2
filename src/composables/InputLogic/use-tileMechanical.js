@@ -17,7 +17,7 @@ export default function useMech() {
     const mechanicalData = reactive({
         noa: '',
         manufacturer: '',
-        TypeofTile: [],
+
         material: '',
         description: '',
         Table2: [],
@@ -25,7 +25,9 @@ export default function useMech() {
         expiration_date: '',
         resistance: [],
         selection: '',
-        DirectDeck_Maps: [],
+        select_tile: [],
+        tile_map: [],
+        table2_map: [],
         two_ten_d_RS_Nails: null,
         one_number_eight_screw: null,
         two_number_eight_screw: null,
@@ -50,12 +52,15 @@ export default function useMech() {
                 // alert('No data found!');
             } else {
                 console.log(noaNum.value);
+                mechanicalData.noa = noaNum.value[0].NOA;
                 mechanicalData.manufacturer = noaNum.value[0].applicant;
                 mechanicalData.material = noaNum.value[0].material;
                 mechanicalData.selection = noaNum.value[0].AdhesiveMaterials;
                 mechanicalData.description = noaNum.value[0].description;
-                mechanicalData.DirectDeck_Maps = noaNum.value[0].DirectDeck_Maps;
-                mechanicalData.TypeofTile = noaNum.value[0].TypeofTile;
+                mechanicalData.select_tile = noaNum.value[0].Select_Tile;
+                mechanicalData.tile_map = noaNum.value[0].Tile_Map;
+                mechanicalData.table2_map = noaNum.value[0].Table2_Map;
+
                 mechanicalData.Table2 = noaNum.value[0].Table2;
                 mechanicalData.Table3 = noaNum.value[0].Table3;
                 mechanicalData.resistance = noaNum.value[0].Resistance;

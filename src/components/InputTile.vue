@@ -650,13 +650,6 @@ function updateTile(event) {
 }
 
 function checkMaterial() {
-    // zones.value.forEach((item, index) => {
-    //     zoneone.zone = item[0];
-    //     zonetwo.zone = item[1];
-    //     zonethree.zone = item[2];
-    // });
-    // tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
-    // tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
     if (tileData.Table2.content === 'multiple') {
         checkTile();
     } else {

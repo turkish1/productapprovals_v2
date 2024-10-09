@@ -40,7 +40,7 @@ const { Edatamounted, etileStore } = useUDL();
 const { zones } = useGlobalState();
 const tilenoas = reactive({
     manufacturer: '',
-    TypeofTile: [],
+    noa: '',
     material: '',
     description: '',
     Table2: [],
@@ -126,8 +126,6 @@ const filteredSuggestions = computed(() => {
     // if (!query.value) return [];
 
     return (suggestions.value = mechanical.value.noa.filter((item) => item.toString().includes(query.value)));
-
-    // [0].singlepdNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 const saTiles = reactive({
     manufacturer: '',
@@ -215,7 +213,7 @@ const save = ref([]);
 
 const tileSel = reactive({
     keys: '',
-    values: ''
+    values: []
 });
 const tileValue = reactive({
     k: '',
@@ -228,11 +226,20 @@ function checkTile() {
         zonetwo.zone = item[1];
         zonethree.zone = item[2];
     });
-    if (tileData.Table2.content === 'multiple') {
-        workoutData(tileData);
-        console.log(multiTiles, multiTiles.select_tile);
+
+    if (datamountedMech.value[0].Table2.content === 'multiple') {
+        workoutData(datamountedMech);
+
         tilenoas.select_tile = multiTiles.select_tile;
     }
+
+    //   if (datamountedMech.value[0].Table2.content === 'multiple' ) {
+    //         isTileSelectionValid = true;
+    //         showMaterialValid = true;
+    //     } else {
+    //         showMaterialValid = true;
+    //         isTileValid = true;
+    //     }
 }
 
 function updateTile(event) {
@@ -250,11 +257,12 @@ function updateTile(event) {
         if (event.value === key) {
             // let sel = tilenoas.select_tile;
             tileSel.values = value[0];
-            console.log(value[0]);
+            console.log(value[0], tileSel.values);
+            zoneone.lambda1 = tileSel.values;
+            zonetwo.lambda2 = tileSel.values;
+            zonethree.lambda3 = tileSel.values;
+            console.log(zoneone.lambda1);
         }
-        zoneone.lambda1 = tileSel.values;
-        zonetwo.lambda2 = tileSel.values;
-        zonethree.lambda3 = tileSel.values;
     });
     let types = multiTiles.tile_map;
     const valMultis = Object.entries(types).map((obj) => {
@@ -270,14 +278,10 @@ function updateTile(event) {
         const slopeRange = clampNumber1(2, Number(dims.slope), 12);
         console.log(slopeRange);
         if (slopeRange <= slopeOptions.three) {
-            console.log('Is Less then three', tileDatas.Table3.two);
-
             zoneone.mg1 = tileValue.v[0];
             zonetwo.mg2 = tileValue.v[0];
             zonethree.mg3 = tileValue.v[0];
         } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-            console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, tileData.Table3.three);
-
             zoneone.mg1 = tileValue.v[1];
             zonetwo.mg2 = tileValue.v[1];
             zonethree.mg3 = tileValue.v[1];
@@ -311,7 +315,8 @@ function updateTile(event) {
         zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
         zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
     });
-
+    tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
+    tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
     checkMaterial();
 }
 function sysEcheckInput() {
@@ -577,7 +582,7 @@ function checkInput() {
         tilenoas.description = datamountedMech.value[0].description;
         tilenoas.material = datamountedMech.value[0].material;
 
-        if (datamountedMech.Table2.content === 'multiple') {
+        if (datamountedMech.value[0].Table2.content === 'multiple') {
             isTileSelectionValid = true;
             showMaterialValid = true;
         } else {
@@ -593,66 +598,70 @@ let ismrInvalid1 = ref(false);
 let ismrInvalid2 = ref(false);
 let ismrInvalid3 = ref(false);
 function checkMaterial() {
-    zones.value.forEach((item, index) => {
-        zoneone.zone = item[0];
-        zonetwo.zone = item[1];
-        zonethree.zone = item[2];
-    });
+    if (datamountedMech.value[0].Table2.content === 'multiple') {
+        checkTile();
+    } else {
+        zones.value.forEach((item, index) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
 
-    tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
-    tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
-    zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
-    zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
-    zonethree.lambda3 = datamountedMech.value[0].Table2.Direct_Deck;
-    const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-    const slopeRange = clampNumber1(2, Number(dims.slope), 12);
-    console.log(slopeRange);
-    if (slopeRange <= slopeOptions.three) {
-        console.log('Is Less then three');
+        tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
+        tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+        zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
+        zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
+        zonethree.lambda3 = datamountedMech.value[0].Table2.Direct_Deck;
+        const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+        const slopeRange = clampNumber1(2, Number(dims.slope), 12);
+        console.log(slopeRange);
+        if (slopeRange <= slopeOptions.three) {
+            console.log('Is Less then three');
 
-        zoneone.mg1 = datamountedMech.value[0].Table3.two;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.two;
-        zonethree.mg3 = datamountedMech.value[0].Table3.two;
-        console.log(zonethree.mg3);
-    } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-        console.log('Is Less than four but equal to or higher than three', mechanicalData.Table3.three);
+            zoneone.mg1 = datamountedMech.value[0].Table3.two;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.two;
+            zonethree.mg3 = datamountedMech.value[0].Table3.two;
+            console.log(zonethree.mg3);
+        } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+            console.log('Is Less than four but equal to or higher than three', mechanicalData.Table3.three);
 
-        zoneone.mg1 = datamountedMech.value[0].Table3.three;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.three;
-        zonethree.mg3 = datamountedMech.value[0].Table3.three;
-        console.log(zonethree.mg3);
-    } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
-        console.log('Is Less');
-        zoneone.mg1 = datamountedMech.value[0].Table3.four;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.four;
-        zonethree.mg3 = datamountedMech.value[0].Table3.four;
-    } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
-        console.log('Is Less');
-        zoneone.mg1 = datamountedMech.value[0].Table3.five;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.five;
-        zonethree.mg3 = datamountedMech.value[0].Table3.five;
-        console.log(zonethree.mg3);
-    } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-        zoneone.mg1 = datamountedMech.value[0].Table3.six;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.six;
-        zonethree.mg3 = datamountedMech.value[0].Table3.six;
-    } else if (slopeRange >= slopeOptions.seven) {
-        console.log('Is Less');
-        zoneone.mg1 = datamountedMech.value[0].Table3.seven;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.seven;
-        zonethree.mg3 = datamountedMech.value[0].Table3.seven;
-        console.log(zonethree.mg3);
+            zoneone.mg1 = datamountedMech.value[0].Table3.three;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.three;
+            zonethree.mg3 = datamountedMech.value[0].Table3.three;
+            console.log(zonethree.mg3);
+        } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
+            console.log('Is Less');
+            zoneone.mg1 = datamountedMech.value[0].Table3.four;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.four;
+            zonethree.mg3 = datamountedMech.value[0].Table3.four;
+        } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
+            console.log('Is Less');
+            zoneone.mg1 = datamountedMech.value[0].Table3.five;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.five;
+            zonethree.mg3 = datamountedMech.value[0].Table3.five;
+            console.log(zonethree.mg3);
+        } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
+            zoneone.mg1 = datamountedMech.value[0].Table3.six;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.six;
+            zonethree.mg3 = datamountedMech.value[0].Table3.six;
+        } else if (slopeRange >= slopeOptions.seven) {
+            console.log('Is Less');
+            zoneone.mg1 = datamountedMech.value[0].Table3.seven;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.seven;
+            zonethree.mg3 = datamountedMech.value[0].Table3.seven;
+            console.log(zonethree.mg3);
+        }
+
+        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+
+        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+
+        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+
+        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
     }
-
-    const result1 = computed(() => zoneone.zone * zoneone.lambda1);
-
-    const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
-
-    const result3 = computed(() => zonethree.zone * zonethree.lambda3);
-
-    zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
-    zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
-    zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
 }
 const maps = ref([]);
 const vals = ref([]);
@@ -1158,27 +1167,21 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <!-- <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" /> -->
                 <InputText id="description" v-model="tilenoas.material" />
             </div>
-            <div class="min-w-[400px] flex flex-col gap-2">
+            <div class="min-w-[700px] flex flex-col gap-2">
                 <label for="material">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
-            <div v-show="isTileSelectionValid" class="w-96 flex flex-col gap-2">
+        </div>
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10">
+            <div v-show="isTileSelectionValid" class="min-w-[500px] flex flex-col gap-2">
                 <label for="selecttile">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
-        </div>
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10">
             <div class="w-72 flex flex-col gap-2">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
                 <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @change="updateMF" />
             </div>
-
-            <!-- <div v-show="isTileTypeValid" class="w-128 flex flex-col gap-2">
-                <label for="material">Tile Type</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.TypeofTile" placeholder="make a selection" @click="checkMaterial" @change="updateMF" /> -->
-            <!-- <InputText id="description" v-model="tilenoas.material" /> -->
-            <!-- </div> -->
         </div>
 
         <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
