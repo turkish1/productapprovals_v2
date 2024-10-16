@@ -37,6 +37,7 @@ export default function useUDL() {
         if (Edatamounted.value.length !== null) {
             Edatamounted.value.forEach((item, index) => {
                 console.log(item);
+                udlTiles.noa = item.systemDataE.noa;
                 udlTiles.manufacturer = item.systemDataE.manufacturer;
                 udlTiles.material = item.systemDataE.material;
                 udlTiles.system = item.systemDataE.system;

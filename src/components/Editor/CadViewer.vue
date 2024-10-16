@@ -20,7 +20,6 @@
 
 <script setup>
 import { ref } from 'vue';
-
 // Reactive variables
 const images = ref([]); // Stores the image URLs
 const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
@@ -61,7 +60,7 @@ function onDrop(event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 120px;
+    margin-left: 140px;
     width: 110%;
 }
 
@@ -77,7 +76,7 @@ function onDrop(event) {
     align-items: center;
     background-color: #f9f9f9;
     margin-bottom: 20px;
-    margin-left: 140px;
+    margin-left: 50px;
     transition: background-color 0.3s;
 }
 

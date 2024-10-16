@@ -10,6 +10,7 @@ export const useShingleStore = defineStore('inputshingle', {
     //actions
     actions: {
         addShingle(shingleData) {
+            console.log(shingleData);
             this.inputshingle.push({ shingleData, completed: false });
         }
         // reset() {

@@ -19,7 +19,13 @@ export default function useInputs() {
         applicant: '',
         material: '',
         description: '',
-        expiration_date: ''
+        expiration_date: '',
+        slope: 0,
+        height: 0,
+        dripEdgeMaterial: [],
+        dripEdgeSize: [],
+        deckType: '',
+        prescriptiveSelection: ''
     });
     function takeValue(inputNoa) {
         input.value = inputNoa;
@@ -27,6 +33,7 @@ export default function useInputs() {
         num.value = Number(input.value);
         fetchData();
     }
+
     const fetchData = async () => {
         try {
             const response = await execute({ params: { noa: num.value } }).then((response) => {
@@ -39,12 +46,12 @@ export default function useInputs() {
                 // alert('No data found!');
             } else {
                 console.log(noaNum.value);
-                shingleData.applicant = noaNum.value[0].noa;
+                shingleData.noa = noaNum.value[0].noa;
                 shingleData.applicant = noaNum.value[0].applicant;
                 shingleData.material = noaNum.value[0].material;
                 shingleData.description = noaNum.value[0].description;
                 shingleData.expiration_date = noaNum.value[0].expiration_date;
-                // }
+
                 store.addShingle(shingleData);
 
                 console.log(shingleData, 'System added');

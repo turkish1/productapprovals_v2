@@ -2,11 +2,12 @@ html {
     height: 100%;
     font-size: 14px;
 }
-
+//  background-color: var(--surface-ground);
 body {
     font-family: 'Lato', sans-serif;
     color: var(--text-color);
-    background-color: var(--surface-ground);
+    background-color: #eff6e0;
+    // background-image: url('concrete.jpg');
     margin: 0;
     padding: 0;
     min-height: 100%;

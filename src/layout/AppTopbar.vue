@@ -20,7 +20,7 @@ const routerNext = () => {
             <router-link to="/" class="layout-topbar-logo">
                 <Image src="/logo.jpg" alt="Image" width="150" />
 
-                <span>Digital Roofing Solutions</span>
+                <!-- <span>Digital Roofing Solutions</span> -->
             </router-link>
         </div>
 

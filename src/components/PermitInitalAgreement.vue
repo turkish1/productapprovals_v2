@@ -35,7 +35,9 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <Button type="button" v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button>
+                <label class="ml-2"> I Agree</label>
+                <RadioButton v-model="agreement" value="1" :invalid="value === null" @click="visible = false" />
+                <!-- <Button type="button" v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button> -->
             </div>
         </Dialog>
     </div>

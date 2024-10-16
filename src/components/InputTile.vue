@@ -570,10 +570,6 @@ function checkTile() {
     }
 }
 function updateTile(event) {
-    console.log(event.value);
-    console.log(multiTiles.table2_map);
-    console.log(multiTiles.tile_map);
-
     let type = multiTiles.table2_map;
 
     const valMulti = Object.entries(type).map((obj) => {
@@ -1117,7 +1113,7 @@ function callReset() {
 watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
 <template>
-    <div id="tile" class="flex flex-col w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 10px">
+    <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px; background-color: #eae7e2">
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
         </div>
@@ -1143,12 +1139,12 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="card md:w-3/4 flex flex-col w-96 mb-4 gap-3">
+        <div class="card md:w-3/4 flex flex-col w-96 mb-4 gap-3" style="background-color: #eae7e2">
             <label for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
         <DripEdgeComponent />
-        <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
+        <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px; background-color: #eae7e2">
             <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
@@ -1181,7 +1177,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
         </div>
 
-        <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
+        <div v-show="isTileValid" class="w-96" style="margin-left: 3px; background-color: #eae7e2">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <div class="autocomplete">
                     <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
@@ -1214,7 +1210,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     <Divider />
     <Divider />
 
-    <div class="card md:w-full gap-4 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="card md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px; background-color: #eae7e2">
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
@@ -1236,7 +1232,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 </div>
             </div>
         </div>
-        <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
+        <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px; background-color: #eae7e2">
             <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 2px">
                 <div class="min-w-[680px] flex flex-col gap-2">
                     <label class="mt-3" for="anchor">Anchor Base Sheet</label>
@@ -1250,7 +1246,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
         </div>
 
-        <div class="card gap-4 mt-10 space-x-10 space-y-6">
+        <div class="card gap-4 mt-10 space-x-10 space-y-6" style="background-color: #eae7e2">
             <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
                 <div class="w-128 flex flex-col gap-2">
                     <label for="saapplicant">S/A Applicant</label>
@@ -1278,7 +1274,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
         </div>
 
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px; background-color: #eae7e2">
             <div class="min-w-[450px] flex flex-col gap-2">
                 <label for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
@@ -1290,7 +1286,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
             <!--  -->
         </div>
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px; background-color: #eae7e2">
             <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
                 <label for="material">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
@@ -1302,7 +1298,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
         </div>
 
-        <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
+        <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px; background-color: #eae7e2">
             <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
                 <table width="100%" align="left">
                     <tbody>

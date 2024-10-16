@@ -1,15 +1,16 @@
 <script setup>
-// import useDripSize from '@/composables/use-dripedgesize';
 import usedripAxios from '@/composables/use-dripAxios';
+import { useShingleStore } from '@/stores/shingleStore';
+import { storeToRefs } from 'pinia';
 import { ref, watch, watchEffect } from 'vue';
 
-// const { types, holdSize, typeSize } = useDripSize();
 const { type, holdSize } = usedripAxios();
 const selectDripEdge = ref();
 const selectDripEdgeSize = ref();
 const selectedValue = ref(null);
 const types = ref();
-
+const shingleStore = useShingleStore();
+const { inputshingle } = storeToRefs(shingleStore);
 const typeSizes = ref();
 function checkValue() {
     types.value = type.value;
@@ -32,6 +33,12 @@ function getdripSize() {
         if (selectedValue.value.label === 'Copper Metal ⁴') {
             typeSizes.value = holdSize.value.size4;
         }
+
+        // console.log(shingleStore, inputshingle);
+        // inputshingle.value[0].shingleData.dripEdgeMaterial = selectedValue.value;
+        // inputshingle.value[0].shingleData.dripEdgeSize = types.value;
+
+        // console.log(shingleStore);
     } else {
         console.log('The element not mounted yet');
     }

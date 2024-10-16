@@ -58,7 +58,7 @@ export default function useTileSystemF() {
                 alert('No data found!');
             } else {
                 console.log(noaNum.value);
-
+                systemData.noa = noaNum.value[0].NOA;
                 systemData.manufacturer = noaNum.value[0].Manufacturer;
                 systemData.material = noaNum.value[0].Material;
 

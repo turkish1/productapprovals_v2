@@ -37,7 +37,9 @@
             <Skeleton width="4rem" height="2rem"></Skeleton>
             <Skeleton width="4rem" height="2rem"></Skeleton>
         </div>
-        <PdfOutput />
+
+        <!-- <Shingle /> -->
+        <TileAdhesive />
     </div>
 </template>
 
@@ -45,7 +47,8 @@
 import { useGlobalState } from '@/stores/accountsStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { onMounted, ref, watch } from 'vue';
-import PdfOutput from '../jsPDF/PdfOutput.vue';
+// import Shingle from '../jsPDF/Shingle.vue';
+import TileAdhesive from '../jsPDF/TileAdhesive.vue';
 
 const { accountUsers } = useGlobalState();
 
@@ -68,11 +71,10 @@ watch(displayUserInfo, () => {});
 console.log(accountUsers);
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
+console.log(roofType);
 const events = ref([
     { status: 'RoofSystems', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: '/src/assets/img/roofing_tile.jpg' },
     { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
-    // { status: 'Shipped', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800' },
-    // { status: 'Delivered', date: '16/10/2020 10:00', icon: 'pi pi-check', color: '#607D8B' }
 ]);
 </script>
 

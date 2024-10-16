@@ -5,7 +5,7 @@ import { reactive, ref, toRefs } from 'vue';
 
 export default function usePoly() {
     const inp = ref();
-    const effort = ref([]);
+
     const noaNum = ref([]);
     let results = ref([]);
     const store = usePolyStore();
@@ -40,6 +40,7 @@ export default function usePoly() {
             if (response.length === 0) {
                 // alert('No data found!');
             } else {
+                polyData.noa = noaNum.value[0].noa;
                 polyData.applicant = noaNum.value[0].applicant;
                 polyData.material = noaNum.value[0].material;
                 polyData.description = noaNum.value[0].description;

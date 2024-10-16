@@ -1,17 +1,15 @@
 <script setup>
-import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
-import { useShingleValidation } from '@/composables/Validation/use-shSlope';
-
-import useInputpoly from '@/composables/use-Inputpoly';
 import useInputs from '@/composables/use-Inputs';
 import useSystemf from '@/composables/use-Inputsystemf';
 import useSlope from '@/composables/use-updateSlope';
+import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
+import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
+import { useShingleStore } from '@/stores/shingleStore';
 import { storeToRefs } from 'pinia';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
-import { useShingleStore } from '@/stores/shingleStore';
 import Divider from 'primevue/divider';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import AutoComplete from './roofSystems/AutoComplete.vue';
@@ -26,15 +24,22 @@ const polyStore = usePolyStore();
 const store = useShingleStore();
 const usesystemfStore = useSystemf();
 const { inputshingle } = storeToRefs(store);
-
+const { systeminput } = storeToRefs(usesystemfStore);
 // const evaluating = ref(false);
 const { polyinput } = storeToRefs(polyStore);
 
 const shingles = reactive({
-    noaValue: '',
+    noa: '',
     manufacturer: '',
     material: '',
-    description: ''
+    description: '',
+    slope: 0,
+    height: 0,
+    dripEdgeMaterial: [],
+    dripEdgeSize: [],
+    deckType: '',
+    expiration_date: '',
+    prescriptiveSelection: ''
 });
 
 const underlayment = reactive({
@@ -60,11 +65,12 @@ const selfadhered = reactive({
     Description_F11: '',
     system: [],
     maps: [],
-    arrSystem: []
+    arrSystem: [],
+    pdfSystemValue: ''
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
-console.log(datamounted.value);
+
 let polydatamt = ref(polyinput._object.polyinput);
 let systemdatamt = ref(usesystemfStore.store.$state.systeminput);
 // let roofArea = ref(roofList._object.roofList);
@@ -76,17 +82,25 @@ let isSelectVisible2 = ref(false);
 let isSlopeValid = ref(true);
 let slope = ref(null);
 let data = ref();
-let datasystemf = ref();
+// let datasystemf = ref();
 let datasbs = ref();
 let datapoly = ref();
 let udlInput = ref(null);
-let saInput = ref(null);
+// let saInput = ref(null);
 let noaInput = ref(null);
 
 const dims = reactive({
     area: '',
     height: ''
 });
+const dt = ref('');
+function getdeckType(event) {
+    console.log(selectedDeck._value.name, event.value.name);
+    if (selectedDeck._value.name === event.value.name) {
+        dt.value = event.value.name;
+        console.log(dt.value);
+    }
+}
 
 const selectedsystemf = ref(null);
 const systemtype = ref(selfadhered.system);
@@ -96,15 +110,13 @@ let slopetypeless = ref(slopeCondition.slope_less_4);
 const selectedSlopehigh = ref();
 const selectedSlopelow = ref();
 const selectedDeck = ref();
-const { input, takeValue } = useInputs();
-const desc = ref(false);
-const { inputsystem, takef } = useSystemf();
-const { inp, takp } = useInputpoly();
 
-const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
-const heightmin = ref(10);
-const heightmax = ref(33);
-const pdfcleared = ref(false);
+const desc = ref(false);
+const { inputsystem } = useSystemf();
+// const { inp, takp } = useInputpoly();
+
+const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
+
 const whatChanged = computed(() => {
     checkInput();
     clearSelected();
@@ -127,7 +139,6 @@ function checkInputPoly() {
 }
 function checkInputSystem() {
     systemdatamt.value.forEach((item, index) => {
-        console.log(item.systemData.Description_F1, item.systemData.Description_F2);
         selfadhered.samanufacturer = item.systemData.manufacturer;
         selfadhered.samaterial = item.systemData.material;
         selfadhered.Description_F1 = item.systemData.Description_F1;
@@ -148,9 +159,8 @@ function checkInputSystem() {
 
 function updateselectSystem(selectedsystemf) {
     console.log(typeof selectedsystemf.value);
-
+    console.log(usesystemfStore.store.$state.systeminput);
     if (selectedsystemf.value === 'F1') {
-        console.log(selfadhered.Description_F1);
         selfadhered.sadescription = selfadhered.Description_F1;
     }
     if (selectedsystemf.value === 'F2') {
@@ -184,6 +194,9 @@ function updateselectSystem(selectedsystemf) {
     if (selectedsystemf.value === 'F11') {
         selfadhered.sadescription = selfadhered.Description_F11;
     }
+    console.log(usesystemfStore.store.$state.systeminput.pdfSystemValue, selectedsystemf.value);
+    usesystemfStore.store.$state.systeminput.pdfSystemValue = selectedsystemf.value;
+
     // });
 }
 
@@ -191,11 +204,15 @@ function checkInput() {
     console.log(datamounted.value);
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
-            shingles.noaValue = item.shingleData.noa;
+            shingles.noa = item.shingleData.noa;
             shingles.manufacturer = item.shingleData.applicant;
             shingles.material = item.shingleData.material;
             shingles.description = item.shingleData.description;
-            pdfcleared.value = true;
+            shingles.expiration_date = item.shingleData.expiration_date;
+            inputshingle.value[0].shingleData.slope = slope.value;
+            inputshingle.value[0].shingleData.height = dims.height;
+            inputshingle.value[0].shingleData.deckType = dt.value;
+            inputshingle.value[0].shingleData.prescriptiveSelection = selectedSlopelow.value;
         });
     }
 }
@@ -234,9 +251,10 @@ function validateRoofSlope() {
     addCheckmarks();
 }
 const validateInput = () => {
-    console.log(slope.value);
     validateShingleSlope(slope.value);
     console.log(errorshingleMessage.value);
+
+    // shingleData.slope = slope.value;
 };
 
 const validateshHeightInput = () => {
@@ -247,6 +265,8 @@ const validateshHeightInput = () => {
 function validateHeight() {
     validateshHeightInput();
     addCheckmarks();
+
+    // getDims(dims.height, slope.value);
 }
 function addCheckmarks() {
     if (errorshingleMessage.value === null || errorshHeightMessage.value === null) {
@@ -339,9 +359,9 @@ watch(
 );
 </script>
 <template>
-    <div id="shingle" class="flex flex-col w-full gap-1 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <div class="w-64 gap-1 mt-3" style="margin-left: 20px">
-            <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" />
+    <div id="shingle" class="flex flex-col w-full gap-1 shadow-lg shadow-cyan-800" style="margin-left: 5px; background-color: #dfdfde">
+        <div class="w-64 gap-1" style="margin-left: 20px">
+            <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" />
             <!-- <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 220px" @click="store.$reset()"></i></Button> -->
         </div>
 
@@ -363,7 +383,6 @@ watch(
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
-        <DripEdgeComponent />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <AutoCompletePoly @keydown.tab.exact.stop="checkInputPoly"></AutoCompletePoly>
@@ -381,73 +400,75 @@ watch(
         </div>
         <!-- <Button plain text class="min-w-1 min-h-0" @click="clearSelected"> <span style="font-size: 1.3rem; color: black; margin-left: 100px; margin-top: 90px" class="pi pi-refresh"></span></Button> -->
 
-        <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">
+        <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1" style="background-color: #dfdfde">
             <label style="color: red">Select Underlayment (S/A) *</label>
             <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
         </div>
 
-        <div v-show="isSelectVisible1" class="card grid gap-2 grid-cols-1">
+        <div v-show="isSelectVisible1" class="card grid gap-2 grid-cols-1" style="background-color: #dfdfde">
             <label style="color: red">Select Underlayment (UDL) *</label>
             <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>
+        <DripEdgeComponent />
     </div>
 
     <Divider />
     <Divider />
-
-    <div class="card gap-2 mt-10 bg-white shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
-            <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
-                <div class="w-96 flex flex-col gap-2">
-                    <label for="manufacturer">(UDL) NOA Applicant</label>
-                    <InputText id="manufacturer" v-model="underlayment.umanufacturer" />
+    <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000" style="background-color: #dfdfde; margin-left: 7px; font-palette: #000000">
+        <div class="card gap-2 mt-2 bg-primary shadow-lg shadow-cyan-800" style="margin-left: 5px; background-color: #dfdfde">
+            <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
+                <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
+                    <div class="w-96 flex flex-col gap-2">
+                        <label for="manufacturer">(UDL) NOA Applicant</label>
+                        <InputText id="manufacturer" v-model="underlayment.umanufacturer" />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="material">(UDL) Material</label>
+                        <InputText id="material" v-model="underlayment.umaterial" />
+                    </div>
+                    <div class="w-128 flex flex-col gap-2">
+                        <label for="description">(UDL) Description</label>
+                        <InputText id="description" v-model="underlayment.udescription" />
+                    </div>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label for="material">(UDL) Material</label>
-                    <InputText id="material" v-model="underlayment.umaterial" />
+            </div>
+
+            <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px; background-color: #dfdfde">
+                <div class="flex flex-row space-x-20">
+                    <div class="flex flex-col gap-2">
+                        <label for="saapplicant">S/A Applicant</label>
+                        <InputText id="saapplicant" v-model="selfadhered.samanufacturer" />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="samaterial">S/A Material Type</label>
+                        <InputText id="saaterial" v-model="selfadhered.samaterial" />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label style="color: red">Select System F *</label>
+                        <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
+                    </div>
+                </div>
+                <div class="w-196 flex flex-col gap-2" style="margin-left: 1px">
+                    <label for="sadescription">S/A Description</label>
+                    <InputText id="sadescription" v-model="selfadhered.sadescription" />
+                </div>
+            </div>
+
+            <div class="max-w-screen-xl flex flex-row mt-8 space-x-10" style="margin-left: 1px; background-color: #dfdfde">
+                <div class="w-128 flex flex-col gap-2">
+                    <label for="manufacturer">Applicant</label>
+                    <InputText id="manufacturer" v-model="shingles.manufacturer" />
                 </div>
                 <div class="w-128 flex flex-col gap-2">
-                    <label for="description">(UDL) Description</label>
-                    <InputText id="description" v-model="underlayment.udescription" />
+                    <label for="material"> Material</label>
+                    <InputText id="material" v-model="shingles.material" />
                 </div>
             </div>
-        </div>
-
-        <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
-            <div class="flex flex-row space-x-20">
-                <div class="flex flex-col gap-2">
-                    <label for="saapplicant">S/A Applicant</label>
-                    <InputText id="saapplicant" v-model="selfadhered.samanufacturer" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label for="samaterial">S/A Material Type</label>
-                    <InputText id="saaterial" v-model="selfadhered.samaterial" />
-                </div>
-
-                <div class="flex flex-col gap-2">
-                    <label style="color: red">Select System F *</label>
-                    <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
-                </div>
+            <div class="w-196 flex flex-col gap-2">
+                <label for="description">Description</label>
+                <InputText id="description" v-model="shingles.description" />
             </div>
-            <div class="w-196 flex flex-col gap-2" style="margin-left: 1px">
-                <label for="sadescription">S/A Description</label>
-                <InputText id="sadescription" v-model="selfadhered.sadescription" />
-            </div>
-        </div>
-
-        <div class="max-w-screen-xl flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div class="w-128 flex flex-col gap-2">
-                <label for="manufacturer">Applicant</label>
-                <InputText id="manufacturer" v-model="shingles.manufacturer" />
-            </div>
-            <div class="w-128 flex flex-col gap-2">
-                <label for="material"> Material</label>
-                <InputText id="material" v-model="shingles.material" />
-            </div>
-        </div>
-        <div class="w-196 flex flex-col gap-2">
-            <label for="description">Description</label>
-            <InputText id="description" v-model="shingles.description" />
         </div>
     </div>
 </template>

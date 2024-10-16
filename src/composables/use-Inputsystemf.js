@@ -5,7 +5,7 @@ import { reactive, ref, toRefs } from 'vue';
 
 export default function useSystemf() {
     const inputsystem = ref();
-    const effort = ref([]);
+
     const noaNum = ref([]);
     let results = ref([]);
     const store = usesystemfStore();
@@ -34,7 +34,7 @@ export default function useSystemf() {
         Description_F9: '',
         Description_F10: '',
         Description_F11: '',
-
+        pdfSystemValue: '',
         arraySystem: [],
         maps: [],
         systemCheck: []
@@ -58,6 +58,7 @@ export default function useSystemf() {
             if (response.length === 0) {
                 // alert('No data found!');
             } else {
+                systemData.noa = noaNum.value[0].NOA;
                 systemData.manufacturer = noaNum.value[0].Manufacturer;
                 systemData.material = noaNum.value[0].Material;
                 systemData.Description_F1 = noaNum.value[0].Description_F1;

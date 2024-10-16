@@ -85,7 +85,7 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
 
 <template>
     <!-- lg:w-full min-h-[10px] card flex flex-row gap-18  -->
-    <div class="md:w-3/4 px-2 pt-0">
+    <div class="flex justify-center md:w-3/4 px-2" style="margin-left: 300px">
         <!-- <div class="card flex justify-center"> -->
         <Stepper value="1" linear class="basis-[400rem]">
             <StepList>
@@ -95,9 +95,15 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 <Step value="4">Mechanical</Step>
                 <Step value="5">Summary</Step>
             </StepList>
-            <StepPanels class="object-scale-down h-700 w-1200 ...">
+            <StepPanels class="object-scale-down h-700 w-1200 ..." style="background-color: #eae7e2">
+                <div class="flex flex-col items-center gap-2" style="margin-left: 1200px">
+                    <span class="text-xl font-medium">Scroll Down</span>
+                    <span class="slidedown-icon h-8 w-8 text-primary-contrast rounded-full inline-flex items-center justify-center" style="background-color: #3e3430">
+                        <i class="pi pi-arrow-down" />
+                    </span>
+                </div>
                 <StepPanel v-slot="{ activateCallback }" value="1">
-                    <div class="flex flex-col h-48 w-1024">
+                    <div class="flex flex-col h-48 w-1024" style="background-color: #eae7e2">
                         <shingles v-if="isValidshingle" />
                         <div class="flex pt-6 justify-end">
                             <Button
@@ -114,7 +120,7 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
-                    <div class="flex flex-col h-48 w-600">
+                    <div class="flex flex-col h-48 w-600" style="background-color: #eae7e2">
                         <!-- v-if="values === 3" -->
                         <LowSlope v-if="isValidbur" />
                         <div class="flex pt-6 justify-between">
@@ -134,7 +140,7 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="3">
                     <!-- flex flex-row -->
-                    <div class="flex flex-col h-48 w-1224">
+                    <div class="flex flex-col h-48 w-1224" style="background-color: #eae7e2">
                         <Tile v-if="isValidtile" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" />
@@ -154,7 +160,7 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="4">
                     <!-- flex flex-row -->
-                    <div class="flex flex-col h-48 w-1224">
+                    <div class="flex flex-col h-48 w-1224" style="background-color: #eae7e2">
                         <Mechanical v-if="isValidmechanical" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('3')" />
@@ -180,23 +186,23 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
     </div>
 </template>
 <style scoped>
-/* .container {
-    padding-bottom: 3px;
-    padding-top: 2px;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 4px 4px 16px rgb(22, 183, 183);
-    position: center;
-    min-height: 1300px;
-    min-width: 1000px;
-    top: 1vh;
+@keyframes slidedown-icon {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(20px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
 }
- .card {
-    min-height: 900px;
-    position: center;
-    min-width: 800px;
+
+.slidedown-icon {
+    animation: slidedown-icon;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
 }
-.ql-container {
-    height: calc(100% - 52px);
-}  */
 </style>

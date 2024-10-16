@@ -12,9 +12,12 @@ const router = createRouter({
             props: (route) => ({ page: parseInt(route.query.page) || 1 }),
             children: [
                 {
+                    // path: '/',
+                    // name: 'login',
+                    // component: () => import('@/views/pages/auth/Login.vue')
                     path: '/',
-                    name: 'login',
-                    component: () => import('@/views/pages/auth/Login.vue')
+                    name: 'firstpage',
+                    component: () => import('@/views/pages/Firstpage.vue')
                 },
 
                 {
@@ -141,16 +144,21 @@ const router = createRouter({
             component: () => import('@/views/pages/Landing.vue')
         },
         {
+            path: '/firstpage',
+            name: 'firstpage',
+            component: () => import('@/views/pages/Firstpage.vue')
+        },
+        {
             path: '/pages/notfound',
             name: 'notfound',
             component: () => import('@/views/pages/NotFound.vue')
         },
 
-        // {
-        //     path: '/auth/login',
-        //     name: 'login',
-        //     component: () => import('@/views/pages/auth/Login.vue')
-        // },
+        {
+            path: '/auth/login',
+            name: 'login',
+            component: () => import('@/views/pages/auth/Login.vue')
+        },
         {
             path: '/auth/access',
             name: 'accessDenied',

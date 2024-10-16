@@ -1,6 +1,9 @@
-<script setup></script>
+<script setup>
+import Firstpage from './views/pages/Firstpage.vue';
+</script>
 
 <template>
+    <Firstpage />
     <router-view />
 </template>
 

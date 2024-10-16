@@ -239,8 +239,8 @@ watch(setRoofInputs, validateRoofSlope, validateHeight, slope, findSelected, upd
 watchEffect(setRoofInputs, sB, whatChanged, syst, selectedSystem, validateRoofSlope, () => {});
 </script>
 <template>
-    <div id="bur" class="flex flex-col lg:w-full gap-2 bg-white shadow-lg shadow-cyan-800" style="margin-left: 50px">
-        <div class="card flex flex-col gap-2">
+    <div id="bur" class="flex flex-col lg:w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px">
+        <div class="card flex flex-col gap-2" style="background-color: #eae7e2">
             <div class="w-128 gap-2" style="margin-left: 12px">
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" />
             </div>
@@ -268,7 +268,7 @@ watchEffect(setRoofInputs, sB, whatChanged, syst, selectedSystem, validateRoofSl
             </div>
 
             <DripEdgeComponent />
-            <div class="card lg:w-full grid gap-2 grid-cols-1">
+            <div class="card lg:w-full grid gap-2 grid-cols-1" style="background-color: #eae7e2">
                 <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
                 <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
                 <label for="system" style="color: red">Type of Low Slope BUR System: *</label>

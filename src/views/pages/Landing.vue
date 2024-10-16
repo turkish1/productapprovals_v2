@@ -100,8 +100,6 @@ const smoothScroll = (id) => {
                                 <div class="flex items-center justify-center bg-yellow-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-users !text-2xl text-yellow-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-surface-900 dark:text-surface-0">Easy to Use</h5>
-                                <span class="text-surface-600 dark:text-surface-200">Posuere morbi leo urna molestie.</span>
                             </div>
                         </div>
                     </div>

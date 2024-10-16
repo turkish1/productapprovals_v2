@@ -38,7 +38,7 @@ export default function usetileInputsingle() {
         num.value = Number(input.value);
         const result = execute({ params: { NOA: num.value } }).then((result) => {
             noaNum.value = data.value;
-            console.log(noaNum.value[0]);
+
             tileDatas.noa = noaNum.value[0].NOA;
             tileDatas.applicant = noaNum.value[0].applicant;
             tileDatas.material = noaNum.value[0].AdhesiveMaterial;
@@ -50,7 +50,6 @@ export default function usetileInputsingle() {
             tileDatas.tile_map = noaNum.value[0].Tile_Map;
             tileDatas.table2_map = noaNum.value[0].Table2_Map;
             tileDatas.resistance = noaNum.value[0].Resistance;
-            console.log(noaNum.value[0].AdhesiveMaterial);
 
             addNoa(tileDatas);
 

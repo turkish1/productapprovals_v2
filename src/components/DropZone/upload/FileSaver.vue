@@ -120,8 +120,8 @@ const saveFileLocally = async (file) => {
 
 <style>
 .dropzone {
-    width: 120%;
-    height: 200px;
+    width: 100%;
+    height: 300px;
     border: 2px dashed #ccc;
     display: flex;
     justify-content: center;

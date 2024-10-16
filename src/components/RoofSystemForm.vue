@@ -2,11 +2,11 @@
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-
+import AOS from 'aos';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
-import { ref } from 'vue';
-
+import { onMounted, ref } from 'vue';
+import Map from './Maps/Map.vue';
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
 
@@ -31,6 +31,13 @@ function clearSelected() {
     store.$reset();
 }
 
+onMounted(() => {
+    AOS.init({
+        duration: 800, // Animation duration in ms
+        easing: 'ease-in-out', // Easing for animations
+        once: true // Whether animation happens only once
+    });
+});
 function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     item = selectedItem.value.name;
 
@@ -72,24 +79,26 @@ function clear() {
 }
 </script>
 <template>
-    <div id="roofselect" class="card flex justify-center">
+    <div id="roofselect" class="card flex justify-center" style="background-color: #eae7e2">
         <div class="refresh">
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
-        <form>
-            <div v-show="!isMiamiBeachValid" class="card flex flex-col gap-4">
-                <h1 class="h1">Select System</h1>
+        <div class="card flex justify-center" style="background-color: #eae7e2">
+            <form>
+                <div v-show="!isMiamiBeachValid" class="card flex flex-col gap-4" style="background-color: #eae7e2">
+                    <h1 class="h1">Select System</h1>
 
-                <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
-                <InputText type="text" v-model="area" />
-            </div>
-            <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
-                <h1 class="h1">Select System</h1>
+                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
+                    <InputText type="text" v-model="area" />
+                </div>
+                <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
+                    <h1 class="h1">Select System</h1>
 
-                <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
-                <InputText type="text" v-model="area" />
-            </div>
-        </form>
+                    <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
+                    <InputText type="text" v-model="area" />
+                </div>
+            </form>
+        </div>
         <!-- Prevent the addition of a system until the roof area has been entered -->
         <div class="add">
             <i class="pi pi-plus-circle" style="font-size: 2rem; color: gray; margin-left: 1px; margin-top: 150px" @click="addItemAndClear(selectedItem, area)"></i>
@@ -97,10 +106,13 @@ function clear() {
 
         <div class="grid grid-cols-1 gap-2 place-content-end h42 ..">
             <div>
-                <!-- <Button severity="contrast" @click="generatePdf">Generate PDF</Button> -->
-
-                <Button class="button" label="Submit" severity="contrast" style="margin-left: 5px; margin-top: 100px" as="router-link" to="/generalpage" @click="generatePdf"></Button>
+                <Button class="button" label="Submit" raised style="margin-left: 5px; margin-top: 100px; background-color: #a4b5b9" as="router-link" to="/generalpage" @click="generatePdf"></Button>
             </div>
+        </div>
+    </div>
+    <div data-aos="zoom-in-up">
+        <div class="card flex justify-center" style="margin-left: 10px; background-color: #eae7e2">
+            <Map></Map>
         </div>
     </div>
 </template>

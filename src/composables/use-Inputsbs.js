@@ -42,11 +42,12 @@ export default function useSbs() {
             if (response.length === 0) {
                 alert('No data found!');
             } else {
+                sbsData.noa = noaNum.value[0].noa;
                 sbsData.applicant = noaNum.value[0].applicant;
                 sbsData.material = noaNum.value[0].material;
                 sbsData.description = noaNum.value[0].description;
                 sbsData.expiration_date = noaNum.value[0].expiration_date;
-                console.log(sbsData.applicant);
+
                 if (sbsData.length === 0) {
                     return;
                 }
