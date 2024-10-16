@@ -999,9 +999,9 @@ function saDescPressure() {
         saTiles.designpressure = keyValueSystemFPairsValues.value.F12;
     }
 }
-function callReset() {
-    resetSingle();
-}
+// function callReset() {
+//     resetSingle();
+// }
 
 watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
 </script>
