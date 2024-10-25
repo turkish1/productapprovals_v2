@@ -27,7 +27,7 @@ onMounted(() => {
             <!-- <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static"> -->
             <div class="video-container">
                 <video autoplay muted loop class="background-video">
-                    <source src="@/assets/multiRadar.mp4" type="video/mp4" />
+                    <source src="@/assets/" type="video/mp4" />
                 </video>
                 <Button
                     class="lg:!hidden"
