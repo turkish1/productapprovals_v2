@@ -359,7 +359,8 @@ watch(
 );
 </script>
 <template>
-    <div id="shingle" class="flex flex-col w-full gap-1 shadow-lg shadow-cyan-800" style="margin-left: 5px; background-color: #dfdfde">
+    <!-- background-color: #dfdfde -->
+    <div id="shingle" class="flex flex-col w-full gap-1 shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="w-64 gap-1" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" />
             <!-- <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 220px" @click="store.$reset()"></i></Button> -->
@@ -379,7 +380,7 @@ watch(
         </div>
 
         <div class="w-64 flex flex-col gap-2 mt-3 mb-8" style="margin-left: 20px">
-            <label for="area">Area</label>
+            <label style="color: whitesmoke" for="area">Area</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
@@ -414,20 +415,22 @@ watch(
 
     <Divider />
     <Divider />
-    <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000" style="background-color: #dfdfde; margin-left: 7px; font-palette: #000000">
-        <div class="card gap-2 mt-2 bg-primary shadow-lg shadow-cyan-800" style="margin-left: 5px; background-color: #dfdfde">
+    <!-- style="background-color: #dfdfde; margin-left: 7px; font-palette: #000000" -->
+    <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
+        <!-- background-color: #dfdfde -->
+        <div class="card gap-2 mt-2 bg-primary shadow-lg shadow-cyan-800" style="margin-left: 5px">
             <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
                 <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                     <div class="w-96 flex flex-col gap-2">
-                        <label for="manufacturer">(UDL) NOA Applicant</label>
+                        <label style="color: whitesmoke" for="manufacturer">(UDL) NOA Applicant</label>
                         <InputText id="manufacturer" v-model="underlayment.umanufacturer" />
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label for="material">(UDL) Material</label>
+                        <label style="color: whitesmoke" for="material">(UDL) Material</label>
                         <InputText id="material" v-model="underlayment.umaterial" />
                     </div>
                     <div class="w-128 flex flex-col gap-2">
-                        <label for="description">(UDL) Description</label>
+                        <label style="color: whitesmoke" for="description">(UDL) Description</label>
                         <InputText id="description" v-model="underlayment.udescription" />
                     </div>
                 </div>
@@ -436,11 +439,11 @@ watch(
             <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px; background-color: #dfdfde">
                 <div class="flex flex-row space-x-20">
                     <div class="flex flex-col gap-2">
-                        <label for="saapplicant">S/A Applicant</label>
+                        <label style="color: whitesmoke" for="saapplicant">S/A Applicant</label>
                         <InputText id="saapplicant" v-model="selfadhered.samanufacturer" />
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label for="samaterial">S/A Material Type</label>
+                        <label style="color: whitesmoke" for="samaterial">S/A Material Type</label>
                         <InputText id="saaterial" v-model="selfadhered.samaterial" />
                     </div>
 
@@ -450,23 +453,23 @@ watch(
                     </div>
                 </div>
                 <div class="w-196 flex flex-col gap-2" style="margin-left: 1px">
-                    <label for="sadescription">S/A Description</label>
+                    <label style="color: whitesmoke" for="sadescription">S/A Description</label>
                     <InputText id="sadescription" v-model="selfadhered.sadescription" />
                 </div>
             </div>
-
-            <div class="max-w-screen-xl flex flex-row mt-8 space-x-10" style="margin-left: 1px; background-color: #dfdfde">
+            <!-- style="margin-left: 1px; background-color: #dfdfde" -->
+            <div class="max-w-screen-xl flex flex-row mt-8 space-x-10">
                 <div class="w-128 flex flex-col gap-2">
-                    <label for="manufacturer">Applicant</label>
+                    <label style="color: whitesmoke" for="manufacturer">Applicant</label>
                     <InputText id="manufacturer" v-model="shingles.manufacturer" />
                 </div>
                 <div class="w-128 flex flex-col gap-2">
-                    <label for="material"> Material</label>
+                    <label style="color: whitesmoke" for="material"> Material</label>
                     <InputText id="material" v-model="shingles.material" />
                 </div>
             </div>
             <div class="w-196 flex flex-col gap-2">
-                <label for="description">Description</label>
+                <label style="color: whitesmoke" for="description">Description</label>
                 <InputText id="description" v-model="shingles.description" />
             </div>
         </div>

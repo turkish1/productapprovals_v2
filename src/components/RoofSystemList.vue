@@ -10,7 +10,7 @@ const { toggleCompleted } = storeToRefs(store);
 <template>
     <div v-for="roof in roofList" :key="roof.id" class="item">
         <div class="content">
-            <span :class="{ completed: roof.completed }">{{ roof.item }} {{ roof.dim1 }} {{ roof.dim2 }} {{ roof.dim3 }} {{ roof.dim4 }}</span>
+            <span :class="{ completed: roof.completed }">{{ roof.item }} {{ roof.dim1 }} {{ roof.dim2 }} {{ roof.dim3 }} {{ roof.dim4 }} {{ roof.dim5 }}</span>
             <!-- <span :class="{ completed: roof.completed }">{{ roof.dim1 }}</span> -->
             <span @click.stop="toggleCompleted(roof.id)">&#10004;</span>
         </div>

@@ -17,46 +17,47 @@ onMounted(() => {
     // Set a timeout to redirect after 5 seconds (5000ms)
     setTimeout(() => {
         router.push('/auth/login'); // Replace '/another-page' with your desired route
-    }, 5000);
+    }, 7000);
 });
 </script>
 <template>
-    <div class="dark:bg-surface-900" style="background-color: #262b26">
+    <!-- class="dark:bg-surface-900"  -->
+    <div style="background-color: #262b26">
         <div id="home" class="landing-wrapper overflow-hidden">
-            <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
-                <div class="video-container">
-                    <video autoplay muted loop class="background-video">
-                        <source src="@/assets/ParticleIllusion.mp4" type="video/mp4" />
-                    </video>
-                    <Button
-                        class="lg:!hidden"
-                        text
-                        severity="secondary"
-                        rounded
-                        v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-                    >
-                        <i class="pi pi-bars !text-2xl"></i>
-                    </Button>
-                    <div class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
-                        <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
-                            <li>
-                                <a @click="smoothScroll('#hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
-                                    <span>Home</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a @click="smoothScroll('#features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
-                                    <span>Features</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+            <!-- <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static"> -->
+            <div class="video-container">
+                <video autoplay muted loop class="background-video">
+                    <source src="@/assets/multiRadar.mp4" type="video/mp4" />
+                </video>
+                <Button
+                    class="lg:!hidden"
+                    text
+                    severity="secondary"
+                    rounded
+                    v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
+                >
+                    <i class="pi pi-bars !text-2xl"></i>
+                </Button>
+                <div class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
+                    <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
+                        <li>
+                            <a @click="smoothScroll('#hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a @click="smoothScroll('#features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                                <span>Features</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
+    <!-- </div> -->
 
-    <div id="hero" class="flex flex-col pt-6 px-6 lg:px-20 overflow-hidden" style="background: #dddddd">
+    <div id="hero" class="flex flex-col" style="background: #dddddd">
         <div class="mx-6 md:mx-20 mt-0 md:mt-6">
             <div class="video-container">
                 <!-- <video autoplay muted loop class="background-video">
@@ -78,8 +79,8 @@ onMounted(() => {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 98vw;
+    height: 85vh;
     overflow: hidden;
     z-index: -1; /* Puts video behind content */
 }

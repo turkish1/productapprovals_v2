@@ -8,20 +8,18 @@
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { usePolyStore } from '@/stores/polyStore';
+
 import { useRoofListStore } from '@/stores/roofList';
-import { useSbsStore } from '@/stores/sbsStore';
-import { useShingleStore } from '@/stores/shingleStore';
+
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
 
 const { getUser } = useGlobalState();
-const sbsStore = useSbsStore();
+
 const permitStore = usePermitappStore();
 const roofStore = useRoofListStore();
-const shingleStore = useShingleStore();
-const polypropolyneStore = usePolyStore();
-console.log(roofStore, shingleStore);
+
+console.log();
 
 const area = ref(roofStore.$state.roofList[0].dim1);
 const address = ref(permitStore.$state.permitapp[0].formdt.address);

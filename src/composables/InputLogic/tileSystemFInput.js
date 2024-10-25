@@ -34,7 +34,14 @@ export default function useTileSystemF() {
         Description_F9: '',
         arraySystem: [],
         // maps: [],
-        systemCheck: []
+        systemCheck: [],
+        slope: 0,
+        height: 0,
+        dripEdgeMaterial: [],
+        dripEdgeSize: [],
+        deckType: '',
+        expiration_date: '',
+        prescriptiveSelection: ''
     });
     const systemCheck = ref([]);
     function takef(saNoa) {

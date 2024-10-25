@@ -10,7 +10,6 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
-// import MapBox from '../../components/Maps/MapBox.vue';
 // import useaccountStore from '@/stores/accountStore';
 
 import { invoke, until } from '@vueuse/core';
@@ -256,108 +255,101 @@ export default {
 </script>
 
 <template>
-    <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px">
-        <PermitInitalAgreement v-if="isDialog" />
-        <div class="md:w-3/4">
-            <!-- <div class="card flex flex-col gap-4"> -->
-            <div class="container">
-                <form>
-                    <div class="row">
-                        <div class="card flex flex-col gap-1" style="background-color: #eae7e2">
-                            <div class="font-semibold text-xl">Permit Application</div>
-                            <div class="card flex justify-center" style="background-color: #eae7e2">
-                                <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" />
-                            </div>
-                            <div class="flex flex-col mt-3 grow basis-0 gap-3" style="max-width: 300px">
-                                <label for="license">License Status</label>
-                                <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
-                                <!-- <Message severity="error">Contractor Name Required</Message> -->
-                            </div>
-                            <div class="card flex flex-col gap-2" style="background-color: #eae7e2">
-                                <!-- <div class="flex flex-wrap gap-2"> -->
-                                <form class="w-3/4" @submit="onSubmit">
-                                    <div class="flex flex-col grow basis-0 gap-2">
-                                        <label for="addr">Property Address</label>
-                                        <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
+    <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #eae7e2"> -->
+    <PermitInitalAgreement v-if="isDialog" />
+    <div class="md:w-3/4">
+        <!-- <div class="card flex flex-col gap-4"> background-color: #eae7e2 -->
+        <div class="container md:w-3/4" style="margin-left: 220px">
+            <form>
+                <!-- style="background-color: #eae7e2" -->
+                <div class="row">
+                    <!-- style="background-color: #eae7e2" -->
+                    <div class="card flex flex-col gap-1">
+                        <div class="font-semibold text-xl">Permit Application</div>
+                        <!-- style="background-color: #eae7e2" -->
+                        <div class="card flex justify-center">
+                            <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" />
+                        </div>
+                        <div class="flex flex-col mt-3 grow basis-0 gap-3" style="max-width: 300px">
+                            <label for="license">License Status</label>
+                            <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
+                            <!-- <Message severity="error">Contractor Name Required</Message> -->
+                        </div>
+                        <!-- style="background-color: #eae7e2" -->
+                        <div class="card flex flex-col gap-2">
+                            <!-- <div class="flex flex-wrap gap-2"> -->
+                            <form class="w-3/4" @submit="onSubmit">
+                                <div class="flex flex-col grow basis-0 gap-2">
+                                    <label for="addr">Property Address</label>
+                                    <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
 
-                                        <Button id="search" v-if="!loading" type="button" label="Search" class="w-1/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
+                                    <Button id="search" v-if="!loading" type="button" label="Search" class="w-1/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
 
-                                        <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                                    <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
 
-                                        <!-- pi-search-plus -->
-                                        <!-- <Message severity="error">Property Address Required</Message> -->
-                                    </div>
-
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="dba">DBA </label>
-                                        <InputText id="dba" v-model="dba" type="text" placeholder="name" />
-                                        <!-- <Message severity="error">Contractor Name Required</Message> -->
-                                    </div>
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="contractor">Contractor Name</label>
-                                        <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
-                                        <!-- <Message severity="error">Contractor Name Required</Message> -->
-                                    </div>
-
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="phone">Cell Phone Number</label>
-                                        <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
-                                    </div>
-
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="Email">Email</label>
-                                        <InputText v-model="email" :invalid="email === null" :error="emailError" />
-                                        <Message v-if="invalid" severity="error">Email is required</Message>
-                                        <!-- @click="navigateNext" -->
-                                    </div>
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="muni">Municipality</label>
-                                        <InputText id="muni" v-model="muni" type="text" placeholder="municipality" />
-                                    </div>
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="folio">Folio</label>
-                                        <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" />
-                                    </div>
-
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="permit">Master Permit</label>
-                                        <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
-                                    </div>
-                                    <div class="flex flex-col mt-3 grow basis-0 gap-3">
-                                        <label for="processnum">mEProcess Number</label>
-                                        <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
-                                    </div>
-
-                                    <p v-if="responseMessage">{{ responseMessage }}</p>
-                                    <!-- <Drop /> -->
-                                    <br />
-                                    <Button
-                                        id="submit"
-                                        type="submit"
-                                        label="Submit"
-                                        class="w-1/3"
-                                        style="background-color: #a4b5b9"
-                                        raised
-                                        as="router-link"
-                                        to="/roofsystem"
-                                        @click="addItemAndClear(formData, selectedApplication)"
-                                        @change="generatePdf"
-                                    />
-                                </form>
-                                <!-- <MapBox /> -->
-                                <br />
-
-                                <div data-aos="fade-up-right" data-aos-delay="500">
-                                    <file-saver></file-saver>
+                                    <!-- pi-search-plus -->
+                                    <!-- <Message severity="error">Property Address Required</Message> -->
                                 </div>
+
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="dba">DBA </label>
+                                    <InputText id="dba" v-model="dba" type="text" placeholder="name" />
+                                    <!-- <Message severity="error">Contractor Name Required</Message> -->
+                                </div>
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="contractor">Contractor Name</label>
+                                    <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
+                                    <!-- <Message severity="error">Contractor Name Required</Message> -->
+                                </div>
+
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="phone">Cell Phone Number</label>
+                                    <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
+                                </div>
+
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="Email">Email</label>
+                                    <InputText v-model="email" :invalid="email === null" :error="emailError" />
+                                    <Message v-if="invalid" severity="error">Email is required</Message>
+                                    <!-- @click="navigateNext" -->
+                                </div>
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="muni">Municipality</label>
+                                    <InputText id="muni" v-model="muni" type="text" placeholder="municipality" />
+                                </div>
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="folio">Folio</label>
+                                    <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" />
+                                </div>
+
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="permit">Master Permit</label>
+                                    <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
+                                </div>
+                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                    <label for="processnum">mEProcess Number</label>
+                                    <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
+                                </div>
+
+                                <p v-if="responseMessage">{{ responseMessage }}</p>
+                                <!-- <Drop /> -->
+                                <br />
+                                <Button id="submit" type="submit" label="Submit" class="w-1/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" />
+                            </form>
+                            <!-- <MapBox /> -->
+                            <br />
+
+                            <div data-aos="fade-up-right" data-aos-delay="500">
+                                <file-saver></file-saver>
                             </div>
                         </div>
                     </div>
-                </form>
-                <!-- </div> -->
-            </div>
+                </div>
+            </form>
+            <!-- </div> -->
         </div>
     </div>
+    <!-- </div> -->
 </template>
 <style scoped>
 .container {
@@ -368,7 +360,8 @@ export default {
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 350px;
-
+    -webkit-transform: scale(0.999);
+    transform: scale(0.999);
     /* min-width: 600px; */
     top: 10vh;
 }

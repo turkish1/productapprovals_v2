@@ -79,13 +79,16 @@ function clear() {
 }
 </script>
 <template>
-    <div id="roofselect" class="card flex justify-center" style="background-color: #eae7e2">
+    <!-- style="background-color: #eae7e2" -->
+    <div id="roofselect" class="card flex justify-center">
         <div class="refresh">
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
-        <div class="card flex justify-center" style="background-color: #eae7e2">
+        <!-- style="background-color: #eae7e2" -->
+        <div class="card flex justify-center">
             <form>
-                <div v-show="!isMiamiBeachValid" class="card flex flex-col gap-4" style="background-color: #eae7e2">
+                <!-- style="background-color: #eae7e2" -->
+                <div v-show="!isMiamiBeachValid" class="card flex flex-col gap-4">
                     <h1 class="h1">Select System</h1>
 
                     <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
@@ -111,7 +114,7 @@ function clear() {
         </div>
     </div>
     <div data-aos="zoom-in-up">
-        <div class="card flex justify-center" style="margin-left: 10px; background-color: #eae7e2">
+        <div class="card flex justify-center" style="margin-left: 10px; width: 400px">
             <Map></Map>
         </div>
     </div>

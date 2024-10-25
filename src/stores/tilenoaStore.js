@@ -1,7 +1,7 @@
 import { createGlobalState } from '@vueuse/core';
 import { computed, ref } from 'vue';
 
-export const useGlobalState = createGlobalState(() => {
+export const useGlobalStates = createGlobalState(() => {
     // state
     const tilenoa = ref([]);
 

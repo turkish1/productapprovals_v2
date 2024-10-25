@@ -2,11 +2,12 @@
 import useburAxios from '@/composables/use-burAxios';
 import { useburValidation } from '@/composables/Validation/use-burHeight';
 import { useburSlopeValidation } from '@/composables/Validation/use-burSlope';
+import { useBurStore } from '@/stores/burStore';
 // import useInput from '@/composables/use-input';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, until } from '@vueuse/shared';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+// import html2canvas from 'html2canvas';
+// import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
@@ -16,6 +17,8 @@ const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 
 const factor = ref(0.6);
+const lowslopeStore = useBurStore();
+const { burinput, addData } = storeToRefs(lowslopeStore);
 
 const props = defineProps({
     roofType: {
@@ -56,14 +59,21 @@ let heightModel = ref('');
 
 function setRoofInputs() {
     console.log(slopeModel, heightModel);
-
+    console.log(burinput, addData);
     dims.per = (dims.height * factor.value).toFixed(2);
 }
 
 function findSelected() {
     mat.value = bMaters.value;
 }
-
+const dt = ref('');
+function getdeckType(event) {
+    console.log(selectedDeck._value.name, event.value.name);
+    if (selectedDeck._value.name === event.value.name) {
+        dt.value = event.value.name;
+        console.log(dt.value);
+    }
+}
 onMounted(() => {
     roofList.value.forEach((item, index) => {
         console.log(item.item, index);
@@ -127,6 +137,8 @@ function selectSystem() {
         let value = syst.value[i];
         maps.value.push([index, value]);
     }
+    addData(dims);
+    console.log(burinput);
 }
 function updateselectSystem() {
     selSytem.value = Object.entries(selectedSystem).map((obj) => {
@@ -166,83 +178,83 @@ function updateselectSystem() {
     });
 }
 
-const generatePdf = () => {
-    const element = document.getElementById('bur');
-    console.log(element);
-    // Use html2canvas to capture the element as a canvas
-    html2canvas(element).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
+// const generatePdf = () => {
+//     const element = document.getElementById('bur');
+//     console.log(element);
+//     // Use html2canvas to capture the element as a canvas
+//     html2canvas(element).then((canvas) => {
+//         const imgData = canvas.toDataURL('image/png');
 
-        // Create a new jsPDF instance
-        const pdf = new jsPDF();
+//         // Create a new jsPDF instance
+//         const pdf = new jsPDF();
 
-        // Add some content
-        pdf.text('This is a sample PDF with a watermark', 20, 30);
+//         // Add some content
+//         pdf.text('This is a sample PDF with a watermark', 20, 30);
 
-        // Set the opacity for the watermark text
-        pdf.setGState(new pdf.GState({ opacity: 0.2 })); // Adjust opacity
+//         // Set the opacity for the watermark text
+//         pdf.setGState(new pdf.GState({ opacity: 0.2 })); // Adjust opacity
 
-        // Set font size, alignment, and rotation for the watermark
-        pdf.setFontSize(50);
-        pdf.setTextColor(150, 150, 150); // Light gray color for watermark
-        pdf.text('WATERMARK', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() / 2, {
-            angle: 45, // Rotate watermark text
-            align: 'center'
-        });
+//         // Set font size, alignment, and rotation for the watermark
+//         pdf.setFontSize(50);
+//         pdf.setTextColor(150, 150, 150); // Light gray color for watermark
+//         pdf.text('WATERMARK', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() / 2, {
+//             angle: 45, // Rotate watermark text
+//             align: 'center'
+//         });
 
-        // Reset the opacity for the rest of the content
-        pdf.setGState(new pdf.GState({ opacity: 1 }));
-        // Add the captured image data to the PDF
-        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+//         // Reset the opacity for the rest of the content
+//         pdf.setGState(new pdf.GState({ opacity: 1 }));
+//         // Add the captured image data to the PDF
+//         pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
 
-        const pdfBlob = pdf.output('blob');
+//         const pdfBlob = pdf.output('blob');
 
-        // Save the PDF Blob using the File System Access API
-        savePdfBlobSilently(pdfBlob);
-    });
+//         // Save the PDF Blob using the File System Access API
+//         savePdfBlobSilently(pdfBlob);
+//     });
 
-    const savePdfBlobSilently = async (blob) => {
-        try {
-            // Use the File System Access API to request a file handle
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: 'bur.pdf',
-                types: [
-                    {
-                        description: 'PDF file',
-                        accept: {
-                            'application/pdf': ['.pdf']
-                        }
-                    }
-                ]
-            });
+//     const savePdfBlobSilently = async (blob) => {
+//         try {
+//             // Use the File System Access API to request a file handle
+//             const fileHandle = await window.showSaveFilePicker({
+//                 suggestedName: 'bur.pdf',
+//                 types: [
+//                     {
+//                         description: 'PDF file',
+//                         accept: {
+//                             'application/pdf': ['.pdf']
+//                         }
+//                     }
+//                 ]
+//             });
 
-            // Create a writable stream
-            const writable = await fileHandle.createWritable();
+//             // Create a writable stream
+//             const writable = await fileHandle.createWritable();
 
-            // Write the Blob data to the file
-            await writable.write(blob);
+//             // Write the Blob data to the file
+//             await writable.write(blob);
 
-            // Close the writable stream
-            await writable.close();
+//             // Close the writable stream
+//             await writable.close();
 
-            console.log('PDF saved successfully without popping download dialog!');
-        } catch (error) {
-            console.error('Error saving file:', error);
-        }
-    };
-};
+//             console.log('PDF saved successfully without popping download dialog!');
+//         } catch (error) {
+//             console.error('Error saving file:', error);
+//         }
+//     };
+// };
 invoke(async () => {
     await until(pdfcleared).changed();
     generatePdf();
 });
-watch(setRoofInputs, validateRoofSlope, validateHeight, slope, findSelected, updateselection, updateselectSystem, syst, dims.per, selSytem, type, () => {});
+watch(setRoofInputs, validateRoofSlope, validateHeight, findSelected, updateselection, updateselectSystem, syst, dims.per, selSytem, type, () => {});
 watchEffect(setRoofInputs, sB, whatChanged, syst, selectedSystem, validateRoofSlope, () => {});
 </script>
 <template>
     <div id="bur" class="flex flex-col lg:w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px">
         <div class="card flex flex-col gap-2" style="background-color: #eae7e2">
             <div class="w-128 gap-2" style="margin-left: 12px">
-                <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" />
+                <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" @change="getdeckType" />
             </div>
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="slope" style="color: red">Slope *</label>

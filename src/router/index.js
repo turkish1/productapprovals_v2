@@ -12,12 +12,12 @@ const router = createRouter({
             props: (route) => ({ page: parseInt(route.query.page) || 1 }),
             children: [
                 {
-                    // path: '/',
-                    // name: 'login',
-                    // component: () => import('@/views/pages/auth/Login.vue')
                     path: '/',
-                    name: 'firstpage',
-                    component: () => import('@/views/pages/Firstpage.vue')
+                    name: 'login',
+                    component: () => import('@/views/pages/auth/Login.vue')
+                    // path: '/',
+                    // name: 'firstpage',
+                    // component: () => import('@/views/pages/Firstpage.vue')
                 },
 
                 {
@@ -78,6 +78,11 @@ const router = createRouter({
                     component: () => import('@/components/Tile.vue')
                 },
                 {
+                    path: '/scroll',
+                    name: 'scroll',
+                    component: () => import('@/views/pages/vIntersection.vue')
+                },
+                {
                     path: '/mechanicaltile',
                     name: 'mechanical',
                     component: () => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue')
@@ -86,6 +91,11 @@ const router = createRouter({
                     path: '/permitapp',
                     name: 'permitapp',
                     component: () => import('@/views/uikit/PermitApp.vue')
+                },
+                {
+                    path: '/permitapplication',
+                    name: 'permitapplication',
+                    component: () => import('@/components/PermitApp/PermitApplication.vue')
                 },
                 {
                     path: '/generalpage',
@@ -154,11 +164,11 @@ const router = createRouter({
             component: () => import('@/views/pages/NotFound.vue')
         },
 
-        {
-            path: '/auth/login',
-            name: 'login',
-            component: () => import('@/views/pages/auth/Login.vue')
-        },
+        // {
+        //     path: '/auth/login',
+        //     name: 'login',
+        //     component: () => import('@/views/pages/auth/Login.vue')
+        // },
         {
             path: '/auth/access',
             name: 'accessDenied',

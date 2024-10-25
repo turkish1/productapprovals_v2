@@ -6,11 +6,15 @@
 }
 
 .card {
-    background: var(--surface-card);
+    // background-color: #eae7e2;
+
+    // background: var(--surface-card);
+    background-image: url('world.jpeg');
     padding: 1rem;
     margin-bottom: 0.5rem;
     border-radius: var(--content-border-radius);
-
+    -webkit-transform: scale(0.999);
+    transform: scale(0.999);
     &:last-child {
         margin-bottom: 0;
     }

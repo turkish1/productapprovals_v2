@@ -4,7 +4,8 @@ import RoofSystemApp from '../../components/RoofSystemApp.vue';
 
 <template>
     <div class="row">
-        <div class="card flex flex-col gap-4" style="background-color: #eff6e0">
+        <!-- style="background-color: #eae7e2" -->
+        <div class="card flex flex-col gap-4">
             <roof-system-app></roof-system-app>
         </div>
     </div>

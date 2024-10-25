@@ -1,9 +1,9 @@
 <script setup>
-import Firstpage from './views/pages/Firstpage.vue';
+// import vIntersection from './views/pages/vIntersection.vue';
 </script>
 
 <template>
-    <Firstpage />
+    <!-- <vIntersection /> -->
     <router-view />
 </template>
 

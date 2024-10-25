@@ -1,4 +1,4 @@
-import { useGlobalState } from '@/stores/tilenoaStore';
+import { useGlobalStates } from '@/stores/tilenoaStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 
@@ -10,7 +10,7 @@ export default function usetileInputdouble() {
     const num = ref();
     const responseMessage = ref('');
     const error = ref('');
-    const { tilenoa, getNoa, addNoa } = useGlobalState();
+    const { tilenoa, getNoa, addNoa } = useGlobalStates();
     let url = 'https://jtk1qa20ul.execute-api.us-east-1.amazonaws.com/doublepd/doublepd';
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -26,7 +26,14 @@ export default function usetileInputdouble() {
         selection: '',
         select_tile: [],
         tile_map: [],
-        table2_map: []
+        table2_map: [],
+        slope: 0,
+        height: 0,
+        dripEdgeMaterial: [],
+        dripEdgeSize: [],
+        deckType: '',
+        expiration_date: '',
+        prescriptiveSelection: ''
     });
 
     function getTilenoa(number) {
@@ -61,7 +68,6 @@ export default function usetileInputdouble() {
                 tileData.tile_map = noaNum.value[0].Tile_Map;
                 tileData.table2_map = noaNum.value[0].Table2_Map;
                 tileData.resistance = noaNum.value[0].Resistance;
-                console.log(noaNum.value[0].AdhesiveMaterial);
 
                 addNoa(tileData);
 

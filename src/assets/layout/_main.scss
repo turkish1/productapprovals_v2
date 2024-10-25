@@ -1,12 +1,14 @@
 .layout-main-container {
-    display: center;
-
+    display: cover;
+    background-image: url('world.jpeg');
     flex-direction: column;
-    min-height: 90vh;
-    max-width: 150vh;
+    height: 100%;
+    width: 100%;
     justify-content: space-between;
     padding: 4rem 2rem 0 2rem;
     transition: margin-left var(--layout-section-transition-duration);
+    -webkit-transform: scale(0.999);
+    transform: scale(0.999);
 }
 
 .layout-main {

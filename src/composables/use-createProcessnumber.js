@@ -16,7 +16,8 @@ export default function usecreateProcess() {
     function procReceive(form) {
         console.log(form);
         procData = form;
-
+        console.log(procData);
+        // if (processNumber === 'meNaN') break; else{}
         execute({ data: form });
         responseMessage.value = 'Form submitted successfully!';
         procStore.addData(procData);

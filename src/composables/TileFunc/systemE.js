@@ -27,7 +27,11 @@ export default function useUDL() {
         TileCap_Sheet_Description_E5: '',
         TileCap_Sheet_Description_E6: '',
         TileCap_Sheet_Description_E7: '',
-        arrDesignPressure: []
+        arrDesignPressure: [],
+        systemSelected: '',
+        dP: '',
+        tileCap: '',
+        Anchor_Base: ''
     });
     const etileStore = usetilesysEStore();
     const { inputsystem, getV, noaNum, error, systemDataE } = useTileSystemE();

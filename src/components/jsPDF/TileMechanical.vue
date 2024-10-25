@@ -8,26 +8,28 @@
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
-import { useSbsStore } from '@/stores/sbsStore';
-import { useShingleStore } from '@/stores/shingleStore';
+import { usetilesysEStore } from '@/stores/tilesysEStore';
+import { usetilesysfStore } from '@/stores/tilesysfStore';
+
+import useMech from '@/composables/InputLogic/use-tileMechanical';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
 
 const { getUser } = useGlobalState();
-const sbsStore = useSbsStore();
+
 const permitStore = usePermitappStore();
 const roofStore = useRoofListStore();
-const shingleStore = useShingleStore();
-const polypropolyneStore = usePolyStore();
-console.log(roofStore, shingleStore);
+const { mechStore } = useMech();
+const saStore = usetilesysfStore();
+const etileStore = usetilesysEStore();
+console.log(mechStore);
 
-const area = ref(roofStore.$state.roofList[0].dim1);
+const area = ref(roofStore.$state.roofList[0].dim3);
 const address = ref(permitStore.$state.permitapp[0].formdt.address);
 const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
 const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
+// const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 const dba = ref(getUser.value[0].dba);
 
 // invoke(async () => {
@@ -37,25 +39,27 @@ const dba = ref(getUser.value[0].dba);
 // });
 const generatePDF = () => {
     // Initialize jsPDF instance
-    if (shingleStore.$state.inputshingle.length === 0) {
+    if (mechStore.tilemech.value.length === 0) {
         console.log('lenghth is   zero');
     } else {
-        console.log(sbsStore, polypropolyneStore);
-        let isPOLYValid = ref(false);
-        let isSBSValid = ref(false);
-        if (sbsStore.$state.sbsinput.length !== 0) {
-            isSBSValid = true;
-            console.log(isSBSValid);
+        // console.log(sbsStore, polypropolyneStore);
+        let isUDLValidPresc = ref(false);
+        let isSAValidPresc = ref(false);
+        if (etileStore.$state.tilesysEinput.length !== 0) {
+            isUDLValidPresc = true;
+            console.log(isUDLValidPresc);
         }
-        if (polypropolyneStore.$state.polyinput.length !== 0) {
-            isPOLYValid = true;
-            console.log(isPOLYValid);
+        if (saStore.$state.tilefinput.length !== 0) {
+            isSAValidPresc = true;
+            console.log(isSAValidPresc);
         }
         // Initialize jsPDF instance
-        const height = ref(shingleStore.$state.inputshingle[0].shingleData.height);
-        const slope = ref(shingleStore.$state.inputshingle[0].shingleData.slope);
-        const deckType = ref(shingleStore.$state.inputshingle[0].shingleData.deckType);
-        console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
+        console.log(mechStore.tilemech.value.length);
+        const height = ref(mechStore.tilemech.value[0].height);
+        const slope = ref(mechStore.tilemech.value[0].slope);
+        const deckType = ref(mechStore.tilemech.value[0].deckType);
+        const perimeter = ref(mechStore.tilemech.value[0].perimeter);
+        const prescriptive = ref(mechStore.tilemech.value[0].prescriptiveSelection);
 
         const doc = new jsPDF();
         // Load an image (example with Base64)
@@ -104,7 +108,7 @@ const generatePDF = () => {
             doc.setFontSize(12);
             doc.setTextColor(0);
             doc.text(
-                'The Shingle roof system and its components shall be installed in strict compliance  with the HVHZportions of Chapter 15 FBC, the HVHZ Roof Application Standards(RAS) 111 & 115, and the submitted MDC(NOA) Notice of Acceptance(s).The mePermit applicant agrees to comply with these installation requirements when obtaining this permit.',
+                'The tile roof system and its components shall be installed in strict compliance with the FBC 2023 HVHZ portions of Chapter 15, the HVHZ Tile Application Standards: RAS-119, RAS-120 & RAS-127 and the submitted MDC Notice of Acceptance(s).',
                 10,
                 20,
                 { maxWidth: '200' }
@@ -131,8 +135,8 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` },
-            { category: 'Folio', value: `${folio.value}` }
+            { category: 'meProcess Number', value: `${processNumber.value}` }
+            // { category: 'Folio', value: `${folio.value}` }
         ];
 
         // Set starting position
@@ -193,15 +197,19 @@ const generatePDF = () => {
 
         // doc.text('Prescriptive ASTM # 30 with type IV hot asphalt applied # 90 Tile Capsheet:', 10, 70);
         // doc.text('Fastened Underlayment (UDL) with Self Adhered (S/A) Tile Capsheet:', 10, 80);
-        const noaText = 'Shingle NOA Number: ';
-        const applicantText = 'Shingle Applicant: ';
-        const materialText = 'Shingle Material: ';
-        const descriptionText = 'Shingle Description: ';
+        const noaText = 'Tile NOA Number: ';
+        const applicantText = 'Tile Applicant: ';
+        const materialText = 'Tile Material: ';
+        const descriptionText = 'Tile Description: ';
 
-        const polynoaText = 'Fastened Underlayment(UDL)NOA: ';
-        const polyapplicantText = 'UDL NOA Applicant: ';
-        const polymaterialText = 'Fastened UDL Material: ';
-        const polydescriptionText = 'UDL Description: ';
+        const polynoaText = 'Fastened (UDL) NOA: ';
+        const polyapplicantText = '(UDL) NOA Applicant: ';
+        const polymaterialText = 'Fastened (UDL) Material: ';
+        const systemEselectionText = 'Select System E: ';
+        const designPSFText = 'Design psf: ';
+        const anchordescriptionText = 'Anchor Base Sheet: ';
+        const udldescriptionText = '(UDL) Description: ';
+        const Perscriptive = 'Perscriptive: ';
         const max_width = 179;
         const thirdYCoordinate = 725;
         const page = doc.getPageInfo(1);
@@ -216,45 +224,53 @@ const generatePDF = () => {
         currentX.value = LeftStart;
         currentY.value = current_y;
         console.log(currentX.value, currentY.value);
-        const noa = ref(shingleStore.$state.inputshingle[0].shingleData.noa);
-        const applicant = ref(shingleStore.$state.inputshingle[0].shingleData.applicant);
-        const material = ref(shingleStore.$state.inputshingle[0].shingleData.material);
-        const description = ref(shingleStore.$state.inputshingle[0].shingleData.description);
+        const noa = ref(mechStore.tilemech.value[0].noa);
+        const applicant = ref(mechStore.tilemech.value[0].manufacturer);
+        const material = ref(mechStore.tilemech.value[0].material);
+        const description = ref(mechStore.tilemech.value[0].description);
+
+        const valueTextWidth_0 = doc.getTextWidth(Perscriptive);
+        const perspectiveStartXValue = LeftStart;
+        doc.text(Perscriptive, perspectiveStartXValue, current_y);
+        const perscriptiveValue = LeftStart;
+        current_y = current_y + 10;
+        doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
+        //  doc.line(perscriptiveValue, current_y, perscriptiveValue + valueTextWidthTile, current_y);
+        current_y = current_y + 10;
 
         const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
-
-        const applicantStartXValue = valueTextWidth0 + LeftStart;
-        doc.text(applicantText, LeftStart, current_y);
-        const applicantValue = applicantStartXValue;
+        const valueTextWidthApp = doc.getTextWidth(applicantText);
+        const applicantStartXValue = LeftStart;
+        doc.text(applicantText, applicantStartXValue, current_y);
+        const applicantValue = applicantStartXValue + valueTextWidthApp;
         doc.text(`${applicant.value}`, applicantValue, current_y);
         doc.line(applicantValue, current_y, applicantValue + valueTextWidth0, current_y);
 
         currentX.value = applicantValue + valueTextWidth0;
 
+        const noaValueTextWidth = doc.getTextWidth(noaText);
         const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        const shingleStartXValue = valueTextWidth3 + currentX.value + 25;
+        const noaStartXValue = currentX.value + noaValueTextWidth;
         doc.text(noaText, currentX.value + 2, current_y);
-        doc.text(`${noa.value}`, shingleStartXValue, current_y);
-        doc.line(shingleStartXValue, current_y, shingleStartXValue + valueTextWidth3, current_y);
-        currentX.value = shingleStartXValue + valueTextWidth3;
+        doc.text(`${noa.value}`, noaStartXValue + 2, current_y);
+        doc.line(noaStartXValue, current_y, noaStartXValue + valueTextWidth3, current_y);
+        currentX.value = noaStartXValue + valueTextWidth3;
 
         // if (currentX.value < max_width)
 
         // currentX provides the update of the x coordinate
         const fourthYCoordinate = current_y;
 
-        const materialStartXValue = currentX.value + 2;
-
-        doc.text(materialText, materialStartXValue, fourthYCoordinate);
         const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
         const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-
+        const materialStartXValue = currentX.value + 5;
+        doc.text(materialText, materialStartXValue, fourthYCoordinate);
         const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
         doc.text(`${material.value}`, materialValue, fourthYCoordinate);
         doc.line(materialValue, fourthYCoordinate, materialValue + valueTextWidthMaterial, fourthYCoordinate);
         currentX.value = materialValue + valueTextWidthMaterial;
 
-        if (currentX.value > max_width) current_y = current_y + 10;
+        current_y = current_y + 10;
 
         const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
         const valueTextWidthDesc = doc.getTextWidth(descriptionText);
@@ -267,17 +283,11 @@ const generatePDF = () => {
         doc.line(descriptionValue, current_y, descriptionValue + valueTextWidth4, current_y);
         currentX.value = descriptionValue + valueTextWidth4;
 
-        // const wrappedText = doc.splitTextToSize(`${description.value}`, 150);
-        // // doc.text(wrappedText, 10, 60);
-        // doc.text(wrappedText, descStartXValue, fourthYCoordinate + 20);
-        // doc.line(descStartXValue, fourthYCoordinate + 20, descStartXValue + valueTextWidth4, fourthYCoordinate + 20);
-
         current_y = current_y + 10;
-        console.log(polypropolyneStore.$state.polyinput.length);
-        if (polypropolyneStore.$state.polyinput.length === 0) {
+
+        if (etileStore.$state.tilesysEinput.length === 0) {
             const udlNoa = 'n/a';
             const udlApplicant = 'n/a';
-
             const udlMaterial = 'n/a';
             const udlDescription = 'n/a';
 
@@ -315,29 +325,32 @@ const generatePDF = () => {
 
             console.log(currentX.value);
 
-            const valueTextWidthpolyDesc = doc.getTextWidth(polydescriptionText);
+            const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(udlDescription);
             const udldescStartXValue = LeftStart;
             const checkDescription = udldescStartXValue + valueTextWidth_3;
             console.log(checkDescription);
-            doc.text(polydescriptionText, udldescStartXValue, current_y);
+            doc.text(udldescriptionText, udldescStartXValue, current_y);
             if (checkDescription > max_width) print(checkDescription);
             const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
             // current_y = current_y + 10;
             doc.text(udlDescription, udldescriptionValue, current_y);
             doc.line(udldescriptionValue, current_y, udldescriptionValue + valueTextWidth_3, current_y);
             currentX.value = udldescriptionValue + valueTextWidth_3;
-            console.log(currentX.value);
+
             current_y = current_y + 10;
         } else {
-            console.log('Entered poly line 351');
-            const udlNoa = ref(polypropolyneStore.$state.polyinput[0].polyData.noa);
-            const udlApplicant = ref(polypropolyneStore.$state.polyinput[0].polyData.applicant);
-            const udlMaterial = ref(polypropolyneStore.$state.polyinput[0].polyData.material);
-            const udlDescription = ref(polypropolyneStore.$state.polyinput[0].polyData.description);
+            const udlNoa = ref(etileStore.$state.tilesysEinput[0].systemDataE.noa);
+            const udlApplicant = ref(etileStore.$state.tilesysEinput[0].systemDataE.manufacturer);
+            const udlMaterial = ref(etileStore.$state.tilesysEinput[0].systemDataE.material);
+            const udlSystemE = ref(etileStore.$state.tilesysEinput[0].systemDataE.systemSelected);
+            const designPressure = ref(etileStore.$state.tilesysEinput[0].systemDataE.dP);
+            const anchorDescription = ref(etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base);
+            const udlDescription = ref(etileStore.$state.tilesysEinput[0].systemDataE.tileCap);
 
             const valueTextWidthNOA = doc.getTextWidth(polynoaText);
             const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
+
             const udlNoaStartXValue = LeftStart;
             doc.text(polynoaText, udlNoaStartXValue, current_y);
             const udlNoaValue = descStartXValue + valueTextWidthNOA;
@@ -352,9 +365,10 @@ const generatePDF = () => {
             const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
             doc.text(`${udlApplicant.value}`, udlApplicantValue, current_y);
             doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
-            currentX.value = udlApplicantValue + valueTextWidth_;
+            const matWidth = doc.getTextWidth(`${udlMaterial.value}`);
+            currentX.value = udlApplicantValue + matWidth;
 
-            if (currentX.value > max_width) current_y = current_y + 10;
+            current_y = current_y + 10;
             const udlmatStartXValue = LeftStart;
             const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
             const valueTextWidth_2 = doc.getTextWidth(`${udlMaterial.value}`);
@@ -365,17 +379,51 @@ const generatePDF = () => {
 
             currentX.value = udlmaterialValue + valueTextWidth_2;
             if (currentX.value > max_width) current_y = current_y + 10;
-            console.log(currentX.value);
+            //     console.log(currentX.value);
 
-            const valueTextWidthpolyDesc = doc.getTextWidth(polydescriptionText);
+            const systemEStartXValue = currentX.value + 5;
+            const valueTextWidthSystemE = doc.getTextWidth(systemEselectionText);
+            const valueTextWidthE = doc.getTextWidth(`${udlSystemE.value}`);
+            doc.text(systemEselectionText, systemEStartXValue, current_y);
+            const udlsystemEValue = systemEStartXValue + valueTextWidthSystemE;
+            doc.text(`${udlSystemE.value}`, udlsystemEValue, current_y);
+            doc.line(udlsystemEValue, current_y, udlsystemEValue + valueTextWidthE, current_y);
+            currentX.value = udlsystemEValue + valueTextWidthE;
+            if (currentX.value > max_width) current_y = current_y + 10;
+
+            const valueTextWidthpolyDesignP = doc.getTextWidth(designPSFText);
+            const valueTextWidthDP = doc.getTextWidth(`${designPressure.value}`);
+            const udldesignStartXValue = currentX.value + 3;
+            doc.text(designPSFText, udldesignStartXValue, current_y);
+            const udldesignValue = udldesignStartXValue + valueTextWidthpolyDesignP;
+
+            doc.text(`${designPressure.value}`, udldesignValue, current_y);
+            doc.line(udldesignValue, current_y, udldesignValue + valueTextWidthDP, current_y);
+            currentX.value = udldesignValue + valueTextWidthDP;
+            console.log(currentX.value);
+            current_y = current_y + 10;
+
+            const valueTextWidthanchorDesc = doc.getTextWidth(anchordescriptionText);
+            const valueTextWidthAnchor = doc.getTextWidth(`${anchorDescription.value}`);
+            const udlanchorStartXValue = LeftStart;
+            doc.text(anchordescriptionText, udlanchorStartXValue, current_y);
+            current_y = current_y + 10;
+            const udlanchorValue = LeftStart;
+
+            doc.text(`${anchorDescription.value}`, udlanchorValue, current_y);
+            doc.line(udlanchorValue, current_y, udlanchorValue + valueTextWidthAnchor, current_y);
+            currentX.value = udlanchorValue + valueTextWidthAnchor;
+            current_y = current_y + 10;
+            //     console.log(currentX.value);
+
+            const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(`${udlDescription.value}`);
-            const udldescStartXValue = currentX.value + 2;
-            const checkDescription = udldescStartXValue + valueTextWidth_3;
-            console.log(checkDescription);
-            doc.text('UDL Description:', udldescStartXValue, current_y);
-            if (checkDescription > max_width) print(checkDescription);
+            const udldescStartXValue = LeftStart;
+
+            doc.text(udldescriptionText, udldescStartXValue, current_y);
+
             const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
-            // current_y = current_y + 10;
+
             doc.text(`${udlDescription.value}`, udldescriptionValue, current_y);
             doc.line(udldescriptionValue, current_y, udldescriptionValue + valueTextWidth_3, current_y);
             currentX.value = udldescriptionValue + valueTextWidth_3;
@@ -384,12 +432,13 @@ const generatePDF = () => {
         }
         const sbsnoaText = 'Self Adhered NOA: ';
         const sbsapplicantText = 'S/A NOA Applicant: ';
+        const sbsSystemFText = 'S/A System F: ';
         const sbsmaterialText = 'S/A Material: ';
         const sbsdescriptionText = 'S/A Description: ';
-        console.log(sbsStore.$state.sbsinput.length);
-        if (sbsStore.$state.sbsinput.length === 0) {
+        if (saStore.$state.tilefinput.length === 0) {
             const saNoa = 'n/a';
             const saApplicant = 'n/a';
+            const saSystemF = 'n/a';
             const saMaterial = 'n/a';
             const saDescription = 'n/a';
 
@@ -413,9 +462,19 @@ const generatePDF = () => {
             currentX.value = sbsapplicantValue + valueTextWidthApp;
             console.log(currentX.value);
 
+            const valueTextWidthSystem = doc.getTextWidth(sbsSystemFText);
+            const saSystemFStartXValue = currentX.value + 3;
+            doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
+            const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
+            doc.text(saSystemF, sbsSystemFValue, current_y);
+            doc.line(sbsSystemFValue, current_y, sbsSystemFValue + valueTextWidthSystem, current_y);
+            currentX.value = sbsSystemFValue + valueTextWidthSystem;
+            console.log(currentX.value);
+            current_y = current_y + 10;
+
             const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
             const valueTextWidthMat = doc.getTextWidth(saMaterial);
-            const saMaterialStartXValue = currentX.value + 3;
+            const saMaterialStartXValue = LeftStart;
             doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
             const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
             doc.text(saMaterial, sbsmaterialValue, current_y);
@@ -433,11 +492,12 @@ const generatePDF = () => {
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             console.log(currentX.value);
         } else {
-            console.log('Entered sbs line 455');
-            const saNoa = ref(sbsStore.$state.sbsinput[0].sbsData.noa);
-            const saApplicant = ref(sbsStore.$state.sbsinput[0].sbsData.applicant);
-            const saMaterial = ref(sbsStore.$state.sbsinput[0].sbsData.material);
-            const saDescription = ref(sbsStore.$state.sbsinput[0].sbsData.description);
+            console.log('Entered sbs line 455', saStore.$state);
+            const saNoa = ref(saStore.$state.tilefinput[0].systemData.noa);
+            const saApplicant = ref(saStore.$state.tilefinput[0].systemData.manufacturer);
+            const saSystemF = ref(saStore.$state.tilefinput[0].systemData.pressure);
+            const saMaterial = ref(saStore.$state.tilefinput[0].systemData.material);
+            const saDescription = ref(saStore.$state.tilefinput[0].systemData.description);
 
             const valueTextWidthsbsNOA = doc.getTextWidth(sbsnoaText);
             const valueTextWidth_4 = doc.getTextWidth(`${saNoa.value}`);
@@ -457,18 +517,30 @@ const generatePDF = () => {
             doc.line(sbsapplicantValue, current_y, sbsapplicantValue + valueTextWidthApp, current_y);
             currentX.value = sbsapplicantValue + valueTextWidthApp;
             console.log(currentX.value);
-            if (currentX.value >= max_width) current_y = current_y + 10;
-            console.log(currentX.value);
+
+            const valueTextWidthSystem = doc.getTextWidth(sbsSystemFText);
+            const valueTextWidthSys = doc.getTextWidth(`${saSystemF.value}`);
+            const saSystemFStartXValue = currentX.value + 3;
+            doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
+            const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
+            doc.text(`${saSystemF.value}`, sbsSystemFValue, current_y);
+            doc.line(sbsSystemFValue, current_y, sbsSystemFValue + valueTextWidthSys, current_y);
+            currentX.value = sbsSystemFValue + valueTextWidthSys;
+
+            current_y = current_y + 10;
+            //     console.log(currentX.value);
 
             const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
             const valueTextWidthMat = doc.getTextWidth(`${saMaterial.value}`);
-            const saMaterialStartXValue = currentX.value + 3;
+            const saMaterialStartXValue = LeftStart;
             doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
             const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
             doc.text(`${saMaterial.value}`, sbsmaterialValue, current_y);
             doc.line(sbsmaterialValue, current_y, sbsmaterialValue + valueTextWidthMat, current_y);
             currentX.value = sbsmaterialValue + valueTextWidthMat;
-            console.log(currentX.value);
+
+            if (currentX.value > max_width) current_y = current_y + 10;
+            //     console.log(currentX.value);
 
             const valueTextWidthsbsDescription = doc.getTextWidth(sbsdescriptionText);
             const valueTextWidthDesc = doc.getTextWidth(`${saDescription.value}`);
@@ -480,35 +552,10 @@ const generatePDF = () => {
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             if (currentX.value >= max_width) current_y = current_y + 10;
             console.log(currentX.value);
-            //     const eighthYCoordinate = 155 + factor;
-            //     const valueTextWidth_4 = doc.getTextWidth(`${saNoa.value}`);
-            //     const saNoaStartXValue = 5 + valueTextWidth_4;
-            //     doc.text('Self Adhered NOA:', 10, eighthYCoordinate);
-            //     doc.text(`${saNoa.value}`, saNoaStartXValue + 25, eighthYCoordinate);
-            //     doc.line(saNoaStartXValue + 25, eighthYCoordinate, saNoaStartXValue + 25 + valueTextWidth_4, eighthYCoordinate);
-            //     const ninthYCoordinate = eighthYCoordinate + factor;
-
-            //     const valueTextWidth_5 = doc.getTextWidth(`${saApplicant.value}`);
-            //     const saApplicantStartXValue = 5 + valueTextWidth_5;
-            //     doc.text('S/A NOA Applicant:', 10, ninthYCoordinate);
-            //     const saApplicantValue = saApplicantStartXValue + 35;
-            //     doc.text(`${saApplicant.value}`, saApplicantValue, ninthYCoordinate);
-            //     doc.line(saApplicantValue, ninthYCoordinate, saApplicantValue + valueTextWidth_5, ninthYCoordinate);
-            //     const samatStartXValue = 100;
-            //     const valueTextWidth_6 = doc.getTextWidth(`${saMaterial.value}`);
-            //     doc.text('S/A Material:', samatStartXValue, ninthYCoordinate);
-            //     const samaterialValue = samatStartXValue + 36;
-            //     doc.text(`${saMaterial.value}`, samaterialValue, ninthYCoordinate);
-            //     doc.line(samaterialValue, ninthYCoordinate, samaterialValue + valueTextWidth_6, ninthYCoordinate);
-            //     const valueTextWidth_7 = doc.getTextWidth(`${saDescription.value}`);
-            //     const sadescStartXValue = 10;
-            //     const tenthYCoordinate = ninthYCoordinate + factor;
-            //     doc.text('UDL Description:', sadescStartXValue, tenthYCoordinate);
-            //     doc.text(`${saDescription.value}`, sadescStartXValue + 40, tenthYCoordinate);
-            //     doc.line(sadescStartXValue + 40, tenthYCoordinate, sadescStartXValue + 40 + valueTextWidth_7, tenthYCoordinate);
         }
+
         // Save the PDF
-        doc.save('Shingle.pdf');
+        doc.save('Mechanical.pdf');
     }
 };
 </script>

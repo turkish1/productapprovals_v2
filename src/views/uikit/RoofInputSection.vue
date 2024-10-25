@@ -84,8 +84,8 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
 </script>
 
 <template>
-    <!-- lg:w-full min-h-[10px] card flex flex-row gap-18  -->
-    <div class="flex justify-center md:w-3/4 px-2" style="margin-left: 300px">
+    <!-- lg:w-full min-h-[10px] card flex flex-row gap-18 background-color: #eae7e2 -->
+    <div class="flex justify-center md:w-3/4 px-2" style="margin-left: 200px">
         <!-- <div class="card flex justify-center"> -->
         <Stepper value="1" linear class="basis-[400rem]">
             <StepList>
@@ -95,34 +95,39 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 <Step value="4">Mechanical</Step>
                 <Step value="5">Summary</Step>
             </StepList>
-            <StepPanels class="object-scale-down h-700 w-1200 ..." style="background-color: #eae7e2">
-                <div class="flex flex-col items-center gap-2" style="margin-left: 1200px">
-                    <span class="text-xl font-medium">Scroll Down</span>
-                    <span class="slidedown-icon h-8 w-8 text-primary-contrast rounded-full inline-flex items-center justify-center" style="background-color: #3e3430">
-                        <i class="pi pi-arrow-down" />
-                    </span>
-                </div>
+            <!-- <div class="flex flex-col items-center gap-2" style="margin-left: 300px; margin-top: 1200px; background-color: #eae7e2">
+                <span class="text-xl font-medium">Scroll Down</span>
+                <span class="slidedown-icon h-8 w-8 text-primary-contrast rounded-full inline-flex items-center justify-center" style="background-color: #eae7e2">
+                    <i class="pi pi-arrow-down" />
+                </span>
+            </div> -->
+            <!-- style="background-color: #eae7e2" -->
+            <StepPanels class="object-scale-down h-0 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
-                    <div class="flex flex-col h-48 w-1024" style="background-color: #eae7e2">
-                        <shingles v-if="isValidshingle" />
-                        <div class="flex pt-6 justify-end">
-                            <Button
-                                label="Next"
-                                severity="contrast"
-                                icon="pi pi-arrow-right"
-                                @click="
-                                    activateCallback('2');
-                                    isValidbur = true;
-                                "
-                            />
-                        </div>
+                    <!-- style="background-color: #eae7e2" -->
+                    <!-- <div class="flex flex-col h-48 w-1024"> -->
+                    <shingles v-if="isValidshingle" />
+                    <!-- style="background-color: #eae7e2" -->
+                    <div class="flex pt-6 justify-end">
+                        <Button
+                            label="Next"
+                            severity="contrast"
+                            icon="pi pi-arrow-right"
+                            @click="
+                                activateCallback('2');
+                                isValidbur = true;
+                            "
+                        />
+                        <!-- </div> -->
                     </div>
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
-                    <div class="flex flex-col h-48 w-600" style="background-color: #eae7e2">
+                    <!-- style="background-color: #eae7e2" -->
+                    <div class="flex flex-col h-0 w-600">
                         <!-- v-if="values === 3" -->
                         <LowSlope v-if="isValidbur" />
+                        <!-- style="background-color: #eae7e2" -->
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" />
                             <Button
@@ -139,8 +144,8 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                     </div>
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="3">
-                    <!-- flex flex-row -->
-                    <div class="flex flex-col h-48 w-1224" style="background-color: #eae7e2">
+                    <!-- flex flex-row  style="background-color: #eae7e2" -->
+                    <div class="flex flex-col h-0 w-1224">
                         <Tile v-if="isValidtile" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('2')" />
@@ -160,7 +165,7 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="4">
                     <!-- flex flex-row -->
-                    <div class="flex flex-col h-48 w-1224" style="background-color: #eae7e2">
+                    <div class="flex flex-col h-0 w-1224">
                         <Mechanical v-if="isValidmechanical" />
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('3')" />
@@ -171,9 +176,10 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="5">
                     <!-- flex flex-row -->
-                    <div class="flex flex-col h-48 w-1024">
+                    <!-- style="background-color: #eae7e2" -->
+                    <div class="flex flex-col h-0 w-1024">
                         <Checkout />
-                        <div class="flex pt-6 justify-between">
+                        <div class="flex pt-6 justify-between" style="background-color: #eae7e2">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('4')" />
                             <Button label="Submit" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('6')" />
                         </div>

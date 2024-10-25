@@ -1,5 +1,5 @@
 import { usemultiStore } from '@/stores/multitileStore';
-import { useGlobalState } from '@/stores/tilenoaStore';
+import { useGlobalStates } from '@/stores/tilenoaStore';
 import { reactive } from 'vue';
 
 export default function usemuliTile() {
@@ -8,7 +8,7 @@ export default function usemuliTile() {
         tile_map: [],
         table2_map: []
     });
-    const { tilenoa, getNoa } = useGlobalState();
+    const { tilenoa, getNoa } = useGlobalStates();
     const multiStore = usemultiStore();
     function workoutData(data) {
         let dt = data;

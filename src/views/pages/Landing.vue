@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 const smoothScroll = (id) => {
     document.body.click();
     document.querySelector(id).scrollIntoView({
@@ -442,4 +442,4 @@ const smoothScroll = (id) => {
             </div>
         </div>
     </div>
-</template>
+</template> -->

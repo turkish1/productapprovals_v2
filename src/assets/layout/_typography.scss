@@ -8,7 +8,7 @@ h6 {
     font-family: inherit;
     font-weight: 700;
     line-height: 1.5;
-    color: var(--text-color);
+    color: whitesmoke;
 
     &:first-child {
         margin-top: 0;
@@ -17,6 +17,7 @@ h6 {
 
 h1 {
     font-size: 2.5rem;
+    color: whitesmoke;
 }
 
 h2 {
@@ -40,7 +41,7 @@ h6 {
 }
 
 mark {
-    background: #fff8e1;
+    background: 'world.jpeg';
     padding: 0.25rem 0.4rem;
     border-radius: var(--content-border-radius);
     font-family: monospace;
@@ -49,7 +50,7 @@ mark {
 blockquote {
     margin: 1rem 0;
     padding: 0 2rem;
-    border-left: 4px solid #90a4ae;
+    border-left: 4px solid 'world.jpeg';
 }
 
 hr {

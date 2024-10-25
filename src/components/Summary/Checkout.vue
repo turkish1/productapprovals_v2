@@ -39,7 +39,8 @@
         </div>
 
         <!-- <Shingle /> -->
-        <TileAdhesive />
+        <!-- <TileAdhesive /> -->
+        <!-- <TileMechanical /> -->
     </div>
 </template>
 
@@ -48,8 +49,8 @@ import { useGlobalState } from '@/stores/accountsStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { onMounted, ref, watch } from 'vue';
 // import Shingle from '../jsPDF/Shingle.vue';
-import TileAdhesive from '../jsPDF/TileAdhesive.vue';
-
+// import TileAdhesive from '../jsPDF/TileAdhesive.vue';
+// import TileMechanical from '../jsPDF/TileMechanical.vue';
 const { accountUsers } = useGlobalState();
 
 const dba = ref('');

@@ -41,8 +41,8 @@ function checkSlope() {
 </script>
 <template>
     <AgreementsDialogShingle v-show="isDialog === true"></AgreementsDialogShingle>
-
-    <div id="shingle" class="card w-full space-y-1" style="background-color: #eae7e2">
+    <!-- style="background-color: #eae7e2" -->
+    <div id="shingle" class="card w-full space-y-1">
         <input-items :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-items>
     </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup>
-// import pdfGen from '@/composables/pdfGen/pdfGen.vue';
+import vIntersection from '@/views/pages/vIntersection.vue';
+
 import { useGlobalState } from '@/stores/accountsStore';
 import { useAuthStore } from '@/stores/auth';
 import { useAxios } from '@vueuse/integrations/useAxios';
@@ -94,25 +95,28 @@ function register() {
 
 const navigateNext = () => {
     router.push('/permitapp');
+    // router.push('/permitapplication');
 };
 </script>
 
 <template>
+    <vIntersection />
     <FloatingConfigurator />
-    <!-- bg-surface-50 dark:bg-surface-950  -->
-    <div id="content" class="flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden" style="background-color: #eae7e2">
+    <!-- bg-surface-50 dark:bg-surface-950 style="background-color: #eae7e2" -->
+    <div id="content" class="flex items-center justify-center min-h-screen min-w-full overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <!--  var(--primary-color) rgba(33, 150, 243, 0) -->
             <div data-aos="flip-up" data-aos-duration="1000">
-                <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, #eae7e2 10%, #d0d2de 30%)">
-                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                <!-- #eae7e2 -->
+                <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, 10%, 30%)">
+                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px; background-image: url('world.jpeg')">
                         <!-- <div class="card flex justify-center"></div> -->
                         <div>
                             <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: #a4b5b9; margin-left: 150px" @click="register" />
-                            <label for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
+                            <label style="color: whitesmoke" for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
                             <InputText id="username" type="text" placeholder="username" class="w-full md:w-[30rem] mb-8" v-model="username" :error="userError" />
 
-                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
+                            <label style="color: whitesmoke" for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
                             <Password
                                 id="password1"
                                 v-tooltip.bottom="'Press Enter after value'"

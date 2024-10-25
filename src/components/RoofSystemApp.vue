@@ -3,8 +3,10 @@ import RoofSystemForm from './RoofSystemForm.vue';
 import RoofSystemList from './RoofSystemList.vue';
 </script>
 <template>
-    <div class="container" style="background-color: #eae7e2; margin-left: 500px">
-        <div class="roof-app" style="background-color: #eae7e2">
+    <!-- background-color: #eae7e2; -->
+    <div class="container" style="margin-left: 500px">
+        <!-- style="background-color: #eae7e2" -->
+        <div class="roof-app">
             <roof-system-form></roof-system-form>
             <roof-system-list></roof-system-list>
         </div>

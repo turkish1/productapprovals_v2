@@ -7,7 +7,10 @@ import '../../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder
 import mapboxgl from '../../../node_modules/mapbox-gl';
 
 const { coords } = useGeolocation();
-
+const bounds = [
+    [-126.39176, 5.24738],
+    [-40.00412, 36.83473]
+];
 const MAPBOX_ACCESS_TOKEN = process.env.VITE_MAPBOX_ACCESS_TOKEN || import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -19,10 +22,11 @@ const procStore = useprocStore();
 const address = ref(procStore.$state.processinput[0].procData.address);
 
 const marker = ref(null);
-
+const floridaBounds = [-87.634938, 24.396308, -79.974307, 31.000968];
 const getCoordinates = async () => {
-    const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address.value)}.json?access_token=${MAPBOX_ACCESS_TOKEN}`);
+    const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address.value)}.json?bbox=${floridaBounds.join(',')}&access_token=${MAPBOX_ACCESS_TOKEN}`);
     const data = await response.json();
+
     if (data.features.length > 0) {
         const [lng, lat] = data.features[0].geometry.coordinates;
         animateCameraTo([lng, lat]);
@@ -39,6 +43,7 @@ onMounted(() => {
         center: [-73.85951, 40.7549], // Initial center coordinates [lng, lat]
         zoom: 10.5,
         bearing: 0
+        // maxBounds: bounds
         // Initial zoom level
     });
 
@@ -71,7 +76,7 @@ watchEffect(map, getCoordinates, () => {});
 </script>
 
 <template>
-    <div ref="mapContainer" class="map-container" style="height: 400px; max-width: 600px; margin-left: 20px; margin-bottom: 10">
+    <div ref="mapContainer" class="map-container" style="height: 400px; max-width: 800px; margin-left: 150px; margin-bottom: 15">
         <!-- <InputText type="text" v-model="address" @load="getCoordinates" placeholder="Enter address" /> -->
     </div>
     <!-- </div> -->
