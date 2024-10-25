@@ -1,12 +1,11 @@
 <script setup>
 import { useprocStore } from '@/stores/processStore'; // import { usePermitappStore } from '@/stores/permitapp';
-import { useGeolocation } from '@vueuse/core';
 
 import { onMounted, ref, watchEffect } from 'vue';
 import '../../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import mapboxgl from '../../../node_modules/mapbox-gl';
 
-const { coords } = useGeolocation();
+// const { coords } = useGeolocation();
 const bounds = [
     [-126.39176, 5.24738],
     [-40.00412, 36.83473]
@@ -30,7 +29,6 @@ const getCoordinates = async () => {
     if (data.features.length > 0) {
         const [lng, lat] = data.features[0].geometry.coordinates;
         animateCameraTo([lng, lat]);
-        console.log(data.features[0].geometry.coordinates);
     } else {
         alert('Address not found!');
     }
@@ -53,7 +51,6 @@ onMounted(() => {
 // Animate
 const animateCameraTo = (coordinates) => {
     if (map.transform._center) {
-        console.log('Entered animate if statement', coordinates);
         map.flyTo({
             center: coordinates,
             zoom: 18.5, // Zoom level for the new location
@@ -82,7 +79,7 @@ watchEffect(map, getCoordinates, () => {});
     <!-- </div> -->
 </template>
 <style scoped>
-.search-input {
+/* .search-input {
     position: absolute;
     top: 2px;
     left: 10px;
@@ -92,5 +89,5 @@ watchEffect(map, getCoordinates, () => {});
     z-index: 10;
     border-radius: 4px;
     border: 1px solid #ccc;
-}
+} */
 </style>

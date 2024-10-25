@@ -18,3 +18,6 @@ api-generator/typedoc.json
 /blob-report/
 /playwright/.cache/
 notes.t
+mapNotes.t
+keptCodeFunctions.t
+endpoint.sh
