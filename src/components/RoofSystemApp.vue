@@ -29,7 +29,7 @@ import RoofSystemList from './RoofSystemList.vue';
     top: 10vh;
 }
 
-.ql-container {
+/* .ql-container {
     height: calc(100% - 42px);
-}
+} */
 </style>

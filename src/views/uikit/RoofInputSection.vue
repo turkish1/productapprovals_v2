@@ -78,6 +78,7 @@ invoke(async () => {
     await until(isValidbur).toBe(true);
     await until(isValidtile).toBe(true);
     await until(isValidmechanical).toBe(true);
+    console.log(isValidbur, isValidmechanical, isValidtile);
 });
 // This is to minimize data not returning in the panel view.
 watch(Shingles, LowSlope, Tile, Mechanical, () => {});
@@ -101,10 +102,9 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                     <i class="pi pi-arrow-down" />
                 </span>
             </div> -->
-            <!-- style="background-color: #eae7e2" -->
+
             <StepPanels class="object-scale-down h-0 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
-                    <!-- style="background-color: #eae7e2" -->
                     <!-- <div class="flex flex-col h-48 w-1024"> -->
                     <shingles v-if="isValidshingle" />
                     <!-- style="background-color: #eae7e2" -->
@@ -144,7 +144,6 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                     </div>
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="3">
-                    <!-- flex flex-row  style="background-color: #eae7e2" -->
                     <div class="flex flex-col h-0 w-1224">
                         <Tile v-if="isValidtile" />
                         <div class="flex pt-6 justify-between">
@@ -172,14 +171,13 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                             <Button label="Next" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('5')" />
                         </div>
                     </div>
-                    <!--  style="margin-top: 650px" -->
                 </StepPanel>
                 <StepPanel v-slot="{ activateCallback }" value="5">
                     <!-- flex flex-row -->
-                    <!-- style="background-color: #eae7e2" -->
+
                     <div class="flex flex-col h-0 w-1024">
                         <Checkout />
-                        <div class="flex pt-6 justify-between" style="background-color: #eae7e2">
+                        <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('4')" />
                             <Button label="Submit" severity="contrast" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('6')" />
                         </div>

@@ -73,12 +73,18 @@ watchEffect(map, getCoordinates, () => {});
 </script>
 
 <template>
-    <div ref="mapContainer" class="map-container" style="height: 400px; max-width: 800px; margin-left: 150px; margin-bottom: 15">
+    <div ref="mapContainer" class="map-container">
         <!-- <InputText type="text" v-model="address" @load="getCoordinates" placeholder="Enter address" /> -->
     </div>
     <!-- </div> -->
 </template>
 <style scoped>
+.map-container {
+    height: 500px;
+    width: 700px;
+    margin-left: 150px;
+    margin-bottom: 15;
+}
 /* .search-input {
     position: absolute;
     top: 2px;

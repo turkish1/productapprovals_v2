@@ -183,7 +183,6 @@ watchEffect(sB, syst, selectedSystem, () => {});
 </script>
 <template>
     <div id="bur" class="flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px">
-        <!-- style="background-color: #eae7e2" -->
         <div class="card flex flex-col gap-2">
             <!-- <div class="w-128 gap-2" style="margin-left: 12px">
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" @change="getdeckType" />

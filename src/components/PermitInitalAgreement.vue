@@ -1,5 +1,6 @@
 <template>
-    <div class="card flex justify-center .">
+    <!-- grid grid-cols-1 gap-4 place-content-center card flex justify-center-->
+    <div class="grid grid-cols-1 gap-2 place-content-center">
         <Dialog v-model:visible="visible" modal header="Terms Of Use" :style="{ width: '70rem' }">
             <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
                 <p style="color: black">The use of the mePermit Application system is limited to properly licensed & insured Roofing Contractors.</p>
@@ -50,6 +51,7 @@ const visible = ref(true);
 </script>
 <style scoped>
 .p {
+    position: static;
     text-align: center;
     text-decoration-color: firebrick;
 }

@@ -84,7 +84,7 @@ function clear() {
         <div class="refresh">
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
-        <!-- style="background-color: #eae7e2" -->
+
         <div class="card flex justify-center">
             <form>
                 <!-- style="background-color: #eae7e2" -->
@@ -114,7 +114,7 @@ function clear() {
         </div>
     </div>
     <div data-aos="zoom-in-up">
-        <div class="card flex justify-center" style="margin-left: 10px; width: 400px">
+        <div class="card flex justify-center" style="margin-left: 10px">
             <Map></Map>
         </div>
     </div>

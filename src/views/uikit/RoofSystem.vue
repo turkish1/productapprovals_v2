@@ -19,6 +19,7 @@ import RoofSystemApp from '../../components/RoofSystemApp.vue';
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 500px;
+    min-width: 600px;
     top: 10vh;
 }
 

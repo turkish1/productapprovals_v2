@@ -2,9 +2,12 @@
     // edf1f5
     position: fixed;
     z-index: 999999;
-    background: #eae7e2;
+    // background: #eae7e2;
+    background-image: url('/dist/world.png');
     width: 100%;
     height: 100%;
+    -webkit-transform: scale(1.999);
+    transform: scale(1.999);
 }
 .preloader-content {
     border: 0 solid transparent;

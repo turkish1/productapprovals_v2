@@ -359,7 +359,6 @@ watch(
 );
 </script>
 <template>
-    <!-- background-color: #dfdfde -->
     <div id="shingle" class="flex flex-col w-full gap-1 shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="w-64 gap-1" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" />
@@ -417,7 +416,6 @@ watch(
     <Divider />
     <!-- style="background-color: #dfdfde; margin-left: 7px; font-palette: #000000" -->
     <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
-        <!-- background-color: #dfdfde -->
         <div class="card gap-2 mt-2 bg-primary shadow-lg shadow-cyan-800" style="margin-left: 5px">
             <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
                 <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
@@ -436,7 +434,7 @@ watch(
                 </div>
             </div>
 
-            <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px; background-color: #dfdfde">
+            <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
                 <div class="flex flex-row space-x-20">
                     <div class="flex flex-col gap-2">
                         <label style="color: whitesmoke" for="saapplicant">S/A Applicant</label>

@@ -1,7 +1,6 @@
 <template>
     <div ref="scrollContainer" class="infinite-container">
         <div v-for="(page, index) in pages" :key="index" class="page-content">
-            <!-- style="background-color: #262b26" -->
             <div>
                 <logicBur1><slot name="Low Slope"></slot></logicBur1>
             </div>
