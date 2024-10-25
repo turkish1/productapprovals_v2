@@ -25,23 +25,23 @@ export default defineConfig({
         //     open: true // Open the report after the build
         // })
     ],
-    build: {
-        rollupOptions: {
-            output: {
-                manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        if (id.includes('vue')) {
-                            return 'vue-vendor';
-                        }
-                        if (id.includes('lodash')) {
-                            return 'lodash';
-                        }
-                        return 'vendor';
-                    }
-                }
-            }
-        }
-    },
+    // build: {
+    //     rollupOptions: {
+    //         output: {
+    //             manualChunks(id) {
+    //                 if (id.includes('node_modules')) {
+    //                     if (id.includes('vue')) {
+    //                         return 'vue-vendor';
+    //                     }
+    //                     if (id.includes('lodash')) {
+    //                         return 'lodash';
+    //                     }
+    //                     return 'vendor';
+    //                 }
+    //             }
+    //         }
+    //     }
+    // },
 
     define: {
         'process.env': process.env // Define process.env to use with Vite
