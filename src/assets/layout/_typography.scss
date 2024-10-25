@@ -41,7 +41,7 @@ h6 {
 }
 
 mark {
-    background: 'world.jpeg';
+    background: '/dist/world.png';
     padding: 0.25rem 0.4rem;
     border-radius: var(--content-border-radius);
     font-family: monospace;
@@ -50,7 +50,7 @@ mark {
 blockquote {
     margin: 1rem 0;
     padding: 0 2rem;
-    border-left: 4px solid 'world.jpeg';
+    border-left: 4px solid '/dist/world.png';
 }
 
 hr {
