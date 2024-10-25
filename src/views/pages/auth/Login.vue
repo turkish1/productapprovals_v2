@@ -109,7 +109,7 @@ const navigateNext = () => {
             <div data-aos="flip-up" data-aos-duration="1000">
                 <!-- #eae7e2 -->
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, 10%, 30%)">
-                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px; background-image: url('world.jpeg')">
+                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px; background-image: url('world.png')">
                         <!-- <div class="card flex justify-center"></div> -->
                         <div>
                             <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: #a4b5b9; margin-left: 150px" @click="register" />
