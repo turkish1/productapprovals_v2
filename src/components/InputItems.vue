@@ -360,6 +360,8 @@ watch(
 </script>
 <template>
     <div id="shingle" class="flex flex-col w-full gap-1 shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <label for="slope" style="color: black; margin-left: 650px">Shingle Roof</label>
+
         <div class="w-64 gap-1" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" />
             <!-- <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 220px" @click="store.$reset()"></i></Button> -->
@@ -416,7 +418,7 @@ watch(
     <Divider />
     <!-- style="background-color: #dfdfde; margin-left: 7px; font-palette: #000000" -->
     <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
-        <div class="card gap-2 mt-2 bg-primary shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <div class="card gap-2 mt-2 shadow-lg shadow-cyan-800" style="margin-left: 5px">
             <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
                 <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                     <div class="w-96 flex flex-col gap-2">
@@ -455,7 +457,6 @@ watch(
                     <InputText id="sadescription" v-model="selfadhered.sadescription" />
                 </div>
             </div>
-            <!-- style="margin-left: 1px; background-color: #dfdfde" -->
             <div class="max-w-screen-xl flex flex-row mt-8 space-x-10">
                 <div class="w-128 flex flex-col gap-2">
                     <label style="color: whitesmoke" for="manufacturer">Applicant</label>

@@ -11,19 +11,20 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
+import { invoke, tryOnMounted, until } from '@vueuse/core';
 
 import useMech from '@/composables/InputLogic/use-tileMechanical';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
 
 const { getUser } = useGlobalState();
-
+let isRoofTileMechanicalValid = ref(false);
 const permitStore = usePermitappStore();
 const roofStore = useRoofListStore();
+const roofType = ref(roofStore.$state.roofList);
 const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
-console.log(mechStore);
 
 const area = ref(roofStore.$state.roofList[0].dim3);
 const address = ref(permitStore.$state.permitapp[0].formdt.address);
@@ -32,11 +33,18 @@ const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
 // const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 const dba = ref(getUser.value[0].dba);
 
-// invoke(async () => {
-// await until(pdfcleared).changed();
-// generatePdf();
-// alert('Generated, PDF!');
-// });
+const callState = tryOnMounted(() => {
+    if (roofType.value[0].item === 'Mechanical Fastened Tile') {
+        isRoofTileMechanicalValid.value = true;
+        generatePDF();
+    }
+});
+
+invoke(async () => {
+    await until(callState).toBe(true);
+
+    console.log(callState);
+});
 const generatePDF = () => {
     // Initialize jsPDF instance
     if (mechStore.tilemech.value.length === 0) {

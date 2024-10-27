@@ -127,7 +127,7 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                     <div class="flex flex-col h-0 w-600">
                         <!-- v-if="values === 3" -->
                         <LowSlope v-if="isValidbur" />
-                        <!-- style="background-color: #eae7e2" -->
+
                         <div class="flex pt-6 justify-between">
                             <Button label="Back" severity="contrast" icon="pi pi-arrow-left" @click="activateCallback('1')" />
                             <Button
@@ -208,5 +208,19 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
     animation: slidedown-icon;
     animation-duration: 3s;
     animation-iteration-count: infinite;
+}
+#panel {
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-size: cover;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    mix-blend-mode: difference;
+    display: flex;
+    /* align-items: center;
+    justify-content: center; */
 }
 </style>

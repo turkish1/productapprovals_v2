@@ -37,22 +37,33 @@
             <Skeleton width="4rem" height="2rem"></Skeleton>
             <Skeleton width="4rem" height="2rem"></Skeleton>
         </div>
+        <div v-show="isRoofShingleValid">
+            <Shingle />
+        </div>
 
-        <!-- <Shingle /> -->
-        <!-- <TileAdhesive /> -->
-        <!-- <TileMechanical /> -->
+        <div v-show="isRoofTileADValid">
+            <TileAdhesive />
+        </div>
+        <div v-show="isRoofTileMechanicalValid">
+            <TileMechanical />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
 import { useRoofListStore } from '@/stores/roofList';
+import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { onMounted, ref, watch } from 'vue';
-// import Shingle from '../jsPDF/Shingle.vue';
-// import TileAdhesive from '../jsPDF/TileAdhesive.vue';
-// import TileMechanical from '../jsPDF/TileMechanical.vue';
+import Shingle from '../jsPDF/Shingle.vue';
+import TileAdhesive from '../jsPDF/TileAdhesive.vue';
+import TileMechanical from '../jsPDF/TileMechanical.vue';
 const { accountUsers } = useGlobalState();
 
+let isRoofTileADValid = ref(false);
+let isRoofTileMechanicalValid = ref(false);
+let isRoofShingleValid = ref(false);
+// const isRoofLowslopeValid = ref(false);
 const dba = ref('');
 const name = ref('');
 const license = ref('');
@@ -64,19 +75,42 @@ function displayUserInfo() {
         console.log(dba.value);
     });
 }
-
-onMounted(() => {
-    displayUserInfo();
-});
-watch(displayUserInfo, () => {});
 console.log(accountUsers);
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
-console.log(roofType);
+onMounted(() => {
+    displayUserInfo();
+
+    console.log(roofType);
+});
+
+const callState = tryOnMounted(() => {
+    if (roofType.value[0].item === 'Asphalt Shingle') {
+        isRoofShingleValid.value = true;
+    }
+    if (roofType.value[0].item === 'Adhesive Set Tile') {
+        isRoofTileADValid.value = true;
+    }
+    if (roofType.value[0].item === 'Mechanical Fastened Tile') {
+        isRoofTileMechanicalValid.value = true;
+    }
+});
+watch(displayUserInfo, callState, () => {
+    console.log(isRoofShingleValid.value);
+});
+
 const events = ref([
     { status: 'RoofSystems', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: '/src/assets/img/roofing_tile.jpg' },
     { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
 ]);
+
+invoke(async () => {
+    await until(callState).toBe(true);
+    // await until(isRoofTileADValid).toBe(true);
+    // await until(isRoofTileMechanicalValid).toBe(true);
+    // await until(isValidmechanical).toBe(true);
+    console.log(isRoofShingleValid);
+});
 </script>
 
 <style lang="scss" scoped>

@@ -12,6 +12,7 @@ import { useRoofListStore } from '@/stores/roofList';
 import { useGlobalStates } from '@/stores/tilenoaStore';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
+import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
 
@@ -20,22 +21,31 @@ const etileStore = usetilesysEStore();
 const { getUser } = useGlobalState();
 
 const permitStore = usePermitappStore();
-const roofStore = useRoofListStore();
+// const roofStore = useRoofListStore();
+const store = useRoofListStore();
+const roofType = ref(store.$state.roofList);
 const tileStore = useGlobalStates();
-const test = ref(true);
 
-// const area = ref(roofStore.$state.roofList[0].dim4);
 const address = ref(permitStore.$state.permitapp[0].formdt.address);
 const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
 const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
+
 const dba = ref(getUser.value[0].dba);
 
-// invoke(async () => {
-// await until(pdfcleared).changed();
-// generatePdf();
-// alert('Generated, PDF!');
-// });
+let isRoofTileADValid = ref(false);
+const callState = tryOnMounted(() => {
+    if (roofType.value[0].item === 'Adhesive Set Tile') {
+        isRoofTileADValid.value = true;
+        generatePDF();
+    }
+});
+
+invoke(async () => {
+    await until(callState).toBe(true);
+
+    console.log(callState);
+});
+
 const generatePDF = () => {
     // Initialize jsPDF instance
 
@@ -43,6 +53,8 @@ const generatePDF = () => {
         console.log('lenghth is zero');
     } else {
         // console.log(sbsStore, polypropolyneStore);
+
+        const doc = new jsPDF();
         let isUDLValidPresc = ref(false);
         let isSAValidPresc = ref(false);
         if (etileStore.$state.tilesysEinput.length !== 0) {
@@ -54,14 +66,24 @@ const generatePDF = () => {
             console.log(isSAValidPresc);
         }
         // Initialize jsPDF instance------active
+        const max_width = 179;
+        const thirdYCoordinate = 725;
+        const page = doc.getPageInfo(1);
+        const topRightx = page.pageContext.mediaBox.topRightX;
+        const topRighty = page.pageContext.mediaBox.topRightY;
 
+        const currentX = ref(0);
+        const currentY = ref(0);
+        var LeftStart = 595.28 - 585.28;
+        var current_y = topRighty - thirdYCoordinate;
+        currentX.value = LeftStart;
+        currentY.value = current_y;
         const height = ref(tileStore.tilenoa.value[0].height);
         const slope = ref(tileStore.tilenoa.value[0].slope);
         const area = ref(tileStore.tilenoa.value[0].area);
         const deckType = ref(tileStore.tilenoa.value[0].deckType);
-        const perimeter = ref(tileStore.tilenoa.value[0].per);
+        const perimeter = ref(tileStore.tilenoa.value[0].perimeter);
 
-        const doc = new jsPDF();
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
         const approved = 'Approved';
@@ -133,8 +155,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` },
-            { category: 'Folio', value: `${folio.value}` }
+            { category: 'meProcess Number', value: `${processNumber.value}` }
         ];
 
         // Set starting position
@@ -169,36 +190,67 @@ const generatePDF = () => {
         doc.setFontSize(12);
         const factor = 2;
         const initialYValue = 100;
-        doc.text('Roof Area:', 10, initialYValue);
+        const param_y = initialYValue;
+        const tArea = 'Roof Area: ';
+        const tDeck = 'Decktype: ';
+        const tHeight = 'Mean Roof Height: ';
+        const tSlope = 'Roof Slope: ';
+        const tPerimeter = 'Roof Perimeter: ';
+        currentX.value = LeftStart;
 
-        doc.text(`${area.value}`, 35, initialYValue);
+        const tAreaTextWidth = doc.getTextWidth(tArea);
+        const AreaTextWidth = doc.getTextWidth(`${area.value}`);
+        const areaStartXValue = currentX.value;
+        doc.text(tArea, areaStartXValue, param_y);
+        const areaValue = tAreaTextWidth + areaStartXValue;
+        doc.text(`${area.value}`, areaValue, param_y);
 
-        doc.line(35, initialYValue + factor, 45, initialYValue + factor);
-        doc.text('Mean Roof Height:', 50, initialYValue);
+        doc.line(areaValue, param_y, areaValue + AreaTextWidth, param_y);
+        currentX.value = areaValue + AreaTextWidth;
 
-        const valueTextWidth1 = doc.getTextWidth('Mean Roof Height:');
-        doc.text(`${height.value}`, initialYValue, initialYValue);
-        doc.line(90, initialYValue + factor, 70 + valueTextWidth1, initialYValue + factor); // Get text width
+        console.log(current_y, param_y);
+        const tHeightTextWidth = doc.getTextWidth(tHeight);
+        const HeightTextWidth = doc.getTextWidth(`${height.value}`);
+        const heightStartXValue = currentX.value + 2;
 
-        doc.text('Roof Slope:', 80 + valueTextWidth1, initialYValue);
-        const slopeStartXValue = 105 + valueTextWidth1;
-        doc.text(`${slope.value}`, slopeStartXValue, initialYValue);
-        const valueTextWidth2 = doc.getTextWidth(`${slope.value}`) * 2;
-        doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
+        doc.text(tHeight, heightStartXValue, param_y);
+        const heightValue = tHeightTextWidth + heightStartXValue;
 
-        doc.text('Roof Perimeter:', 100 + valueTextWidth2, initialYValue);
-        const perStartXValue = 125 + valueTextWidth2;
-        // doc.text(`${perimeter.value}`, perStartXValue, initialYValue);
-        // const valueTextWidthPer = doc.getTextWidth(`${perimeter.value}`) * 2;
-        // doc.line(perStartXValue, initialYValue + factor, perStartXValue + valueTextWidthPer, initialYValue + factor); // Get text width
+        doc.text(`${height.value}`, heightValue, param_y);
+        doc.line(heightValue, param_y, heightValue + HeightTextWidth, param_y); // Get text width
+        currentX.value = heightValue + HeightTextWidth;
 
-        const secondYCoordinate = 108;
-        doc.text('Decktype:', 10, secondYCoordinate);
-        const decktypeStartXValue = 30 + valueTextWidth2;
-        doc.text(`${deckType.value}`, decktypeStartXValue, secondYCoordinate);
-        const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`) * 2;
-        doc.line(decktypeStartXValue, secondYCoordinate, decktypeStartXValue + valueTextWidth5, secondYCoordinate); // Get text width
+        const tSlopeTextWidth = doc.getTextWidth(tSlope);
+        const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
+        const slopeStartXValue = currentX.value + 2;
 
+        doc.text(tSlope, slopeStartXValue, param_y);
+        const slopeValue = tSlopeTextWidth + slopeStartXValue;
+
+        doc.text(`${slope.value}`, slopeValue, param_y);
+        doc.line(slopeValue, param_y, slopeValue + SlopeTextWidth, param_y); // Get text width
+        currentX.value = slopeValue + SlopeTextWidth;
+
+        const tPermTextWidth = doc.getTextWidth(tPerimeter);
+        const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
+        const permStartXValue = currentX.value + 2;
+
+        doc.text(tPerimeter, permStartXValue, param_y);
+        const perimeterValue = tPermTextWidth + permStartXValue;
+        doc.text(`${perimeter.value}`, perimeterValue, param_y);
+        doc.line(perimeterValue, param_y, perimeterValue + PermTextWidth, param_y);
+        console.log(param_y, current_y);
+        current_y = param_y + 10;
+
+        const tDeckTextWidth = doc.getTextWidth(tDeck);
+        const DeckTextWidth = doc.getTextWidth(`${deckType.value}`);
+        const deckStartXValue = LeftStart;
+        doc.text(tDeck, deckStartXValue, current_y);
+        const decktypeStartValue = tDeckTextWidth + deckStartXValue;
+        doc.text(`${deckType.value}`, decktypeStartValue, current_y);
+
+        doc.line(decktypeStartValue, current_y, decktypeStartValue + DeckTextWidth, current_y); // Get text width
+        current_y = current_y + 10;
         // doc.text('Prescriptive ASTM # 30 with type IV hot asphalt applied # 90 Tile Capsheet:', 10, 70);
         // doc.text('Fastened Underlayment (UDL) with Self Adhered (S/A) Tile Capsheet:', 10, 80);
         const noaText = 'Tile NOA Number: ';
@@ -214,35 +266,22 @@ const generatePDF = () => {
         const anchordescriptionText = 'Anchor Base Sheet: ';
         const udldescriptionText = 'UDL Description: ';
         const Perscriptive = 'Perscriptive: ';
-        const max_width = 179;
-        const thirdYCoordinate = 725;
-        const page = doc.getPageInfo(1);
 
-        const topRightx = page.pageContext.mediaBox.topRightX;
-        const topRighty = page.pageContext.mediaBox.topRightY;
-
-        const currentX = ref(0);
-        const currentY = ref(0);
-        var LeftStart = 595.28 - 585.28;
-        var current_y = topRighty - thirdYCoordinate;
-        currentX.value = LeftStart;
-        currentY.value = current_y;
-        console.log(currentX.value, currentY.value);
-        const noa = ref(tileStore.tilenoa.value[0].noa);
-        const applicant = ref(tileStore.tilenoa.value[0].applicant);
-        const material = ref(tileStore.tilenoa.value[0].material);
-        const description = ref(tileStore.tilenoa.value[0].description);
-
-        const prescriptive = ref(etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection);
-
-        const valueTextWidth_0 = doc.getTextWidth(Perscriptive);
+        const prescriptive = ref(tileStore.tilenoa.value[0].prescriptiveSelection.selectedBasesheet);
+        console.log(prescriptive.value, tileStore.tilenoa);
+        const persValueTextWidth = doc.getTextWidth(`${prescriptive.value.selectedBasesheet}`);
         const perspectiveStartXValue = LeftStart;
         doc.text(Perscriptive, perspectiveStartXValue, current_y);
         const perscriptiveValue = LeftStart;
         current_y = current_y + 10;
         doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
-        //  doc.line(perscriptiveValue, current_y, perscriptiveValue + valueTextWidthTile, current_y);
+        doc.line(perscriptiveValue, current_y, perscriptiveValue + persValueTextWidth, current_y);
         current_y = current_y + 10;
+
+        const noa = ref(tileStore.tilenoa.value[0].noa);
+        const applicant = ref(tileStore.tilenoa.value[0].applicant);
+        const material = ref(tileStore.tilenoa.value[0].material);
+        const description = ref(tileStore.tilenoa.value[0].description);
 
         const valueTextWidthTileCategory = doc.getTextWidth(applicantText);
         const valueTextWidthTile = doc.getTextWidth(`${applicant.value}`);

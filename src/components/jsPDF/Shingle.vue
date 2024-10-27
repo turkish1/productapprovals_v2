@@ -12,6 +12,7 @@ import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
 import { usesystemfStore } from '@/stores/systemfStore';
+import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
 
@@ -21,20 +22,26 @@ const permitStore = usePermitappStore();
 const roofStore = useRoofListStore();
 const shingleStore = useShingleStore();
 const polypropolyneStore = usePolyStore();
-console.log(roofStore, shingleStore);
-
+const store = useRoofListStore();
+const roofType = ref(store.$state.roofList);
 const area = ref(roofStore.$state.roofList[0].dim1);
 const address = ref(permitStore.$state.permitapp[0].formdt.address);
 const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
 const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 const dba = ref(getUser.value[0].dba);
+let isRoofShingleValid = ref(false);
+const callState = tryOnMounted(() => {
+    if (roofType.value[0].item === 'Asphalt Shingle') {
+        isRoofShingleValid.value = true;
+        generatePDF();
+    }
+});
 
-// invoke(async () => {
-// await until(pdfcleared).changed();
-// generatePdf();
-// alert('Generated, PDF!');
-// });
+invoke(async () => {
+    await until(callState).toBe(true);
+
+    console.log(callState);
+});
 const generatePDF = () => {
     // Initialize jsPDF instance
     if (shingleStore.$state.inputshingle.length === 0) {
@@ -129,8 +136,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` },
-            { category: 'Folio', value: `${folio.value}` }
+            { category: 'meProcess Number', value: `${processNumber.value}` }
         ];
 
         // Set starting position
@@ -222,10 +228,12 @@ const generatePDF = () => {
         const prescriptive = ref(shingleStore.$state.inputshingle[0].shingleData.prescriptiveSelection);
 
         const valueTextWidth_0 = doc.getTextWidth(Perscriptive);
+        const perscriptiveTextValue = doc.getTextWidth(`${prescriptive.value}`);
         const perspectiveStartXValue = LeftStart;
         doc.text(Perscriptive, perspectiveStartXValue, current_y);
         const perscriptiveValue = valueTextWidth_0 + 10;
         doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
+        doc.line(perscriptiveValue, current_y, perscriptiveValue + perscriptiveTextValue, current_y);
 
         current_y = current_y + 10;
 
@@ -429,7 +437,7 @@ const generatePDF = () => {
 
             const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
             const valueTextWidthMat = doc.getTextWidth(saMaterial);
-            const saMaterialStartXValue = currentX.value + 3;
+            const saMaterialStartXValue = LeftStart;
             doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
             const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
             doc.text(saMaterial, sbsmaterialValue, current_y);

@@ -1049,6 +1049,8 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
+        <label for="title" style="color: black; margin-left: 650px">Mechanical Tile Roof</label>
+
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
         </div>
@@ -1205,7 +1207,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
             <div class="w-128 flex flex-col gap-2">
-                <label style="color: whitesmoke" for="material">Tile Adhesive Material</label>
+                <label style="color: whitesmoke" for="material">Tile Material</label>
                 <!-- <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" /> -->
                 <InputText id="description" v-model="tilenoas.material" />
             </div>
@@ -1214,7 +1216,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
         </div>
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="background-color: #eae7e2">
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10">
             <div v-show="isTileSelectionValid" class="min-w-[500px] flex flex-col gap-2">
                 <label style="color: whitesmoke" for="selecttile">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />

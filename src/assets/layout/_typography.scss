@@ -41,7 +41,10 @@ h6 {
 }
 
 mark {
-    background: '/dist/world.png';
+    // background: '/dist/hudgrid.png';
+    // background-position: center;
+    // background-repeat: no-repeat;
+    // background-size: cover;
     padding: 0.25rem 0.4rem;
     border-radius: var(--content-border-radius);
     font-family: monospace;
@@ -50,7 +53,10 @@ mark {
 blockquote {
     margin: 1rem 0;
     padding: 0 2rem;
-    border-left: 4px solid '/dist/world.png';
+    // border-left: 4px solid '/dist/hudgrid.png';
+    // background-position: center; /* Centers the image */
+    // background-repeat: no-repeat; /* Prevents the image from repeating */
+    // background-size: cover;
 }
 
 hr {

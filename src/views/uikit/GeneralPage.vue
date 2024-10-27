@@ -178,13 +178,9 @@ invoke(async () => {
 <template>
     <div id="generalpg" class="flex flex-col md:flex-row gap-6" style="margin-left: 320px">
         <div class="md:w-full">
-            <!-- style="background-color: #eae7e2" -->
             <div class="md:w-3/4 card flex flex-col gap-4">
-                <!-- style="background-color: #eae7e2" -->
                 <div class="container">
-                    <!-- style="background-color: #eae7e2" -->
                     <div class="row">
-                        <!-- style="background-color: #eae7e2" -->
                         <div class="card flex flex-col gap-4">
                             <!-- <div class="font-semibold text-xl">2023 HVHZ</div> -->
                             <div class="grid grid-cols-1 gap-1 place-content-center h-6 ...">
@@ -196,7 +192,7 @@ invoke(async () => {
                             <div class="grid grid-cols-1 gap-1 place-content-center h-4 ...">
                                 <p class="text-center font-semibold text-xl">General Information Page</p>
                             </div>
-                            <!-- style="background-color: #eae7e2" -->
+
                             <div class="flex flex-wrap gap-5 columns-3">
                                 <div class="flex flex-col grow basis-0 gap-3">
                                     <label for="master">Master Permit</label>
@@ -218,7 +214,7 @@ invoke(async () => {
                                 <InputText id="dba" v-model="dba" type="text" />
                             </div>
                         </div>
-                        <!-- </div>style="background-color: #eae7e2" -->
+
                         <div class="card flex flex-wrap justify-center gap-6">
                             <div class="flex items-center">
                                 <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
@@ -229,7 +225,7 @@ invoke(async () => {
                                 <label for="reroof" class="ml-2"> Re-Roof</label>
                             </div>
                         </div>
-                        <!-- style="background-color: #eae7e2" -->
+
                         <div class="card flex flex-wrap justify-center gap-4">
                             <div class="flex items-center">
                                 <Checkbox v-model="checkedslp" inputId="slope1" name="lowslope" value="Low Slope" severity="contrast" :binary="true" />
@@ -256,7 +252,7 @@ invoke(async () => {
                             </div>
                         </div>
                         <label style="margin-left: 350px">Roof Area </label>
-                        <!-- style="background-color: #eae7e2" -->
+
                         <div class="card flex flex-col md:flex-row gap-8">
                             <div><label for="lowslope" class="ml-1 text-left">Low Slope </label></div>
 
@@ -276,10 +272,10 @@ invoke(async () => {
                                 <InputText v-model="total" placeholder="Total" />
                             </InputGroup>
                         </div>
-                        <div class="card md:w-1/2 flex flex-col bg-local hover:bg-fixed gap-4" style="margin-left: 10px; background-color: #eae7e2">
+                        <div class="card md:w-2/3 flex flex-col bg-local hover:bg-fixed gap-4">
                             <CadViewer />
                         </div>
-                        <!-- style="background-color: #eae7e2" -->
+
                         <div class="card md:w-1/3 flex flex-col gap-4">
                             <Button class="w-1/3" type="submit" label="Submit" style="background-color: #a4b5b9" raised @click="navigateNext" />
                         </div>

@@ -60,8 +60,8 @@ function onDrop(event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 140px;
-    width: 110%;
+    margin-left: 110px;
+    width: 100%;
 }
 
 .drop-zone {
@@ -76,7 +76,7 @@ function onDrop(event) {
     align-items: center;
     background-color: #f9f9f9;
     margin-bottom: 20px;
-    margin-left: 100px;
+    margin-left: 80px;
     transition: background-color 0.3s;
 }
 
@@ -96,8 +96,8 @@ function onDrop(event) {
 }
 
 .image-gallery {
-    width: 140%;
-    max-width: 850px;
+    width: 110%;
+    max-width: 750px;
 }
 
 .images-grid {

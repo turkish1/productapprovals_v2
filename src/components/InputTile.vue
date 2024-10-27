@@ -547,6 +547,7 @@ function setRoofInputs() {
 const selectedExposures = ref(null);
 function selectedExposure() {
     console.log(selectedExposures.value);
+    grabInput();
 }
 
 function checkInputSA() {
@@ -567,6 +568,7 @@ function checkInput() {
 
         tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
         tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
+
         if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple') {
             isTileSelectionValid = true;
             showMaterialValid = true;
@@ -574,6 +576,7 @@ function checkInput() {
             showMaterialValid = true;
             isTileValid = true;
         }
+        til;
     }
 }
 let ismrValidMR1 = ref(false);
@@ -1090,12 +1093,14 @@ function udlDescPressure() {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E13;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E13;
     }
-    console.log(selectedUnderlayment.value);
-    etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base = udlTile.Anchor_Base_Sheet;
-    etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
-    etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
-    etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
-    etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value;
+    console.log(etileStore.$state.tilesysEinput);
+    if (etileStore.$state.tilesysEinput.length !== 0) {
+        etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base = udlTile.Anchor_Base_Sheet;
+        etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
+        etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
+        etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
+        // etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value;
+    }
 }
 function saDescPressure() {
     if (selectedsystemf.value === 'F1') {
@@ -1150,9 +1155,12 @@ function saDescPressure() {
         saTiles.description = saTiles.Description_F12;
         saTiles.designpressure = keyValueSystemFPairsValues.value.F12;
     }
-    ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
-    ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
-    ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
+    console.log(ftileStore.$state.tilefinput.length);
+    if (ftileStore.$state.tilefinput.length !== 0) {
+        ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
+        ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
+        ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
+    }
 }
 function callReset() {
     resetSingle();
@@ -1162,6 +1170,8 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
+        <label for="title" style="color: black; margin-left: 650px">Tile Adhesive Roof</label>
+
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
         </div>
@@ -1187,7 +1197,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             <label style="color: whitesmoke" for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="card md:w-3/4 flex flex-col w-96 mb-4 gap-3">
+        <div class="card md:w-1/2 flex flex-col w-96 mb-4 gap-3">
             <label style="color: whitesmoke" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
@@ -1228,7 +1238,8 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
         <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <div class="autocomplete">
-                    <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+                    <div class="w-128 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+                        <!--  @click="grabInput"   -->
                         <FloatLabel>
                             <InputText
                                 id="tilenoa"
@@ -1238,7 +1249,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                                 @focus="showSuggestions = true"
                                 @blur="hideSuggestions"
                                 @input="onInput"
-                                @click="grabInput"
+                                @click="selectedExposure"
                                 @keydown.tab.exact.stop="checkInput"
                             />
                             <label for="ac">Tile NOA: 00000000</label>
@@ -1341,7 +1352,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
 
             <div v-show="showMaterialValid" class="w-128 flex flex-col gap-2">
-                <label style="color: whitesmoke" for="material">Tile Adhesive Material</label>
+                <label style="color: whitesmoke" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
         </div>

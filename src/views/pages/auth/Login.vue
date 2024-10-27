@@ -1,5 +1,5 @@
 <script setup>
-import vIntersection from '@/views/pages/vIntersection.vue';
+// import vIntersection from '@/views/pages/vIntersection.vue';
 
 import { useGlobalState } from '@/stores/accountsStore';
 import { useAuthStore } from '@/stores/auth';
@@ -100,16 +100,18 @@ const navigateNext = () => {
 </script>
 
 <template>
-    <vIntersection />
     <FloatingConfigurator />
+    <!-- <vIntersection /> -->
     <!-- bg-surface-50 dark:bg-surface-950 style="background-color: #eae7e2" -->
     <div id="content" class="flex items-center justify-center min-h-screen min-w-full overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <!--  var(--primary-color) rgba(33, 150, 243, 0) -->
             <div data-aos="flip-up" data-aos-duration="1000">
                 <!-- #eae7e2 -->
-                <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, 10%, 30%)">
-                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px; background-image: url('/dist/world.png')">
+                <!-- background: linear-gradient(180deg, 10%, 30%) -->
+                <div style="border-radius: 56px; padding: 0.3rem">
+                    <!-- background-image: url('/dist/world.png')" bg-surface-0 dark:bg-surface-900-->
+                    <div class="w-full py-20 px-8 sm:px-20" style="border-radius: 53px">
                         <!-- <div class="card flex justify-center"></div> -->
                         <div>
                             <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: #a4b5b9; margin-left: 150px" @click="register" />
@@ -157,7 +159,20 @@ const navigateNext = () => {
     transform: scale(1.6);
     margin-right: 1rem;
 }
-
+#content {
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-size: cover;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgba(0, 0, 0, 0); Semi-transparent background for blending */
+    mix-blend-mode: difference; /* Blending mode for overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .pi-eye-slash {
     transform: scale(1.6);
     margin-right: 1rem;

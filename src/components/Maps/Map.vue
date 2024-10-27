@@ -60,7 +60,7 @@ const animateCameraTo = (coordinates) => {
             bearing: -45.2,
             easing: (t) => t // essential: true // Ensures animation works even when user prefers reduced motion
         });
-
+        map.setPaintProperty('satellite', 'raster-saturation', -1);
         // Remove the previous marker if it exists
         if (marker.value) {
             marker.value.remove();

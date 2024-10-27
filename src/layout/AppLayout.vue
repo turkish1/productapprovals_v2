@@ -51,19 +51,19 @@ const isOutsideClicked = (event) => {
 </script>
 
 <template>
-    <!-- style="background-color: #eae7e2" -->
     <div class="layout-wrapper" :class="containerClass">
         <app-topbar></app-topbar>
         <!-- <app-sidebar></app-sidebar> -->
-        <!-- style="background-color: #eae7e2" -->
+
         <div class="layout-main-container">
             <!-- <div class="layout-main"> -->
             <router-view></router-view>
             <!-- </div> -->
             <!-- <app-footer></app-footer> -->
         </div>
-        <!-- style="background-color: #eae7e2" -->
+
         <div class="layout-mask animate-fadein"></div>
     </div>
     <Toast />
 </template>
+<style scoped></style>

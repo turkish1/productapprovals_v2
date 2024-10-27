@@ -9,12 +9,15 @@
     // background-color: #eae7e2;
 
     // background: var(--surface-card);
-    background-image: url('/dist/world.png');
+    // background-image: url('/dist/hudgrid.png');
+    // background-position: center; /* Centers the image */
+    // background-repeat: no-repeat; /* Prevents the image from repeating */
+    // background-size: cover;
     padding: 1rem;
     margin-bottom: 0.5rem;
     border-radius: var(--content-border-radius);
-    -webkit-transform: scale(0.999);
-    transform: scale(0.999);
+    // -webkit-transform: scale(0.999);
+    // transform: scale(0.999);
     &:last-child {
         margin-bottom: 0;
     }
