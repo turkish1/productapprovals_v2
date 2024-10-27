@@ -3,7 +3,7 @@
     <div id="background-container">
         <!-- Fullscreen video background -->
         <video id="background-video" autoplay loop muted playsinline>
-            <source src="@/assets/cityvideo.mp4" type="video/mp4" />
+            <!-- <source src="@/assets/cityvideo.mp4" type="video/mp4" /> -->
             <!-- Fallback text -->
             Your browser does not support the video tag.
         </video>
