@@ -729,12 +729,7 @@ function checkMaterial() {
             zonethree.zone = item[2];
         });
     }
-    // else {
-    //     zones.value.forEach((item, index) => {
-    //         zoneone.zone = item[0];
-    //         zonetwo.zone = item[1];
-    //         zonethree.zone = item[2];
-    //     });
+
     tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
     tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
     zoneone.lambda1 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
