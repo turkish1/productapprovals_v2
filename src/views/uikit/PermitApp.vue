@@ -98,6 +98,7 @@ export default {
                 formData.license = accountUsers._value[0].license;
                 formData.contractor = accountUsers._value[0].name;
                 formData.folio = data.MinimumPropertyInfos[0].Strap;
+                console.log(lastNum.value);
                 let strLength = String(lastNum.value);
                 console.log(lastNum.value.length, lastNum.value, strLength);
                 let newNumber = strLength.substring(2, 13);
@@ -292,11 +293,6 @@ export default {
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 350px;
-    /* -webkit-transform: scale(0.999);
-    transform: scale(0.999); */
-    /* min-width: 600px; */
-    /* background-color: rgba(0, 0, 0, 0.5); Semi-transparent background for blending */
-    /* mix-blend-mode: difference; Blending mode for overlay */
 
     top: 10vh;
 }

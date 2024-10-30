@@ -13,12 +13,4 @@ export const useprocStore = defineStore('processinput', {
             this.processinput.push({ procData, completed: false });
         }
     }
-
-    //getters
-    // getters: {
-    //     noaInfo(state) {
-    //         return state.inputshingle.shingleData;
-    //     }
-    // }
-    // persist: true
 });

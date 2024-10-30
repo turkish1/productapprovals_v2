@@ -1,10 +1,15 @@
 import useLast from '@/composables/lastNumber';
+import { useprocdataStore } from '@/stores/processDataStore';
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
-
 // The useLast function does return the value but is not accessable here 8/16/2024
 export default function useProcess() {
     const { resNum, lastNum } = useLast();
+    const useStore = useprocdataStore();
 
+    const { processinput } = storeToRefs(useStore);
+    console.log(lastNum);
+    console.log(processinput);
     const pNum = ref('');
     const currentYear = ref(new Date().getFullYear());
     const sequenceLength = ref(6);

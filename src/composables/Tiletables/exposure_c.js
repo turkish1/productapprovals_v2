@@ -28,14 +28,7 @@ export default function useExposurec() {
             thirtyfive: []
         }
     });
-    const { addDimzones, addDimslope, addDimheight } = useGlobalState();
-    loading.value = true;
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/zonec2023';
 
-    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
-
-    let zones = reactive({});
-    let tb = reactive({});
     const heightOptions = {
         fifteen: 15,
         twenty: 20,
@@ -44,6 +37,15 @@ export default function useExposurec() {
         thirtyfive: 35,
         forty: 40
     };
+
+    const { addDimzones, addDimslope, addDimheight } = useGlobalState();
+    loading.value = true;
+    // let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/zonec2023';
+    let url = 'https://23ftwm0pyk.execute-api.us-east-1.amazonaws.com/exposureC/exposureC';
+    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
+
+    let zones = reactive({});
+    let tb = reactive({});
 
     const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
     const slopeRange1 = clampNumber1(2, 4.5, 6);
@@ -77,9 +79,11 @@ export default function useExposurec() {
         results.value = execute().then((result) => {
             if (type.value === 'table3') {
                 console.log('table3 executed');
-                zoneData.value = data.value.result.WindExposureC2023_db.slp_six_twelve;
+                console.log(result);
 
-                console.log('table3', zoneData.value);
+                zoneData.value = result.data.value.WindExposureC2023_db.slp_six_twelve;
+                console.log(result.data.value);
+                console.log('table3');
                 slopeSelection(slope.value, height.value, zoneData.value);
                 addDimslope(slope.value);
                 addDimheight(height.value);
@@ -87,8 +91,8 @@ export default function useExposurec() {
             if (type.value === 'table2') {
                 console.log('table2 executed');
 
-                zoneData.value = data.value.result.WindExposureC2023_db.slp_four_six;
-
+                zoneData.value = result.data.value.WindExposureC2023_db.slp_four_six;
+                console.log(result.data.value);
                 slopeSelection(slope.value, height.value, zoneData.value);
                 addDimslope(slope.value);
                 addDimheight(height.value);
@@ -96,8 +100,8 @@ export default function useExposurec() {
             if (type.value === 'table1') {
                 console.log('table1 executed');
 
-                zoneData.value = data.value.result.WindExposureC2023_db.slp_two_four;
-
+                zoneData.value = result.data.value.WindExposureC2023_db.slp_two_four;
+                console.log(result.data.value);
                 slopeSelection(slope.value, height.value, zoneData.value);
                 addDimslope(slope.value);
                 addDimheight(height.value);
@@ -118,6 +122,7 @@ export default function useExposurec() {
     // I need to work on the less than greater than conditions
     function processData(z) {
         const z1 = z;
+        console.log(z1);
         const fifteen = Number(heightOptions.fifteen);
         const twenty = Number(heightOptions.twenty);
         const twentyfive = Number(heightOptions.twentyfive);

@@ -186,9 +186,7 @@ watch(setRoofInputs, validateRoofSlope, validateHeight, dims.per, type, () => {}
 watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
 </script>
 <template>
-    <!-- background-color: #eae7e2 -->
     <div id="bur" class="flex flex-col gap-2" style="margin-left: 1px">
-        <!-- background-color: #eae7e2 -->
         <div class="card flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px">
             <div class="w-128 gap-2" style="margin-left: 12px">
                 <!-- @change="getdeckType"  -->
@@ -218,16 +216,6 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
             </div>
 
             <DripEdgeComponent />
-            <!-- <div class="card lg:w-full grid gap-2 grid-cols-1" style="background-color: #eae7e2">
-                <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
-                <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
-                <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
-                <Select v-model="selectedSystem" :options="syst" placeholder="make selection" @click="selectSystem" @change="updateselectSystem" />
-                <label for="fieldPresc1" style="color: red">Attach P(1') Prime using P(1) Field Prescriptive Basesheet: *</label>
-                <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" @change="updateselectSystem" />
-                <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: *</label>
-                <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" @change="updateselectSystem" />
-            </div> -->
         </div>
     </div>
 </template>

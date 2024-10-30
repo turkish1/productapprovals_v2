@@ -402,12 +402,12 @@ watch(
         </div>
         <!-- <Button plain text class="min-w-1 min-h-0" @click="clearSelected"> <span style="font-size: 1.3rem; color: black; margin-left: 100px; margin-top: 90px" class="pi pi-refresh"></span></Button> -->
 
-        <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1" style="background-color: #dfdfde">
+        <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">
             <label style="color: red">Select Underlayment (S/A) *</label>
             <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
         </div>
 
-        <div v-show="isSelectVisible1" class="card grid gap-2 grid-cols-1" style="background-color: #dfdfde">
+        <div v-show="isSelectVisible1" class="card grid gap-2 grid-cols-1">
             <label style="color: red">Select Underlayment (UDL) *</label>
             <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>
@@ -416,7 +416,6 @@ watch(
 
     <Divider />
     <Divider />
-    <!-- style="background-color: #dfdfde; margin-left: 7px; font-palette: #000000" -->
     <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
         <div class="card gap-2 mt-2 shadow-lg shadow-cyan-800" style="margin-left: 5px">
             <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">

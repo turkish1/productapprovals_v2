@@ -210,9 +210,7 @@ watchEffect(sB, syst, selectedSystem, () => {});
                 <InputText id="per" v-model="dims.per" type="text" placeholder="per" @change="setRoofInputs" />
             </div> -->
 
-            <!-- <DripEdgeComponent /> -->
             <div class="card lg:w-full grid gap-2 grid-cols-1">
-                <!-- style="background-color: #eae7e2" -->
                 <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
                 <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
                 <label for="system" style="color: red">Type of Low Slope BUR System: *</label>

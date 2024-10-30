@@ -44,7 +44,7 @@ onMounted(() => {
 </script>
 <template>
     <agreements-dialog-tile v-if="isDialog === true"></agreements-dialog-tile>
-    <div id="tile" class="card w-full space-y-1" style="margin-left: 20px; background-color: #eae7e2">
+    <div id="tile" class="card w-full space-y-1" style="margin-left: 20px">
         <input-tile :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-tile>
     </div>
 </template>

@@ -8,9 +8,12 @@ import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepadd
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
+import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-Height';
 import { useNumberValidation } from '@/composables/Validation/use-Slope';
 import { useGlobalState } from '@/stores/exposurecStore';
+import { useExposureD } from '@/stores/exposuredStore';
+
 import { useRoofListStore } from '@/stores/roofList';
 import { useGlobalStates } from '@/stores/tilenoaStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
@@ -43,6 +46,8 @@ const { Edatamounted, etileStore } = useUDL();
 
 const { getTilenoas, tileDatas, resetSingle } = usetileInputsingle();
 const { zones } = useGlobalState();
+// const { zoned } = useGlobalState();
+const { tbd, zoned } = useExposureD();
 const tilenoas = reactive({
     manufacturer: '',
     material: [],
@@ -248,8 +253,6 @@ const udlTile = reactive({
 let datamounted = ref(ftileStore.$state.tilefinput);
 // let Edatamounted = ref(etileStore.$state.tilesysEinput);
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
-
-const pdfcleared = ref(false);
 
 let tilenoaInput = ref(null);
 // Method to update the input field with selected suggestion
@@ -537,6 +540,7 @@ const tileSel = reactive({
 });
 const factor = ref(0.4);
 const { getData } = useExposurec();
+const { getDatas } = useExposured();
 function setRoofInputs() {
     dims.height = heightModel.value;
 
@@ -544,9 +548,19 @@ function setRoofInputs() {
     addCheckmarks();
 }
 
+const isExposureC = ref(false);
+const exposureChoosen = ref('');
 const selectedExposures = ref(null);
 function selectedExposure() {
-    console.log(selectedExposures.value);
+    console.log(selectedExposures);
+    if (selectedExposures.value === 'c') {
+        exposureChoosen.value = 'c';
+        console.log(isExposureC);
+    } else {
+        exposureChoosen.value = 'd';
+
+        isExposureC.value = false;
+    }
     grabInput();
 }
 
@@ -564,8 +578,6 @@ let isTileSelectionValid = ref(false);
 let showMaterialValid = ref(false);
 function checkInput() {
     if (datatilenoa.value.length !== null) {
-        getData(dims.slope, dims.height);
-
         tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
         tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
 
@@ -576,8 +588,8 @@ function checkInput() {
             showMaterialValid = true;
             isTileValid = true;
         }
-        til;
     }
+    checkTile();
 }
 let ismrValidMR1 = ref(false);
 let ismrValidMR2 = ref(false);
@@ -590,11 +602,24 @@ const tileValue = reactive({
     v: []
 });
 function checkTile() {
-    zones.value.forEach((item, index) => {
-        zoneone.zone = item[0];
-        zonetwo.zone = item[1];
-        zonethree.zone = item[2];
-    });
+    if (exposureChoosen.value === 'd') {
+        // console.log(zoned, zones);
+        getDatas(dims.slope, dims.height);
+
+        zoned.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    } else {
+        getData(dims.slope, dims.height);
+        zones.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    }
+
     if (tileData.Table2.content === 'multiple') {
         workoutData(tileData);
         console.log(multiTiles, multiTiles.select_tile);
@@ -682,77 +707,99 @@ function updateTile(event) {
 function checkMaterial() {
     if (tileData.Table2.content === 'multiple') {
         checkTile();
+
+        console.log('Sent to checkTile()');
+    }
+    if (exposureChoosen.value === 'd') {
+        console.log('D exposure');
+        console.log(tbd, zoned);
+        console.log(useExposured());
+        zoned.value.forEach((item, index) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
     } else {
+        console.log('Else C exposure');
+        console.log(zones);
+
         zones.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
-        tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
-        tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
-        zoneone.lambda1 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
-        zonetwo.lambda2 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
-        zonethree.lambda3 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
-        const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-        const slopeRange = clampNumber1(2, Number(dims.slope), 12);
-        console.log(slopeRange);
-        if (slopeRange <= slopeOptions.three) {
-            console.log('Is Less then three', tileDatas.Table3.two);
-
-            zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
-            zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
-            zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
-            console.log(zonethree.mg3);
-        } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-            console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, tileData.Table3.three);
-
-            zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
-            zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
-            zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
-            console.log(zonethree.mg3);
-        } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
-            console.log('Is Less');
-            zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
-            zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
-            zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
-        } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
-            console.log('Is Less');
-            zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
-            zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
-            zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
-            console.log(zonethree.mg3);
-        } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-            zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
-            zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
-            zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
-        } else if (slopeRange >= slopeOptions.seven) {
-            console.log('Is Less');
-            zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
-            zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
-            zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
-            console.log(zonethree.mg3);
-        }
-
-        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
-
-        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
-
-        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
-
-        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
-        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
-        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
-
-        tileStore.tilenoa.value[0].slope = dims.slope;
-        tileStore.tilenoa.value[0].height = pdfStore.getHeight.value[0];
-        tileStore.tilenoa.value[0].area = dims.area;
-        tileStore.tilenoa.value[0].perimeter = dims.per;
-        tileStore.tilenoa.value[0].deckType = dt.value;
-        tileStore.tilenoa.value[0].select_tile = tilenoas.material;
-        tileStore.tilenoa.value[0].prescriptiveSelection = selectedUnderlayment.value;
-        console.log(pdfStore, tileStore);
     }
+    // else {
+    //     zones.value.forEach((item, index) => {
+    //         zoneone.zone = item[0];
+    //         zonetwo.zone = item[1];
+    //         zonethree.zone = item[2];
+    //     });
+    tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
+    tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
+    zoneone.lambda1 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
+    zonetwo.lambda2 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
+    zonethree.lambda3 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
+    const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+    const slopeRange = clampNumber1(2, Number(dims.slope), 12);
+    console.log(slopeRange);
+    if (slopeRange <= slopeOptions.three) {
+        console.log('Is Less then three', tileDatas.Table3.two);
+
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
+        console.log(zonethree.mg3);
+    } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+        console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, tileData.Table3.three);
+
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
+        console.log(zonethree.mg3);
+    } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
+        console.log('Is Less');
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
+    } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
+        console.log('Is Less');
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
+        console.log(zonethree.mg3);
+    } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
+    } else if (slopeRange >= slopeOptions.seven) {
+        console.log('Is Less');
+        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
+        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
+        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
+        console.log(zonethree.mg3);
+    }
+
+    const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+
+    const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+
+    const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+
+    zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+    zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+    zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+
+    tileStore.tilenoa.value[0].slope = dims.slope;
+    tileStore.tilenoa.value[0].height = pdfStore.getHeight.value[0];
+    tileStore.tilenoa.value[0].area = dims.area;
+    tileStore.tilenoa.value[0].perimeter = dims.per;
+    tileStore.tilenoa.value[0].deckType = dt.value;
+    tileStore.tilenoa.value[0].select_tile = tilenoas.material;
+    tileStore.tilenoa.value[0].prescriptiveSelection = selectedUnderlayment.value;
+    console.log(pdfStore, tileStore);
 }
+
 const maps = ref([]);
 const vals = ref([]);
 const mfupdate = ref();
@@ -1420,12 +1467,6 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     width: 200px;
 }
 
-/* input {
-    width: 100%;
-    padding: 8px;
-    font-size: 16px;
-} */
-
 .suggestions {
     list-style: none;
     padding: 0;
@@ -1435,7 +1476,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     width: 100%;
     max-height: 150px;
     overflow-y: auto;
-    background: white;
+    /* background: white; */
     z-index: 1000;
 }
 
@@ -1444,9 +1485,9 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     cursor: pointer;
 }
 
-.suggestions li:hover {
+/* .suggestions li:hover {
     background-color: #f0f0f0;
-}
+} */
 @keyframes slidedown-icon {
     0% {
         transform: translateY(0);
