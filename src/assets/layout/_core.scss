@@ -7,10 +7,10 @@ body {
     font-family: 'Lato', sans-serif;
     color: whitesmoke;
     // background-color: #eae7e2;
-    // background-image: url('/dist/hudgrid.png');
-    // background-position: center;
-    // background-repeat: no-repeat;
-    // background-size: cover;
+    background-image: url('/src/assets/img/radar_Fotor.png');
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: cover;
     margin: 0;
     padding: 0;
     min-height: 100%;
@@ -26,8 +26,9 @@ a {
 
 .layout-wrapper {
     min-height: 100vh;
-    background-image: url('/dist/hudgrid.png');
-    background-position: center;
+    background-image: url('/src/assets/img/radar_Fotor.png');
+    background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
+    // filter: blur(1px);
 }
