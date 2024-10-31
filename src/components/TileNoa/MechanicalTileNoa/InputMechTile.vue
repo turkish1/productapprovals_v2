@@ -2,6 +2,8 @@
 import DripEdgeComponent from '@/components/DripEdgeComponent.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
+import useExposured from '@/composables/Tiletables/exposure_d';
+import { useExposureD } from '@/stores/exposuredStore';
 
 import useMechNumber from '@/composables/fetchTech/use-systemMechNumber';
 
@@ -25,6 +27,7 @@ const ftileStore = usetilesysfStore();
 const { workoutData, multiTiles } = usemultiTile();
 // Input query
 const query = ref('');
+const { tbd, zoned } = useExposureD();
 
 // const paddySeleted = ref('');
 // Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
@@ -240,11 +243,28 @@ const tileValue = reactive({
 });
 watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 function checkTile() {
-    zones.value.forEach((item, index) => {
-        zoneone.zone = item[0];
-        zonetwo.zone = item[1];
-        zonethree.zone = item[2];
-    });
+    // zones.value.forEach((item, index) => {
+    //     zoneone.zone = item[0];
+    //     zonetwo.zone = item[1];
+    //     zonethree.zone = item[2];
+    // });
+    if (exposureChoosen.value === 'd') {
+        // console.log(zoned, zones);
+        getDatas(dims.slope, dims.height);
+
+        zoned.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    } else {
+        getData(dims.slope, dims.height);
+        zones.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    }
 
     if (datamountedMech.value[0].Table2.content === 'multiple') {
         workoutData(datamountedMech);
@@ -576,15 +596,27 @@ function validateHeight() {
 
 const factor = ref(0.4);
 const { getData } = useExposurec();
+const { getDatas } = useExposureD();
 function setRoofInputs() {
     dims.height = heightModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
     addCheckmarks();
 }
 
+const isExposureC = ref(false);
+const exposureChoosen = ref('');
 const selectedExposures = ref(null);
 function selectedExposure() {
-    console.log(selectedExposures.value);
+    console.log(selectedExposures);
+    if (selectedExposures.value === 'c') {
+        exposureChoosen.value = 'c';
+        console.log(isExposureC);
+    } else {
+        exposureChoosen.value = 'd';
+
+        isExposureC.value = false;
+    }
+    grabInput();
 }
 
 function checkInputSA() {
@@ -626,68 +658,88 @@ let ismrInvalid3 = ref(false);
 function checkMaterial() {
     if (datamountedMech.value[0].Table2.content === 'multiple') {
         checkTile();
+    }
+    // else {
+    //     zones.value.forEach((item, index) => {
+    //         zoneone.zone = item[0];
+    //         zonetwo.zone = item[1];
+    //         zonethree.zone = item[2];
+    //     });
+    if (exposureChoosen.value === 'd') {
+        console.log('D exposure');
+        console.log(tbd, zoned);
+        console.log(useExposured());
+        zoned.value.forEach((item, index) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
     } else {
+        console.log('Else C exposure');
+        console.log(zones);
+
         zones.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
-
-        tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
-        tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
-        zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
-        zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
-        zonethree.lambda3 = datamountedMech.value[0].Table2.Direct_Deck;
-        const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-        const slopeRange = clampNumber1(2, Number(dims.slope), 12);
-        console.log(slopeRange);
-        if (slopeRange <= slopeOptions.three) {
-            console.log('Is Less then three');
-
-            zoneone.mg1 = datamountedMech.value[0].Table3.two;
-            zonetwo.mg2 = datamountedMech.value[0].Table3.two;
-            zonethree.mg3 = datamountedMech.value[0].Table3.two;
-            console.log(zonethree.mg3);
-        } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-            console.log('Is Less than four but equal to or higher than three', mechanicalData.Table3.three);
-
-            zoneone.mg1 = datamountedMech.value[0].Table3.three;
-            zonetwo.mg2 = datamountedMech.value[0].Table3.three;
-            zonethree.mg3 = datamountedMech.value[0].Table3.three;
-            console.log(zonethree.mg3);
-        } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
-            console.log('Is Less');
-            zoneone.mg1 = datamountedMech.value[0].Table3.four;
-            zonetwo.mg2 = datamountedMech.value[0].Table3.four;
-            zonethree.mg3 = datamountedMech.value[0].Table3.four;
-        } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
-            console.log('Is Less');
-            zoneone.mg1 = datamountedMech.value[0].Table3.five;
-            zonetwo.mg2 = datamountedMech.value[0].Table3.five;
-            zonethree.mg3 = datamountedMech.value[0].Table3.five;
-            console.log(zonethree.mg3);
-        } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-            zoneone.mg1 = datamountedMech.value[0].Table3.six;
-            zonetwo.mg2 = datamountedMech.value[0].Table3.six;
-            zonethree.mg3 = datamountedMech.value[0].Table3.six;
-        } else if (slopeRange >= slopeOptions.seven) {
-            console.log('Is Less');
-            zoneone.mg1 = datamountedMech.value[0].Table3.seven;
-            zonetwo.mg2 = datamountedMech.value[0].Table3.seven;
-            zonethree.mg3 = datamountedMech.value[0].Table3.seven;
-            console.log(zonethree.mg3);
-        }
-
-        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
-
-        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
-
-        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
-
-        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
-        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
-        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
     }
+
+    tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
+    tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+    zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
+    zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
+    zonethree.lambda3 = datamountedMech.value[0].Table2.Direct_Deck;
+    const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+    const slopeRange = clampNumber1(2, Number(dims.slope), 12);
+    console.log(slopeRange);
+    if (slopeRange <= slopeOptions.three) {
+        console.log('Is Less then three');
+
+        zoneone.mg1 = datamountedMech.value[0].Table3.two;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.two;
+        zonethree.mg3 = datamountedMech.value[0].Table3.two;
+        console.log(zonethree.mg3);
+    } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+        console.log('Is Less than four but equal to or higher than three', mechanicalData.Table3.three);
+
+        zoneone.mg1 = datamountedMech.value[0].Table3.three;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.three;
+        zonethree.mg3 = datamountedMech.value[0].Table3.three;
+        console.log(zonethree.mg3);
+    } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
+        console.log('Is Less');
+        zoneone.mg1 = datamountedMech.value[0].Table3.four;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.four;
+        zonethree.mg3 = datamountedMech.value[0].Table3.four;
+    } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
+        console.log('Is Less');
+        zoneone.mg1 = datamountedMech.value[0].Table3.five;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.five;
+        zonethree.mg3 = datamountedMech.value[0].Table3.five;
+        console.log(zonethree.mg3);
+    } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
+        zoneone.mg1 = datamountedMech.value[0].Table3.six;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.six;
+        zonethree.mg3 = datamountedMech.value[0].Table3.six;
+    } else if (slopeRange >= slopeOptions.seven) {
+        console.log('Is Less');
+        zoneone.mg1 = datamountedMech.value[0].Table3.seven;
+        zonetwo.mg2 = datamountedMech.value[0].Table3.seven;
+        zonethree.mg3 = datamountedMech.value[0].Table3.seven;
+        console.log(zonethree.mg3);
+    }
+
+    const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+
+    const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+
+    const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+
+    zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+    zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+    zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+
     console.log(mechStore.tilemech);
     mechStore.tilemech.value[0].slope = dims.slope;
     mechStore.tilemech.value[0].height = dims.height;
@@ -697,6 +749,7 @@ function checkMaterial() {
     // mechStore.tilemech.value[0].select_tile = tilenoas.material;
     mechStore.tilemech.value[0].prescriptiveSelection = selectedUnderlayment.value;
 }
+
 const maps = ref([]);
 const vals = ref([]);
 const v0 = ref(null);
@@ -1045,7 +1098,7 @@ function saDescPressure() {
 //     resetSingle();
 // }
 
-watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">

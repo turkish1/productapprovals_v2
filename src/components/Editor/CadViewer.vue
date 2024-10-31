@@ -60,12 +60,12 @@ function onDrop(event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 110px;
+    margin-left: 130px;
     width: 100%;
 }
 
 .drop-zone {
-    width: 150%;
+    width: 120%;
 
     /* max-width: 1000px; */
     height: 800px;
@@ -74,7 +74,7 @@ function onDrop(event) {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f9f9f9;
+    background-color: #e0e0e0;
     margin-bottom: 20px;
     margin-left: 80px;
     transition: background-color 0.3s;

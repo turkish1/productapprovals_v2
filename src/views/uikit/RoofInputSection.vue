@@ -105,27 +105,25 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
 
             <StepPanels class="object-scale-down h-0 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
-                    <!-- <div class="flex flex-col h-48 w-1024"> -->
-                    <shingles v-if="isValidshingle" />
-                    <!-- style="background-color: #eae7e2" -->
-                    <div class="flex pt-6 justify-end">
-                        <Button
-                            label="Next"
-                            severity="contrast"
-                            icon="pi pi-arrow-right"
-                            @click="
-                                activateCallback('2');
-                                isValidbur = true;
-                            "
-                        />
-                        <!-- </div> -->
+                    <div class="flex flex-col h-0 w-1024">
+                        <shingles v-if="isValidshingle" />
+
+                        <div class="flex pt-6 justify-end">
+                            <Button
+                                label="Next"
+                                severity="contrast"
+                                icon="pi pi-arrow-right"
+                                @click="
+                                    activateCallback('2');
+                                    isValidbur = true;
+                                "
+                            />
+                        </div>
                     </div>
                 </StepPanel>
 
                 <StepPanel v-slot="{ activateCallback }" value="2">
-                    <!-- style="background-color: #eae7e2" -->
                     <div class="flex flex-col h-0 w-600">
-                        <!-- v-if="values === 3" -->
                         <LowSlope v-if="isValidbur" />
 
                         <div class="flex pt-6 justify-between">
@@ -208,19 +206,5 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
     animation: slidedown-icon;
     animation-duration: 3s;
     animation-iteration-count: infinite;
-}
-#panel {
-    background-position: center; /* Centers the image */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-size: cover;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    mix-blend-mode: difference;
-    display: flex;
-    /* align-items: center;
-    justify-content: center; */
 }
 </style>

@@ -2,11 +2,11 @@
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-import AOS from 'aos';
+// import AOS from 'aos';
+// import { gsap } from 'gsap';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
-import { onMounted, ref } from 'vue';
-import Map from './Maps/Map.vue';
+import { ref } from 'vue';
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
 
@@ -31,13 +31,13 @@ function clearSelected() {
     store.$reset();
 }
 
-onMounted(() => {
-    AOS.init({
-        duration: 800, // Animation duration in ms
-        easing: 'ease-in-out', // Easing for animations
-        once: true // Whether animation happens only once
-    });
-});
+// onMounted(() => {
+//     AOS.init({
+//         duration: 800, // Animation duration in ms
+//         easing: 'ease-in-out', // Easing for animations
+//         once: true // Whether animation happens only once
+//     });
+// });
 function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     item = selectedItem.value.name;
 
@@ -69,7 +69,6 @@ function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     }
 
     clear();
-    console.log(item, dim1, 'System added');
 }
 
 function clear() {
@@ -79,7 +78,6 @@ function clear() {
 }
 </script>
 <template>
-    <!-- style="background-color: #eae7e2" -->
     <div id="roofselect" class="card flex justify-center">
         <div class="refresh">
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
@@ -87,11 +85,10 @@ function clear() {
 
         <div class="card flex justify-center">
             <form>
-                <!-- style="background-color: #eae7e2" -->
                 <div v-show="!isMiamiBeachValid" class="card flex flex-col gap-4">
                     <h1 class="h1">Select System</h1>
 
-                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
+                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" />
                     <InputText type="text" v-model="area" />
                 </div>
                 <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
@@ -102,7 +99,6 @@ function clear() {
                 </div>
             </form>
         </div>
-        <!-- Prevent the addition of a system until the roof area has been entered -->
         <div class="add">
             <i class="pi pi-plus-circle" style="font-size: 2rem; color: gray; margin-left: 1px; margin-top: 150px" @click="addItemAndClear(selectedItem, area)"></i>
         </div>
@@ -113,25 +109,10 @@ function clear() {
             </div>
         </div>
     </div>
-    <div data-aos="zoom-in-up">
-        <div class="card flex justify-center" style="margin-left: 10px">
-            <Map></Map>
-        </div>
-    </div>
+    <!-- <div data-aos="zoom-in-bottom" style="margin-left: 650px; margin-bottom: 350px">
+         <Map></Map>
+
+    </div> -->
 </template>
 
-<style scoped>
-/* .add { */
-/* margin-left: 280px;
-    margin-top: 30px; */
-/* } */
-/* .refresh {
-    margin-left: 40px;
-    margin-top: 90px;
-} */
-
-/* .button {
-    margin-left: 30px;
-    margin-top: 120px;
-} */
-</style>
+<style scoped></style>

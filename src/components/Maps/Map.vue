@@ -80,10 +80,10 @@ watchEffect(map, getCoordinates, () => {});
 </template>
 <style scoped>
 .map-container {
-    height: 500px;
-    width: 700px;
+    height: 400px;
+    width: 450px;
     margin-left: 150px;
-    margin-bottom: 15;
+    margin-top: 50px;
 }
 /* .search-input {
     position: absolute;

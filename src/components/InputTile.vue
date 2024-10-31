@@ -360,7 +360,7 @@ const slopeOptions = {
 
 const isDataValid = ref(true);
 
-watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, () => {});
+watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, underlaymentType, () => {});
 
 function checkData() {
     if (tileData.Table3.two === 'N/A') {
