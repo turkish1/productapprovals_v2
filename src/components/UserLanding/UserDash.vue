@@ -1,5 +1,4 @@
 <template>
-    <Hud />
     <div class="columns-1 ...">
         <div class="w-1/2 p-grid mt-6 p-dir-col">
             <h2>User Dashboard</h2>
@@ -47,7 +46,6 @@
 </template>
 
 <script setup>
-import Hud from '@/components/Maps/Hud.vue';
 import { onMounted, ref } from 'vue';
 const totalUsers = ref(1000);
 const activeUsers = ref(120);

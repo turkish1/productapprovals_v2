@@ -2,6 +2,8 @@
     <div class="drone-bad-signal">
         <div class="city-overlay"></div>
         <div class="static-overlay"></div>
+        <div class="tracking-bars top"></div>
+        <div class="tracking-bars bottom"></div>
         <div class="hud-overlay">
             <div class="crosshair"></div>
             <div class="target-lock"></div>
@@ -38,10 +40,39 @@
     background-size: cover;
     background-position: center;
     filter: brightness(0.7) contrast(0.8) blur(2px);
-    opacity: 0.7;
+    opacity: 0.9;
     animation: glitch 3s infinite alternate;
 }
 
+/* Tracking bars for top and bottom edges */
+.tracking-bars {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(to right, transparent 20%, #14c71420 50%, transparent 80%);
+    opacity: 0.9;
+    animation: tracking-bars-move 0.5s infinite;
+}
+
+.tracking-bars.top {
+    top: 20px;
+}
+
+.tracking-bars.bottom {
+    bottom: 0;
+}
+
+@keyframes tracking-bars-move {
+    0% {
+        transform: translateX(-9%);
+    }
+    50% {
+        transform: translateX(5%);
+    }
+    100% {
+        transform: translateX(-5%);
+    }
+}
 /* Static effect overlay */
 .static-overlay {
     position: absolute;
@@ -49,7 +80,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('https://example.com/static.png'); /* Use a static texture */
+    background: url('/src/assets/img/hudgrid.png'); /* Use a static texture */
     opacity: 0.2;
     mix-blend-mode: screen;
     animation: static-flicker 0.1s infinite;
@@ -79,8 +110,8 @@
 /* Target lock indicator */
 .target-lock {
     position: absolute;
-    top: 60%;
-    left: 40%;
+    top: 50%;
+    left: 50%;
     width: 50px;
     height: 50px;
     border: 2px solid #ff0000;

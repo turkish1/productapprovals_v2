@@ -1,4 +1,5 @@
 <script setup>
+import Hud from '@/components/Maps/Hud.vue';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 const alertTitle = ref("System's Terms of Use   🚧   👷🏼  🚧  👷🏼   🚧   👷🏼  🚧   👷🏼  🚧 High Velocity Hurricane Zone (HZHZ)");
@@ -22,7 +23,7 @@ function checkRadio() {
 
 <template>
     <div class="card">
-        <h1>{{ alertTitle }}</h1>
+        <!-- <h1>{{ alertTitle }}</h1>
         <Panel header="Agreement">
             <p class="m-0">It is the applicant's responsiblity to complete this application correctly.</p>
             <p class="m-0">Failure to provide valid permitting information can result in failed inspections and/or cancelation of the permit by the Authority Having Jurisdiction (AHJ).</p>
@@ -32,8 +33,10 @@ function checkRadio() {
             <p class="m-0">The permit applicant agrees to comply with these terms of use requirements when obtaining this permit electronically.</p>
         </Panel>
 
-        <!-- <Button type="submit" label="Agree" severity="contrast"  />  @click="$emit('close')" @click.left="routerNext()"-->
-        <RadioButton v-model="val" value="agree" variant="filled" :invalid="val === null" severity="contrast" @input="checkRadio" @click="navigateNext" />
-        <label for="consent" class="ml-2">Agree</label>
+        <Button type="submit" label="Agree" severity="contrast"  />  @click="$emit('close')" @click.left="routerNext()"-->
+        <!-- <RadioButton v-model="val" value="agree" variant="filled" :invalid="val === null" severity="contrast" @input="checkRadio" @click="navigateNext" />
+        <label for="consent" class="ml-2">Agree</label> -->
+
+        <Hud />
     </div>
 </template>
