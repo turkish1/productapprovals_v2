@@ -101,18 +101,12 @@ const navigateNext = () => {
 
 <template>
     <FloatingConfigurator />
-    <!-- <vIntersection /> -->
-    <!-- bg-surface-50 dark:bg-surface-950 style="background-color: #eae7e2" -->
+
     <div id="content" class="flex items-center justify-center min-h-screen min-w-full overflow-hidden">
         <div class="flex flex-col items-center justify-center">
-            <!--  var(--primary-color) rgba(33, 150, 243, 0) -->
             <div data-aos="flip-up" data-aos-duration="1000">
-                <!-- #eae7e2 -->
-                <!-- background: linear-gradient(180deg, 10%, 30%) -->
                 <div style="border-radius: 56px; padding: 0.3rem">
-                    <!-- background-image: url('/dist/world.png')" bg-surface-0 dark:bg-surface-900-->
                     <div class="w-full py-20 px-8 sm:px-20" style="border-radius: 53px">
-                        <!-- <div class="card flex justify-center"></div> -->
                         <div>
                             <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: #a4b5b9; margin-left: 150px" @click="register" />
                             <label style="color: whitesmoke" for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>

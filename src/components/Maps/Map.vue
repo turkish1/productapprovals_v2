@@ -1,6 +1,5 @@
 <script setup>
 import { useprocStore } from '@/stores/processStore'; // import { usePermitappStore } from '@/stores/permitapp';
-
 import { onMounted, ref, watchEffect } from 'vue';
 import '../../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import mapboxgl from '../../../node_modules/mapbox-gl';
@@ -73,27 +72,76 @@ watchEffect(map, getCoordinates, () => {});
 </script>
 
 <template>
-    <div ref="mapContainer" class="map-container">
-        <!-- <InputText type="text" v-model="address" @load="getCoordinates" placeholder="Enter address" /> -->
+    <div class="military-folder">
+        <div class="folder-content">
+            <div ref="mapContainer" class="map-container"></div>
+        </div>
     </div>
-    <!-- </div> -->
 </template>
 <style scoped>
 .map-container {
     height: 400px;
-    width: 450px;
-    margin-left: 150px;
-    margin-top: 50px;
+    width: 400px;
+    margin-left: 50px;
 }
-/* .search-input {
+.military-folder {
+    width: 380px;
+    padding: 10px;
+    background-color: darkgreen; /* Dark military green/grey color */
+    border: 2px solid #a1ffba;
+    border-radius: 6px;
+    box-shadow: 0 0 15px greenyellow;
+    position: relative;
+    overflow: hidden;
+    margin-left: 130px;
+    margin-bottom: 10px;
+}
+
+/* Top Notch Tab Effect */
+.military-folder::before {
+    content: 'Map';
+    position: relative;
+    top: -20px;
+    left: 90px;
+    width: 80px;
+    height: 15px;
+    background-color: black;
+    border: 2px solid darkgreen;
+    border-radius: 3px 3px 0 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5);
+    margin-left: 130px;
+}
+
+/* Additional Styling for Folder Content */
+.folder-content {
+    color: #d3d3d3;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.folder-content h1 {
+    font-size: 18px;
+    color: #a1ffba;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.folder-content p {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #e2e2e2;
+}
+
+/* Textured Border Styling */
+.military-folder {
+    background: linear-gradient(145deg, #2e2e2e, #383838);
+}
+
+.military-folder::after {
+    content: '';
     position: absolute;
-    top: 2px;
-    left: 10px;
-    padding: 8px;
-    font-size: 16px;
-    width: 250px;
-    z-index: 10;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-} */
+    inset: 0;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+}
 </style>

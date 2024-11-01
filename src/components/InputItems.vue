@@ -1,9 +1,9 @@
 <script setup>
+import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
+import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import useInputs from '@/composables/use-Inputs';
 import useSystemf from '@/composables/use-Inputsystemf';
 import useSlope from '@/composables/use-updateSlope';
-import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
-import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
@@ -360,7 +360,7 @@ watch(
 </script>
 <template>
     <div id="shingle" class="flex flex-col w-full gap-1 shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <label for="slope" style="color: black; margin-left: 650px">Shingle Roof</label>
+        <label for="slope" style="color: whitesmoke; margin-left: 650px">Shingle Roof</label>
 
         <div class="w-64 gap-1" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" />

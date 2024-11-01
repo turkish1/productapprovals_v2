@@ -241,15 +241,9 @@ const tileValue = reactive({
     k: '',
     v: []
 });
-watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 function checkTile() {
-    // zones.value.forEach((item, index) => {
-    //     zoneone.zone = item[0];
-    //     zonetwo.zone = item[1];
-    //     zonethree.zone = item[2];
-    // });
     if (exposureChoosen.value === 'd') {
-        // console.log(zoned, zones);
+        console.log(zoned, exposureChoosen);
         getDatas(dims.slope, dims.height);
 
         zoned.value.forEach((item) => {
@@ -280,6 +274,9 @@ function checkTile() {
     //         isTileValid = true;
     //     }
 }
+
+watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
+
 const dt = ref('');
 function getdeckType(event) {
     console.log(selectedDeck._value.name, event.value.name);
@@ -575,12 +572,12 @@ function validateRoofSlope() {
 }
 const validateInput = () => {
     validateNumber(dims.slope);
-    console.log(errorMessage.value, dims.slope);
+    console.log(dims.slope);
 };
 
 const validateHeightInput = () => {
     validateTileHeight(dims.height);
-    console.log(errorHeightMessage.value, dims.height);
+    console.log(dims.height);
 };
 
 function addCheckmarks() {
@@ -596,27 +593,11 @@ function validateHeight() {
 
 const factor = ref(0.4);
 const { getData } = useExposurec();
-const { getDatas } = useExposureD();
+const { getDatas } = useExposured();
 function setRoofInputs() {
     dims.height = heightModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
     addCheckmarks();
-}
-
-const isExposureC = ref(false);
-const exposureChoosen = ref('');
-const selectedExposures = ref(null);
-function selectedExposure() {
-    console.log(selectedExposures);
-    if (selectedExposures.value === 'c') {
-        exposureChoosen.value = 'c';
-        console.log(isExposureC);
-    } else {
-        exposureChoosen.value = 'd';
-
-        isExposureC.value = false;
-    }
-    grabInput();
 }
 
 function checkInputSA() {
@@ -632,10 +613,7 @@ function checkInputSA() {
 let isTileSelectionValid = ref(false);
 let showMaterialValid = ref(false);
 function checkInput() {
-    console.log(datamountedMech.value[0]);
     if (datamountedMech.value.length !== null) {
-        getData(dims.slope, dims.height);
-        console.log(datamechnoas.value, datamountedMech);
         tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
         tilenoas.description = datamountedMech.value[0].description;
         tilenoas.material = datamountedMech.value[0].material;
@@ -648,6 +626,25 @@ function checkInput() {
             isTileValid = true;
         }
     }
+    selectedExposure();
+    checkTile();
+}
+
+const isExposureC = ref(false);
+const exposureChoosen = ref('');
+const selectedExposures = ref('');
+function selectedExposure() {
+    console.log(selectedExposures);
+    if (selectedExposures.value === 'd') {
+        exposureChoosen.value = 'd';
+        console.log(isExposureC);
+        console.log(selectedExposures);
+    } else {
+        exposureChoosen.value = 'c';
+        console.log(selectedExposures);
+        isExposureC.value = true;
+    }
+    grabInput();
 }
 let ismrValidMR1 = ref(false);
 let ismrValidMR2 = ref(false);
@@ -659,12 +656,7 @@ function checkMaterial() {
     if (datamountedMech.value[0].Table2.content === 'multiple') {
         checkTile();
     }
-    // else {
-    //     zones.value.forEach((item, index) => {
-    //         zoneone.zone = item[0];
-    //         zonetwo.zone = item[1];
-    //         zonethree.zone = item[2];
-    //     });
+
     if (exposureChoosen.value === 'd') {
         console.log('D exposure');
         console.log(tbd, zoned);
@@ -761,7 +753,25 @@ function updateMF(event) {
     let mat = tilenoas.fastenerValues;
 
     console.log(mat);
+    if (exposureChoosen.value === 'd') {
+        console.log('D exposure');
+        console.log(tbd, zoned);
+        console.log(useExposured());
+        zoned.value.forEach((item, index) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    } else {
+        console.log('Else C exposure');
+        console.log(zones);
 
+        zones.value.forEach((item, index) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    }
     resistanceCheck.value = Object.entries(mat).map((obj) => {
         const k = obj[0];
         const v = obj[1];
@@ -1031,11 +1041,13 @@ function udlDescPressure() {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E13;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E13;
     }
-    etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base = udlTile.Anchor_Base_Sheet;
-    etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
-    etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
-    etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
-    etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value;
+    if (etileStore.$state.tilesysEinput.length !== 0) {
+        etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base = udlTile.Anchor_Base_Sheet;
+        etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
+        etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
+        etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
+        etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value;
+    }
 }
 function saDescPressure() {
     if (selectedsystemf.value === 'F1') {
@@ -1090,9 +1102,12 @@ function saDescPressure() {
         saTiles.description = saTiles.Description_F12;
         saTiles.designpressure = keyValueSystemFPairsValues.value.F12;
     }
-    ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
-    ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
-    ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
+
+    if (ftileStore.$state.tilefinput.length !== 0) {
+        ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
+        ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
+        ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
+    }
 }
 // function callReset() {
 //     resetSingle();
@@ -1102,7 +1117,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
-        <label for="title" style="color: black; margin-left: 650px">Mechanical Tile Roof</label>
+        <label for="title" style="color: whitesmoke; margin-left: 650px">Mechanical Tile Roof</label>
 
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
@@ -1129,7 +1144,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="card md:w-3/4 flex flex-col w-96 mb-4 gap-2" style="margin-left: 1px">
+        <div class="card md:w-1/2 flex flex-col w-96 mb-4 gap-2" style="margin-left: 1px">
             <label style="color: whitesmoke" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>

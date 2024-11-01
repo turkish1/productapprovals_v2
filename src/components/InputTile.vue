@@ -46,7 +46,6 @@ const { Edatamounted, etileStore } = useUDL();
 
 const { getTilenoas, tileDatas, resetSingle } = usetileInputsingle();
 const { zones } = useGlobalState();
-// const { zoned } = useGlobalState();
 const { tbd, zoned } = useExposureD();
 const tilenoas = reactive({
     manufacturer: '',
@@ -1212,7 +1211,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
-        <label for="title" style="color: black; margin-left: 650px">Tile Adhesive Roof</label>
+        <label for="title" style="color: whitesmoke; margin-left: 650px">Tile Adhesive Roof</label>
 
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />

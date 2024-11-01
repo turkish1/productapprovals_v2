@@ -2,8 +2,7 @@
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-// import AOS from 'aos';
-// import { gsap } from 'gsap';
+
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import { ref } from 'vue';
@@ -105,14 +104,10 @@ function clear() {
 
         <div class="grid grid-cols-1 gap-2 place-content-end h42 ..">
             <div>
-                <Button class="button" label="Submit" raised style="margin-left: 5px; margin-top: 100px; background-color: #a4b5b9" as="router-link" to="/generalpage" @click="generatePdf"></Button>
+                <Button class="button" label="Submit" raised style="margin-left: 1px; margin-top: 100px; background-color: #a4b5b9" as="router-link" to="/generalpage" @click="generatePdf"></Button>
             </div>
         </div>
     </div>
-    <!-- <div data-aos="zoom-in-bottom" style="margin-left: 650px; margin-bottom: 350px">
-         <Map></Map>
-
-    </div> -->
 </template>
 
 <style scoped></style>

@@ -188,6 +188,8 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
 <template>
     <div id="bur" class="flex flex-col gap-2" style="margin-left: 1px">
         <div class="card flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px">
+            <label for="title" style="color: whitesmoke; margin-left: 650px">Low Slope Roof</label>
+
             <div class="w-128 gap-2" style="margin-left: 12px">
                 <!-- @change="getdeckType"  -->
                 <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" />
