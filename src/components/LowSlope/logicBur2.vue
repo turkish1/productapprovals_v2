@@ -151,9 +151,9 @@ function updateselectSystem() {
             primeone.value = Perimeters.p1_two;
             primethree.value = Perimeters.p2_two;
         }
-        if (sp2[2] === ') ⁵') {
-            primeone.value = Perimeters.p1_five;
-            primethree.value = Perimeters.p2_five;
+        if (sp3[3] === '³') {
+            primeone.value = Perimeters.p1_three;
+            primethree.value = Perimeters.p2_three;
         }
         if (sp4[2] === '⁴' || sp4[2] === '⁵') {
             primeone.value = Perimeters.p1_four;

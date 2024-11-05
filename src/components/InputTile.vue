@@ -1,9 +1,6 @@
 <script setup>
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
-import usemultiTile from '@/composables/businesslogic/use-multiTile';
-import useDouble from '@/composables/fetchTech/use-doublepdNumber';
-import useSingle from '@/composables/fetchTech/use-singlepdNumber';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import useUDL from '@/composables/TileFunc/systemE';
@@ -11,9 +8,12 @@ import useExposurec from '@/composables/Tiletables/exposure_c';
 import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-Height';
 import { useNumberValidation } from '@/composables/Validation/use-Slope';
+import usemultiTile from '@/composables/businesslogic/use-multiTile';
+import useDouble from '@/composables/fetchTech/use-doublepdNumber';
+import useSingle from '@/composables/fetchTech/use-singlepdNumber';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useExposureD } from '@/stores/exposuredStore';
-
+import { usemultiStore } from '@/stores/multitileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { useGlobalStates } from '@/stores/tilenoaStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
@@ -29,7 +29,9 @@ const pdfStore = useGlobalState();
 
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
+const multipleStore = usemultiStore();
 const { workoutData, multiTiles } = usemultiTile();
+const { multiinput } = storeToRefs(multipleStore);
 // Input query
 const query = ref('');
 const isSinglepaddyValid = ref(false);
@@ -326,25 +328,25 @@ watch(selectedUnderlayment, () => {
     save.value = selectedUnderlayment.value.key;
 
     if (save.value === 1) {
-        isTileValid.value = true;
-        isUDLValid.value = false;
-        isUDLNOAValid.value = false;
-        isSAValid.value = false;
+        isTileValid = true;
+        isUDLValid = false;
+        isUDLNOAValid = false;
+        isSAValid = false;
     } else if (save.value === 2) {
-        isTileValid.value = true;
-        isUDLValid.value = false;
-        isUDLNOAValid.value = false;
-        isSAValid.value = true;
+        isTileValid = true;
+        isUDLValid = false;
+        isUDLNOAValid = false;
+        isSAValid = true;
     } else if (save.value === 3) {
-        isTileValid.value = true;
-        isUDLValid.value = true;
-        isUDLNOAValid.value = true;
-        isSAValid.value = false;
+        isTileValid = true;
+        isUDLValid = true;
+        isUDLNOAValid = true;
+        isSAValid = false;
     } else if (save.value === 0) {
-        isUDLValid.value = false;
-        isUDLNOAValid.value = false;
-        isSAValid.value = false;
-        isTileValid.value = false;
+        isUDLValid = false;
+        isUDLNOAValid = false;
+        isSAValid = false;
+        isTileValid = false;
     }
 });
 
@@ -562,87 +564,28 @@ function selectedExposure() {
     }
     grabInput();
 }
-
-function checkInputSA() {
-    if (datamounted.value.length !== null) {
-        datamounted.value.forEach((item, index) => {
-            console.log(item);
-            saTiles.manufacturer = item.systemData.manufacturer;
-            saTiles.material = item.systemData.material;
-            saTiles.system = item.systemData.system;
-        });
-    }
-}
-let isTileSelectionValid = ref(false);
-let showMaterialValid = ref(false);
-function checkInput() {
-    if (datatilenoa.value.length !== null) {
-        tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
-        tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
-
-        if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple') {
-            isTileSelectionValid = true;
-            showMaterialValid = true;
-        } else {
-            showMaterialValid = true;
-            isTileValid = true;
-        }
-    }
-    checkTile();
-}
-let ismrValidMR1 = ref(false);
-let ismrValidMR2 = ref(false);
-let ismrValidMR3 = ref(false);
-let ismrInvalid1 = ref(false);
-let ismrInvalid2 = ref(false);
-let ismrInvalid3 = ref(false);
-const tileValue = reactive({
-    k: '',
-    v: []
-});
-function checkTile() {
-    if (exposureChoosen.value === 'd') {
-        // console.log(zoned, zones);
-        getDatas(dims.slope, dims.height);
-
-        zoned.value.forEach((item) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
-    } else {
-        getData(dims.slope, dims.height);
-        zones.value.forEach((item) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
-    }
-
-    if (tileData.Table2.content === 'multiple') {
-        workoutData(tileData);
-        console.log(multiTiles, multiTiles.select_tile);
-        tilenoas.select_tile = multiTiles.select_tile;
-        tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
-        tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
-    }
-}
 function updateTile(event) {
     let type = multiTiles.table2_map;
 
     const valMulti = Object.entries(type).map((obj) => {
         const key = obj[0];
         const value = obj[1];
-        console.log(key);
+        console.log(key, value);
 
         if (event.value === key) {
+            tilenoas.description = key;
             // let sel = tilenoas.select_tile;
+            console.log(event.value);
             tileSel.values = value[0];
-            console.log(value[0]);
+            console.log(value[0], tileSel.values);
+            tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : key;
+
+            // tilenoas.select_tile;
+            zoneone.lambda1 = tileSel.values;
+            zonetwo.lambda2 = tileSel.values;
+            zonethree.lambda3 = tileSel.values;
+            console.log(zoneone.lambda1);
         }
-        zoneone.lambda1 = tileSel.values;
-        zonetwo.lambda2 = tileSel.values;
-        zonethree.lambda3 = tileSel.values;
     });
     let types = multiTiles.tile_map;
     const valMultis = Object.entries(types).map((obj) => {
@@ -689,6 +632,7 @@ function updateTile(event) {
             zonetwo.mg2 = tileValue.v[5];
             zonethree.mg3 = tileValue.v[5];
         }
+
         const result1 = computed(() => zoneone.zone * zoneone.lambda1);
 
         const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
@@ -699,8 +643,85 @@ function updateTile(event) {
         zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
         zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
     });
-
+    tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
+    tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
     checkMaterial();
+}
+function checkInputSA() {
+    if (datamounted.value.length !== null) {
+        datamounted.value.forEach((item, index) => {
+            console.log(item);
+            saTiles.manufacturer = item.systemData.manufacturer;
+            saTiles.material = item.systemData.material;
+            saTiles.system = item.systemData.system;
+        });
+    }
+}
+let isTileSelectionValid = ref(false);
+let showMaterialValid = ref(false);
+function checkInput() {
+    if (datatilenoa.value.length !== null) {
+        tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
+        console.log(zoneone.lambda1);
+        if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple') {
+            isTileSelectionValid = true;
+            isMultiTileValid = true;
+            showMaterialValid = true;
+        } else {
+            showMaterialValid = true;
+            isTileValid = true;
+            tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
+        }
+    }
+    selectedExposure();
+    checkTile();
+}
+let ismrValidMR1 = ref(false);
+let ismrValidMR2 = ref(false);
+let ismrValidMR3 = ref(false);
+let ismrInvalid1 = ref(false);
+let ismrInvalid2 = ref(false);
+let ismrInvalid3 = ref(false);
+const tileValue = reactive({
+    k: '',
+    v: []
+});
+function checkTile() {
+    if (exposureChoosen.value === 'd') {
+        // console.log(zoned, zones);
+        getDatas(dims.slope, dims.height);
+
+        zoned.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    } else {
+        getData(dims.slope, dims.height);
+        zones.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+            zoneone.lambda1 = tileSel.values;
+            zonetwo.lambda2 = tileSel.values;
+            zonethree.lambda3 = tileSel.values;
+            console.log(zoneone.lambda1, tileSel.values, tileSel);
+        });
+        // zoneone.lambda1 = tileSel.values;
+        // zonetwo.lambda2 = tileSel.values;
+        // zonethree.lambda3 = tileSel.values;
+        // console.log(zoneone.lambda1, tileSel.values, tileSel);
+    }
+
+    if (tileData.Table2.content === 'multiple') {
+        workoutData(tileData);
+        console.log(multiTiles.select_tile);
+        tilenoas.select_tile = multiTiles.select_tile;
+
+        // tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
+        // tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
+    }
+    // updateTile();
 }
 
 function checkMaterial() {
@@ -729,11 +750,6 @@ function checkMaterial() {
         });
     }
 
-    tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
-    tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
-    zoneone.lambda1 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
-    zonetwo.lambda2 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
-    zonethree.lambda3 = isSinglepaddyValid.value === true ? tileDatas.Table2.Direct_Deck : tileData.Table2.Direct_Deck;
     const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
     const slopeRange = clampNumber1(2, Number(dims.slope), 12);
     console.log(slopeRange);
@@ -773,7 +789,28 @@ function checkMaterial() {
         zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
         console.log(zonethree.mg3);
     }
+    console.log(isSinglepaddyValid);
+    // if (tileData.table2_map === '') {
+    tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
+    tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
 
+    if (isSinglepaddyValid.value === false && tileData.Table2.content === 'multiple') {
+        zoneone.lambda1 = tileSel.values;
+        zonetwo.lambda2 = tileSel.values;
+        zonethree.lambda3 = tileSel.values;
+    } else {
+        zoneone.lambda1 = tileData.Table2.Direct_Deck;
+        zonetwo.lambda2 = tileData.Table2.Direct_Deck;
+        zonethree.lambda3 = tileData.Table2.Direct_Deck;
+    }
+    if (isSinglepaddyValid.value === true) {
+        zoneone.lambda1 = tileDatas.Table2.Direct_Deck;
+        zonetwo.lambda2 = tileDatas.Table2.Direct_Deck;
+        zonethree.lambda3 = tileDatas.Table2.Direct_Deck;
+    }
+
+    // }
+    console.log(zoneone.lambda1, tileSel.values);
     const result1 = computed(() => zoneone.zone * zoneone.lambda1);
 
     const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
@@ -1207,7 +1244,25 @@ function callReset() {
     resetSingle();
 }
 
-watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, () => {});
+watch(
+    checkInputSystem,
+    MF,
+    validateRoofSlope,
+
+    ismrValidMR3,
+    ismrValidMR1,
+    ismrValidMR2,
+    ismrInvalid2,
+    ismrInvalid3,
+    ismrInvalid1,
+    checkMaterial,
+    updateselectSystem,
+    EcheckInputSystem,
+    updateselectSystemE,
+    checkMaterial,
+    updateTile,
+    () => {}
+);
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -1380,16 +1435,21 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
-            <div class="min-w-[770px] flex flex-col gap-2">
-                <label style="color: whitesmoke" for="description">Tile Description</label>
-                <InputText id="description" v-model="tilenoas.description" />
+            <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
+                <label style="color: whitesmoke" for="material">Tile Type</label>
+                <!-- @change="updateTile" -->
+                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
             <!--  -->
         </div>
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
+            <!-- <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
                 <label style="color: whitesmoke" for="material">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
+            </div> -->
+            <div class="min-w-[770px] flex flex-col gap-2">
+                <label style="color: whitesmoke" for="description">Tile Description</label>
+                <InputText id="description" v-model="tilenoas.description" />
             </div>
 
             <div v-show="showMaterialValid" class="w-128 flex flex-col gap-2">
@@ -1470,7 +1530,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     width: 100%;
     max-height: 150px;
     overflow-y: auto;
-    /* background: white; */
+    background: white;
     z-index: 1000;
 }
 

@@ -4,10 +4,9 @@ import { useburValidation } from '@/composables/Validation/use-burHeight';
 import { useburSlopeValidation } from '@/composables/Validation/use-burSlope';
 import { useBurStore } from '@/stores/burStore';
 // import useInput from '@/composables/use-input';
-import { useRoofListStore } from '@/stores/roofList';
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
 import DripEdgeComponent from '@/components/DripEdgeComponent.vue';
+import { useBurpdfStore } from '@/stores/burpdfStore';
+import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
@@ -26,6 +25,8 @@ const props = defineProps({
         default: 'LowSlope'
     }
 });
+const burpdfStore = useBurpdfStore();
+const { burpdfinput, addpdfData } = storeToRefs(burpdfStore);
 // function addCheckmarks() {
 //     if (errorMessage.value === null || errorHeightMessage.value === null) {
 //         isvalueValid = true;
@@ -132,7 +133,7 @@ const validateHeightInput = () => {
 };
 function validateHeight() {
     validateHeightInput();
-    console.log(dims.height);
+    console.log(dims, burpdfinput.value[0]);
 }
 
 // function selectSystem() {
@@ -192,7 +193,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
 
             <div class="w-128 gap-2" style="margin-left: 12px">
                 <!-- @change="getdeckType"  -->
-                <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" />
+                <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" @change="getdeckType" />
             </div>
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="slope" style="color: red">Slope *</label>

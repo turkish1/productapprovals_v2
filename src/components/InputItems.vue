@@ -298,7 +298,25 @@ function getIndexs() {
         console.log('Not Mounted');
     }
 }
+const showSuggestions = ref(false);
 
+// Method to update the input field with selected suggestion
+const selectSuggestion = (suggestion) => {
+    query.value = suggestion;
+    showSuggestions.value = false;
+};
+
+// Method to handle input change
+const onInput = () => {
+    showSuggestions.value = true;
+};
+
+// Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
+const hideSuggestions = () => {
+    setTimeout(() => {
+        showSuggestions.value = false;
+    }, 200);
+};
 function valueEntered() {
     if (slope.value) {
         let slopeNumber = Number(slope.value);

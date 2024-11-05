@@ -4,10 +4,9 @@ import { useburValidation } from '@/composables/Validation/use-burHeight';
 import { useburSlopeValidation } from '@/composables/Validation/use-burSlope';
 import { useBurStore } from '@/stores/burStore';
 // import useInput from '@/composables/use-input';
+
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, until } from '@vueuse/shared';
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
+import { invoke } from '@vueuse/shared';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
@@ -34,7 +33,7 @@ const dims = reactive({
     height: '',
     slope: ''
 });
-const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
+const type = ref([{ name: ' Select Deck Type ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 const whatChanged = computed(() => {
     setRoofInputs();
 
@@ -68,7 +67,6 @@ function findSelected() {
 }
 const dt = ref('');
 function getdeckType(event) {
-    console.log(selectedDeck._value.name, event.value.name);
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
         console.log(dt.value);
@@ -156,10 +154,14 @@ function updateselectSystem() {
             primeone.value = Perimeters.p1_two;
             primethree.value = Perimeters.p2_two;
         }
-        if (sp2[2] === ') ⁵') {
-            primeone.value = Perimeters.p1_five;
-            primethree.value = Perimeters.p2_five;
+        if (sp3[3] === '³') {
+            primeone.value = Perimeters.p1_three;
+            primethree.value = Perimeters.p2_three;
         }
+        // if (sp2[2] === ') ⁵') {
+        //     primeone.value = Perimeters.p1_five;
+        //     primethree.value = Perimeters.p2_five;
+        // }
         if (sp4[2] === '⁴' || sp4[2] === '⁵') {
             primeone.value = Perimeters.p1_four;
             primethree.value = Perimeters.p2_four;
@@ -178,74 +180,8 @@ function updateselectSystem() {
     });
 }
 
-// const generatePdf = () => {
-//     const element = document.getElementById('bur');
-//     console.log(element);
-//     // Use html2canvas to capture the element as a canvas
-//     html2canvas(element).then((canvas) => {
-//         const imgData = canvas.toDataURL('image/png');
-
-//         // Create a new jsPDF instance
-//         const pdf = new jsPDF();
-
-//         // Add some content
-//         pdf.text('This is a sample PDF with a watermark', 20, 30);
-
-//         // Set the opacity for the watermark text
-//         pdf.setGState(new pdf.GState({ opacity: 0.2 })); // Adjust opacity
-
-//         // Set font size, alignment, and rotation for the watermark
-//         pdf.setFontSize(50);
-//         pdf.setTextColor(150, 150, 150); // Light gray color for watermark
-//         pdf.text('WATERMARK', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() / 2, {
-//             angle: 45, // Rotate watermark text
-//             align: 'center'
-//         });
-
-//         // Reset the opacity for the rest of the content
-//         pdf.setGState(new pdf.GState({ opacity: 1 }));
-//         // Add the captured image data to the PDF
-//         pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-
-//         const pdfBlob = pdf.output('blob');
-
-//         // Save the PDF Blob using the File System Access API
-//         savePdfBlobSilently(pdfBlob);
-//     });
-
-//     const savePdfBlobSilently = async (blob) => {
-//         try {
-//             // Use the File System Access API to request a file handle
-//             const fileHandle = await window.showSaveFilePicker({
-//                 suggestedName: 'bur.pdf',
-//                 types: [
-//                     {
-//                         description: 'PDF file',
-//                         accept: {
-//                             'application/pdf': ['.pdf']
-//                         }
-//                     }
-//                 ]
-//             });
-
-//             // Create a writable stream
-//             const writable = await fileHandle.createWritable();
-
-//             // Write the Blob data to the file
-//             await writable.write(blob);
-
-//             // Close the writable stream
-//             await writable.close();
-
-//             console.log('PDF saved successfully without popping download dialog!');
-//         } catch (error) {
-//             console.error('Error saving file:', error);
-//         }
-//     };
-// };
 invoke(async () => {
-    await until(pdfcleared).changed();
-    generatePdf();
+    // await until(pdfcleared).changed();
 });
 watch(setRoofInputs, validateRoofSlope, validateHeight, findSelected, updateselection, updateselectSystem, syst, dims.per, selSytem, type, () => {});
 watchEffect(setRoofInputs, sB, whatChanged, syst, selectedSystem, validateRoofSlope, () => {});

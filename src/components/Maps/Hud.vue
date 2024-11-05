@@ -4,6 +4,27 @@
         <div class="static-overlay"></div>
         <div class="tracking-bars top"></div>
         <div class="tracking-bars bottom"></div>
+        <div class="drone-list">
+            <h1 class="hud-title">Target Acquisitions</h1>
+            <ul class="target-list">
+                <li v-for="(target, index) in targets" :key="index" class="target-item">
+                    <div class="target-info">
+                        <div class="target-id">
+                            <span class="label">ID: </span>
+                            <span class="typing" :style="{ animationDelay: `${index * 0.5}s` }">{{ target.id }}</span>
+                        </div>
+                        <div class="target-name">
+                            <span class="label">Name: </span>
+                            <span class="typing" :style="{ animationDelay: `${index * 0.7}s` }">{{ target.name }}</span>
+                        </div>
+                        <div class="target-status">
+                            <span class="label">Status: </span>
+                            <span class="typing" :style="{ animationDelay: `${index * 0.9}s` }">{{ target.status }}</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
         <div class="hud-overlay">
             <div class="crosshair"></div>
             <div class="target-lock"></div>
@@ -12,9 +33,130 @@
     </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from 'vue';
+
+// Define targets with mock data
+const targets = ref([
+    { id: 'TGT-01', name: 'Alpha', status: 'Locked' },
+    { id: 'TGT-02', name: 'Bravo', status: 'Tracking' },
+    { id: 'TGT-03', name: 'Charlie', status: 'Engaged' },
+    { id: 'TGT-04', name: 'Delta', status: 'Lost' }
+]);
+</script>
 
 <style scoped>
+.drone-list {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #00ff00;
+    font-family: 'Courier New', Courier, monospace;
+    background: #001f3f;
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #00ff0050;
+    overflow: hidden;
+}
+
+/* Title styling */
+.hud-title {
+    text-align: center;
+    font-size: 1.5rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #00ff00;
+    margin-bottom: 10px;
+}
+
+/* Target list styling */
+.target-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.target-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px dashed #00ff00;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.2);
+    animation: item-entry 0.5s ease-in-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+@keyframes item-entry {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Typing effect */
+.typing {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid #00ff00;
+    animation:
+        typing 1.5s steps(15) forwards,
+        blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink-caret {
+    50% {
+        border-color: transparent;
+    }
+}
+/* Target item detail styling */
+.target-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.target-id,
+.target-name,
+.target-status {
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Target lock animation for locked status */
+.target-status[data-status='Locked'] {
+    color: #ff0000;
+    animation: target-lock 1s infinite alternate;
+}
+
+@keyframes target-lock {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 /* Main drone view */
 .drone-bad-signal {
     position: relative;
@@ -72,6 +214,16 @@
     100% {
         transform: translateX(-5%);
     }
+}
+/* Typing effect */
+.typing {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid #00ff00;
+    animation:
+        typing 1.5s steps(15) forwards,
+        blink-caret 0.75s step-end infinite;
 }
 /* Static effect overlay */
 .static-overlay {
