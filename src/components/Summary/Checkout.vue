@@ -85,13 +85,13 @@ onMounted(() => {
 });
 
 const callState = tryOnMounted(() => {
-    if (roofType.value[0].item === 'Asphalt Shingle') {
+    if (roofType.value.length === 0) {
+        return '';
+    } else if (roofType.value[0].item === 'Asphalt Shingle') {
         isRoofShingleValid.value = true;
-    }
-    if (roofType.value[0].item === 'Adhesive Set Tile') {
+    } else if (roofType.value[0].item === 'Adhesive Set Tile') {
         isRoofTileADValid.value = true;
-    }
-    if (roofType.value[0].item === 'Mechanical Fastened Tile') {
+    } else if (roofType.value[0].item === 'Mechanical Fastened Tile') {
         isRoofTileMechanicalValid.value = true;
     }
 });

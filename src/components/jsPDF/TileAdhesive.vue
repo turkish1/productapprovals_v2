@@ -26,15 +26,11 @@ const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const tileStore = useGlobalStates();
 
-const address = ref(permitStore.$state.permitapp[0].formdt.address);
-const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-
-const dba = ref(getUser.value[0].dba);
-
 let isRoofTileADValid = ref(false);
 const callState = tryOnMounted(() => {
-    if (roofType.value[0].item === 'Adhesive Set Tile') {
+    if (roofType.value.length === 0) {
+        return '';
+    } else if (roofType.value[0].item === 'Adhesive Set Tile') {
         isRoofTileADValid.value = true;
         generatePDF();
     }
@@ -83,7 +79,11 @@ const generatePDF = () => {
         const area = ref(tileStore.tilenoa.value[0].area);
         const deckType = ref(tileStore.tilenoa.value[0].deckType);
         const perimeter = ref(tileStore.tilenoa.value[0].perimeter);
+        const address = ref(permitStore.$state.permitapp[0].formdt.address);
+        const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
+        const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
 
+        const dba = ref(getUser.value[0].dba);
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
         const approved = 'Approved';

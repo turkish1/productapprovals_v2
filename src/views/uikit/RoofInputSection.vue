@@ -96,12 +96,6 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                 <Step value="4">Mechanical</Step>
                 <Step value="5">Summary</Step>
             </StepList>
-            <!-- <div class="flex flex-col items-center gap-2" style="margin-left: 300px; margin-top: 1200px; background-color: #eae7e2">
-                <span class="text-xl font-medium">Scroll Down</span>
-                <span class="slidedown-icon h-8 w-8 text-primary-contrast rounded-full inline-flex items-center justify-center" style="background-color: #eae7e2">
-                    <i class="pi pi-arrow-down" />
-                </span>
-            </div> -->
 
             <StepPanels class="object-scale-down h-0 w-1200 ...">
                 <StepPanel v-slot="{ activateCallback }" value="1">
@@ -115,9 +109,10 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                                 icon="pi pi-arrow-right"
                                 @click="
                                     activateCallback('2');
-                                    isValidbur = true;
+                                    updateBur();
                                 "
                             />
+                            <!--   isValidbur = true; -->
                         </div>
                     </div>
                 </StepPanel>
@@ -135,9 +130,10 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                                 iconPos="right"
                                 @click="
                                     activateCallback('3');
-                                    isValidtile = true;
+                                    updateTile();
                                 "
                             />
+                            <!-- isValidtile = true; -->
                         </div>
                     </div>
                 </StepPanel>
@@ -153,9 +149,10 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
                                 iconPos="right"
                                 @click="
                                     activateCallback('4');
-                                    isValidmechanical = true;
+                                    updateMechanical();
                                 "
                             />
+                            <!-- isValidmechanical = true; -->
                         </div>
                     </div>
                     <!--  style="margin-top: 650px" -->
@@ -187,24 +184,4 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
         <!-- </div> -->
     </div>
 </template>
-<style scoped>
-@keyframes slidedown-icon {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(20px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
-}
-
-.slidedown-icon {
-    animation: slidedown-icon;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-}
-</style>
+<style scoped></style>

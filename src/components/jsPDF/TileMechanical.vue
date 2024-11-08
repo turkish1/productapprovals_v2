@@ -26,18 +26,20 @@ const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
 
-const area = ref(roofStore.$state.roofList[0].dim3);
-const address = ref(permitStore.$state.permitapp[0].formdt.address);
-const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
 // const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
-const dba = ref(getUser.value[0].dba);
 
 const callState = tryOnMounted(() => {
-    if (roofType.value[0].item === 'Mechanical Fastened Tile') {
+    if (roofType.value.length === 0) {
+        return '';
+    } else if (roofType.value[0].item === 'Mechanical Fastened Tile') {
         isRoofTileMechanicalValid.value = true;
         generatePDF();
     }
+
+    // if (roofType.value[0].item === 'Mechanical Fastened Tile') {
+    //     isRoofTileMechanicalValid.value = true;
+    //     generatePDF();
+    // }
 });
 
 invoke(async () => {
@@ -68,7 +70,11 @@ const generatePDF = () => {
         const deckType = ref(mechStore.tilemech.value[0].deckType);
         const perimeter = ref(mechStore.tilemech.value[0].perimeter);
         const prescriptive = ref(mechStore.tilemech.value[0].prescriptiveSelection);
-
+        const area = ref(roofStore.$state.roofList[0].dim3);
+        const address = ref(permitStore.$state.permitapp[0].formdt.address);
+        const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
+        const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+        const dba = ref(getUser.value[0].dba);
         const doc = new jsPDF();
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity

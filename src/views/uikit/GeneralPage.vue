@@ -167,7 +167,7 @@ const generatePdf = () => {
 
 const navigateNext = () => {
     pdfcleared.value = true;
-    router.push('/roofinputsection');
+    router.push('/dynamicstepper');
 };
 invoke(async () => {
     await until(pdfcleared).changed();

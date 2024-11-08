@@ -23,15 +23,21 @@ const roofStore = useRoofListStore();
 const shingleStore = useShingleStore();
 const polypropolyneStore = usePolyStore();
 const store = useRoofListStore();
+
+// const systemAreaImport =  ref(roofStore.$state.roofList[0].dim1);
 const roofType = ref(store.$state.roofList);
-const area = ref(roofStore.$state.roofList[0].dim1);
-const address = ref(permitStore.$state.permitapp[0].formdt.address);
-const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const dba = ref(getUser.value[0].dba);
+
+// const area = ref(roofStore.$state.roofList[0].dim1);
+// const address = ref(permitStore.$state.permitapp[0].formdt.address);
+// const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
+// const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+// const dba = ref(getUser.value[0].dba);
 let isRoofShingleValid = ref(false);
 const callState = tryOnMounted(() => {
-    if (roofType.value[0].item === 'Asphalt Shingle') {
+    console.log(roofType);
+    if (roofType.value.length === 0) {
+        return '';
+    } else if (roofType.value[0].item === 'Asphalt Shingle') {
         isRoofShingleValid.value = true;
         generatePDF();
     }
@@ -59,11 +65,15 @@ const generatePDF = () => {
             console.log(isPOLYValid);
         }
         // Initialize jsPDF instance
+        const address = ref(permitStore.$state.permitapp[0].formdt.address);
+        const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
+        const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+        const dba = ref(getUser.value[0].dba);
         const height = ref(shingleStore.$state.inputshingle[0].shingleData.height);
         const slope = ref(shingleStore.$state.inputshingle[0].shingleData.slope);
         const deckType = ref(shingleStore.$state.inputshingle[0].shingleData.deckType);
-        console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
-
+        // console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
+        const area = ref(roofStore.$state.roofList[0].dim1);
         const doc = new jsPDF();
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity

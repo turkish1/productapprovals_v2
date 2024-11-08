@@ -41,6 +41,11 @@ const router = createRouter({
                     component: () => import('@/components/UserLanding/UserDash.vue')
                 },
                 {
+                    path: '/dynamicstepper',
+                    name: 'dynamicstepper',
+                    component: () => import('@/components/Stepper/DynamicStepper.vue')
+                },
+                {
                     path: '/doralapp',
                     name: 'doralapp',
                     component: () => import('@/components/Summary/DoralPermitApp.vue')
