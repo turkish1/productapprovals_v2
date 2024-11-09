@@ -169,11 +169,10 @@ watchEffect(map, getCoordinates, () => {});
 
 .tracking-software {
     display: flex;
-    justify-content: left;
+    justify-content: center;
     align-items: center;
-    width: 50%;
+    width: 80%;
     height: 30vh;
-
     overflow: hidden;
 }
 
