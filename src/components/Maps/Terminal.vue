@@ -1,25 +1,32 @@
 <script setup>
-import { useRoofListStore } from '@/stores/roofList';
+import { useGlobalState } from '@/stores/accountsStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
-const store = useRoofListStore();
 
-const { roofList } = storeToRefs(store);
+const permitstore = usePermitappStore();
+const { permitapp } = storeToRefs(permitstore);
 
-const { toggleCompleted } = storeToRefs(store);
-
+const { accountUsers } = useGlobalState();
 const lines = [
     'Initializing system...',
     'Loading modules...',
     'Connecting to server...',
     'Server connection established.',
-    'Fetching data...',
-    'Data received successfully.',
-    'Processing information...',
-    'System ready.',
-    'Awaiting Roof System Selection...'
+    `${accountUsers._value[0].dba}...`,
+    `${accountUsers._value[0].license}...`,
+    `${accountUsers._value[0].expiration_date}...`,
+    `${accountUsers._value[0].secondary_status}...`
 ];
 
+let master = ref();
+let process = ref();
+let dba = ref();
+let jobaddress = ref();
+let contractor = ref();
+permitapp.value.forEach((item, index) => {
+    (master.value = item.formdt.permit), (process.value = item.formdt.processNumber), (jobaddress.value = item.formdt.address), (contractor.value = item.formdt.contractor);
+});
 // Controls the visible lines
 const visibleLines = ref([]);
 
@@ -46,32 +53,32 @@ function scrollTerminal() {
 onMounted(() => {
     scrollTerminal();
 });
+onMounted(() => {
+    if (accountUsers._value[0].DBA === '') {
+        console.log(accountUsers._value[0]);
+        return null;
+    } else {
+        dba.value = accountUsers._value[0].dba;
+        console.log(accountUsers._value[0]);
+    }
+});
 </script>
+
 <template>
     <div class="terminal">
         <div class="terminal-content">
             <div v-for="(line, index) in visibleLines" :key="index" class="terminal-line">
                 {{ line }}
             </div>
-            <div v-for="roof in roofList" :key="roof.id" class="item">
-                <div class="content">
-                    <span :class="{ completed: roof.completed }">{{ roof.item }} {{ roof.dim1 }} {{ roof.dim2 }} {{ roof.dim3 }} {{ roof.dim4 }} {{ roof.dim5 }}</span>
-                    <!-- <span :class="{ completed: roof.completed }">{{ roof.dim1 }}</span> -->
-                    <span @click.stop="toggleCompleted(roof.id)">&#10004;</span>
-                </div>
-            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.completed {
-    text-decoration: line-through;
-}
 .terminal {
     width: 100%;
-    max-width: 500px;
-    height: 200px;
+    max-width: 300px;
+    height: 400px;
     background-color: black;
     color: #00ff00;
     font-family: monospace;
@@ -88,7 +95,7 @@ onMounted(() => {
 
 .terminal-line {
     opacity: 0;
-    animation: fadeIn 0.5s ease forwards;
+    animation: fadeIn 1.5s ease forwards;
 }
 @keyframes fadeIn {
     from {

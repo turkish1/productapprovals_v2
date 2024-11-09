@@ -3,9 +3,9 @@ import CadViewer from '@/components/Editor/CadViewer.vue';
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, until } from '@vueuse/core';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { invoke } from '@vueuse/core';
+// import html2canvas from 'html2canvas';
+// import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
@@ -30,7 +30,7 @@ let checkedmtile = ref(false);
 let checkedadtile = ref(false);
 let checkedshingle = ref(false);
 let checkedmetal = ref(false);
-// let checkedslope = ref();
+
 let master = ref();
 let process = ref();
 let dba = ref();
@@ -51,9 +51,8 @@ onMounted(() => {
         }
 
         if (item.item === 'Low Slope') {
-            console.log(item.dim2);
             low1.value = item.dim2;
-            console.log(low1.value);
+
             checkedslp.value = true;
         }
 
@@ -76,10 +75,9 @@ onMounted(() => {
         } else {
             dba.value = accountUsers._value[0].dba;
         }
-        // (slope.value = item.formdt.permit), (mtile.value = item.formdt.processNumber), (adtile.value = item.formdt.phone), (mtile.value = item.formdt.email), (shingle.value = item.formdt.contractor);
     });
 
-    permitapp.value.forEach((item, index) => {
+    permitapp.value.forEach((item) => {
         (master.value = item.formdt.permit), (process.value = item.formdt.processNumber), (jobaddress.value = item.formdt.address), (contractor.value = item.formdt.contractor);
     });
 
@@ -101,77 +99,13 @@ function roofArea() {
     console.log(steep1.value);
     total.value = lowslope.value + steep.value;
 }
-const pdfcleared = ref(false);
-const generatePdf = () => {
-    const element = document.getElementById('generalpg');
-    console.log(element);
-    // Use html2canvas to capture the element as a canvas
-    html2canvas(element).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-
-        // Create a new jsPDF instance
-        const pdf = new jsPDF();
-        pdf.text(`${process.value}`, 20, 30);
-
-        // Set the opacity for the watermark text
-        pdf.setGState(new pdf.GState({ opacity: 0.4 })); // Adjust opacity
-
-        // Set font size, alignment, and rotation for the watermark
-        pdf.setFontSize(24);
-        pdf.setTextColor(150, 150, 150); // Light gray color for watermark
-        pdf.text('DigitalSolutions', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() / 2, {
-            angle: 0, // Rotate watermark text
-            align: 'left',
-            baseline: 'bottom',
-            renderingMode: 'fill'
-        });
-        console.log(pdf.text);
-        // Add the captured image data to the PDF
-        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-        // Reset the opacity for the rest of the content
-        pdf.setGState(new pdf.GState({ opacity: 1 }));
-
-        // Add the captured image data to the PDF
-
-        const pdfBlob = pdf.output('blob');
-
-        // Save the PDF Blob using the File System Access API
-        savePdfBlobSilently(pdfBlob);
-    });
-
-    const savePdfBlobSilently = async (blob) => {
-        try {
-            // Use the File System Access API to request a file handle
-            const fileContents = blob;
-            const blobs = new Blob([fileContents], { type: 'application/pdf' });
-
-            // Step 2: Create a temporary link element
-            const link = document.createElement('a');
-
-            // Step 3: Create a URL for the blob and set it as the link href
-            link.href = URL.createObjectURL(blobs);
-            link.download = `${process.value}-general-page.pdf`; // Specify the filename
-
-            // Step 4: Programmatically click the link to trigger the download
-            link.click();
-
-            // Step 5: Clean up the URL object
-            URL.revokeObjectURL(link.href);
-
-            console.log('PDF saved successfully without popping download dialog!');
-        } catch (error) {
-            console.error('Error saving file:', error);
-        }
-    };
-};
 
 const navigateNext = () => {
-    pdfcleared.value = true;
     router.push('/dynamicstepper');
 };
 invoke(async () => {
-    await until(pdfcleared).changed();
-    generatePdf();
+    // await until(pdfcleared).changed();
+    // generatePdf();
 });
 </script>
 

@@ -62,7 +62,6 @@ tryOnMounted(() => {
 });
 
 function checkState() {
-    console.log(roofList.value.length);
     for (let i = 0; i <= roofList.value.length - 1; i++) {
         console.log(i);
         if (roofList.value[i].item === 'Asphalt Shingle') {
@@ -91,6 +90,7 @@ const steps = ref([
     { label: '', component: '' },
     { label: '', component: '' },
     { label: '', component: '' },
+    { label: '', component: '' },
     { label: '', component: '' }
 ]);
 
@@ -102,25 +102,27 @@ function validateState() {
     booleanValues.value[3] = isValidmechanical.value;
     booleanValues.value[4] = isValidcheckout.value;
 
+    const nonEmptyValues = booleanValues.value.filter((value) => value !== '' && value !== null && value !== undefined);
+    const countTrue = nonEmptyValues.filter((value) => value === true).length;
     console.log(booleanValues);
+    for (let k = 0; k <= countTrue; k++) {
+        console.log(k);
+        if (isValidshingle.value === true) {
+            steps.value[k].label = k + 1;
+        } else {
+            steps.value[k].label = k;
+        }
+
+        console.log(k);
+    }
+
     for (let i = 0; i < booleanValues.value.length; i++) {
         // count the false values
 
-        const nonEmptyValues = booleanValues.value.filter((value) => value !== '' && value !== null && value !== undefined);
-        const countTrue = nonEmptyValues.filter((value) => value === true).length;
-
         for (let j = 0; j <= nonEmptyValues.length; j++) {
-            console.log(nonEmptyValues, j);
             if (nonEmptyValues[j] === true) {
-                for (let k = 1; k <= countTrue; k++) {
-                    steps.value[k].label = k;
-
-                    console.log(steps.value[k].label);
-                    if (booleanValues.value[i] === true) {
-                        console.log(i);
-                        steps.value[i].component = comp.component[i];
-                    }
-                    // steps.value[k].component = comp.component[k];
+                if (booleanValues.value[i] === true) {
+                    steps.value[i].component = comp.component[i];
                 }
             }
         }
@@ -162,6 +164,7 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     flex-direction: row;
     align-items: left;
     width: 100%;
+    height: 100%;
     margin-top: 100px;
 }
 
@@ -188,7 +191,7 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 }
 
 .line {
-    width: 700px;
+    width: 500px;
     height: 0.5px;
     background-color: #f5ece6;
     padding-inline-start: 5px;

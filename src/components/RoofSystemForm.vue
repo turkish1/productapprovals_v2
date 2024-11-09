@@ -30,13 +30,6 @@ function clearSelected() {
     store.$reset();
 }
 
-// onMounted(() => {
-//     AOS.init({
-//         duration: 800, // Animation duration in ms
-//         easing: 'ease-in-out', // Easing for animations
-//         once: true // Whether animation happens only once
-//     });
-// });
 function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
     item = selectedItem.value.name;
 
@@ -110,4 +103,8 @@ function clear() {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.card {
+    background-size: cover;
+}
+</style>
