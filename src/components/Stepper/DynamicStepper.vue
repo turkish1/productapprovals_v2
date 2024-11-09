@@ -105,16 +105,35 @@ function validateState() {
     const nonEmptyValues = booleanValues.value.filter((value) => value !== '' && value !== null && value !== undefined);
     const countTrue = nonEmptyValues.filter((value) => value === true).length;
     console.log(booleanValues);
-    for (let k = 0; k <= countTrue; k++) {
-        console.log(k);
-        if (isValidshingle.value === true) {
-            steps.value[k].label = k + 1;
-        } else {
-            steps.value[k].label = k;
-        }
-
-        console.log(k);
+    // for (let k = 0; k <= countTrue; k++) {
+    //     console.log(k);
+    if (isValidshingle.value === true) {
+        console.log(isValidshingle.value, 'Entered if statement shingle');
+        steps.value[0].label = 'Shingles';
     }
+    if (isValidbur.value === true) {
+        console.log(isValidbur.value, 'Entered if statement bur');
+        steps.value[1].label = 'Low Slope';
+    }
+    if (isValidtile.value === true) {
+        console.log(isValidtile.value, 'Entered if statement tile!');
+        steps.value[2].label = 'Adhesive Tile';
+    }
+    if (isValidmechanical.value === true) {
+        console.log(isValidmechanical.value, 'Entered if statement tile!');
+        steps.value[3].label = 'Adhesive Tile';
+    }
+    if (isValidcheckout.value === true) {
+        console.log(isValidtile.value, 'Entered if statement checkout!');
+        steps.value[4].label = 'Checkout';
+    }
+    if (isValidcheckout.value === true) {
+        console.log(isValidtile.value, 'Entered if statement checkout!');
+        steps.value[5].label = 'Checkout';
+    }
+
+    //     console.log(k);
+    // }
 
     for (let i = 0; i < booleanValues.value.length; i++) {
         // count the false values
@@ -179,7 +198,7 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     text-align: center;
     font-weight: bold;
     border-radius: 50%;
-    width: 30px;
+    width: 90px;
     height: 30px;
     border: 1px solid #595959;
     background-color: #595959;
