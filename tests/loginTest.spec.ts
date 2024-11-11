@@ -12,23 +12,6 @@ test.describe('test initial pages', () => {
         await expect(page).toHaveTitle(/Digital Solutions/);
     });
 
-    // test('get started link', async ({ page }) => {
-    // Click the get started link.
-
-    // Expects page to have a heading with the name of Installation.
-    //   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-    //     await page.getByLabel('Click to Register').click();
-    // });
-    // test('get started link', async ({ page }) => {
-    //     // Click the get started link.
-    //     await page.locator('#username').fill('jj');
-
-    //     await page..locator('#password1')fill('jj');
-    //     // Expects page to have a heading with the name of Installation.
-    //     //   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-    //     await page.getByLabel('Sign In').click();
-    // });
-
     test('Sigin', async ({ page }) => {
         // Click the get started link
 

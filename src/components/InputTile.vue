@@ -1522,6 +1522,7 @@ watch(
 }
 
 .suggestions {
+    color: black;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -1539,9 +1540,9 @@ watch(
     cursor: pointer;
 }
 
-/* .suggestions li:hover {
+.suggestions li:hover {
     background-color: #f0f0f0;
-} */
+}
 @keyframes slidedown-icon {
     0% {
         transform: translateY(0);
@@ -1560,5 +1561,8 @@ watch(
     animation: slidedown-icon;
     animation-duration: 3s;
     animation-iteration-count: infinite;
+}
+.p-inputtext {
+    color: black;
 }
 </style>

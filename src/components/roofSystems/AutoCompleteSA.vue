@@ -142,6 +142,7 @@ input {
 }
 
 .suggestions {
+    color: black;
     list-style: none;
     padding: 0;
     margin: 0;
