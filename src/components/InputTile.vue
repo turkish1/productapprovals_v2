@@ -667,9 +667,11 @@ function checkInput() {
             isTileSelectionValid = true;
             isMultiTileValid = true;
             showMaterialValid = true;
+            console.log(tileData.Table2.content, tileDatas.Table2.content);
         } else {
             showMaterialValid = true;
             isTileValid = true;
+            isTileSelectionValid = false;
             tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
         }
     }
@@ -793,7 +795,7 @@ function checkMaterial() {
     // if (tileData.table2_map === '') {
     tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
     tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
-
+    console.log(tilenoas.material, tilenoas.paddies);
     if (isSinglepaddyValid.value === false && tileData.Table2.content === 'multiple') {
         zoneone.lambda1 = tileSel.values;
         zonetwo.lambda2 = tileSel.values;
@@ -1244,25 +1246,7 @@ function callReset() {
     resetSingle();
 }
 
-watch(
-    checkInputSystem,
-    MF,
-    validateRoofSlope,
-
-    ismrValidMR3,
-    ismrValidMR1,
-    ismrValidMR2,
-    ismrInvalid2,
-    ismrInvalid3,
-    ismrInvalid1,
-    checkMaterial,
-    updateselectSystem,
-    EcheckInputSystem,
-    updateselectSystemE,
-    checkMaterial,
-    updateTile,
-    () => {}
-);
+watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, updateTile, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -1392,7 +1376,6 @@ watch(
                 <div class="min-w-[680px] flex flex-col gap-2">
                     <label style="color: whitesmoke" class="mt-3" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
-                    <!-- @click="EcheckInputSystem" -->
                 </div>
                 <div class="min-w-[480px] flex flex-col gap-2">
                     <label style="color: whitesmoke" for="description">(UDL) Description</label>
@@ -1437,16 +1420,11 @@ watch(
 
             <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
                 <label style="color: whitesmoke" for="material">Tile Type</label>
-                <!-- @change="updateTile" -->
+
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
-            <!--  -->
         </div>
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <!-- <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
-                <label style="color: whitesmoke" for="material">Tile Type</label>
-                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
-            </div> -->
             <div class="min-w-[770px] flex flex-col gap-2">
                 <label style="color: whitesmoke" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
