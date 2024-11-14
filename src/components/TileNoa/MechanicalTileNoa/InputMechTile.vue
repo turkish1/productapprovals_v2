@@ -261,8 +261,9 @@ function checkTile() {
     }
 
     if (datamountedMech.value[0].Table2.content === 'multiple') {
-        workoutData(datamountedMech);
-
+        console.log(datamountedMech, multiTiles.select_tile);
+        workoutData(datamountedMech, multiTiles.select_tile);
+        isMultiTileValid = true;
         tilenoas.select_tile = multiTiles.select_tile;
     }
 
@@ -300,11 +301,10 @@ function updateTile(event) {
         if (event.value === key) {
             // let sel = tilenoas.select_tile;
             tileSel.values = value[0];
-            console.log(value[0], tileSel.values);
+
             zoneone.lambda1 = tileSel.values;
             zonetwo.lambda2 = tileSel.values;
             zonethree.lambda3 = tileSel.values;
-            console.log(zoneone.lambda1);
         }
     });
     let types = multiTiles.tile_map;
@@ -316,6 +316,7 @@ function updateTile(event) {
             // let sel = tilenoas.select_tile;
             tileValue.v = value;
             console.log(tileValue.v);
+            console.log(value);
         }
         const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
         const slopeRange = clampNumber1(2, Number(dims.slope), 12);
@@ -360,7 +361,7 @@ function updateTile(event) {
     });
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
-    checkMaterial();
+    // checkMaterial();
 }
 function sysEcheckInput() {
     console.log(Edatamounted.value);
@@ -391,6 +392,7 @@ const selectedMechanical = ref(null);
 const selectedsysNoa = ref(null);
 
 const selectedsystemE = ref(null);
+let isMultiTileValid = ref(false);
 let isTileTypeValid = ref(false);
 let isUDLValid = ref(false);
 let isUDLNOAValid = ref(false);
@@ -619,11 +621,14 @@ function checkInput() {
         tilenoas.material = datamountedMech.value[0].material;
 
         if (datamountedMech.value[0].Table2.content === 'multiple') {
-            isTileSelectionValid = true;
+            isTileSelectionValid = false;
+            isMultiTileValid = true;
             showMaterialValid = true;
         } else {
             showMaterialValid = true;
             isTileValid = true;
+            isTileSelectionValid = true;
+            isMultiTileValid = false;
         }
     }
     selectedExposure();
@@ -1279,20 +1284,29 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <!-- <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" /> -->
                 <InputText id="description" v-model="tilenoas.material" />
             </div>
-            <div class="min-w-[700px] flex flex-col gap-2">
-                <label style="color: whitesmoke" for="material">Tile Description</label>
+            <!-- v-show="!isTileTypeValid" -->
+            <div v-show="!isMultiTileValid" class="min-w-[700px] flex flex-col gap-2">
+                <label style="color: whitesmoke" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
         </div>
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10">
-            <div v-show="isTileSelectionValid" class="min-w-[500px] flex flex-col gap-2">
+        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+            <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2">
+                <label style="color: red">Select Mechanical Tile Fastnener *</label>
+                <!-- @click="checkInputSystem" @change="updateselectSystem" @click="checkMaterial"-->
+                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @change="updateMF" />
+            </div>
+        </div>
+
+        <div v-show="isMultiTileValid" class="w-full flex flex-row mt-8 space-x-10">
+            <div class="min-w-[500px] flex flex-col gap-2">
                 <label style="color: whitesmoke" for="selecttile">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
-            <div class="w-72 flex flex-col gap-2">
+            <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
-                <!-- @click="checkInputSystem" @change="updateselectSystem" -->
-                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @change="updateMF" />
+                <!-- @click="checkMaterial"   -->
+                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="updateMF" />
             </div>
         </div>
 
@@ -1366,6 +1380,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 } */
 
 .suggestions {
+    color: black;
     list-style: none;
     padding: 0;
     margin: 0;

@@ -573,11 +573,12 @@ function updateTile(event) {
         console.log(key, value);
 
         if (event.value === key) {
+            console.log(event.value, value);
             tilenoas.description = key;
             // let sel = tilenoas.select_tile;
-            console.log(event.value);
-            tileSel.values = value[0];
-            console.log(value[0], tileSel.values);
+
+            tileSel.values = value;
+
             tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : key;
 
             // tilenoas.select_tile;
@@ -588,6 +589,7 @@ function updateTile(event) {
         }
     });
     let types = multiTiles.tile_map;
+    console.log(types);
     const valMultis = Object.entries(types).map((obj) => {
         const key = obj[0];
         const value = obj[1];
@@ -601,11 +603,12 @@ function updateTile(event) {
         const slopeRange = clampNumber1(2, Number(dims.slope), 12);
         console.log(slopeRange);
         if (slopeRange <= slopeOptions.three) {
-            console.log('Is Less then three', tileDatas.Table3.two);
-
+            console.log('Is Less then three', tileDatas.Table3.two, tileValue.v[0]);
+            tileValue.v[0];
             zoneone.mg1 = tileValue.v[0];
             zonetwo.mg2 = tileValue.v[0];
             zonethree.mg3 = tileValue.v[0];
+            console.log(zoneone.mg1);
         } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
             console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, tileData.Table3.three);
 
@@ -638,14 +641,15 @@ function updateTile(event) {
         const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
 
         const result3 = computed(() => zonethree.zone * zonethree.lambda3);
-
+        console.log(zoneone.mg1, result1);
         zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
         zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
         zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
     });
     tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
     tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
-    checkMaterial();
+    console.log(tilenoas.material, tilenoas.paddies);
+    // checkMaterial();
 }
 function checkInputSA() {
     if (datamounted.value.length !== null) {
@@ -666,10 +670,10 @@ function checkInput() {
         if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple') {
             isTileSelectionValid = true;
             isMultiTileValid = true;
-            showMaterialValid = true;
-            console.log(tileData.Table2.content, tileDatas.Table2.content);
+            showMaterialValid = false;
         } else {
             showMaterialValid = true;
+            isMultiTileValid = false;
             isTileValid = true;
             isTileSelectionValid = false;
             tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
@@ -709,21 +713,15 @@ function checkTile() {
             zonethree.lambda3 = tileSel.values;
             console.log(zoneone.lambda1, tileSel.values, tileSel);
         });
-        // zoneone.lambda1 = tileSel.values;
-        // zonetwo.lambda2 = tileSel.values;
-        // zonethree.lambda3 = tileSel.values;
-        // console.log(zoneone.lambda1, tileSel.values, tileSel);
     }
 
     if (tileData.Table2.content === 'multiple') {
         workoutData(tileData);
         console.log(multiTiles.select_tile);
         tilenoas.select_tile = multiTiles.select_tile;
-
-        // tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
-        // tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
+        isMultiTileValid = true;
+        showMaterialValid = false;
     }
-    // updateTile();
 }
 
 function checkMaterial() {
@@ -848,18 +846,19 @@ function updateMF(event) {
         maps.value.push(k);
         vals.value.push(v);
         console.log(v, k);
-
-        console.log(vals.value[0], vals.value[1]);
     });
     for (let i = 0; i < maps.value.length; i++) {
         console.log(vals.value[i]);
         mfupdate.value = vals.value[i];
+
+        console.log(event.value, maps.value[i], mfupdate.value[i]);
         if (maps.value[i] === event.value) {
             zoneone.mf1 = vals.value[i];
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
         }
-        if ((!zoneone.mf1.includes('.') && zoneone.mf1.length === 4) || (!zonetwo.mf2.includes('.') && zonetwo.mf2.length === 4) || (!zonethree.mf3.includes('.') && zonethree.mf3.length === 4)) {
+
+        if ((!zoneone.mf1.includes('.') && zoneone.mf1.length === 6) || (!zonetwo.mf2.includes('.') && zonetwo.mf2.length === 4) || (!zonethree.mf3.includes('.') && zonethree.mf3.length === 4)) {
             const superscripts = detectSuperscripts(zoneone.mf1, zonetwo.mf2, zonethree.mf3);
             console.log('Entered superscript', superscripts);
         } else {
@@ -1428,6 +1427,11 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
             <div class="min-w-[770px] flex flex-col gap-2">
                 <label style="color: whitesmoke" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
+            </div>
+            <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2">
+                <!--  @click="checkMaterial" -->
+                <label style="color: whitesmoke" for="material">Tile Material</label>
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @change="updateMF" />
             </div>
 
             <div v-show="showMaterialValid" class="w-128 flex flex-col gap-2">
