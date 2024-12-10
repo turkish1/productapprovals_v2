@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1>Generate PDF with Columns and Underlined Text</h1>
-        <button @click="generatePDF">Download PDF</button>
+        <!-- <h1>Generate PDF with Columns and Underlined Text</h1>
+        <button @click="generatePDF">Download PDF</button> -->
     </div>
 </template>
 

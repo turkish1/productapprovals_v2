@@ -60,8 +60,8 @@
 import { useGlobalState } from '@/stores/accountsStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, tryOnMounted, until } from '@vueuse/core';
-import { onMounted, ref, watch } from 'vue';
+import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
+import { onMounted, ref } from 'vue';
 import GeneralPage from '../jsPDF/Generalpagepdf.vue';
 import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
@@ -114,7 +114,7 @@ const callState = tryOnMounted(() => {
         isGenaralPageValid.value = true;
     }
 });
-watch(displayUserInfo, callState, () => {
+watchOnce(displayUserInfo, callState, () => {
     console.log(isRoofShingleValid.value);
 });
 

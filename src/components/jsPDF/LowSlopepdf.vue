@@ -13,6 +13,7 @@ import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 // import 'jspdf-acroform';
+// import { PDFDocument } from 'pdf-lib'
 import { ref } from 'vue';
 
 const { getUser } = useGlobalState();
@@ -32,31 +33,24 @@ let isBurValid = ref(false);
 function testBurType() {
     if (burType.value.length !== 1) {
         isBurValid.value = true;
+        generatePDF();
     }
 }
 tryOnMounted(() => {
     testBurType();
-    generatePDF();
 });
 
 invoke(async () => {
     await until(isBurValid).toBe(true);
-    generatePDF();
+
     // alert('Generated, PDF!');
 });
 const generatePDF = () => {
     const burpdfStore = useBurpdfStore();
-    // const { burpdfinput } = storeToRefs(burpdfStore);
-    console.log(burpdfStore.$state.burpdfinput[0].burpdfData); // const { burinput } = storeToRefs(lowslopeStore);
-    // Initialize jsPDF instance
+
     if (burpdfStore.$state.burpdfinput.length === 0) {
         console.log('lenghth is zero');
     } else {
-        // if (sbsStore.$state.sbsinput.length !== 0) {
-        //     isSBSValid = true;
-        //     console.log(isSBSValid);
-        // }
-
         // Initialize jsPDF instance
         const height = ref(burpdfStore.$state.burpdfinput[0].burpdfData.height);
         const slope = ref(burpdfStore.$state.burpdfinput[0].burpdfData.slope);
@@ -64,11 +58,11 @@ const generatePDF = () => {
         const deckType = ref(burpdfStore.$state.burpdfinput[0].burpdfData.deckType);
         const doc = new jsPDF();
         // Load an image (example with Base64)
-        doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
+        doc.setGState(new doc.GState({ opacity: 0.9 })); // Adjust opacity
         const approved = 'Approved';
         // Set font size, alignment, and rotation for the watermark
         doc.setFontSize(24);
-        doc.setTextColor(150, 150, 150);
+        doc.setTextColor('black');
         // doc.setFont('Courier', 'bolditalic');
         // Light gray color for watermark
         // doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2
@@ -98,12 +92,13 @@ const generatePDF = () => {
         currentY.value = current_y;
         console.log(currentX.value, currentY.value);
 
-        doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
+        doc.addImage(logoImage, 'JPEG', 10, 2, 50, 30);
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
         doc.setFontSize(14);
-        doc.setTextColor(190, 190, 190);
+        // doc.setTextColor(190, 190, 190);
+        doc.setTextColor('red');
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();
         doc.text(approved, 10, 270, { align: 'left' });
@@ -114,9 +109,7 @@ const generatePDF = () => {
         doc.text(`${municipality.value}`, procWidth + 15, 280);
 
         // Add a paragraph of text
-        // const paragraphText = "This PDF contains a watermark that says 'CONFIDENTIAL' across the center of the page. You can adjust the size, rotation, and opacity of the watermark.";
-        // const wrappedText = doc.splitTextToSize(paragraphText, 200);
-        // doc.text(wrappedText, 10, 60);
+
         doc.setFontSize(12);
         // doc.text(wrappedText, 10, 60);
         // Function to add header
@@ -126,17 +119,17 @@ const generatePDF = () => {
             doc.text(
                 'The low slope Built Up Roof (BUR) Assembly shall be installed in compliance with the HVHZ portions of Chapter 15 found in the 2023 Florida Building Code and the HVHZ Roofing Application Standards (RAS), RAS-111, RAS-117 and RAS-128. This roof assembly shall also comply with the listed requirements for a Class "A" fire rating including roof slope (incline), components and a fire barrier when required. The mePermit applicant agrees to comply with these installation requirements when obtaining this permit.',
                 10,
-                20,
+                25,
                 { maxWidth: '170' }
             ); // Position at (x, y)
-            doc.line(10, 41, 195, 41); // Draw a line below the header
+            doc.line(10, 45, 195, 45); // Draw a line below the header
         };
-        doc.setTextColor(0);
+        doc.setTextColor('black');
         // Add a circle to simulate a radio button
-        doc.circle(185, 38, 2, 'FD'); // Circle as radio button (x, y, radius)
+        doc.circle(185, 40, 2, 'FD'); // Circle as radio button (x, y, radius)
 
         // Add the "I agree" text next to the circle
-        doc.text('I agree', 165, 39);
+        doc.text('I agree', 165, 41);
         // Add header to the first page
         addHeader();
 

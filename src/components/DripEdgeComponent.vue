@@ -20,7 +20,7 @@ watch(types, typeSizes, type, () => {});
 
 function getdripSize() {
     if (selectedValue.value) {
-        console.log(selectedValue.value);
+        console.log(selectedValue.value.label);
         if (selectedValue.value.label === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
         }

@@ -46,14 +46,14 @@ const generatePDF = () => {
         console.log('lenghth is   zero');
     } else {
         // Initialize jsPDF instance
-        console.log(generalpageStore.$state.generalpdfinput);
+
         const doc = new jsPDF();
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.9 })); // Adjust opacity
         const approved = 'Approved';
         // Set font size, alignment, and rotation for the watermark
         doc.setFontSize(24);
-        doc.setTextColor(150, 150, 150);
+        doc.setTextColor('black');
         // doc.setFont('Courier', 'bolditalic');
         // Light gray color for watermark
         // doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2
@@ -88,7 +88,7 @@ const generatePDF = () => {
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
         doc.setFontSize(14);
-        doc.setTextColor(190, 190, 190);
+        doc.setTextColor('red');
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();
         doc.text(approved, 10, 270, { align: 'left' });
@@ -109,7 +109,7 @@ const generatePDF = () => {
         const addHeader = () => {
             doc.setFontSize(10);
             doc.setTextColor(0);
-            doc.text('2023 HVHZ  mEPermit General Information Page', 100, 20, { maxWidth: '170' }); // Position at (x, y)
+            doc.text('2023 HVHZ  mEPermit General Information Page', 70, 20, { maxWidth: '170' }); // Position at (x, y)
             doc.line(10, 41, 195, 41); // Draw a line below the header
         };
         doc.setTextColor(0);
@@ -170,32 +170,39 @@ const generatePDF = () => {
         const factor = 2;
         const initialYValue = 100;
         const param_y = initialYValue;
+        const isReroof = ref(false);
+        console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0]);
 
-        console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData);
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0] === 'reroof') {
+            isReroof.value = true;
+            console.log(isReroof.value);
+        }
 
-        // if (generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeChk) {
         currentX.value = LeftStart + 70;
         current_y = param_y - 15;
         console.log(current_y);
         const checkBox6 = new jsPDF.API.AcroFormCheckBox();
-        doc.text('New Roof: ', currentX.value, current_y);
+        doc.text('Re-Roof: ', currentX.value, current_y);
+        // doc.text('New Roof: ', currentX.value, current_y);
         const alignCheckbox6 = current_y - 3;
         checkBox6.fieldName = 'CheckBox6';
+        console.log(isReroof.value);
         checkBox6.Rect = [currentX.value + 20, alignCheckbox6, 4, 4, 'FD'];
         currentX.value = currentX.value + 20;
         doc.addField(checkBox6);
-
+        // }else {
         currentX.value = LeftStart + 120;
         current_y = param_y - 15;
         console.log(current_y);
         const checkBox7 = new jsPDF.API.AcroFormCheckBox();
-        doc.text('Re-Roof: ', currentX.value, current_y);
+        doc.text('New Roof: ', currentX.value, current_y);
+        // : [currentX.value + 20, alignCheckbox7, 4, 4, 'FD']
         const alignCheckbox7 = current_y - 3;
         checkBox7.fieldName = 'CheckBox7';
-        checkBox7.Rect = [currentX.value + 20, alignCheckbox7, 4, 4, 'FD'];
+        checkBox7.Rect = [currentX.value + 20, alignCheckbox7, 4, 4];
         currentX.value = currentX.value + 20;
         doc.addField(checkBox7);
-
+        // }
         const tTotal = 'Total: ';
 
         const tSlope = 'Low Slope: ';
@@ -240,8 +247,6 @@ const generatePDF = () => {
 
         doc.line(totalValue, param_y, totalValue + TotalTextWidth, param_y);
         currentX.value = totalValue + TotalTextWidth;
-
-        console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData);
 
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeChk) {
             currentX.value = LeftStart;
