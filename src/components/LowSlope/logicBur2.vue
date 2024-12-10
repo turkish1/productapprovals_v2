@@ -1,22 +1,17 @@
 <script setup>
+import useBurDetails from '@/composables/fetchTech/use-burdetailsdocs';
+
+import useS3download from '@/composables/fetchTech/use-S3download';
 import useburAxios from '@/composables/use-burAxios';
-// import { useBurStore } from '@/stores/burStore';
-// import useInput from '@/composables/use-input';
-import { useRoofListStore } from '@/stores/roofList';
+import { useBurpdfStore } from '@/stores/burpdfStore';
 import { invoke, until } from '@vueuse/shared';
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
-import { ref, watch, watchEffect } from 'vue';
+import { computed, reactive, ref, watch, watchEffect } from 'vue';
 
+const { downloadFile, fileUrl } = useS3download();
+const fileName = ref('downloaded-file.pdf');
 const { bMaters, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
-const storeroof = useRoofListStore();
-const { roofList } = storeToRefs(storeroof);
-
-// const factor = ref(0.6);
-
-// const { burinput, addData } = storeToRefs(lowslopeStore);
-
+const { calldetailsdoc } = useBurDetails();
 const props = defineProps({
     roofType: {
         type: ref,
@@ -25,24 +20,20 @@ const props = defineProps({
     }
 });
 
-// const dims = reactive({
-//     area: '',
-//     per: '',
-//     height: '',
-//     slope: ''
-// });
-// const type = ref([{ name: '--Select Deck Type--' }, { name: '- 5/8" Plywood -' }, { name: '- 3/4" Plywood -' }, { name: '- 1" x 6" T & G -' }, { name: '- 1" x 8" T & G -' }, { name: '- Existing 1/2" Plywood -' }]);
-// const whatChanged = computed(() => {
-//     setRoofInputs();
+const burpdfStore = useBurpdfStore();
+const { burpdfinput, addpdfData } = storeToRefs(burpdfStore);
 
-//     validateHeight();
-//     validateRoofSlope();
-// });
+const selectedBurItems = reactive({
+    burMaterial: '',
+    burSystem: '',
+    p1: '',
+    p3: ''
+});
 const selectedBur = ref();
 const mat = ref();
 const selectedSystem = ref();
 const syst = ref([]);
-// const selectedDeck = ref();
+
 const selectedPrimeone = ref(null);
 const primeone = ref();
 const selectedPrimethree = ref(null);
@@ -50,38 +41,12 @@ const primethree = ref();
 const sB = ref('');
 let selSytem = ref('');
 const maps = ref([]);
-const pdfcleared = ref(false);
-// let slopeModel = ref('');
-// let heightModel = ref('');
-
-// function setRoofInputs() {
-//     console.log(slopeModel, heightModel);
-//     console.log(burinput, addData);
-//     dims.per = (dims.height * factor.value).toFixed(2);
-// }
 
 function findSelected() {
     mat.value = bMaters.value;
 }
-// const dt = ref('');
-// function getdeckType(event) {
-//     console.log(selectedDeck._value.name, event.value.name);
-//     if (selectedDeck._value.name === event.value.name) {
-//         dt.value = event.value.name;
-//         console.log(dt.value);
-//     }
-// }
-// onMounted(() => {
-//     roofList.value.forEach((item, index) => {
-//         console.log(item.item, index);
-//         if (item.item === 'Low Slope') {
-//             console.log(item.dim2);
-//             dims.area = item.dim2;
-//         }
-//     });
-// });
 
-function updateselection() {
+function updateselection(event) {
     sB.value = Object.entries(selectedBur).map((obj) => {
         const value = obj[1];
 
@@ -97,36 +62,9 @@ function updateselection() {
             return null;
         }
     });
+
+    selectedBurItems.burMaterial = event.value;
 }
-
-// const { errorburMessage, validateburSlope } = useburSlopeValidation({
-//     min: 0.128,
-//     max: 2.1,
-//     required: true
-// });
-
-// const { errorburHeightMessage, validateburHeight } = useburValidation({
-//     min: 10,
-//     max: 30,
-//     required: true
-// });
-
-// function validateRoofSlope() {
-//     validateInput();
-// }
-// const validateInput = () => {
-//     validateburSlope(dims.slope);
-//     console.log(errorburMessage.value);
-// };
-
-// const validateHeightInput = () => {
-//     validateburHeight(dims.height);
-//     console.log(errorburHeightMessage.value);
-// };
-// function validateHeight() {
-//     validateHeightInput();
-//     console.log(dims.height);
-// }
 
 function selectSystem() {
     for (let i = 0; i < syst.value.length; i++) {
@@ -135,92 +73,117 @@ function selectSystem() {
         maps.value.push([index, value]);
     }
 }
-function updateselectSystem() {
+const sp1 = ref('');
+const sp2 = ref('');
+const sp3 = ref('');
+const sp4 = ref('');
+const sp5 = ref('');
+const copiedString = ref('');
+
+function updateselectSystem(event) {
     selSytem.value = Object.entries(selectedSystem).map((obj) => {
         const val = obj[1];
-
+        console.log(val, obj);
         let convert = String(val);
 
-        let sp1 = convert.split(/(?=[)¹])/);
-        let sp2 = convert.split(/(?=[)²])/);
-        let sp3 = convert.split(/(?=[)³])/);
-        let sp4 = convert.split(/(?=[)⁴])/);
-        let sp5 = convert.split(/(?=[)⁵])/);
+        sp1.value = convert.split(/(?=[)¹])/);
+        sp2.value = convert.split(/(?=[)²])/);
+        sp3.value = convert.split(/(?=[)³])/);
+        sp4.value = convert.split(/(?=[)⁴])/);
+        sp5.value = convert.split(/(?=[)⁵])/);
 
-        if (sp2[2] === '²' || sp2[3] === '²') {
+        if (sp2.value[2] === '²' || sp2.value[3] === '²') {
             primeone.value = Perimeters.p1_two;
             primethree.value = Perimeters.p2_two;
+            // I need to separete, possibly the p1 and p2 to capture each event from the select box.
         }
-        if (sp3[3] === '³') {
+        if (sp3.value[3] === '³') {
             primeone.value = Perimeters.p1_three;
             primethree.value = Perimeters.p2_three;
         }
-        if (sp4[2] === '⁴' || sp4[2] === '⁵') {
+        if (sp4.value[2] === '⁴' || sp4.value[2] === '⁵') {
             primeone.value = Perimeters.p1_four;
             primethree.value = Perimeters.p2_four;
             primeone.value = Perimeters.p1_five;
             primethree.value = Perimeters.p2_five;
         }
-        if (sp5[4] === '⁵') {
+        if (sp5.value[4] === '⁵') {
             primeone.value = Perimeters.p1_five;
             primethree.value = Perimeters.p2_five;
         }
-        if (sp1[4] === '¹') {
+        if (sp1.value[4] === '¹') {
             primeone.value = Perimeters.p1_one;
             primethree.value = Perimeters.p2_one;
-            pdfcleared.value = true;
         }
     });
+    selectedBurItems.burSystem = event.value;
+    console.log(event.value);
+
+    // selectedBurItems.p1
+    // I may use this to call the function in s3downloadbin... downloadFile pass the selection, then generate the pre-url \
+
+    const getFirstPart = (str) => {
+        console.log(str);
+        const match = str.match(/^[^\s]+/); // Matches characters until the first space
+        return match ? match[0] : ''; // Return the matched part or an empty string if no match
+    };
+    const firstPart = computed(() => getFirstPart(event.value));
+    console.log(firstPart.value);
+    // Computed property to dynamically get the first part computed()
+
+    // handleDownload();
+    copyToClipboard(firstPart.value);
+    calldetailsdoc(firstPart.value);
 }
 
+function copyToClipboard(firstPart) {
+    console.log(firstPart);
+    const copyToClipboard = () => {
+        copiedString.value = firstPart.value; // Copy the first part
+        console.log(copiedString.value);
+
+        alert(`Copied: "${copiedString.value}"`);
+    };
+}
+function prescriptiveOne(event) {
+    selectedBurItems.p1 = event.value;
+}
+function prescriptiveThree(event) {
+    selectedBurItems.p3 = event.value;
+    burpdfStore.addpdfData(selectedBurItems);
+}
+
+const handleDownload = async () => {
+    console.log('handleDownload called');
+    try {
+        downloadFile(fileUrl, fileName.value);
+    } catch (error) {
+        console.error('Error downloading file:', error);
+    }
+};
 invoke(async () => {
-    await until(pdfcleared).changed();
+    await until(handleDownload).changed();
 });
-// setRoofInputs, validateRoofSlope, validateHeight,type,
-watch(findSelected, updateselection, updateselectSystem, syst, selSytem, () => {});
-// setRoofInputs,dims.per,validateRoofSlope,whatChanged,
+
+watch(findSelected, updateselection, updateselectSystem, handleDownload, syst, selSytem, prescriptiveOne, prescriptiveThree, copyToClipboard, () => {});
+
 watchEffect(sB, syst, selectedSystem, () => {});
 </script>
 <template>
-    <div id="bur" class="flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px">
-        <div class="card flex flex-col gap-2">
-            <!-- <div class="w-128 gap-2" style="margin-left: 12px">
-                <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" @change="getdeckType" />
-            </div>
-            <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
-                <label for="slope" style="color: red">Slope *</label>
-
-                <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :invalid="slope === null" @change="validateRoofSlope" />
-                <Message v-if="errorburMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorburMessage }}</Message>
-            </div>
-
-            <div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
-                <label for="height" style="color: red">Height *</label>
-                <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
-                <Message v-if="errorburHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorburHeightMessage }}</Message>
-            </div>
-
-            <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 20px">
-                <label for="area">Area</label>
-                <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
-            </div>
-
-            <div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
-                <label for="per" style="color: red">Roof Perimeter * (a') = .6 x h:</label>
-                <InputText id="per" v-model="dims.per" type="text" placeholder="per" @change="setRoofInputs" />
-            </div> -->
-
-            <div class="card lg:w-full grid gap-2 grid-cols-1">
-                <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
-                <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
-                <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
-                <Select v-model="selectedSystem" :options="syst" placeholder="make selection" @click="selectSystem" @change="updateselectSystem" />
-                <label for="fieldPresc1" style="color: red">Attach P(1') Prime using P(1) Field Prescriptive Basesheet: *</label>
-                <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" @change="updateselectSystem" />
-                <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: *</label>
-                <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" @change="updateselectSystem" />
-            </div>
-        </div>
+    <!-- <div id="bur" class="flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px"> -->
+    <!-- <div class="card flex flex-col gap-2"> -->
+    <div class="card md:w-1/2 grid gap-2 grid-cols-1 gap-2 shadow-md shadow-cyan-800" style="margin-left: 450px">
+        <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
+        <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
+        <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
+        <Select v-model="selectedSystem" :options="syst" placeholder="make selection" @click="selectSystem" @change="updateselectSystem" />
+        <label for="fieldPresc1" style="color: red">Attach P(1') Prime using P(1) Field Prescriptive Basesheet: *</label>
+        <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" @update="updateselectSystem" @change="prescriptiveOne" />
+        <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: *</label>
+        <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" @update="updateselectSystem" @change="prescriptiveThree" />
     </div>
+    <!-- </div> -->
+    <!-- <DownloadS3 /> -->
+    <!-- </div> -->
 </template>
 <style scoped></style>

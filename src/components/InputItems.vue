@@ -82,11 +82,11 @@ let isSelectVisible2 = ref(false);
 let isSlopeValid = ref(true);
 let slope = ref(null);
 let data = ref();
-// let datasystemf = ref();
+
 let datasbs = ref();
 let datapoly = ref();
 let udlInput = ref(null);
-// let saInput = ref(null);
+
 let noaInput = ref(null);
 
 const dims = reactive({
@@ -113,7 +113,6 @@ const selectedDeck = ref();
 
 const desc = ref(false);
 const { inputsystem } = useSystemf();
-// const { inp, takp } = useInputpoly();
 
 const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 
@@ -201,7 +200,6 @@ function updateselectSystem(selectedsystemf) {
 }
 
 function checkInput() {
-    console.log(datamounted.value);
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
             shingles.noa = item.shingleData.noa;

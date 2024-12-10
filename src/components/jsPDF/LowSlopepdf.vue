@@ -1,60 +1,67 @@
 <template>
     <div>
-        <h1>Generate PDF with Columns and Underlined Text</h1>
-        <button @click="generatePDF">Download PDF</button>
+        <!-- <h1>Generate PDF with Columns and Underlined Text</h1>
+        <button @click="generatePDF">Download PDF</button> -->
     </div>
 </template>
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
+import { useBurpdfStore } from '@/stores/burpdfStore';
 import { usePermitappStore } from '@/stores/permitapp';
-
 import { useRoofListStore } from '@/stores/roofList';
-
+import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
+// import 'jspdf-acroform';
 import { ref } from 'vue';
 
 const { getUser } = useGlobalState();
 
 const permitStore = usePermitappStore();
 const roofStore = useRoofListStore();
-
-console.log();
-
-const area = ref(roofStore.$state.roofList[0].dim1);
+const burpdfStore = useBurpdfStore();
+const area = ref(roofStore.$state.roofList[0].dim2);
 const address = ref(permitStore.$state.permitapp[0].formdt.address);
 const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
 const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
+
 const dba = ref(getUser.value[0].dba);
+const burType = ref(burpdfStore.$state.burpdfinput);
+let isBurValid = ref(false);
 
-// invoke(async () => {
-// await until(pdfcleared).changed();
-// generatePdf();
-// alert('Generated, PDF!');
-// });
+function testBurType() {
+    if (burType.value.length !== 1) {
+        isBurValid.value = true;
+    }
+}
+tryOnMounted(() => {
+    testBurType();
+    generatePDF();
+});
+
+invoke(async () => {
+    await until(isBurValid).toBe(true);
+    generatePDF();
+    // alert('Generated, PDF!');
+});
 const generatePDF = () => {
+    const burpdfStore = useBurpdfStore();
+    // const { burpdfinput } = storeToRefs(burpdfStore);
+    console.log(burpdfStore.$state.burpdfinput[0].burpdfData); // const { burinput } = storeToRefs(lowslopeStore);
     // Initialize jsPDF instance
-    if (shingleStore.$state.inputshingle.length === 0) {
-        console.log('lenghth is   zero');
+    if (burpdfStore.$state.burpdfinput.length === 0) {
+        console.log('lenghth is zero');
     } else {
-        console.log(sbsStore, polypropolyneStore);
-        let isPOLYValid = ref(false);
-        let isSBSValid = ref(false);
-        if (sbsStore.$state.sbsinput.length !== 0) {
-            isSBSValid = true;
-            console.log(isSBSValid);
-        }
-        if (polypropolyneStore.$state.polyinput.length !== 0) {
-            isPOLYValid = true;
-            console.log(isPOLYValid);
-        }
-        // Initialize jsPDF instance
-        const height = ref(shingleStore.$state.inputshingle[0].shingleData.height);
-        const slope = ref(shingleStore.$state.inputshingle[0].shingleData.slope);
-        const deckType = ref(shingleStore.$state.inputshingle[0].shingleData.deckType);
-        console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
+        // if (sbsStore.$state.sbsinput.length !== 0) {
+        //     isSBSValid = true;
+        //     console.log(isSBSValid);
+        // }
 
+        // Initialize jsPDF instance
+        const height = ref(burpdfStore.$state.burpdfinput[0].burpdfData.height);
+        const slope = ref(burpdfStore.$state.burpdfinput[0].burpdfData.slope);
+        const perimeter = ref(burpdfStore.$state.burpdfinput[0].burpdfData.per);
+        const deckType = ref(burpdfStore.$state.burpdfinput[0].burpdfData.deckType);
         const doc = new jsPDF();
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
@@ -73,14 +80,29 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        image.src = ' /demo/images/paperversion.jpeg';
+        image.src = '/demo/images/paperbackground.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
+
+        const max_width = 179;
+        const thirdYCoordinate = 725;
+        const page = doc.getPageInfo(1);
+        // console.log(page);
+        const topRightx = page.pageContext.mediaBox.topRightX;
+        const topRighty = page.pageContext.mediaBox.topRightY;
+
+        const currentX = ref(0);
+        const currentY = ref(0);
+        var LeftStart = 595.28 - 585.28;
+        var current_y = topRighty - thirdYCoordinate;
+        currentX.value = LeftStart;
+        currentY.value = current_y;
+        console.log(currentX.value, currentY.value);
 
         doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
-        doc.setFontSize(20);
+        doc.setFontSize(14);
         doc.setTextColor(190, 190, 190);
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();
@@ -99,13 +121,13 @@ const generatePDF = () => {
         // doc.text(wrappedText, 10, 60);
         // Function to add header
         const addHeader = () => {
-            doc.setFontSize(12);
+            doc.setFontSize(10);
             doc.setTextColor(0);
             doc.text(
-                'The Shingle roof system and its components shall be installed in strict compliance  with the HVHZportions of Chapter 15 FBC, the HVHZ Roof Application Standards(RAS) 111 & 115, and the submitted MDC(NOA) Notice of Acceptance(s).The mePermit applicant agrees to comply with these installation requirements when obtaining this permit.',
+                'The low slope Built Up Roof (BUR) Assembly shall be installed in compliance with the HVHZ portions of Chapter 15 found in the 2023 Florida Building Code and the HVHZ Roofing Application Standards (RAS), RAS-111, RAS-117 and RAS-128. This roof assembly shall also comply with the listed requirements for a Class "A" fire rating including roof slope (incline), components and a fire barrier when required. The mePermit applicant agrees to comply with these installation requirements when obtaining this permit.',
                 10,
                 20,
-                { maxWidth: '200' }
+                { maxWidth: '170' }
             ); // Position at (x, y)
             doc.line(10, 41, 195, 41); // Draw a line below the header
         };
@@ -122,15 +144,15 @@ const generatePDF = () => {
         doc.setFontSize(12);
 
         // Add a title
-        doc.setFontSize(14);
+        doc.setFontSize(10);
+
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
         const data = [
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` },
-            { category: 'Folio', value: `${folio.value}` }
+            { category: 'meProcess Number', value: `${processNumber.value}` }
         ];
 
         // Set starting position
@@ -141,7 +163,7 @@ const generatePDF = () => {
         // Set starting position second data
 
         // Set font size
-        doc.setFontSize(12);
+        doc.setFontSize(10);
 
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -162,351 +184,144 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
-        doc.setFontSize(12);
+        doc.setFontSize(10);
         const factor = 2;
         const initialYValue = 100;
-        doc.text('Roof Area:', 10, initialYValue);
+        const param_y = initialYValue;
+        const tArea = 'Roof Area: ';
+        const tDeck = 'Decktype: ';
+        const tHeight = 'Mean Roof Height: ';
+        const tSlope = 'Roof Slope: ';
+        const tPerimeter = 'Roof Perimeter: ';
 
-        doc.text(`${area.value}`, 35, initialYValue);
+        const burMaterialText = 'Type of Low Slope BUR Material: ';
+        const burSystemText = 'Type of Low Slope BUR System: ';
+        const primeOneText = "Attach P(1') Prime using P(1) Field Prescriptive Basesheet: ";
+        const primeThreeText = 'Attach P(2) Perimeter using P(3) Corner Prescriptive: ';
 
-        doc.line(35, initialYValue + factor, 45, initialYValue + factor);
-        doc.text('Mean Roof Height:', 50, initialYValue);
+        const material = ref(burpdfStore.$state.burpdfinput[1].burpdfData.burMaterial);
+        const system = ref(burpdfStore.$state.burpdfinput[1].burpdfData.burSystem);
+        const primeone = ref(burpdfStore.$state.burpdfinput[1].burpdfData.p1);
+        const primethree = ref(burpdfStore.$state.burpdfinput[1].burpdfData.p3);
 
-        const valueTextWidth1 = doc.getTextWidth('Mean Roof Height:');
-        doc.text(`${height.value}`, initialYValue, initialYValue);
-        doc.line(90, initialYValue + factor, 70 + valueTextWidth1, initialYValue + factor); // Get text width
-
-        doc.text('Roof Slope:', 80 + valueTextWidth1, initialYValue);
-        const slopeStartXValue = 105 + valueTextWidth1;
-        doc.text(`${slope.value}`, slopeStartXValue, initialYValue);
-        const valueTextWidth2 = doc.getTextWidth(`${slope.value}`) * 2;
-        doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
-
-        const secondYCoordinate = 108;
-        doc.text('Decktype:', 10, secondYCoordinate);
-        const decktypeStartXValue = 30 + valueTextWidth2;
-        doc.text(`${deckType.value}`, decktypeStartXValue, secondYCoordinate);
-        const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`) * 2;
-        doc.line(decktypeStartXValue, secondYCoordinate, decktypeStartXValue + valueTextWidth5, secondYCoordinate); // Get text width
-
-        // doc.text('Prescriptive ASTM # 30 with type IV hot asphalt applied # 90 Tile Capsheet:', 10, 70);
-        // doc.text('Fastened Underlayment (UDL) with Self Adhered (S/A) Tile Capsheet:', 10, 80);
-        const noaText = 'Shingle NOA Number: ';
-        const applicantText = 'Shingle Applicant: ';
-        const materialText = 'Shingle Material: ';
-        const descriptionText = 'Shingle Description: ';
-
-        const polynoaText = 'Fastened Underlayment(UDL)NOA: ';
-        const polyapplicantText = 'UDL NOA Applicant: ';
-        const polymaterialText = 'Fastened UDL Material: ';
-        const polydescriptionText = 'UDL Description: ';
-        const max_width = 179;
-        const thirdYCoordinate = 725;
-        const page = doc.getPageInfo(1);
-        console.log(page);
-        const topRightx = page.pageContext.mediaBox.topRightX;
-        const topRighty = page.pageContext.mediaBox.topRightY;
-
-        const currentX = ref(0);
-        const currentY = ref(0);
-        var LeftStart = 595.28 - 585.28;
-        var current_y = topRighty - thirdYCoordinate;
         currentX.value = LeftStart;
-        currentY.value = current_y;
-        console.log(currentX.value, currentY.value);
-        const noa = ref(shingleStore.$state.inputshingle[0].shingleData.noa);
-        const applicant = ref(shingleStore.$state.inputshingle[0].shingleData.applicant);
-        const material = ref(shingleStore.$state.inputshingle[0].shingleData.material);
-        const description = ref(shingleStore.$state.inputshingle[0].shingleData.description);
 
-        const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
+        const tAreaTextWidth = doc.getTextWidth(tArea);
+        const AreaTextWidth = doc.getTextWidth(`${area.value}`);
+        const areaStartXValue = currentX.value;
+        doc.text(tArea, areaStartXValue, param_y);
+        const areaValue = tAreaTextWidth + areaStartXValue;
+        doc.text(`${area.value}`, areaValue, param_y);
 
-        const applicantStartXValue = valueTextWidth0 + LeftStart;
-        doc.text(applicantText, LeftStart, current_y);
-        const applicantValue = applicantStartXValue;
-        doc.text(`${applicant.value}`, applicantValue, current_y);
-        doc.line(applicantValue, current_y, applicantValue + valueTextWidth0, current_y);
+        doc.line(areaValue, param_y, areaValue + AreaTextWidth, param_y);
+        currentX.value = areaValue + AreaTextWidth;
 
-        currentX.value = applicantValue + valueTextWidth0;
+        const tHeightTextWidth = doc.getTextWidth(tHeight);
+        const HeightTextWidth = doc.getTextWidth(`${height.value}`);
+        const heightStartXValue = currentX.value + 2;
 
-        const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        const shingleStartXValue = valueTextWidth3 + currentX.value + 25;
-        doc.text(noaText, currentX.value + 2, current_y);
-        doc.text(`${noa.value}`, shingleStartXValue, current_y);
-        doc.line(shingleStartXValue, current_y, shingleStartXValue + valueTextWidth3, current_y);
-        currentX.value = shingleStartXValue + valueTextWidth3;
+        doc.text(tHeight, heightStartXValue, param_y);
+        const heightValue = tHeightTextWidth + heightStartXValue;
 
-        // if (currentX.value < max_width)
+        doc.text(`${height.value}`, heightValue, param_y);
+        doc.line(heightValue, param_y, heightValue + HeightTextWidth, param_y); // Get text width
+        currentX.value = heightValue + HeightTextWidth;
 
-        // currentX provides the update of the x coordinate
-        const fourthYCoordinate = current_y;
+        const tSlopeTextWidth = doc.getTextWidth(tSlope);
+        const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
+        const slopeStartXValue = currentX.value + 2;
 
-        const materialStartXValue = currentX.value + 2;
+        doc.text(tSlope, slopeStartXValue, param_y);
+        const slopeValue = tSlopeTextWidth + slopeStartXValue;
 
-        doc.text(materialText, materialStartXValue, fourthYCoordinate);
-        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
-        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        doc.text(`${slope.value}`, slopeValue, param_y);
+        doc.line(slopeValue, param_y, slopeValue + SlopeTextWidth, param_y); // Get text width
+        currentX.value = slopeValue + SlopeTextWidth;
 
-        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-        doc.text(`${material.value}`, materialValue, fourthYCoordinate);
-        doc.line(materialValue, fourthYCoordinate, materialValue + valueTextWidthMaterial, fourthYCoordinate);
-        currentX.value = materialValue + valueTextWidthMaterial;
+        const tPermTextWidth = doc.getTextWidth(tPerimeter);
+        const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
+        const permStartXValue = currentX.value + 2;
 
-        if (currentX.value > max_width) current_y = current_y + 10;
+        doc.text(tPerimeter, permStartXValue, param_y);
+        const perimeterValue = tPermTextWidth + permStartXValue;
+        doc.text(`${perimeter.value}`, perimeterValue, param_y);
+        doc.line(perimeterValue, param_y, perimeterValue + PermTextWidth, param_y);
+        console.log(param_y, current_y);
+        current_y = param_y + 10;
 
-        const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
-        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        currentX.value = perimeterValue + PermTextWidth;
 
-        const descStartXValue = LeftStart;
-        doc.text(descriptionText, descStartXValue, current_y);
-        // this is the text we want to underline
-        const descriptionValue = descStartXValue + valueTextWidthDesc;
-        doc.text(`${description.value}`, descriptionValue, current_y);
-        doc.line(descriptionValue, current_y, descriptionValue + valueTextWidth4, current_y);
-        currentX.value = descriptionValue + valueTextWidth4;
+        const tDeckTextWidth = doc.getTextWidth(tDeck);
+        const DeckTextWidth = doc.getTextWidth(`${deckType.value}`);
+        const deckStartXValue = LeftStart;
+        doc.text(tDeck, deckStartXValue, current_y);
+        const decktypeStartValue = tDeckTextWidth + deckStartXValue;
+        doc.text(`${deckType.value}`, decktypeStartValue, current_y);
 
-        // const wrappedText = doc.splitTextToSize(`${description.value}`, 150);
-        // // doc.text(wrappedText, 10, 60);
-        // doc.text(wrappedText, descStartXValue, fourthYCoordinate + 20);
-        // doc.line(descStartXValue, fourthYCoordinate + 20, descStartXValue + valueTextWidth4, fourthYCoordinate + 20);
-
+        doc.line(decktypeStartValue, current_y, decktypeStartValue + DeckTextWidth, current_y); // Get text width
         current_y = current_y + 10;
-        console.log(polypropolyneStore.$state.polyinput.length);
-        if (polypropolyneStore.$state.polyinput.length === 0) {
-            const udlNoa = 'n/a';
-            const udlApplicant = 'n/a';
 
-            const udlMaterial = 'n/a';
-            const udlDescription = 'n/a';
+        currentX.value = LeftStart;
 
-            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
-            const valueTextWidth_1 = doc.getTextWidth(udlNoa);
-            const udlNoaStartXValue = LeftStart;
-            doc.text(polynoaText, udlNoaStartXValue, current_y);
-            const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
-            doc.text(udlNoa, udlNoaValue, current_y);
-            doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
-            currentX.value = udlNoaValue + valueTextWidth_1;
+        const tburMaterialTextWidth = doc.getTextWidth(burMaterialText);
+        const MaterialTextWidth = doc.getTextWidth(`${material.value}`);
+        const materialStartXValue = currentX.value;
+        doc.text(burMaterialText, materialStartXValue, current_y);
+        const materialValue = tburMaterialTextWidth + 12;
+        doc.text(`${material.value}`, materialValue, current_y);
 
-            console.log(currentX.value);
-            const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
-            const valueTextWidth_ = doc.getTextWidth(udlApplicant);
-            const udlApplicantStartXValue = currentX.value + 2;
-            doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
-            const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
-            doc.text(udlApplicant, udlApplicantValue, current_y);
-            doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
-            currentX.value = udlApplicantValue + valueTextWidth_;
+        doc.line(materialValue, current_y, materialValue + MaterialTextWidth, current_y);
+        currentX.value = materialValue + MaterialTextWidth;
+        // if (currentX.value > max_width) current_y = current_y + 10;
+        current_y = current_y + 10;
 
-            console.log(currentX.value);
-            if (currentX.value > max_width) current_y = current_y + 10;
-            const udlmatStartXValue = currentX.value + 2;
-            const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
-            const valueTextWidth_2 = doc.getTextWidth(udlMaterial);
-            doc.text(polymaterialText, udlmatStartXValue, current_y);
-            const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
-            doc.text(udlMaterial, udlmaterialValue, current_y);
-            doc.line(udlmaterialValue, current_y, udlmaterialValue + valueTextWidth_2, current_y);
-            currentX.value = udlmaterialValue + valueTextWidth_2;
-            console.log(currentX.value);
-            if (currentX.value > max_width) current_y = current_y + 10;
+        currentX.value = LeftStart;
 
-            console.log(currentX.value);
+        doc.setFontSize(9);
+        const tburSystemTextWidth = doc.getTextWidth(primeOneText);
+        const SystemTextWidth = doc.getTextWidth(`${system.value}`);
+        const systemStartXValue = currentX.value;
+        doc.text(burSystemText, systemStartXValue, current_y);
+        current_y = current_y + 10;
 
-            const valueTextWidthpolyDesc = doc.getTextWidth(polydescriptionText);
-            const valueTextWidth_3 = doc.getTextWidth(udlDescription);
-            const udldescStartXValue = LeftStart;
-            const checkDescription = udldescStartXValue + valueTextWidth_3;
-            console.log(checkDescription);
-            doc.text(polydescriptionText, udldescStartXValue, current_y);
-            if (checkDescription > max_width) print(checkDescription);
-            const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
-            // current_y = current_y + 10;
-            doc.text(udlDescription, udldescriptionValue, current_y);
-            doc.line(udldescriptionValue, current_y, udldescriptionValue + valueTextWidth_3, current_y);
-            currentX.value = udldescriptionValue + valueTextWidth_3;
-            console.log(currentX.value);
-            current_y = current_y + 10;
-        } else {
-            console.log('Entered poly line 351');
-            const udlNoa = ref(polypropolyneStore.$state.polyinput[0].polyData.noa);
-            const udlApplicant = ref(polypropolyneStore.$state.polyinput[0].polyData.applicant);
-            const udlMaterial = ref(polypropolyneStore.$state.polyinput[0].polyData.material);
-            const udlDescription = ref(polypropolyneStore.$state.polyinput[0].polyData.description);
+        currentX.value = LeftStart;
+        const systemValue = currentX.value;
 
-            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
-            const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
-            const udlNoaStartXValue = LeftStart;
-            doc.text(polynoaText, udlNoaStartXValue, current_y);
-            const udlNoaValue = descStartXValue + valueTextWidthNOA;
-            doc.text(`${udlNoa.value}`, udlNoaValue, current_y);
-            doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
-            currentX.value = udlNoaValue + valueTextWidth_1;
+        doc.text(`${system.value}`, systemValue, current_y);
 
-            const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
-            const valueTextWidth_ = doc.getTextWidth(`${udlApplicant.value}`);
-            const udlApplicantStartXValue = currentX.value + 2;
-            doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
-            const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
-            doc.text(`${udlApplicant.value}`, udlApplicantValue, current_y);
-            doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
-            currentX.value = udlApplicantValue + valueTextWidth_;
+        doc.line(systemValue, current_y, systemValue + SystemTextWidth, current_y);
+        current_y = current_y + 10;
 
-            if (currentX.value > max_width) current_y = current_y + 10;
-            const udlmatStartXValue = LeftStart;
-            const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
-            const valueTextWidth_2 = doc.getTextWidth(`${udlMaterial.value}`);
-            doc.text(polymaterialText, udlmatStartXValue, current_y);
-            const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
-            doc.text(`${udlMaterial.value}`, udlmaterialValue, current_y);
-            doc.line(udlmaterialValue, current_y, udlmaterialValue + valueTextWidth_2, current_y);
+        doc.setFontSize(10);
+        const tprimeoneTextWidth = doc.getTextWidth(primeOneText);
+        const PrimeoneTextWidth = doc.getTextWidth(`${primeone.value}`);
+        const primeoneStartXValue = LeftStart;
+        doc.text(primeOneText, primeoneStartXValue, current_y);
+        current_y = current_y + 7;
 
-            currentX.value = udlmaterialValue + valueTextWidth_2;
-            if (currentX.value > max_width) current_y = current_y + 10;
-            console.log(currentX.value);
+        const primeoneValue = LeftStart;
 
-            const valueTextWidthpolyDesc = doc.getTextWidth(polydescriptionText);
-            const valueTextWidth_3 = doc.getTextWidth(`${udlDescription.value}`);
-            const udldescStartXValue = currentX.value + 2;
-            const checkDescription = udldescStartXValue + valueTextWidth_3;
-            console.log(checkDescription);
-            doc.text('UDL Description:', udldescStartXValue, current_y);
-            if (checkDescription > max_width) print(checkDescription);
-            const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
-            // current_y = current_y + 10;
-            doc.text(`${udlDescription.value}`, udldescriptionValue, current_y);
-            doc.line(udldescriptionValue, current_y, udldescriptionValue + valueTextWidth_3, current_y);
-            currentX.value = udldescriptionValue + valueTextWidth_3;
-            console.log(currentX.value);
-            current_y = current_y + 10;
-        }
-        const sbsnoaText = 'Self Adhered NOA: ';
-        const sbsapplicantText = 'S/A NOA Applicant: ';
-        const sbsmaterialText = 'S/A Material: ';
-        const sbsdescriptionText = 'S/A Description: ';
-        console.log(sbsStore.$state.sbsinput.length);
-        if (sbsStore.$state.sbsinput.length === 0) {
-            const saNoa = 'n/a';
-            const saApplicant = 'n/a';
-            const saMaterial = 'n/a';
-            const saDescription = 'n/a';
+        doc.text(`${primeone.value}`, primeoneValue, current_y);
+        doc.line(primeoneValue, current_y, primeoneValue + PrimeoneTextWidth + 70, current_y);
+        current_y = current_y + 10;
 
-            const valueTextWidthsbsNOA = doc.getTextWidth(sbsnoaText);
-            const valueTextWidth_4 = doc.getTextWidth(saNoa);
-            const saNoaStartXValue = LeftStart;
-            doc.text(sbsnoaText, saNoaStartXValue, current_y);
-            const sbsnoaValue = saNoaStartXValue + valueTextWidthsbsNOA;
-            doc.text(saNoa, sbsnoaValue, current_y);
-            doc.line(sbsnoaValue, current_y, sbsnoaValue + valueTextWidth_4, current_y);
-            currentX.value = sbsnoaValue + valueTextWidth_4;
-            console.log(currentX.value);
+        currentX.value = LeftStart;
 
-            const valueTextWidthsbsApplicant = doc.getTextWidth(sbsapplicantText);
-            const valueTextWidthApp = doc.getTextWidth(saApplicant);
-            const saApplicantStartXValue = currentX.value + 3;
-            doc.text(sbsapplicantText, saApplicantStartXValue, current_y);
-            const sbsapplicantValue = saApplicantStartXValue + valueTextWidthsbsApplicant;
-            doc.text(saApplicant, sbsapplicantValue, current_y);
-            doc.line(sbsapplicantValue, current_y, sbsapplicantValue + valueTextWidthApp, current_y);
-            currentX.value = sbsapplicantValue + valueTextWidthApp;
-            console.log(currentX.value);
+        // const tprimethreeTextWidth = doc.getTextWidth(primeThreeText);
+        const PrimethreeTextWidth = doc.getTextWidth(`${primethree.value}`);
+        const primethreeStartXValue = currentX.value;
 
-            const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
-            const valueTextWidthMat = doc.getTextWidth(saMaterial);
-            const saMaterialStartXValue = currentX.value + 3;
-            doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
-            const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
-            doc.text(saMaterial, sbsmaterialValue, current_y);
-            doc.line(sbsmaterialValue, current_y, sbsmaterialValue + valueTextWidthMat, current_y);
-            currentX.value = sbsmaterialValue + valueTextWidthMat;
-            console.log(currentX.value);
+        doc.text(primeThreeText, primethreeStartXValue, current_y);
+        current_y = current_y + 7;
 
-            const valueTextWidthsbsDescription = doc.getTextWidth(sbsdescriptionText);
-            const valueTextWidthDesc = doc.getTextWidth(saDescription);
-            const saDescriptionStartXValue = currentX.value + 3;
-            doc.text(sbsdescriptionText, saDescriptionStartXValue, current_y);
-            const sbsdescriptionValue = saDescriptionStartXValue + valueTextWidthsbsDescription;
-            doc.text(saDescription, sbsdescriptionValue, current_y);
-            doc.line(sbsdescriptionValue, current_y, sbsdescriptionValue + valueTextWidthDesc, current_y);
-            currentX.value = sbsdescriptionValue + valueTextWidthDesc;
-            console.log(currentX.value);
-        } else {
-            console.log('Entered sbs line 455');
-            const saNoa = ref(sbsStore.$state.sbsinput[0].sbsData.noa);
-            const saApplicant = ref(sbsStore.$state.sbsinput[0].sbsData.applicant);
-            const saMaterial = ref(sbsStore.$state.sbsinput[0].sbsData.material);
-            const saDescription = ref(sbsStore.$state.sbsinput[0].sbsData.description);
+        currentX.value = LeftStart;
+        const primethreeValue = currentX.value;
+        doc.text(`${primethree.value}`, primethreeValue, current_y);
+        doc.line(primethreeValue, current_y, primethreeValue + PrimethreeTextWidth + 70, current_y);
+        current_y = current_y + 10;
 
-            const valueTextWidthsbsNOA = doc.getTextWidth(sbsnoaText);
-            const valueTextWidth_4 = doc.getTextWidth(`${saNoa.value}`);
-            const saNoaStartXValue = LeftStart;
-            doc.text(sbsnoaText, saNoaStartXValue, current_y);
-            const sbsnoaValue = saNoaStartXValue + valueTextWidthsbsNOA;
-            doc.text(`${saNoa.value}`, sbsnoaValue, current_y);
-            doc.line(sbsnoaValue, current_y, sbsnoaValue + valueTextWidth_4, current_y);
-            currentX.value = sbsnoaValue + valueTextWidth_4;
-
-            const valueTextWidthsbsApplicant = doc.getTextWidth(sbsapplicantText);
-            const valueTextWidthApp = doc.getTextWidth(`${saApplicant.value}`);
-            const saApplicantStartXValue = currentX.value + 3;
-            doc.text(sbsapplicantText, saApplicantStartXValue, current_y);
-            const sbsapplicantValue = saApplicantStartXValue + valueTextWidthsbsApplicant;
-            doc.text(`${saApplicant.value}`, sbsapplicantValue, current_y);
-            doc.line(sbsapplicantValue, current_y, sbsapplicantValue + valueTextWidthApp, current_y);
-            currentX.value = sbsapplicantValue + valueTextWidthApp;
-            console.log(currentX.value);
-            if (currentX.value >= max_width) current_y = current_y + 10;
-            console.log(currentX.value);
-
-            const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
-            const valueTextWidthMat = doc.getTextWidth(`${saMaterial.value}`);
-            const saMaterialStartXValue = currentX.value + 3;
-            doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
-            const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
-            doc.text(`${saMaterial.value}`, sbsmaterialValue, current_y);
-            doc.line(sbsmaterialValue, current_y, sbsmaterialValue + valueTextWidthMat, current_y);
-            currentX.value = sbsmaterialValue + valueTextWidthMat;
-            console.log(currentX.value);
-
-            const valueTextWidthsbsDescription = doc.getTextWidth(sbsdescriptionText);
-            const valueTextWidthDesc = doc.getTextWidth(`${saDescription.value}`);
-            const saDescriptionStartXValue = currentX.value + 3;
-            doc.text(sbsdescriptionText, saDescriptionStartXValue, current_y);
-            const sbsdescriptionValue = saDescriptionStartXValue + valueTextWidthsbsDescription;
-            doc.text(`${saDescription.value}`, sbsdescriptionValue, current_y);
-            doc.line(sbsdescriptionValue, current_y, sbsdescriptionValue + valueTextWidthDesc, current_y);
-            currentX.value = sbsdescriptionValue + valueTextWidthDesc;
-            if (currentX.value >= max_width) current_y = current_y + 10;
-            console.log(currentX.value);
-            //     const eighthYCoordinate = 155 + factor;
-            //     const valueTextWidth_4 = doc.getTextWidth(`${saNoa.value}`);
-            //     const saNoaStartXValue = 5 + valueTextWidth_4;
-            //     doc.text('Self Adhered NOA:', 10, eighthYCoordinate);
-            //     doc.text(`${saNoa.value}`, saNoaStartXValue + 25, eighthYCoordinate);
-            //     doc.line(saNoaStartXValue + 25, eighthYCoordinate, saNoaStartXValue + 25 + valueTextWidth_4, eighthYCoordinate);
-            //     const ninthYCoordinate = eighthYCoordinate + factor;
-
-            //     const valueTextWidth_5 = doc.getTextWidth(`${saApplicant.value}`);
-            //     const saApplicantStartXValue = 5 + valueTextWidth_5;
-            //     doc.text('S/A NOA Applicant:', 10, ninthYCoordinate);
-            //     const saApplicantValue = saApplicantStartXValue + 35;
-            //     doc.text(`${saApplicant.value}`, saApplicantValue, ninthYCoordinate);
-            //     doc.line(saApplicantValue, ninthYCoordinate, saApplicantValue + valueTextWidth_5, ninthYCoordinate);
-            //     const samatStartXValue = 100;
-            //     const valueTextWidth_6 = doc.getTextWidth(`${saMaterial.value}`);
-            //     doc.text('S/A Material:', samatStartXValue, ninthYCoordinate);
-            //     const samaterialValue = samatStartXValue + 36;
-            //     doc.text(`${saMaterial.value}`, samaterialValue, ninthYCoordinate);
-            //     doc.line(samaterialValue, ninthYCoordinate, samaterialValue + valueTextWidth_6, ninthYCoordinate);
-            //     const valueTextWidth_7 = doc.getTextWidth(`${saDescription.value}`);
-            //     const sadescStartXValue = 10;
-            //     const tenthYCoordinate = ninthYCoordinate + factor;
-            //     doc.text('UDL Description:', sadescStartXValue, tenthYCoordinate);
-            //     doc.text(`${saDescription.value}`, sadescStartXValue + 40, tenthYCoordinate);
-            //     doc.line(sadescStartXValue + 40, tenthYCoordinate, sadescStartXValue + 40 + valueTextWidth_7, tenthYCoordinate);
-        }
         // Save the PDF
-        doc.save('Shingle.pdf');
+        doc.save('LowSlope.pdf');
     }
 };
 </script>

@@ -93,7 +93,7 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        image.src = ' /demo/images/paperversion.jpeg';
+        image.src = '/demo/images/paperbackground.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
 
         doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);

@@ -26,16 +26,7 @@ export default function useInputSA() {
     const { data } = useFetch(url).get().json();
 
     const fetchData = async () => {
-        // try {
-
         saNoaNumber.noa = data;
-
-        // for (let i = 0;)
-        // const response = await execute({ params: { noa: num.value } }).then((response) => {
-        //     noaNum.value = data.value;
-
-        //     return noaNum.value;
-        // });
 
         saStore.addData(saNoaNumber);
 

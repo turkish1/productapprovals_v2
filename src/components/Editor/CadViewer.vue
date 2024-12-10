@@ -23,7 +23,7 @@ import { ref } from 'vue';
 // Reactive variables
 const images = ref([]); // Stores the image URLs
 const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
-
+const pdfFiles = ref([]);
 // Handle drag events
 function onDragEnter() {
     dragging.value = true; // Change state when the user drags files over the zone
@@ -42,7 +42,8 @@ function onDrop(event) {
 
     // Loop through each file and process if it's an image
     for (const file of droppedFiles) {
-        if (file.type.startsWith('image/')) {
+        // startsWith
+        if (file.type.startsWith('image/') || file.type === 'application/pdf') {
             const reader = new FileReader();
 
             reader.onload = (e) => {
@@ -53,6 +54,10 @@ function onDrop(event) {
         }
     }
 }
+// Delete a file by index
+const deleteFile = (index) => {
+    pdfFiles.value.splice(index, 1);
+};
 </script>
 
 <style scoped>
@@ -60,24 +65,26 @@ function onDrop(event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 130px;
+
+    margin-top: 50px;
     width: 100%;
 }
 
 .drop-zone {
-    width: 120%;
-
-    /* max-width: 1000px; */
+    width: 700px;
     height: 800px;
     border: 2px dashed #ccc;
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #e0e0e0;
-    margin-bottom: 20px;
-    margin-left: 80px;
+    /* background-color: #e0e0e0; */
+    margin-bottom: 10px;
+    margin-left: 40px;
     transition: background-color 0.3s;
+    background-image: url('/demo/images/cad.jpeg');
+    background-size: cover; /* Options: contain, cover, auto */
+    background-position: center;
 }
 
 .drop-zone.dragging {
@@ -86,7 +93,7 @@ function onDrop(event) {
 }
 
 .instructions {
-    color: #999;
+    color: #0b0808;
     font-size: 1.2em;
     text-align: center;
 }
@@ -96,7 +103,7 @@ function onDrop(event) {
 }
 
 .image-gallery {
-    width: 110%;
+    width: 100%;
     max-width: 750px;
 }
 
@@ -108,13 +115,13 @@ function onDrop(event) {
 }
 
 .image-wrapper {
-    width: 550px;
-    height: 550px;
+    width: 'object-fit';
+    height: 'object-fit';
     overflow: hidden;
 }
 
 .uploaded-image {
-    width: 150%;
+    width: 100%;
     height: 700px;
     object-fit: cover;
     border-radius: 8px;

@@ -183,7 +183,7 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     flex-direction: row;
     align-items: left;
     width: 100%;
-    height: 100%;
+    height: 80%;
     margin-top: 100px;
 }
 
@@ -223,7 +223,7 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 }
 .stepper-controls {
     display: flex;
-    gap: 1800px;
+    gap: 1500px;
     margin-top: 200px;
 }
 </style>

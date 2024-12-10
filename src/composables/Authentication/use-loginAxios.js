@@ -4,7 +4,7 @@ import { useAxios } from '@vueuse/integrations/useAxios';
 
 let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/retriveaccounts';
 
-const { execute, t } = useAxios(url, { method: 'GET' }, { immediate: false });
+const { execute, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
 let Data = reactive({});
 function confirmAuth(userAccount) {

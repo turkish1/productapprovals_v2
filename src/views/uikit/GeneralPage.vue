@@ -1,11 +1,13 @@
 <script setup>
 import CadViewer from '@/components/Editor/CadViewer.vue';
+
+// import FileSystem from '@/components/FileSystem/FileSystem.vue';
 import { useGlobalState } from '@/stores/accountsStore';
+import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke } from '@vueuse/core';
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
+
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
@@ -16,8 +18,10 @@ const { permitapp } = storeToRefs(permitstore);
 const store = useRoofListStore();
 const { roofList } = storeToRefs(store);
 const router = useRouter();
-
+const generalpageStore = useGeneralpdfStore();
 const { accountUsers } = useGlobalState();
+
+const { addgeneralpdfData } = storeToRefs(generalpageStore);
 let total = ref('');
 let low1 = ref('');
 let steep1 = ref('');
@@ -37,9 +41,19 @@ let dba = ref();
 let jobaddress = ref();
 let contractor = ref();
 
-const checkedslp = ref(false);
+const dataGeneral = {
+    steepData: '',
+    slopeData: '',
+    totalData: '',
+    mtileChk: '',
+    adtileChk: '',
+    shingleChk: '',
+    slopeChk: '',
+    metalChk: '',
+    roofCheck: ''
+};
 
-console.log(roofList, permitapp);
+const checkedslp = ref(false);
 
 onMounted(() => {
     roofList.value.forEach((item, index) => {
@@ -48,26 +62,31 @@ onMounted(() => {
             console.log(item.dim1);
             steep1.value = item.dim1;
             checkedshingle.value = true;
+            dataGeneral.shingleChk = checkedshingle.value;
         }
 
         if (item.item === 'Low Slope') {
             low1.value = item.dim2;
 
             checkedslp.value = true;
+            dataGeneral.slopeChk = checkedslp.value;
         }
 
         if (item.item === 'Mechanical Fastened Tile') {
             steep1.value = item.dim3;
             checkedmtile.value = true;
+            dataGeneral.mtileChk = checkedmtile.value;
         }
 
         if (item.item === 'Adhesive Set Tile') {
             steep2.value = item.dim4;
             checkedadtile.value = true;
+            dataGeneral.adtileChk = checkedadtile.value;
         }
         if (item.item === 'Metal Panel') {
             steep3.value = item.dim5;
             checkedmetal.value = true;
+            dataGeneral.metalChk = checkedmetal.value;
         }
         if (accountUsers._value[0].DBA === '') {
             console.log(accountUsers._value[0]);
@@ -83,6 +102,7 @@ onMounted(() => {
 
     roofArea();
 });
+
 const checked = ref(false);
 function roofArea() {
     let l1 = Number(low1.value);
@@ -93,11 +113,14 @@ function roofArea() {
     let st4 = Number(steep4.value);
     steep.value = st1 + st2 + st3 + st4;
 
-    // + st2 + st3 + st4;
-
     lowslope.value = l1;
-    console.log(steep1.value);
+
     total.value = lowslope.value + steep.value;
+    dataGeneral.slopeData = lowslope.value;
+    dataGeneral.steepData = steep.value;
+    dataGeneral.totalData = total.value;
+    dataGeneral.roofCheck = checked;
+    generalpageStore.addgeneralpdfData(dataGeneral);
 }
 
 const navigateNext = () => {
@@ -110,13 +133,13 @@ invoke(async () => {
 </script>
 
 <template>
-    <div id="generalpg" class="flex flex-col md:flex-row gap-6" style="margin-left: 320px">
-        <div class="md:w-full">
-            <div class="md:w-3/4 card flex flex-col gap-4">
+    <!-- flex flex-col md:flex-row gap-6 -->
+    <div id="generalpg" class="grid grid-cols-2 gap-2" style="margin-left: 120px">
+        <div class="md:w-2/3">
+            <div class="md:w-2/3 card flex flex-col gap-4">
                 <div class="container">
                     <div class="row">
                         <div class="card flex flex-col gap-4">
-                            <!-- <div class="font-semibold text-xl">2023 HVHZ</div> -->
                             <div class="grid grid-cols-1 gap-1 place-content-center h-6 ...">
                                 <p class="text-center font-semibold text-xl">2023 HVHZ</p>
                             </div>
@@ -207,7 +230,8 @@ invoke(async () => {
                             </InputGroup>
                         </div>
                         <div class="card md:w-2/3 flex flex-col bg-local hover:bg-fixed gap-4">
-                            <CadViewer />
+                            <!-- <CadViewer /> -->
+                            <!-- <FileSystem /> -->
                         </div>
 
                         <div class="card md:w-1/3 flex flex-col gap-4">
@@ -216,6 +240,9 @@ invoke(async () => {
                     </div>
                 </div>
             </div>
+        </div>
+        <div>
+            <CadViewer />
         </div>
     </div>
 </template>
@@ -227,8 +254,8 @@ invoke(async () => {
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 500px;
-    min-width: 700px;
+    min-height: 800px;
+    min-width: 900px;
     top: 10vh;
 }
 

@@ -30,11 +30,6 @@ const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
 const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 const dba = ref(getUser.value[0].dba);
 
-// invoke(async () => {
-// await until(pdfcleared).changed();
-// generatePdf();
-// alert('Generated, PDF!');
-// });
 const generatePDF = () => {
     // Initialize jsPDF instance
     if (shingleStore.$state.inputshingle.length === 0) {
@@ -64,9 +59,7 @@ const generatePDF = () => {
         // Set font size, alignment, and rotation for the watermark
         doc.setFontSize(24);
         doc.setTextColor(150, 150, 150);
-        // doc.setFont('Courier', 'bolditalic');
-        // Light gray color for watermark
-        // doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2
+
         doc.text('mEPermits', 25, 250, {
             angle: 45, // Rotate watermark text
             align: 'left',
@@ -75,7 +68,7 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        image.src = ' /demo/images/paperversion.jpeg';
+        image.src = '/demo/images/paperbackground.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
 
         doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);

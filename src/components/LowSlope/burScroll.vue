@@ -1,13 +1,15 @@
 <template>
-    <div ref="scrollContainer" class="infinite-container">
-        <div v-for="(page, index) in pages" :key="index" class="page-content">
-            <div>
-                <logicBur1><slot name="Low Slope"></slot></logicBur1>
-            </div>
-        </div>
+    <!-- <div ref="scrollContainer" class="infinite-container"> -->
+    <div class="card w-2/3 space-y-1">
+        <!-- <div v-for="(page, index) in pages" :key="index" class="page-content"> -->
+        <!-- <div> -->
+        <logicBur1><slot name="Low Slope"></slot></logicBur1>
+        <!-- </div> -->
+        <!-- </div> -->
 
         <div v-if="loading" class="loading-indicator">Loading more content...</div>
     </div>
+    <!-- </div> -->
 </template>
 
 <script setup>

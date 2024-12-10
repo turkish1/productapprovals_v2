@@ -29,7 +29,7 @@
             <div>
                 <Skeleton width="10rem" class="mb-2"></Skeleton>
                 <Skeleton width="5rem" class="mb-2"></Skeleton>
-                <Skeleton height="2.5rem" width="30rem" v-model="dba">{{ db }}</Skeleton>
+                <Skeleton height="2rem" width="30rem" v-model="dba">{{ db }}</Skeleton>
             </div>
         </div>
         <Skeleton width="100%" height="150px"></Skeleton>
@@ -47,41 +47,56 @@
         <div v-show="isRoofTileMechanicalValid">
             <TileMechanical />
         </div>
+        <div v-show="isRoofLowslopeValid">
+            <LowSlope />
+        </div>
+        <div>
+            <GeneralPage />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
+import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { onMounted, ref, watch } from 'vue';
+import GeneralPage from '../jsPDF/Generalpagepdf.vue';
+import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
 import TileAdhesive from '../jsPDF/TileAdhesive.vue';
 import TileMechanical from '../jsPDF/TileMechanical.vue';
+
+// import uploadbucket from '../jsPDF/uploadS3.vue';
 const { accountUsers } = useGlobalState();
 
+let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
 let isRoofTileMechanicalValid = ref(false);
 let isRoofShingleValid = ref(false);
-// const isRoofLowslopeValid = ref(false);
+let isRoofLowslopeValid = ref(false);
 const dba = ref('');
 const name = ref('');
 const license = ref('');
 const status = ref('');
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
-        console.log(item);
         dba.value = item.dba;
-        console.log(dba.value);
     });
 }
-console.log(accountUsers);
+
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
+
+const generalStore = useGeneralpdfStore();
+const generalType = ref(generalStore.$state.generalpdfinput);
+
 onMounted(() => {
     displayUserInfo();
 
-    console.log(roofType);
+    // console.log(roofType);
+    // console.log(generalType.value.length);
 });
 
 const callState = tryOnMounted(() => {
@@ -89,10 +104,14 @@ const callState = tryOnMounted(() => {
         return '';
     } else if (roofType.value[0].item === 'Asphalt Shingle') {
         isRoofShingleValid.value = true;
+    } else if (roofType.value[0].item === 'Low Slope') {
+        isRoofLowslopeValid.value = true;
     } else if (roofType.value[0].item === 'Adhesive Set Tile') {
         isRoofTileADValid.value = true;
     } else if (roofType.value[0].item === 'Mechanical Fastened Tile') {
         isRoofTileMechanicalValid.value = true;
+    } else if (generalType.value.length !== 1) {
+        isGenaralPageValid.value = true;
     }
 });
 watch(displayUserInfo, callState, () => {
@@ -106,10 +125,6 @@ const events = ref([
 
 invoke(async () => {
     await until(callState).toBe(true);
-    // await until(isRoofTileADValid).toBe(true);
-    // await until(isRoofTileMechanicalValid).toBe(true);
-    // await until(isValidmechanical).toBe(true);
-    console.log(isRoofShingleValid);
 });
 </script>
 

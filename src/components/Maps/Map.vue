@@ -124,7 +124,7 @@ watchEffect(map, getCoordinates, () => {});
     content: 'Map';
     position: relative;
     top: -20px;
-    left: 90px;
+    left: 230px;
     width: 80px;
     height: 15px;
     background-color: black;

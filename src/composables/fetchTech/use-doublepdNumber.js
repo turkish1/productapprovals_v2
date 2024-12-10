@@ -23,14 +23,8 @@ export default function useDouble() {
     const { data } = useFetch(url).get().json();
 
     const fetchData = async () => {
-        // try {
-
         doublepdNumber.noa = data;
         console.log(doublepdNumber.noa);
-        // for (let i = 0;)
-        // const response = await execute({ params: { noa: num.value } }).then((response) => {
-
-        // });
 
         doubleStore.addDouble(doublepdNumber);
 

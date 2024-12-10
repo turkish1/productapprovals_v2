@@ -90,9 +90,7 @@ const generatePDF = () => {
         // Set font size, alignment, and rotation for the watermark
         doc.setFontSize(24);
         doc.setTextColor(150, 150, 150);
-        // doc.setFont('Courier', 'bolditalic');
-        // Light gray color for watermark
-        // doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2
+
         doc.text('mEPermits', 25, 250, {
             angle: 45, // Rotate watermark text
             align: 'left',
@@ -101,7 +99,7 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        image.src = ' /demo/images/paperversion.jpeg';
+        image.src = '/demo/images/paperbackground.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
 
         doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
@@ -122,7 +120,7 @@ const generatePDF = () => {
         // Add a paragraph of text
 
         doc.setFontSize(12);
-        // doc.text(wrappedText, 10, 60);
+
         // Function to add header
         const addHeader = () => {
             doc.setFontSize(12);

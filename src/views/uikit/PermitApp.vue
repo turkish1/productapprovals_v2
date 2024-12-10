@@ -26,8 +26,6 @@ export default {
         const { accountUsers, getUser, addUser } = useGlobalState();
         console.log(accountUsers._value[0]);
 
-        // const useacctStore = useaccountStore();
-        // const { accountinput } = storeToRefs(useacctStore);
         const prefix = ref('me');
         const store = usePermitappStore();
         const formData = reactive({

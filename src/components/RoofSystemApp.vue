@@ -1,9 +1,10 @@
 <script setup>
-import Terminal from '@/components/Maps/Terminal.vue';
+// import Terminal from '@/components/Maps/Terminal.vue';
 import AOS from 'aos';
 import { onMounted } from 'vue';
 import RoofSystemForm from './RoofSystemForm.vue';
 import RoofSystemList from './RoofSystemList.vue';
+// import Map from '@/components/Maps/Map.vue';
 onMounted(() => {
     AOS.init({
         duration: 4500, // Animation duration in ms
@@ -18,12 +19,12 @@ onMounted(() => {
             <roof-system-form></roof-system-form>
             <roof-system-list></roof-system-list>
         </div>
-        <div style="margin-left: 150px">
+        <!-- <div style="margin-left: 150px">
             <Map></Map>
-        </div>
-        <div style="margin-left: 50px">
+        </div> -->
+        <!-- <div style="margin-left: 50px">
             <Terminal />
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -32,6 +33,6 @@ onMounted(() => {
     margin-left: 300px;
 }
 #id {
-    height: 1200px;
+    height: 1000px;
 }
 </style>

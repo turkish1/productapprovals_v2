@@ -1,14 +1,14 @@
 // this html covers the whole system
 html {
-    height: 130%;
+    height: 100%;
     font-size: 14px;
 }
 
 body {
     font-family: 'Lato', sans-serif;
     color: whitesmoke;
-    // background-color: #eae7e2;
-    background-image: url('/src/assets/img/radar_Fotor.png');
+
+    // background-image: url('/src/assets/img/radar_Fotor.png');
     background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
@@ -26,10 +26,10 @@ a {
 }
 
 .layout-wrapper {
-    min-height: 90vh;
+    min-height: 100vh;
     background-image: url('/src/assets/img/radar_Fotor.png');
     background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
-    min-height: 5%;
+    // min-height: 5%;
 }
