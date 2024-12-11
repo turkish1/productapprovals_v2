@@ -12,14 +12,14 @@
                 <div class="images-grid">
                     <div v-for="(image, index) in images" :key="index" class="image-wrapper">
                         <img :src="image" alt="Uploaded Image" class="uploaded-image" />
-                        <Button @click="deleteImages(index)"></Button>
+                        <Button label="" severity="info" rounded @click="deleteImages(index)"></Button>
                     </div>
                 </div>
             </div>
 
             <!-- Uploaded Files List -->
             <div v-if="files.length" class="file-list">
-                <h2 class="underline hover:underline-offset-4">Uploaded Files</h2>
+                <h2 class="underline hover:underline-offset-4"></h2>
                 <ul class="list-image-[url(checkmark.png)] ...">
                     <li v-for="(file, index) in files" :key="index">
                         {{ file.name }}
