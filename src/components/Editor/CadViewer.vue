@@ -6,13 +6,26 @@
             <p v-if="dragging" class="instructions dragging">Release to drop the images</p>
 
             <!-- Display Uploaded Images -->
+
             <div class="image-gallery" v-if="images.length">
                 <h3>Uploaded Images</h3>
                 <div class="images-grid">
                     <div v-for="(image, index) in images" :key="index" class="image-wrapper">
                         <img :src="image" alt="Uploaded Image" class="uploaded-image" />
+                        <Button @click="deleteImages(index)"></Button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Uploaded Files List -->
+            <div v-if="files.length" class="file-list">
+                <h2 class="underline hover:underline-offset-4">Uploaded Files</h2>
+                <ul class="list-image-[url(checkmark.png)] ...">
+                    <li v-for="(file, index) in files" :key="index">
+                        {{ file.name }}
+                        <Button @click="deleteFile(index)" severity="contrast">Delete</Button>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -23,7 +36,8 @@ import { ref } from 'vue';
 // Reactive variables
 const images = ref([]); // Stores the image URLs
 const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
-const pdfFiles = ref([]);
+const files = ref([]);
+
 // Handle drag events
 function onDragEnter() {
     dragging.value = true; // Change state when the user drags files over the zone
@@ -52,11 +66,19 @@ function onDrop(event) {
 
             reader.readAsDataURL(file); // Read the file as a data URL for display
         }
+        files.value.push(file);
     }
 }
+
+const deleteImages = (index) => {
+    // images.value.splice(index, 1);
+    deleteFile(index);
+};
 // Delete a file by index
 const deleteFile = (index) => {
-    pdfFiles.value.splice(index, 1);
+    files.value.splice(index, 1);
+    images.value.splice(index, 1);
+    console.log(images.value, files.value);
 };
 </script>
 
