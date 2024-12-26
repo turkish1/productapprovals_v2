@@ -1,5 +1,5 @@
 import { useburDetailStore } from '@/stores/burDetaildocs';
-// import { useFetch } from '@vueuse/core';
+
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
@@ -9,7 +9,7 @@ export default function useS3download() {
     const isDownloading = ref(false);
     const downloadProgress = ref(0);
     const sentItem = ref('');
-    // downloaded-file.pdf
+
     const fName = ref('');
     const error = ref('');
     const isDetailInput = ref(false);
@@ -43,7 +43,6 @@ export default function useS3download() {
 
     async function downloadPdfFromS3() {
         try {
-            console.log(fName.value, sentItem.value);
             // Construct the public URL for the file in the bucket
             const url = `https://digitalsolutionsroofs.s3.us-east-1.amazonaws.com/${sentItem.value}`;
             // console.log(url);

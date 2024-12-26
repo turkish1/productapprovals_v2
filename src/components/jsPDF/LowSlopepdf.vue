@@ -30,6 +30,8 @@ const dba = ref(getUser.value[0].dba);
 const burType = ref(burpdfStore.$state.burpdfinput);
 let isBurValid = ref(false);
 
+const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+const uploadUrl = ref('');
 function testBurType() {
     if (burType.value.length !== 1) {
         isBurValid.value = true;
@@ -314,7 +316,44 @@ const generatePDF = () => {
         current_y = current_y + 10;
 
         // Save the PDF
-        doc.save('LowSlope.pdf');
+        // doc.save('LowSlope.pdf');
+        const fName = 'LowSlope.pdf';
+        const pdfBlob = doc.output('blob');
+
+        const uploadFile = async (fName, pdfBlob) => {
+            const file = fName;
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const fileName = file; // Keep original name or generate a new one
+            console.log(fileName);
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+
+            try {
+                const response = await fetch(s3Url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': file.type
+                    },
+                    body: pdfBlob
+                });
+
+                if (response.ok) {
+                    uploadUrl.value = s3Url;
+
+                    alert('File uploaded successfully!');
+                } else {
+                    alert(`Failed to upload file. Status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('An error occurred while uploading the file.');
+            }
+        };
+        uploadFile(fName, pdfBlob);
     }
 };
 </script>

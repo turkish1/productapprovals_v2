@@ -74,6 +74,9 @@ const generatePDF = () => {
         const address = ref(permitStore.$state.permitapp[0].formdt.address);
         const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
         const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+
+        const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+        const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
         const doc = new jsPDF();
         // Load an image (example with Base64)
@@ -569,7 +572,44 @@ const generatePDF = () => {
         }
 
         // Save the PDF
-        doc.save('Mechanical.pdf');
+        // doc.save('Mechanical.pdf');
+        const fName = 'LowSlope.pdf';
+        const pdfBlob = doc.output('blob');
+
+        const uploadFile = async (fName, pdfBlob) => {
+            const file = fName;
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const fileName = file; // Keep original name or generate a new one
+            console.log(fileName);
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+
+            try {
+                const response = await fetch(s3Url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': file.type
+                    },
+                    body: pdfBlob
+                });
+
+                if (response.ok) {
+                    uploadUrl.value = s3Url;
+
+                    alert('File uploaded successfully!');
+                } else {
+                    alert(`Failed to upload file. Status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('An error occurred while uploading the file.');
+            }
+        };
+        uploadFile(fName, pdfBlob);
     }
 };
 </script>

@@ -74,6 +74,8 @@ const generatePDF = () => {
         const deckType = ref(shingleStore.$state.inputshingle[0].shingleData.deckType);
         // console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
         const area = ref(roofStore.$state.roofList[0].dim1);
+        const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+        const uploadUrl = ref('');
         const doc = new jsPDF();
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
@@ -525,7 +527,44 @@ const generatePDF = () => {
             console.log(currentX.value);
         }
         // Save the PDF
-        doc.save('Shingle.pdf');
+        // doc.save('Shingle.pdf');
+        const fName = 'LowSlope.pdf';
+        const pdfBlob = doc.output('blob');
+
+        const uploadFile = async (fName, pdfBlob) => {
+            const file = fName;
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const fileName = file; // Keep original name or generate a new one
+            console.log(fileName);
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+
+            try {
+                const response = await fetch(s3Url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': file.type
+                    },
+                    body: pdfBlob
+                });
+
+                if (response.ok) {
+                    uploadUrl.value = s3Url;
+
+                    alert('File uploaded successfully!');
+                } else {
+                    alert(`Failed to upload file. Status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('An error occurred while uploading the file.');
+            }
+        };
+        uploadFile(fName, pdfBlob);
     }
 };
 </script>

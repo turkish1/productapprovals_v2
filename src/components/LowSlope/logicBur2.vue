@@ -91,8 +91,9 @@ function updateselectSystem(event) {
         sp3.value = convert.split(/(?=[)³])/);
         sp4.value = convert.split(/(?=[)⁴])/);
         sp5.value = convert.split(/(?=[)⁵])/);
-
-        if (sp2.value[2] === '²' || sp2.value[3] === '²') {
+        console.log(sp2.value);
+        console.log(sp2.value[3]);
+        if (sp2.value[2] === '²' || sp2.value[3] === '²' || sp2.value[4] === '²') {
             primeone.value = Perimeters.p1_two;
             primethree.value = Perimeters.p2_two;
             // I need to separete, possibly the p1 and p2 to capture each event from the select box.

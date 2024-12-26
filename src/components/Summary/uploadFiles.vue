@@ -12,42 +12,57 @@
 </template>
 
 <script setup>
+import { usePermitappStore } from '@/stores/permitapp';
 import { ref } from 'vue';
 
 const bucketName = 'dsr-pdfupload';
-const region = 'us-east-1'; // Example: 'us-east-1'
+const region = 'us-east-1';
 const uploadProgress = ref(0);
-const uploadUrl = ref('https://dsr-pdfupload.s3.us-east-1.amazonaws.com/files');
+const uploadUrl = ref('');
+
+const permitStore = usePermitappStore();
+
+const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+
+const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+console.log(objName);
+
+// assuming we have a directory handle: 'currentDirHandle'
 
 const uploadFile = async (event) => {
     const file = event.target.files[0];
+
     if (!file) {
         alert('Please select a file to upload.');
         return;
     }
 
     const fileName = file.name; // Keep original name or generate a new one
-    const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/files/${fileName}`;
+    console.log(fileName);
+    const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+    console.log(s3Url);
+    // try {
+    const response = await fetch(s3Url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': file.type
+        },
+        body: file
+    });
 
-    try {
-        const response = await fetch(s3Url, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': file.type
-            },
-            body: file
-        });
+    console.log(response);
 
-        if (response.ok) {
-            uploadUrl.value = s3Url;
-            alert('File uploaded successfully!');
-        } else {
-            alert(`Failed to upload file. Status: ${response.status}`);
-        }
-    } catch (error) {
-        console.error('Error uploading file:', error);
-        alert('An error occurred while uploading the file.');
+    if (response.ok) {
+        uploadUrl.value = s3Url;
+        console.log(s3Url);
+        alert('File uploaded successfully!');
+    } else {
+        alert(`Failed to upload file. Status: ${response.status}`);
     }
+    // } catch (error) {
+    //     console.error('Error uploading file:', error);
+    //     alert('An error occurred while uploading the file.');
+    // }
 };
 </script>
 

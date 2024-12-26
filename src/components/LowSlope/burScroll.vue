@@ -46,7 +46,7 @@ const { stop } = useIntersectionObserver(
     },
     { threshold: 1 }
 );
-console.log(useIntersectionObserver());
+// console.log(useIntersectionObserver());
 onMounted(() => {
     watchEffect(() => {
         // Clean up observer if all pages are loaded

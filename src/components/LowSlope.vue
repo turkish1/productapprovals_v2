@@ -49,7 +49,7 @@ onMounted(() => {
 <template>
     <agreements-dialog-lowslope v-if="isDialog === true"></agreements-dialog-lowslope>
     <!-- class="card w-1/3 space-y-1 bg-white shadow-lg shadow-cyan-800" card w-full space-y-1 card flex flex-col md:flex-row gap-2 mt-5 bg-white shadow-lg shadow-cyan-800-->
-    <div data-aos="fade-down-right" data-aos-offset="200" data-aos-delay="50" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-mirror="true" data-aos-once="false" style="margin-top: 50px">
+    <div data-aos="fade-down-right" data-aos-offset="150" data-aos-delay="50" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-mirror="true" data-aos-once="false" style="margin-top: 50px">
         <!-- margin-top: 50px -->
         <!-- <div id="bur" class="mb-1" style="margin-left: 100px"> -->
         <!-- <InputItemsBur><slot name="Low Slope"></slot></InputItemsBur> -->

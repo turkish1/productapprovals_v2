@@ -10,6 +10,7 @@ import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
+
 const { getUser } = useGlobalState();
 
 let isGenaralPageValid = ref(false);
@@ -20,9 +21,16 @@ const address = ref(permitStore.$state.permitapp[0].formdt.address);
 const masterPermit = ref(permitStore.$state.permitapp[0].formdt.permit);
 const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
 
+const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+
 const dba = ref(getUser.value[0].dba);
 
+const uploadUrl = ref('');
 const generalType = ref(generalpageStore.$state.generalpdfinput);
+
+// Path to your self-signed `.pfx` file
+const digitalIdFilePath = './HugoBlanco.pfx';
+const pfxPassword = 'miamibeach20'; // The password you set when creating the .pfx file
 
 function testGeneralType() {
     if (generalType.value.length !== 1) {
@@ -272,7 +280,7 @@ const generatePDF = () => {
             currentX.value = checkBox2TextWidth + 20;
             doc.addField(checkBox2);
         }
-        // adtileChk
+
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.adtileChk) {
             const checkBox3TextWidth = currentX.value + 5;
             const checkBox3 = new jsPDF.API.AcroFormCheckBox();
@@ -283,8 +291,6 @@ const generatePDF = () => {
             currentX.value = checkBox3TextWidth + 20;
             doc.addField(checkBox3);
         }
-
-        // shingleChk
 
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk) {
             const checkBox4TextWidth = currentX.value + 5;
@@ -310,7 +316,44 @@ const generatePDF = () => {
 
             // Save the PDF
         }
-        doc.save('GeneralPage.pdf');
+
+        const fName = 'GeneralPage.pdf';
+        const pdfBlob = doc.output('blob');
+        const uploadFile = async (fName, pdfBlob) => {
+            const file = fName;
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const fileName = file; // Keep original name or generate a new one
+            console.log(fileName);
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+
+            try {
+                const response = await fetch(s3Url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': file.type
+                    },
+                    body: pdfBlob
+                });
+
+                if (response.ok) {
+                    uploadUrl.value = s3Url;
+
+                    alert('File uploaded successfully!');
+                } else {
+                    alert(`Failed to upload file. Status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('An error occurred while uploading the file.');
+            }
+        };
+
+        uploadFile(fName, pdfBlob);
     }
 };
 </script>
