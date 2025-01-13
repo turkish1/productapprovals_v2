@@ -324,7 +324,7 @@ const underlaymentType = ref([
     { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
 ]);
 
-watch(selectedUnderlayment, () => {
+watch(selectedUnderlayment, checkInput, () => {
     save.value = selectedUnderlayment.value.key;
 
     if (save.value === 1) {
@@ -665,7 +665,7 @@ let showMaterialValid = ref(false);
 function checkInput() {
     if (datatilenoa.value.length !== null) {
         tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
-        console.log(zoneone.lambda1);
+        // console.log(zoneone.lambda1);
         if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple') {
             isTileSelectionValid = true;
             isMultiTileValid = true;
@@ -1346,6 +1346,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
                                 @input="onInput"
                                 @click="selectedExposure"
                                 @keydown.tab.exact.stop="checkInput"
+                                @change="checkInput"
                             />
                             <label for="ac">Tile NOA: 00000000</label>
                         </FloatLabel>

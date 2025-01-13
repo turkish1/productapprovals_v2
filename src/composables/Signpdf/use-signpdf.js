@@ -17,12 +17,12 @@ export default function useSignpdf() {
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
-    function getNumber(Input) {
+    function getNumbers(Input) {
         console.log(Input);
         inp.value = Input;
 
         sendProcessnumber.value = inp.value + '/';
-
+        // console.log(sendProcessnumber);
         // procNum.value = Number(inp.value);
         fetchData();
     }
@@ -31,7 +31,7 @@ export default function useSignpdf() {
         try {
             const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((response) => {
                 procNum.value = data.value;
-                console.log(data);
+                console.log(data.value);
             });
 
             return response;
@@ -41,5 +41,5 @@ export default function useSignpdf() {
         }
     };
 
-    return { error, getNumber, procNum, fetchData };
+    return { error, getNumbers, procNum, fetchData };
 }

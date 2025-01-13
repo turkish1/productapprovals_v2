@@ -4,8 +4,8 @@
         <!-- v-show="download_url" -->
         <!-- margin-left: 550px; margin-top: 390px; -->
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 850px; margin-top: 440px">
-            <Button v-show="isUrldownloadValid" icon="pi-arrow-circle-down" label="Link" variant="Link" style="color: whitesmoke; background-color: #020507" @click="downloadFile" />
-
+            <!-- <Button v-show="isUrldownloadValid" icon="pi-arrow-circle-down" label="Download Files" variant="Link" style="color: whitesmoke; background-color: #020507" @click="downloadFile" /> -->
+            <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="downloadFile" />
             <div class="payment-widget">
                 <h2 style="color: black">Credit Card Payment</h2>
                 <form @submit.prevent="handleSubmit">
@@ -44,17 +44,31 @@
 
 <script setup>
 import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
+import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+
 const permitStore = usePermitappStore();
+const objName = ref('');
+const { getNumbers } = useSignpdf();
 
+// if (permitStore.$state.permitapp[0].formdt.length >= 0) {
 const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+// } else {
+//     processNumber.value = ref('');
+// }
 
-const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
-console.log(objName);
-
+objName.value = processNumber.value.length !== 0 ? processNumber.value : 'files';
+console.log(objName.value);
 // State for the form and payment
+function signPdfs() {
+    getNumbers(objName.value);
+}
+
+onMounted(() => {
+    signPdfs();
+});
 const form = ref({
     cardholderName: '',
     cardNumber: '',
@@ -62,26 +76,28 @@ const form = ref({
     cvv: ''
 });
 const isUrldownloadValid = ref(false);
-const { getNumber, zip_download_url } = useDownloadpdf();
+const { getNumber } = useDownloadpdf();
 const submitted = ref(false);
 const spinnerValid = ref(false);
 const amount = 49.99; // Example fixed payment amount
-const procNumber = objName;
-console.log(procNumber.value);
+
+// console.log(procNumber.value);
 const pdfstore = usedownloadStore();
 const download_url = ref('');
+
 const handleSubmit = () => {
-    getNumber(objName);
-    console.log(objName);
+    getNumber(objName.value);
+    console.log(objName.value);
+
     // Basic validation can be added here
     if (!form.value.cardholderName || !form.value.cardNumber || !form.value.expiryDate || !form.value.cvv) {
         alert('Please fill out all fields.');
         return;
     }
-    download_url.value = pdfstore.$state.downloadinput[0].downloadData;
+
     // Fake submission
     submitted.value = true;
-    isUrldownloadValid.value = true;
+
     // Reset form after submission
     spinnerValid.value = true;
 
@@ -91,8 +107,10 @@ const handleSubmit = () => {
         form.value.expiryDate = '';
         form.value.cvv = '';
         submitted.value = false;
-    }, 2000);
+    }, 3000);
     spinnerValid.value = false;
+    isUrldownloadValid.value = true;
+    download_url.value = pdfstore.$state.downloadinput[0].downloadData;
 };
 
 const downloadFile = () => {
@@ -129,7 +147,7 @@ const downloadFile = () => {
     background-attachment: fixed;
     background-position: center;
     width: 100%;
-    height: 100vh;
+    height: 120vh;
     /* width: 1800px;
     height: 980px; */
     /* height: 100%;

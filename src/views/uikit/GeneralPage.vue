@@ -242,8 +242,8 @@ invoke(async () => {});
 </template>
 <style scoped>
 .container {
-    padding-bottom: 30px;
-    padding-top: 12px;
+    padding-bottom: 25px;
+    padding-top: 10px;
     border: none;
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);

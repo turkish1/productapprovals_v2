@@ -8,8 +8,8 @@ export default function useProcess() {
     const useStore = useprocdataStore();
 
     const { processinput } = storeToRefs(useStore);
-    console.log(lastNum);
-    console.log(processinput);
+    // console.log(lastNum);
+    // console.log(processinput);
     const pNum = ref('');
     const currentYear = ref(new Date().getFullYear());
     const sequenceLength = ref(6);

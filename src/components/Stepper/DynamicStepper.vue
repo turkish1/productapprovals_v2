@@ -9,6 +9,7 @@
         </div>
     </div>
     <div class="step-content">
+        <VueSpinnerBall v-show="isSpinnerValid" />
         <!-- <p>{{ filteredSteps[currentStepIndex].component }}</p> -->
         <component :is="activeComponent" />
     </div>
@@ -24,9 +25,9 @@ import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, reactive, ref } from 'vue';
-
+import { VueSpinnerBall } from 'vue3-spinners';
 let isMiamiBeachValid = ref(false);
-
+const isSpinnerValid = ref(false);
 const permitStore = usePermitappStore();
 const mbVal = ref(2);
 if (permitStore.$state.permitapp.length !== 0) {
@@ -157,15 +158,20 @@ tryOnMounted(() => {
 });
 
 const filteredSteps = computed(() => steps.value.filter((step) => step.component));
-
+console.log(filteredSteps);
 const currentStepIndex = ref(0);
 const activeComponent = computed(() => filteredSteps.value[currentStepIndex.value]?.component);
 
 const nextStep = () => {
     if (currentStepIndex.value < filteredSteps.value.length - 1) {
+        setTimeout(() => {
+            isSpinnerValid.value = true;
+        }, 2000);
+
         currentStepIndex.value += 1;
+        isSpinnerValid.value = false;
     }
-    console.log(steps);
+    // console.log(steps);
 };
 
 const prevStep = () => {
@@ -188,23 +194,24 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     align-items: left;
     width: 100%;
     height: 100%;
-    margin-top: 19px;
+    margin-top: 16px;
 }
 
 .step-wrapper {
     display: flex;
     align-items: left;
+    margin-top: 25px;
 }
 
 .step {
     cursor: pointer;
-    padding: 2px 4px;
+    padding: 4px 6px;
     text-align: center;
     font-weight: bold;
-    border-radius: 50%;
+    border-radius: 80%;
     width: 90px;
     height: 30px;
-    border: 1px solid #595959;
+    border: 2px solid #595959;
     background-color: #595959;
 }
 
@@ -218,7 +225,7 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     height: 1.5px;
     background-color: #f5ece6;
     padding-inline-start: 5px;
-    margin-top: 8px;
+    margin-top: 30px;
 }
 
 .step-content {
@@ -229,6 +236,6 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 .stepper-controls {
     display: flex;
     gap: 1500px;
-    margin-top: 200px;
+    margin-top: 175px;
 }
 </style>

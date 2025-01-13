@@ -88,7 +88,7 @@ const roofType = ref(store.$state.roofList);
 const generalStore = useGeneralpdfStore();
 const generalType = ref(generalStore.$state.generalpdfinput);
 const processnumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const { getNumber } = useSignpdf();
+const { getNumbers } = useSignpdf();
 
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
@@ -101,13 +101,12 @@ function displayUserInfo() {
 // const callPdfSign = tryOnMounted(() => {
 //     getNumber(processnumber.value);
 // });
-const index = ref(0);
-const count = ref(2);
+
 function callPdfSign() {
     // while (index.value < count.value) {
-    getNumber(processnumber.value);
+    getNumbers(processnumber.value);
     console.log('called times');
-    getNumber(processnumber.value);
+    // getNumber(processnumber.value);
     //     index.value = index.value + 1;
     // }
     //     getNumber(processnumber.value);
