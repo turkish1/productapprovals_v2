@@ -1,12 +1,13 @@
 <template>
     <div>
-        <!-- <h1>Generate PDF with Columns and Underlined Text</h1>
-        <button @click="generatePDF">Download PDF</button> -->
+        <h1>Generate PDF with Columns and Underlined Text</h1>
+        <!-- <button @click="generatePDF">Download PDF</button> -->
     </div>
 </template>
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
+import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { useGlobalStates } from '@/stores/tilenoaStore';
@@ -15,7 +16,6 @@ import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
-
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
 const { getUser } = useGlobalState();
@@ -25,7 +25,7 @@ const permitStore = usePermitappStore();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const tileStore = useGlobalStates();
-
+const usedripStore = usedripedgeStore();
 let isRoofTileADValid = ref(false);
 const callState = tryOnMounted(() => {
     if (roofType.value.length === 0) {
@@ -98,10 +98,10 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        image.src = '/demo/images/paperbackground.jpeg';
+        image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
 
-        doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
+        doc.addImage(logoImage, 'JPEG', 10, 1, 50, 30);
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
@@ -186,7 +186,7 @@ const generatePDF = () => {
 
         doc.setFontSize(12);
         const factor = 2;
-        const initialYValue = 100;
+        const initialYValue = 90;
         const param_y = initialYValue;
         const tArea = 'Roof Area: ';
         const tDeck = 'Decktype: ';
@@ -248,8 +248,7 @@ const generatePDF = () => {
 
         doc.line(decktypeStartValue, current_y, decktypeStartValue + DeckTextWidth, current_y); // Get text width
         current_y = current_y + 10;
-        // doc.text('Prescriptive ASTM # 30 with type IV hot asphalt applied # 90 Tile Capsheet:', 10, 70);
-        // doc.text('Fastened Underlayment (UDL) with Self Adhered (S/A) Tile Capsheet:', 10, 80);
+
         const noaText = 'Tile NOA Number: ';
         const applicantText = 'Tile Applicant: ';
         const materialText = 'Tile Material: ';
@@ -262,16 +261,63 @@ const generatePDF = () => {
         const designPSFText = 'Design psf: ';
         const anchordescriptionText = 'Anchor Base Sheet: ';
         const udldescriptionText = 'UDL Description: ';
-        const Perscriptive = 'Perscriptive: ';
+        const Prescriptive = 'Prescriptive: ';
+
+        const dripEdgeMaterial = 'DripEdge Materiall: ';
+
+        const dripEdgeSize = 'DripEdge Size: ';
+
+        console.log(tileStore.tilenoa);
+        const dripedgeMaterials = ref(usedripStore.$state.dripinput[0].dripData);
+        const dripedgeSize = ref(usedripStore.$state.dripinput[3].dripData);
+
+        const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
+        const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);
+        const dMaterialStartXValue = LeftStart;
+        doc.text(dripEdgeMaterial, dMaterialStartXValue, current_y);
+        const dripMaterialStartValue = dripMaterialTextWidth + dMaterialStartXValue;
+        doc.text(`${dripedgeMaterials.value}`, dripMaterialStartValue, current_y);
+
+        doc.line(dripMaterialStartValue, current_y, dripMaterialStartValue + materialTextWidth, current_y);
+
+        current_y = current_y + 10;
+
+        const dripEdgeSizeTextWidth = doc.getTextWidth(dripEdgeSize);
+        const dripEdgeTextWidth = doc.getTextWidth(`${dripedgeSize.value}`);
+        const dSizeStartXValue = LeftStart;
+        doc.text(dripEdgeSize, dSizeStartXValue, current_y);
+        const dripSizeStartValue = dripEdgeSizeTextWidth + dSizeStartXValue;
+        doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
+
+        doc.line(dripSizeStartValue, current_y, dripSizeStartValue + dripEdgeTextWidth, current_y);
+        current_y = current_y + 10;
+
+        const mf1 = ref(tileStore.tilenoa.value[0].mf1);
+        const lambda1 = ref(tileStore.tilenoa.value[0].lambda1);
+        const mg1 = ref(tileStore.tilenoa.value[0].mg1);
+        const mr1 = ref(tileStore.tilenoa.value[0].mr1);
+        const zoneone = ref(tileStore.tilenoa.value[0].zoneone);
+
+        const mf2 = ref(tileStore.tilenoa.value[0].mf2);
+        const lambda2 = ref(tileStore.tilenoa.value[0].lambda2);
+        const mg2 = ref(tileStore.tilenoa.value[0].mg2);
+        const mr2 = ref(tileStore.tilenoa.value[0].mr2);
+        const zonetwo = ref(tileStore.tilenoa.value[0].zonetwo);
+
+        const mf3 = ref(tileStore.tilenoa.value[0].mf3);
+        const lambda3 = ref(tileStore.tilenoa.value[0].lambda3);
+        const mg3 = ref(tileStore.tilenoa.value[0].mg3);
+        const mr3 = ref(tileStore.tilenoa.value[0].mr3);
+        const zonethree = ref(tileStore.tilenoa.value[0].zonethree);
 
         const prescriptive = ref(tileStore.tilenoa.value[0].prescriptiveSelection.selectedBasesheet);
-        console.log(prescriptive.value, tileStore.tilenoa);
+
         const persValueTextWidth = doc.getTextWidth(`${prescriptive.value.selectedBasesheet}`);
         const perspectiveStartXValue = LeftStart;
-        doc.text(Perscriptive, perspectiveStartXValue, current_y);
+        doc.text(Prescriptive, perspectiveStartXValue, current_y);
         const perscriptiveValue = LeftStart;
         current_y = current_y + 10;
-        doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
+        doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
         doc.line(perscriptiveValue, current_y, perscriptiveValue + persValueTextWidth, current_y);
         current_y = current_y + 10;
 
@@ -598,10 +644,66 @@ const generatePDF = () => {
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             if (currentX.value >= max_width) current_y = current_y + 10;
             console.log(currentX.value);
+
+            current_y = current_y + 10;
         }
         // Save the PDF
-        // doc.save('Tile.pdf');
-        const fName = 'LowSlope.pdf';
+        // doc.save('AdhesiveTile.pdf');
+        // Table configuration
+
+        current_y = current_y + 10;
+        // Data for each row
+        doc.setFont('times', 'normal');
+
+        // Using doc.text()
+        // console.log('\u03BB'); // outputs λ
+        // const lambdaSymbol = ref('\u03BB');
+        console.log(tileStore.tilenoa.value[0]);
+        const tableData = [
+            // Zone 1
+            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+        ];
+
+        console.log(tableData);
+
+        // const colWidths = [
+        //     22, // "Zone 1:" label cell
+        //     14, // numeric field (e.g., "82", "108", "142")
+        //     15, // "x λ"
+        //     18, // numeric field (e.g., "0.23")
+        //     19, // label (e.g., "- Mg:")
+        //     21, // numeric field (e.g., "2.473")
+        //     23, // label (e.g., "= Mr1:")
+        //     18, // numeric field (e.g., "16.39")
+        //     23, // label (e.g., "NOA Mf:")
+        //     21 // numeric field (e.g., "31.3°")
+        // ];
+
+        // Top-left corner where we start drawing the table
+        let startX = LeftStart - 5;
+        let startYY = current_y;
+        // doc.setFillColor(15, 20, 30); // some dark color
+        // doc.rect(0, 0, doc.internal.pageSize.getWidth(), 100, 'F');
+
+        // White text color for the "Zone X" labels placed over dark background:
+        // doc.setTextColor(0, 0, 0);
+
+        // Render the table manually
+        tableData.forEach((row) => {
+            let x = startX; // Starting x-coordinate for each row
+            row.forEach((cell) => {
+                // if (typeof cell === 'number' || String(cell).match(/^[-+]?\d*\.?\d+$/)) {
+                //     // Draw rectangle around numerical value
+                //     doc.rect(x - 2, startYY - 2, 20, 12); // Adjust the rectangle size and position
+                // }
+                doc.text(String(cell), x, startYY);
+                x += 18; // Space between columns
+            });
+            startYY += 5; // Move to next row
+        });
+        const fName = 'TileAdhesive.pdf';
         const pdfBlob = doc.output('blob');
 
         const uploadFile = async (fName, pdfBlob) => {

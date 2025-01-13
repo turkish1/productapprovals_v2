@@ -1,9 +1,9 @@
 <script setup>
+// import RoofSystemApp from '@/components/RoofSystemApp.vue';
 import { useprocStore } from '@/stores/processStore'; // import { usePermitappStore } from '@/stores/permitapp';
 import { onMounted, ref, watchEffect } from 'vue';
 import '../../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import mapboxgl from '../../../node_modules/mapbox-gl';
-
 // const { coords } = useGeolocation();
 const bounds = [
     [-126.39176, 5.24738],
@@ -102,9 +102,8 @@ watchEffect(map, getCoordinates, () => {});
 </template>
 <style scoped>
 .map-container {
-    height: 400px;
-    width: 400px;
-    margin-left: 50px;
+    height: 1000px;
+    width: 1000px;
 }
 .military-folder {
     width: 380px;
@@ -171,14 +170,15 @@ watchEffect(map, getCoordinates, () => {});
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 80%;
-    height: 30vh;
+    /* width: 150%; */
+    width: 150vh;
+    height: 150vh;
     overflow: hidden;
 }
 
 .satellite-footage {
-    position: relative;
-    width: 100%;
+    position: cover;
+    width: auto;
     max-width: auto;
     height: auto;
     overflow: hidden;

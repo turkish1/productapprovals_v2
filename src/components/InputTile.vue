@@ -517,12 +517,12 @@ function validateRoofSlope() {
 }
 const validateInput = () => {
     validateNumber(dims.slope);
-    console.log(errorMessage.value, dims.slope);
+    console.log(dims.slope);
 };
 
 const validateHeightInput = () => {
     validateTileHeight(dims.height);
-    console.log(errorHeightMessage.value, dims.height);
+    console.log(dims.height);
 };
 
 function addCheckmarks() {
@@ -573,7 +573,6 @@ function updateTile(event) {
         console.log(key, value);
 
         if (event.value === key) {
-            console.log(event.value, value);
             tilenoas.description = key;
             // let sel = tilenoas.select_tile;
 
@@ -828,7 +827,20 @@ function checkMaterial() {
     tileStore.tilenoa.value[0].deckType = dt.value;
     tileStore.tilenoa.value[0].select_tile = tilenoas.material;
     tileStore.tilenoa.value[0].prescriptiveSelection = selectedUnderlayment.value;
-    console.log(pdfStore, tileStore);
+    tileStore.tilenoa.value[0].zoneone = zoneone.zone;
+    tileStore.tilenoa.value[0].lambda1 = zoneone.lambda1;
+    tileStore.tilenoa.value[0].mg1 = zoneone.mg1;
+    tileStore.tilenoa.value[0].mr1 = zoneone.mr1;
+    tileStore.tilenoa.value[0].zonetwo = zonetwo.zone;
+    tileStore.tilenoa.value[0].lambda2 = zonetwo.lambda2;
+    tileStore.tilenoa.value[0].mg2 = zonetwo.mg2;
+    tileStore.tilenoa.value[0].mr2 = zonetwo.mr2;
+    tileStore.tilenoa.value[0].zonethree = zonethree.zone;
+    tileStore.tilenoa.value[0].lambda3 = zonethree.lambda3;
+    tileStore.tilenoa.value[0].mg3 = zonethree.mg3;
+    tileStore.tilenoa.value[0].mr3 = zonethree.mr3;
+
+    console.log(tileStore);
 }
 
 const maps = ref([]);
@@ -857,6 +869,10 @@ function updateMF(event) {
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
         }
+        console.log(tileStore.tilenoa.value[0]);
+        tileStore.tilenoa.value[0].mf1 = zoneone.mf1;
+        tileStore.tilenoa.value[0].mf2 = zonetwo.mf2;
+        tileStore.tilenoa.value[0].mf3 = zonethree.mf3;
 
         if ((!zoneone.mf1.includes('.') && zoneone.mf1.length === 6) || (!zonetwo.mf2.includes('.') && zonetwo.mf2.length === 4) || (!zonethree.mf3.includes('.') && zonethree.mf3.length === 4)) {
             const superscripts = detectSuperscripts(zoneone.mf1, zonetwo.mf2, zonethree.mf3);
@@ -1256,13 +1272,13 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="slope">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
+            <label for="slope" style="color: whitesmoke">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="height">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
+            <label for="height" style="color: whitesmoke">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
@@ -1502,7 +1518,12 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
     position: relative;
     width: 200px;
 }
-
+#tile {
+    margin-top: 0%;
+}
+.card {
+    min-height: 100px;
+}
 .suggestions {
     color: black;
     list-style: none;

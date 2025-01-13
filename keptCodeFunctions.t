@@ -76,3 +76,27 @@
 //     }
 //     // console.log(useInputwFetch());
 // }
+
+
+// Print each text at a different X, same Y
+            // rows.forEach((item, index) => {
+            //     // Calculate the X position for this text
+            //     const xPos = startX + index * colWidth;
+            //     doc.text(item, xPos, startY);
+            // });
+
+            // (Optional) Draw boundary lines to illustrate columns
+            // This is purely visual; you can remove or customize as needed.
+            // const rowHeight = 10; // Height of the row
+            // // Left boundary
+            // doc.setLineWidth(0.5);
+            // doc.line(startX, startY - 5, startX, startY + rowHeight - 5);
+            // // Vertical lines & text boundary
+            // rows.forEach((_, index) => {
+            //     const xPos = startX + (index + 1) * colWidth;
+            //     doc.line(xPos, startY - 5, xPos, startY + rowHeight - 5);
+            // });
+            // // Top boundary line
+            // doc.line(startX, startY - 5, startX + colWidth * rows.length, startY - 5);
+            // // Bottom boundary line
+            // doc.line(startX, startY + rowHeight - 5, startX + colWidth * rows.length, startY + rowHeight - 5);

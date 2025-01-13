@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router'; // Import Vue Router
-
+import { VueSpinnerBall } from 'vue3-spinners';
 const smoothScroll = (id) => {
     document.body.click();
     document.querySelector(id).scrollIntoView({
@@ -16,19 +16,22 @@ const router = useRouter(); // Access the router instance
 onMounted(() => {
     // Set a timeout to redirect after 5 seconds (5000ms)
     setTimeout(() => {
-        router.push('/auth/login'); // Replace '/another-page' with your desired route
-    }, 7000);
+        router.push('/'); // Replace '/another-page' with your desired route
+    }, 15000);
 });
 </script>
 <template>
     <!-- class="dark:bg-surface-900"  -->
     <div style="background-color: #262b26">
+        <!-- <VueSpinnerBall /> -->
         <div id="home" class="landing-wrapper overflow-hidden">
+            <VueSpinnerBall size="50" color="green" style="margin-left: 300px" />
             <!-- <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static"> -->
             <div class="video-container">
                 <video autoplay muted loop class="background-video">
-                    <!-- <source src="@/assets/" type="video/mp4" /> -->
+                    <source src="/demo/images/RoofDrone.mp4" type="video/mp4" />
                 </video>
+
                 <Button
                     class="lg:!hidden"
                     text
@@ -38,6 +41,7 @@ onMounted(() => {
                 >
                     <i class="pi pi-bars !text-2xl"></i>
                 </Button>
+                <VueSpinnerBall size="50" color="green" style="margin-left: 300px" />
                 <div class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
                     <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
                         <li>
@@ -57,15 +61,6 @@ onMounted(() => {
     </div>
     <!-- </div> -->
 
-    <div id="hero" class="flex flex-col" style="background: #dddddd">
-        <div class="mx-6 md:mx-20 mt-0 md:mt-6">
-            <div class="video-container">
-                <!-- <video autoplay muted loop class="background-video">
-                    <source src="@/assets/multiRadar.mp4" type="video/mp4" />
-                </video> -->
-            </div>
-        </div>
-    </div>
     <div class="py-6 px-6 mx-0 mt-20 lg:mx-20">
         <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12 md:col-span-2">
@@ -79,8 +74,8 @@ onMounted(() => {
     position: fixed;
     top: 0;
     left: 0;
-    width: 98vw;
-    height: 85vh;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
     z-index: -1; /* Puts video behind content */
 }

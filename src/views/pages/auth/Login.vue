@@ -159,7 +159,7 @@ const navigateNext = () => {
     background-size: cover;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 90%;
     height: 100%;
     /* background-color: rgba(0, 0, 0, 0); Semi-transparent background for blending */
     mix-blend-mode: difference; /* Blending mode for overlay */
@@ -168,7 +168,7 @@ const navigateNext = () => {
     justify-content: center;
 }
 .pi-eye-slash {
-    transform: scale(1.6);
+    transform: scale(1.1);
     margin-right: 1rem;
 }
 </style>

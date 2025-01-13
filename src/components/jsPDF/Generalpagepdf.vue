@@ -29,8 +29,8 @@ const uploadUrl = ref('');
 const generalType = ref(generalpageStore.$state.generalpdfinput);
 
 // Path to your self-signed `.pfx` file
-const digitalIdFilePath = './HugoBlanco.pfx';
-const pfxPassword = 'miamibeach20'; // The password you set when creating the .pfx file
+// const digitalIdFilePath = './HugoBlanco.pfx';
+// const pfxPassword = 'miamibeach20'; // The password you set when creating the .pfx file
 
 function testGeneralType() {
     if (generalType.value.length !== 1) {
@@ -73,8 +73,10 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        image.src = '/demo/images/paperbackground.jpeg';
+        const drapdropImage = new Image();
+        image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
+        drapdropImage.src = '/demo/images/DragAndDrop.jpeg';
 
         const max_width = 179;
         const thirdYCoordinate = 725;
@@ -96,17 +98,21 @@ const generatePDF = () => {
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
         doc.setFontSize(14);
-        doc.setTextColor('red');
+        doc.setTextColor('green');
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();
         doc.text(approved, 10, 270, { align: 'left' });
         const approvedWidth = doc.getTextWidth(approved);
         doc.text('on: ' + formattedDate, approvedWidth + 15, 270);
-        doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
+        doc.text(`${processNumber.value}`, 10, 258, { align: 'left' });
         const procWidth = doc.getTextWidth(`${processNumber.value}`);
 
         console.log(address, masterPermit, processNumber, dba);
-
+        const adtileChk = ref(false);
+        const metalChk = ref(false);
+        const mtileChk = ref(false);
+        const shingleChk = ref(false);
+        const slopeChk = ref(false);
         // Add a paragraph of text
         // const paragraphText = "This PDF contains a watermark that says 'CONFIDENTIAL' across the center of the page. You can adjust the size, rotation, and opacity of the watermark.";
         // const wrappedText = doc.splitTextToSize(paragraphText, 200);
@@ -179,7 +185,6 @@ const generatePDF = () => {
         const initialYValue = 100;
         const param_y = initialYValue;
         const isReroof = ref(false);
-        console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0]);
 
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0] === 'reroof') {
             isReroof.value = true;
@@ -195,8 +200,10 @@ const generatePDF = () => {
         const alignCheckbox6 = current_y - 3;
         checkBox6.fieldName = 'CheckBox6';
         console.log(isReroof.value);
-        checkBox6.Rect = [currentX.value + 20, alignCheckbox6, 4, 4, 'FD'];
+        checkBox6.Rect = [currentX.value + 20, alignCheckbox6, 4, 4];
         currentX.value = currentX.value + 20;
+        checkBox6.value = isReroof.value === true ? 'On' : 'Off';
+        checkBox6.appearanceState = isReroof.value === true ? 'On' : 'Off';
         doc.addField(checkBox6);
         // }else {
         currentX.value = LeftStart + 120;
@@ -208,6 +215,8 @@ const generatePDF = () => {
         const alignCheckbox7 = current_y - 3;
         checkBox7.fieldName = 'CheckBox7';
         checkBox7.Rect = [currentX.value + 20, alignCheckbox7, 4, 4];
+        checkBox7.value = isReroof.value === true ? 'Off' : 'On';
+        checkBox7.appearanceState = isReroof.value === true ? 'Off' : 'On';
         currentX.value = currentX.value + 20;
         doc.addField(checkBox7);
         // }
@@ -255,67 +264,92 @@ const generatePDF = () => {
 
         doc.line(totalValue, param_y, totalValue + TotalTextWidth, param_y);
         currentX.value = totalValue + TotalTextWidth;
-
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeChk) {
-            currentX.value = LeftStart;
-            current_y = current_y + 10;
-            console.log(current_y);
-            const checkBox = new jsPDF.API.AcroFormCheckBox();
-            doc.text('Low Slope: ', LeftStart, current_y);
-            const alignCheckbox = current_y - 3;
-            checkBox.fieldName = 'CheckBox1';
-            checkBox.Rect = [LeftStart + 20, alignCheckbox, 4, 4, 'FD'];
-            currentX.value = LeftStart + 20;
-            doc.addField(checkBox);
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeChk === true) {
+            slopeChk.value = true;
         }
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.adtileChk === true) {
+            adtileChk.value = true;
+        }
+
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.metalChk === true) {
+            metalChk.value = true;
+        }
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.mtileChk === true) {
+            mtileChk.value = true;
+        }
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk === true) {
+            shingleChk.value = true;
+        }
+        currentX.value = LeftStart;
+        current_y = current_y + 10;
+        console.log(current_y);
+        const checkBox = new jsPDF.API.AcroFormCheckBox();
+        doc.text('Low Slope: ', LeftStart, current_y);
+        const alignCheckbox = current_y - 3;
+        checkBox.fieldName = 'CheckBox1';
+        checkBox.Rect = [LeftStart + 20, alignCheckbox, 4, 4];
+        checkBox.value = slopeChk.value === true ? 'On' : 'Off';
+        checkBox.appearanceState = slopeChk.value === true ? 'On' : 'Off';
+        currentX.value = LeftStart + 20;
+
+        doc.addField(checkBox);
 
         // mtileChk
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.mtileChk) {
-            const checkBox2TextWidth = currentX.value + 5;
-            const checkBox2 = new jsPDF.API.AcroFormCheckBox();
-            doc.text('Mechanical Fastened Tile: ', checkBox2TextWidth, current_y);
-            const alignCheckbox2 = current_y - 3;
-            checkBox2.fieldName = 'CheckBox2';
-            checkBox2.Rect = [checkBox2TextWidth + 20, alignCheckbox2, 4, 4, 'FD'];
-            currentX.value = checkBox2TextWidth + 20;
-            doc.addField(checkBox2);
-        }
 
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.adtileChk) {
-            const checkBox3TextWidth = currentX.value + 5;
-            const checkBox3 = new jsPDF.API.AcroFormCheckBox();
-            doc.text('Adhesive Set Tile: ', checkBox3TextWidth, current_y);
-            const alignCheckbox3 = current_y - 3;
-            checkBox3.fieldName = 'CheckBox3';
-            checkBox3.Rect = [checkBox3TextWidth + 20, alignCheckbox3, 4, 4, 'FD'];
-            currentX.value = checkBox3TextWidth + 20;
-            doc.addField(checkBox3);
-        }
+        const checkBox2TextWidth = currentX.value + 10;
+        const checkBox2 = new jsPDF.API.AcroFormCheckBox();
+        doc.text('Mechanical Fastened Tile: ', checkBox2TextWidth, current_y);
+        const alignCheckbox2 = current_y - 3;
+        checkBox2.fieldName = 'CheckBox2';
+        checkBox2.Rect = [checkBox2TextWidth + 45, alignCheckbox2, 4, 4];
+        checkBox2.value = slopeChk.value === true ? 'On' : 'Off';
+        checkBox2.appearanceState = slopeChk.value === true ? 'On' : 'Off';
+        currentX.value = checkBox2TextWidth + 20;
 
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk) {
-            const checkBox4TextWidth = currentX.value + 5;
-            const checkBox4 = new jsPDF.API.AcroFormCheckBox();
-            doc.text('Shingle: ', checkBox4TextWidth, current_y);
-            const alignCheckbox4 = current_y - 3;
-            checkBox4.fieldName = 'CheckBox4';
-            checkBox4.Rect = [checkBox4TextWidth + 20, alignCheckbox4, 4, 4, 'FD'];
-            currentX.value = checkBox4TextWidth + 20;
-            doc.addField(checkBox4);
-        }
+        doc.addField(checkBox2);
+
+        const checkBox3TextWidth = currentX.value + 30;
+        const checkBox3 = new jsPDF.API.AcroFormCheckBox();
+        doc.text('Adhesive Set Tile: ', checkBox3TextWidth, current_y);
+        const alignCheckbox3 = current_y - 3;
+        checkBox3.fieldName = 'CheckBox3';
+        checkBox3.Rect = [checkBox3TextWidth + 35, alignCheckbox3, 4, 4];
+        checkBox3.value = adtileChk.value === true ? 'On' : 'Off';
+        checkBox3.appearanceState = adtileChk.value === true ? 'On' : 'Off';
+        currentX.value = checkBox3TextWidth + 10;
+
+        doc.addField(checkBox3);
+
+        const checkBox4TextWidth = currentX.value + 35;
+        const checkBox4 = new jsPDF.API.AcroFormCheckBox();
+        doc.text('Shingle: ', checkBox4TextWidth, current_y);
+        const alignCheckbox4 = current_y - 3;
+        checkBox4.fieldName = 'CheckBox4';
+        checkBox4.Rect = [checkBox4TextWidth + 20, alignCheckbox4, 4, 4];
+        checkBox4.value = shingleChk.value === true ? 'On' : 'Off';
+        checkBox4.appearanceState = shingleChk.value === true ? 'On' : 'Off';
+
+        currentX.value = checkBox4TextWidth + 20;
+        // if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk) {
+        //     checkBox4.Rect = [checkBox4TextWidth + 20, alignCheckbox4, 4, 4, 'FD'];
+        // }
+        doc.addField(checkBox4);
 
         // metalChk
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.metalChk) {
-            const checkBox5TextWidth = currentX.value + 5;
-            const checkBox5 = new jsPDF.API.AcroFormCheckBox();
-            doc.text('Metal Panel: ', checkBox5TextWidth, current_y);
-            const alignCheckbox5 = current_y - 3;
-            checkBox5.fieldName = 'CheckBox5';
-            checkBox5.Rect = [checkBox5TextWidth + 20, alignCheckbox5, 4, 4, 'FD'];
-            currentX.value = checkBox5TextWidth + 20;
-            doc.addField(checkBox5);
 
-            // Save the PDF
-        }
+        const checkBox5TextWidth = currentX.value + 25;
+        const checkBox5 = new jsPDF.API.AcroFormCheckBox();
+        doc.text('Metal Panel: ', checkBox5TextWidth, current_y);
+        const alignCheckbox5 = current_y - 3;
+        checkBox5.fieldName = 'CheckBox5';
+        checkBox5.Rect = [checkBox5TextWidth + 20, alignCheckbox5, 4, 4];
+        checkBox5.value = metalChk.value === true ? 'on' : 'Off';
+        checkBox5.appearanceState = metalChk.value === true ? 'On' : 'Off';
+        currentX.value = checkBox5TextWidth + 20;
+        doc.addField(checkBox5);
+        current_y = current_y + 10;
+        // Save the PDF
+        doc.addImage(drapdropImage, 'JPEG', LeftStart + 40, current_y, 120, 120);
 
         const fName = 'GeneralPage.pdf';
         const pdfBlob = doc.output('blob');

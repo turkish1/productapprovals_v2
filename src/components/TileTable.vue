@@ -94,7 +94,7 @@ watch(zoneone, zonetwo, zonethree, () => {});
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 200px;
+    min-height: 250px;
     /* min-width: 600px; */
     top: 10vh;
 }

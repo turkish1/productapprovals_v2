@@ -7,6 +7,7 @@
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
+import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
@@ -25,7 +26,7 @@ const roofType = ref(roofStore.$state.roofList);
 const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
-
+const usedripStore = usedripedgeStore();
 // const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 
 const callState = tryOnMounted(() => {
@@ -64,17 +65,18 @@ const generatePDF = () => {
             console.log(isSAValidPresc);
         }
         // Initialize jsPDF instance
-        console.log(mechStore.tilemech.value.length);
+        console.log(mechStore.tilemech.value[0]);
         const height = ref(mechStore.tilemech.value[0].height);
         const slope = ref(mechStore.tilemech.value[0].slope);
         const deckType = ref(mechStore.tilemech.value[0].deckType);
-        const perimeter = ref(mechStore.tilemech.value[0].perimeter);
-        const prescriptive = ref(mechStore.tilemech.value[0].prescriptiveSelection);
+        // const perimeter = ref(mechStore.tilemech.value[0].perimeter);
+        // const prescriptive = ref(mechStore.tilemech.value[0].prescriptiveSelection);
         const area = ref(roofStore.$state.roofList[0].dim3);
         const address = ref(permitStore.$state.permitapp[0].formdt.address);
         const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
         const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-
+        const dripedgeMaterials = ref(usedripStore.$state.dripinput[0].dripData);
+        const dripedgeSize = ref(usedripStore.$state.dripinput[3].dripData);
         const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
@@ -96,7 +98,7 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        image.src = '/demo/images/paperbackground.jpeg';
+        image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
 
         doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
@@ -226,7 +228,12 @@ const generatePDF = () => {
         const designPSFText = 'Design psf: ';
         const anchordescriptionText = 'Anchor Base Sheet: ';
         const udldescriptionText = '(UDL) Description: ';
-        const Perscriptive = 'Perscriptive: ';
+        const Prescriptive = 'Prescriptive: ';
+
+        const dripEdgeMaterial = 'DripEdge Matetiral: ';
+
+        const dripEdgeSize = 'DripEdge Size: ';
+
         const max_width = 179;
         const thirdYCoordinate = 725;
         const page = doc.getPageInfo(1);
@@ -246,13 +253,34 @@ const generatePDF = () => {
         const material = ref(mechStore.tilemech.value[0].material);
         const description = ref(mechStore.tilemech.value[0].description);
 
-        const valueTextWidth_0 = doc.getTextWidth(Perscriptive);
+        const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
         const perspectiveStartXValue = LeftStart;
-        doc.text(Perscriptive, perspectiveStartXValue, current_y);
+        doc.text(Prescriptive, perspectiveStartXValue, current_y);
         const perscriptiveValue = LeftStart;
         current_y = current_y + 10;
-        doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
+        // doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
         //  doc.line(perscriptiveValue, current_y, perscriptiveValue + valueTextWidthTile, current_y);
+        current_y = current_y + 10;
+
+        const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
+        const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);
+        const dMaterialStartXValue = LeftStart;
+        doc.text(dripEdgeMaterial, dMaterialStartXValue, current_y);
+        const dripMaterialStartValue = dripMaterialTextWidth + dMaterialStartXValue;
+        doc.text(`${dripedgeMaterials.value}`, dripMaterialStartValue, current_y);
+
+        doc.line(dripMaterialStartValue, current_y, dripMaterialStartValue + materialTextWidth, current_y);
+
+        current_y = current_y + 10;
+
+        const dripEdgeSizeTextWidth = doc.getTextWidth(dripEdgeSize);
+        const dripEdgeTextWidth = doc.getTextWidth(`${dripedgeSize.value}`);
+        const dSizeStartXValue = LeftStart;
+        doc.text(dripEdgeSize, dSizeStartXValue, current_y);
+        const dripSizeStartValue = dripEdgeSizeTextWidth + dSizeStartXValue;
+        doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
+
+        doc.line(dripSizeStartValue, current_y, dripSizeStartValue + dripEdgeTextWidth, current_y);
         current_y = current_y + 10;
 
         const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
@@ -573,7 +601,7 @@ const generatePDF = () => {
 
         // Save the PDF
         // doc.save('Mechanical.pdf');
-        const fName = 'LowSlope.pdf';
+        const fName = 'MechanicalTile.pdf';
         const pdfBlob = doc.output('blob');
 
         const uploadFile = async (fName, pdfBlob) => {

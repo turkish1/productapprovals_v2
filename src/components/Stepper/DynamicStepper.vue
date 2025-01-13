@@ -40,11 +40,13 @@ const isValidbur = ref(false);
 const isValidtile = ref(false);
 const isValidmechanical = ref(false);
 const isValidcheckout = ref(true);
+const isValidpaymentgate = ref(true);
 const Step1Component = defineAsyncComponent(() => import('@/components/Shingles.vue'));
 const Step2Component = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
 const Step3Component = defineAsyncComponent(() => import('@/components/Tile.vue'));
 const Step4Component = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const Step5Component = defineAsyncComponent(() => import('@/components/Summary/Checkout.vue'));
+const Step6Component = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
 const { roofList } = storeToRefs(store);
 
 // const RoofList = ref(['', 'LowSlope', '', 'Mechanical', 'Checkout']);
@@ -81,11 +83,12 @@ function checkState() {
     validateState();
 }
 
-const comp = reactive({ component: [Step1Component, Step2Component, Step3Component, Step4Component, Step5Component] });
+const comp = reactive({ component: [Step1Component, Step2Component, Step3Component, Step4Component, Step5Component, Step6Component] });
 
 const booleanValues = ref([]);
 const steps = ref([
     // use tenerary option
+    { label: '', component: '' },
     { label: '', component: '' },
     { label: '', component: '' },
     { label: '', component: '' },
@@ -101,6 +104,7 @@ function validateState() {
     booleanValues.value[2] = isValidtile.value;
     booleanValues.value[3] = isValidmechanical.value;
     booleanValues.value[4] = isValidcheckout.value;
+    booleanValues.value[5] = isValidpaymentgate.value;
 
     const nonEmptyValues = booleanValues.value.filter((value) => value !== '' && value !== null && value !== undefined);
     const countTrue = nonEmptyValues.filter((value) => value === true).length;
@@ -121,15 +125,15 @@ function validateState() {
     }
     if (isValidmechanical.value === true) {
         console.log(isValidmechanical.value, 'Entered if statement tile!');
-        steps.value[3].label = 'Adhesive Tile';
+        steps.value[3].label = 'Mechanical Tile';
     }
     if (isValidcheckout.value === true) {
         console.log(isValidtile.value, 'Entered if statement checkout!');
         steps.value[4].label = 'Checkout';
     }
-    if (isValidcheckout.value === true) {
-        console.log(isValidtile.value, 'Entered if statement checkout!');
-        steps.value[5].label = 'Checkout';
+    if (isValidpaymentgate.value === true) {
+        console.log(isValidpaymentgate.value, 'Entered if statement checkout!');
+        steps.value[5].label = 'Payment Page';
     }
 
     //     console.log(k);
@@ -183,8 +187,8 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     flex-direction: row;
     align-items: left;
     width: 100%;
-    height: 80%;
-    margin-top: 100px;
+    height: 100%;
+    margin-top: 19px;
 }
 
 .step-wrapper {
@@ -211,13 +215,14 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 
 .line {
     width: 500px;
-    height: 0.5px;
+    height: 1.5px;
     background-color: #f5ece6;
     padding-inline-start: 5px;
+    margin-top: 8px;
 }
 
 .step-content {
-    margin-top: 16px;
+    margin-top: 18px;
     margin-left: -30px;
     font-size: 14px;
 }

@@ -1,19 +1,19 @@
-@media screen and (min-width: 2060px) {
+@media screen and (min-width: 1400px) {
     .layout-main,
     .landing-wrapper {
-        width: 1504px;
+        width: 1200px;
         margin-left: auto !important;
         // margin-left: auto !important;
         margin-right: auto !important;
     }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 800px) {
     .layout-wrapper {
         &.layout-overlay {
             .layout-main-container {
                 margin-left: 0;
-                padding-left: 0.5rem;
+                // padding-left: 0.5rem;
             }
 
             .layout-sidebar {
@@ -53,7 +53,7 @@
 
                 .layout-main-container {
                     margin-left: 0;
-                    padding-left: 1rem;
+                    // padding-left: 1rem;
                 }
             }
         }
@@ -72,7 +72,7 @@
     .layout-wrapper {
         .layout-main-container {
             margin-left: 0;
-            padding-left: 1rem;
+            // padding-left: 1rem;
         }
 
         .layout-sidebar {

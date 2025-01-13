@@ -17,7 +17,6 @@ export default function useMech() {
     const mechanicalData = reactive({
         noa: '',
         manufacturer: '',
-
         material: '',
         description: '',
         Table2: [],

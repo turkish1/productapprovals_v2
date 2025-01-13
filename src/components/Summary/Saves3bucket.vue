@@ -16,9 +16,9 @@ const generateAndUploadPDF = async () => {
 
         // 2. Configure AWS S3
         const s3 = new AWS.S3({
-            accessKeyId: 'YOUR_AWS_ACCESS_KEY_ID', // Replace with your AWS access key
-            secretAccessKey: 'YOUR_AWS_SECRET_ACCESS_KEY', // Replace with your AWS secret key
-            region: 'YOUR_AWS_REGION' // Replace with your S3 bucket region
+            // accessKeyId: 'YOUR_AWS_ACCESS_KEY_ID', // Replace with your AWS access key
+            // secretAccessKey: 'YOUR_AWS_SECRET_ACCESS_KEY', // Replace with your AWS secret key
+            // region: 'YOUR_AWS_REGION' // Replace with your S3 bucket region
         });
 
         // 3. Upload the PDF to S3

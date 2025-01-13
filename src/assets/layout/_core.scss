@@ -6,17 +6,19 @@ html {
 
 body {
     font-family: 'Lato', sans-serif;
-    color: whitesmoke;
+    // color: whitesmoke;
+    margin: 0; /* Remove default margins */
+    height: 100vh;
+    background-image: url('/src/assets/img/radar_Fotor.png');
 
-    // background-image: url('/src/assets/img/radar_Fotor.png');
-    background-position: left;
-    background-repeat: no-repeat;
-    background-size: cover;
-    margin: 0;
-    padding: 0;
-    min-height: 50%;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    // background-position: left;
+    // background-repeat: no-repeat;
+    // background-size: cover;
+    // margin: 0;
+    // padding: 0;
+    // min-height: 100%;
+    // -webkit-font-smoothing: antialiased;
+    // -moz-osx-font-smoothing: grayscale;
     // -webkit-transform: scale(0.999);
     // transform: scale(0.999);
 }
@@ -27,9 +29,10 @@ a {
 
 .layout-wrapper {
     min-height: 100vh;
-    background-image: url('/src/assets/img/radar_Fotor.png');
-    background-position: left;
+    // background-image: url('/src/assets/img/radar_Fotor.png');
+    // background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
+    // background-attachment: fixed;
     // min-height: 5%;
 }

@@ -10,6 +10,7 @@ export default function usedripAxios() {
     const error = ref(null);
     const type = ref([]);
     loading.value = true;
+
     let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/dripmaterials';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
@@ -24,7 +25,6 @@ export default function usedripAxios() {
 
         return hold.value;
     });
-
     loading.value = false;
 
     return { type, error, loading, hold, results, typeSize, holdSize };

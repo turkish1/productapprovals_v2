@@ -57,8 +57,10 @@
 </template>
 
 <script setup>
+import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { useGlobalState } from '@/stores/accountsStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
 import { onMounted, ref } from 'vue';
@@ -68,7 +70,6 @@ import Shingle from '../jsPDF/Shingle.vue';
 import TileAdhesive from '../jsPDF/TileAdhesive.vue';
 import TileMechanical from '../jsPDF/TileMechanical.vue';
 
-// import uploadbucket from '../jsPDF/uploadS3.vue';
 const { accountUsers } = useGlobalState();
 
 let isGenaralPageValid = ref(false);
@@ -80,24 +81,37 @@ const dba = ref('');
 const name = ref('');
 const license = ref('');
 const status = ref('');
-function displayUserInfo() {
-    accountUsers.value.forEach((item, index) => {
-        dba.value = item.dba;
-    });
-}
-
+const permitStore = usePermitappStore();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 
 const generalStore = useGeneralpdfStore();
 const generalType = ref(generalStore.$state.generalpdfinput);
+const processnumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+const { getNumber } = useSignpdf();
 
-onMounted(() => {
-    displayUserInfo();
+function displayUserInfo() {
+    accountUsers.value.forEach((item, index) => {
+        dba.value = item.dba;
+    });
+    console.log(processnumber.value);
+    // getNumber(processnumber.value);
+}
 
-    // console.log(roofType);
-    // console.log(generalType.value.length);
-});
+// const callPdfSign = tryOnMounted(() => {
+//     getNumber(processnumber.value);
+// });
+const index = ref(0);
+const count = ref(2);
+function callPdfSign() {
+    // while (index.value < count.value) {
+    getNumber(processnumber.value);
+    console.log('called times');
+    getNumber(processnumber.value);
+    //     index.value = index.value + 1;
+    // }
+    //     getNumber(processnumber.value);
+}
 
 const callState = tryOnMounted(() => {
     if (roofType.value.length === 0) {
@@ -114,10 +128,18 @@ const callState = tryOnMounted(() => {
         isGenaralPageValid.value = true;
     }
 });
+
+onMounted(() => {
+    displayUserInfo();
+    callPdfSign();
+});
+
 watchOnce(displayUserInfo, callState, () => {
     console.log(isRoofShingleValid.value);
 });
-
+// watch(callPdfSign, () => {
+//     console.log(callPdfSign());
+// });
 const events = ref([
     { status: 'RoofSystems', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: '/src/assets/img/roofing_tile.jpg' },
     { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }

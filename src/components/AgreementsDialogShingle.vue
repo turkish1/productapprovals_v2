@@ -19,12 +19,14 @@
             <div class="grid grid-cols-1 gap-2 place-content-center h-12 ...">
                 <p class="text-center text-red-600">The mePermit applicant agrees to comply with these installation requirement when obtaining this roof permit.</p>
             </div>
-
             <div class="flex justify-end gap-2">
-                <!-- visible = false -->
-                <!-- <label for="agree">I Agree</label> <RadioButton v-model="agreement" value="1" @click="visible" :invalid="value === null" @blur="clear" /> -->
-                <Button v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button>
+                <label class="ml-2"> I Agree</label>
+                <RadioButton v-model="agreement" value="1" :invalid="value === null" @click="visible = false" />
             </div>
+            <!-- <div class="flex justify-end gap-2">
+
+                <Button v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button>
+            </div> -->
         </Dialog>
     </div>
 </template>

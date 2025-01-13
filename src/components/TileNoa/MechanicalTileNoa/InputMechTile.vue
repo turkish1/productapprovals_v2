@@ -743,6 +743,20 @@ function checkMaterial() {
     mechStore.tilemech.value[0].area = dims.area;
     mechStore.tilemech.value[0].perimeter = dims.per;
     mechStore.tilemech.value[0].deckType = dt.value;
+    mechStore.tilemech.value[0].zoneone = zoneone.zone;
+    mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
+    mechStore.tilemech.value[0].zonethree = zonethree.zone;
+    mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
+    mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
+
+    mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
+    mechStore.tilemech.value[0].mg1 = zoneone.mg1;
+    mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
+    mechStore.tilemech.value[0].mg3 = zonethree.mg3;
+    mechStore.tilemech.value[0].mr1 = zoneone.mr1;
+    mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
+    mechStore.tilemech.value[0].mr3 = zonethree.mr3;
+    console.log(mechStore.tilemech.value[0]);
     // mechStore.tilemech.value[0].select_tile = tilenoas.material;
     mechStore.tilemech.value[0].prescriptiveSelection = selectedUnderlayment.value;
 }

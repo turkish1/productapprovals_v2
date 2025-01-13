@@ -21,8 +21,13 @@
                 <p class="text-center text-red-600">The mePermit applicant agrees to comply with these installation requirements when obtaining this permit.</p>
             </div>
 
-            <div class="flex justify-end gap-2">
+            <!-- <div class="flex justify-end gap-2">
                 <Button v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button>
+            </div> -->
+            <div class="flex justify-end gap-2">
+                <label class="ml-2"> I Agree</label>
+                <RadioButton v-model="agreement" value="1" :invalid="value === null" @click="visible = false" />
+                <!-- <Button type="button" v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button> -->
             </div>
         </Dialog>
     </div>

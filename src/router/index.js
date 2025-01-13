@@ -19,7 +19,16 @@ const router = createRouter({
                     // name: 'firstpage',
                     // component: () => import('@/views/pages/Firstpage.vue')
                 },
-
+                {
+                    path: '/firstpage',
+                    name: 'firstpage',
+                    component: () => import('@/views/pages/Firstpage.vue')
+                },
+                {
+                    path: '/noc',
+                    name: 'noc',
+                    component: () => import('@/components/UserLanding/Noc.vue')
+                },
                 {
                     path: '/registration',
                     name: 'registration',
@@ -50,7 +59,11 @@ const router = createRouter({
                     name: 'doralapp',
                     component: () => import('@/components/Summary/DoralPermitApp.vue')
                 },
-
+                {
+                    path: '/payment',
+                    name: 'payment',
+                    component: () => import('@/components/Summary/Paymentgateway.vue')
+                },
                 {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
@@ -135,11 +148,11 @@ const router = createRouter({
                     name: 'empty',
                     component: () => import('@/views/pages/Empty.vue')
                 },
-                // {
-                //     path: '/pages/crud',
-                //     name: 'crud',
-                //     component: () => import('@/views/pages/Crud.vue')
-                // },
+                {
+                    path: '/map',
+                    name: 'map',
+                    component: () => import('@/components/Maps/Map.vue')
+                },
                 {
                     path: '/documentation',
                     name: 'documentation',

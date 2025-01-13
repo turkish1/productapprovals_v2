@@ -20,8 +20,14 @@
                 <p class="text-center text-red-600">The mePermit applicant agrees to comply with these installation requirement when obtaining this roof permit.</p>
             </div>
 
-            <div class="flex justify-end gap-2">
+            <!-- <div class="flex justify-end gap-2">
                 <Button type="button" v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button>
+            </div> -->
+            <RadioButton class="p" v-model="agreement" value="1" :invalid="value === null" @click="visible = false" />
+            <div class="flex justify-end gap-2">
+                <label class="ml-2"> I Agree</label>
+                <RadioButton v-model="agreement" value="1" :invalid="value === null" @click="visible = false" />
+                <!-- <Button type="button" v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button> -->
             </div>
         </Dialog>
     </div>
@@ -30,6 +36,7 @@
 <script setup>
 import { ref } from 'vue';
 
+const agreement = ref('');
 const visible = ref(true);
 </script>
 <style scoped>
