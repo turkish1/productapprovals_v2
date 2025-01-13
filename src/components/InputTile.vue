@@ -265,6 +265,7 @@ const selectSuggestion = (suggestion) => {
 // Method to handle input change
 const onInput = () => {
     showSuggestions.value = true;
+    checkTile();
 };
 
 // Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
@@ -1345,8 +1346,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
                                 @blur="hideSuggestions"
                                 @input="onInput"
                                 @click="selectedExposure"
-                                @keydown.tab.exact.stop="checkInput"
-                                @change="checkInput"
+                                @keydown.tab.exact.tab="checkInput"
                             />
                             <label for="ac">Tile NOA: 00000000</label>
                         </FloatLabel>
