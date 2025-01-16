@@ -80,7 +80,9 @@ const generatePDF = () => {
         const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
+
         const doc = new jsPDF();
+
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
         const approved = 'Approved';

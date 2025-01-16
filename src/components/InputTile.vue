@@ -148,7 +148,6 @@ watch(
 let datatilenoa = ref(tileData);
 let datatilenoas = ref(tileDatas);
 function grabInput() {
-    console.log(query.value);
     datatilenoa.value = query.value;
     datatilenoas.value = query.value;
 
@@ -311,13 +310,13 @@ const selectedsysNoa = ref(null);
 const selectedMulti = ref(null);
 const selectedsystemE = ref(null);
 
-let isUDLValid = ref('');
+let isUDLValid = ref(false);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
 let isMultiTileValid = ref(false);
 
-let selectedUnderlayment = ref();
+let selectedUnderlayment = ref('');
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
     { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
@@ -325,9 +324,10 @@ const underlaymentType = ref([
     { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
 ]);
 
-watch(selectedUnderlayment, checkInput, () => {
+function pickUnderlayment(event) {
+    console.log(event);
     save.value = selectedUnderlayment.value.key;
-
+    console.log(selectedUnderlayment.value.key);
     if (save.value === 1) {
         isTileValid = true;
         isUDLValid = false;
@@ -349,7 +349,9 @@ watch(selectedUnderlayment, checkInput, () => {
         isSAValid = false;
         isTileValid = false;
     }
-});
+}
+
+watch(selectedUnderlayment, checkInput, pickUnderlayment, () => {});
 
 const slopeOptions = {
     two: 2,
@@ -789,7 +791,7 @@ function checkMaterial() {
         zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
         console.log(zonethree.mg3);
     }
-    console.log(isSinglepaddyValid);
+
     // if (tileData.table2_map === '') {
     tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
     tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
@@ -1293,9 +1295,9 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
             <label style="color: whitesmoke" for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="card md:w-1/2 flex flex-col w-96 mb-4 gap-3">
+        <div class="md:w-1/2 flex flex-col w-96 mb-4 mt-6 gap-3 space-y-2">
             <label style="color: whitesmoke" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
-            <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
+            <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="pickUnderlayment" />
         </div>
         <DripEdgeComponent />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
@@ -1346,7 +1348,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
                                 @blur="hideSuggestions"
                                 @input="onInput"
                                 @click="selectedExposure"
-                                @keydown.tab.exact.tab="checkInput"
+                                @keydown.tab.exact.stop="checkInput"
                             />
                             <label for="ac">Tile NOA: 00000000</label>
                         </FloatLabel>
@@ -1365,7 +1367,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
     <Divider />
     <Divider />
 
-    <div class="card md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
@@ -1400,7 +1402,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
             </div>
         </div>
 
-        <div class="card gap-4 mt-10 space-x-10 space-y-6">
+        <div class="gap-4 mt-10 space-x-10 space-y-6">
             <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
                 <div class="w-128 flex flex-col gap-2">
                     <label style="color: whitesmoke" for="saapplicant">S/A Applicant</label>
@@ -1519,12 +1521,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
     position: relative;
     width: 200px;
 }
-#tile {
-    margin-top: 0%;
-}
-.card {
-    min-height: 100px;
-}
+
 .suggestions {
     color: black;
     list-style: none;

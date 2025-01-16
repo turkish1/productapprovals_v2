@@ -1,10 +1,8 @@
 <template>
     <div class="card">
-        <!-- <VueSpinnerBall v-show="spinnerValid" size="50" color="green" style="margin-left: 300px" /> -->
-        <!-- v-show="download_url" -->
-        <!-- margin-left: 550px; margin-top: 390px; -->
-        <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 850px; margin-top: 440px">
-            <!-- <Button v-show="isUrldownloadValid" icon="pi-arrow-circle-down" label="Download Files" variant="Link" style="color: whitesmoke; background-color: #020507" @click="downloadFile" /> -->
+        <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
+
+        <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
             <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="downloadFile" />
             <div class="payment-widget">
                 <h2 style="color: black">Credit Card Payment</h2>
@@ -32,7 +30,6 @@
 
                     <button type="submit">Pay</button>
                 </form>
-                <!-- v-show="isUrldownloadValid" -->
 
                 <div v-if="submitted" class="confirmation">
                     <p>Thank you, {{ form.cardholderName }}! Your payment of ${{ amount }} was processed.</p>
@@ -46,48 +43,82 @@
 import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
 import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
+import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
+import { invoke, until } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
+import { VueSpinnerBall } from 'vue3-spinners';
 
 const permitStore = usePermitappStore();
 const objName = ref('');
-const { getNumbers } = useSignpdf();
-
-// if (permitStore.$state.permitapp[0].formdt.length >= 0) {
+const { getNumbers, res1 } = useSignpdf();
+const isdataValid = ref(false);
+const isloading = ref(false);
+const isSigned = ref(false);
+// changing the value from some external store/composables
+// const processNumber = ref('me20240000976');
 const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-// } else {
-//     processNumber.value = ref('');
-// }
 
 objName.value = processNumber.value.length !== 0 ? processNumber.value : 'files';
-console.log(objName.value);
+
 // State for the form and payment
 function signPdfs() {
     getNumbers(objName.value);
+    isSigned.value = true;
+    console.log(objName.value);
 }
 
 onMounted(() => {
     signPdfs();
 });
+
+const isUrldownloadValid = ref(false);
+const { getNumber } = useDownloadpdf();
+const submitted = ref(false);
+const amount = 49.99;
+const { confirmResponse, res } = useGlobalState();
+console.log(res, confirmResponse);
+// const notNUll = ref(confirmResponse);
+const confirm = ref(confirmResponse);
+
+const timedOut = ref(false);
+
+const handleTime = () => {
+    setTimeout(() => {
+        timedOut.value = true;
+    }, 3000);
+    console.log('time passed', res, confirmResponse);
+    getNumber(objName.value);
+};
+invoke(async () => {
+    await until(isSigned).toBe(true);
+    // await until(notNUll).not.toBeNull();
+    console.log(confirmResponse);
+    await until(timedOut).toBe(true, { timeout: 4000 });
+    handleTime();
+    // will throw if timeout
+});
+
 const form = ref({
     cardholderName: '',
     cardNumber: '',
     expiryDate: '',
     cvv: ''
 });
-const isUrldownloadValid = ref(false);
-const { getNumber } = useDownloadpdf();
-const submitted = ref(false);
-const spinnerValid = ref(false);
-const amount = 49.99; // Example fixed payment amount
+// Example fixed payment amount
 
 // console.log(procNumber.value);
 const pdfstore = usedownloadStore();
-const download_url = ref('');
+
+const { downloadinput } = storeToRefs(pdfstore.$state.downloadinput);
+
+const downloadState = ref(pdfstore.$state.downloadinput);
 
 const handleSubmit = () => {
-    getNumber(objName.value);
     console.log(objName.value);
+    console.log(downloadState.value.length);
+    console.log(downloadState.value[0].downloadData);
 
     // Basic validation can be added here
     if (!form.value.cardholderName || !form.value.cardNumber || !form.value.expiryDate || !form.value.cvv) {
@@ -97,9 +128,8 @@ const handleSubmit = () => {
 
     // Fake submission
     submitted.value = true;
-
+    isloading.value = true;
     // Reset form after submission
-    spinnerValid.value = true;
 
     setTimeout(() => {
         form.value.cardholderName = '';
@@ -107,33 +137,44 @@ const handleSubmit = () => {
         form.value.expiryDate = '';
         form.value.cvv = '';
         submitted.value = false;
-    }, 3000);
-    spinnerValid.value = false;
-    isUrldownloadValid.value = true;
-    download_url.value = pdfstore.$state.downloadinput[0].downloadData;
+        isloading.value = false;
+    }, 2000);
+
+    downloadFile();
 };
 
-const downloadFile = () => {
+const downloadFile = async () => {
     // Define the file URL and filename
+    console.log(downloadState.value.length);
+    console.log(downloadState.value[0].downloadData);
 
-    const fileUrl = download_url.value; // Replace with your actual file path
-    console.log(fileUrl);
-    const fileName = 'processnumber.zip';
-    // Check if the file URL is valid (non-empty)
-    // if (!fileUrl || fileUrl.length !== 0) {
-    //     isUrldownloadValid.value = true;
-    //     return;
-    // }
-    // Create a temporary anchor element
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = fileName;
+    const objState = ref(downloadState.value.length);
+    // const downloadState = await ref(pdfstore.$state.downloadinput.length)
+    if (objState.value === 0) {
+        return true;
+    } else {
+        isdataValid.value = true;
+        const dlData = ref(downloadState.value[0].downloadData);
+        console.log(dlData.value);
 
-    // Programmatically click the anchor to trigger the download
-    link.click();
+        const fileUrl = dlData.value; // Replace with your actual file path
+        console.log(fileUrl);
+        // Replace with your actual file path
 
-    // Clean up by removing the temporary anchor
-    link.remove();
+        const fileName = 'processnumber.zip';
+
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = fileName;
+        isUrldownloadValid.value = true;
+        link.click();
+        link.remove();
+        // Programmatically click the anchor to trigger the download
+    }
+
+    // // Programmatically click the anchor to trigger the download
+
+    // // Clean up by removing the temporary anchor link.remove()
 };
 </script>
 
@@ -147,11 +188,7 @@ const downloadFile = () => {
     background-attachment: fixed;
     background-position: center;
     width: 100%;
-    height: 120vh;
-    /* width: 1800px;
-    height: 980px; */
-    /* height: 100%;
-    width: 100%; */
+    /* height: 150%; */
 }
 .payment-widget {
     max-width: 1200px;

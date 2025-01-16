@@ -1,6 +1,5 @@
 <script setup>
 // import Terminal from '@/components/Maps/Terminal.vue';
-// import Map from '@/components/Maps/Map.vue';
 import AOS from 'aos';
 import { onMounted } from 'vue';
 import RoofSystemForm from './RoofSystemForm.vue';
@@ -23,7 +22,7 @@ onMounted(() => {
             <roof-system-list></roof-system-list>
         </div>
 
-        <!-- <div><Map></Map>  </div> -->
+        <!-- <div><Map></Map></div> -->
 
         <!-- <div style="margin-left: 50px">
             <Terminal />

@@ -8,16 +8,6 @@ const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
 
 const { accountUsers } = useGlobalState();
-const lines = [
-    'Initializing system...',
-    'Loading modules...',
-    'Connecting to server...',
-    'Server connection established.',
-    `${accountUsers._value[0].dba}...`,
-    `${accountUsers._value[0].license}...`,
-    `${accountUsers._value[0].expiration_date}...`,
-    `${accountUsers._value[0].secondary_status}...`
-];
 
 let master = ref();
 let process = ref();
@@ -27,11 +17,26 @@ let contractor = ref();
 permitapp.value.forEach((item, index) => {
     (master.value = item.formdt.permit), (process.value = item.formdt.processNumber), (jobaddress.value = item.formdt.address), (contractor.value = item.formdt.contractor);
 });
+
+const lines = [
+    'Initializing system...',
+    'Loading modules...',
+    'Connecting to server...',
+    'Server connection established.',
+    `${accountUsers._value[0].dba}...`,
+    `${accountUsers._value[0].license}...`,
+    `${accountUsers._value[0].expiration_date}...`,
+    `${accountUsers._value[0].secondary_status}...`,
+    `${process.value}...`,
+    `${jobaddress.value}...`,
+    `${contractor.value}...`
+];
+
 // Controls the visible lines
 const visibleLines = ref([]);
 
 // Number of lines to display at once in the terminal
-const maxVisibleLines = 5;
+const maxVisibleLines = 8;
 
 function scrollTerminal() {
     let index = 0;

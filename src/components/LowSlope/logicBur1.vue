@@ -104,7 +104,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
 </script>
 <template>
     <!-- <div id="bur" class="flex flex-col gap-2" style="margin-left: 1px"> -->
-    <div class="card flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px">
+    <div class="card flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 500px">
         <label for="title" style="color: whitesmoke; margin-left: 450px">Low Slope Roof</label>
 
         <div class="w-128 gap-2" style="margin-left: 12px">

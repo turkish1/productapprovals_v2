@@ -1,12 +1,12 @@
 <script>
 // import useinputValid from '@/composables/input.js';
+// import ZipUpload from '@/components/DropZone/upload/ZipUpload.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-
 import { onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 // import useaccountStore from '@/stores/accountStore';
@@ -66,7 +66,8 @@ export default {
                 // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
             }
         });
-        const pdfcleared = ref(false);
+        //
+        // const pdfcleared = ref(false); changed 1/14/2025
         const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
@@ -82,12 +83,13 @@ export default {
         // const getData = reactive(accountinput);
         const load = async () => {
             try {
+                loading.value = true;
+                console.log(loading.value);
                 const addr = ref(formData.address);
                 const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
 
                 const url = `${baseURL}&myAddress=${encodeURIComponent(addr.value)}&to=200`;
                 const response = await fetch(url);
-                loading.value = true;
 
                 const data = await response.json();
                 console.log(data);
@@ -189,8 +191,10 @@ export default {
 <template>
     <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #eae7e2"> -->
     <PermitInitalAgreement v-if="isDialog" />
-    <div class="md:w-2/3">
-        <div class="container md:w-2/3" style="margin-left: 220px">
+    <div class="grid grid-cols-2 gap-0">
+        <!-- <div class="md:w-2/3"> -->
+
+        <div class="container md:w-2/3" style="margin-left: 90px; margin-top: 90px">
             <form>
                 <div class="row">
                     <div class="card flex flex-col gap-1">
@@ -266,15 +270,17 @@ export default {
                             </form>
                             <!-- <MapBox /> -->
                             <br />
-
-                            <div data-aos="fade-up-right" data-aos-delay="500">
-                                <file-saver></file-saver>
-                            </div>
                         </div>
                     </div>
                 </div>
             </form>
             <!-- </div> -->
+            <!-- </div> -->
+        </div>
+        <div data-aos="fade-up-right" data-aos-delay="500" style="margin-top: 90px">
+            <file-saver></file-saver>
+            <!-- <zip-upload></zip-upload>
+            <ZipUpload></ZipUpload> -->
         </div>
     </div>
     <!-- </div> -->
@@ -282,13 +288,13 @@ export default {
 <style scoped>
 .container {
     padding-bottom: 30px;
-    padding-top: 12px;
+    /* padding-top: 12px; */
     border: none;
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 250px;
-    margin-top: 40px;
+    min-height: 170px;
+    margin-top: 30px;
     top: 10vh;
 }
 

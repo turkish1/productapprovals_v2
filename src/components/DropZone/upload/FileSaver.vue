@@ -1,9 +1,15 @@
 <!-- FileSaver.vue -->
+<!-- I need to add an possibly the functionality to process images -->
 <template>
     <div class="dropzone" @dragover.prevent="onDragOver" @drop.prevent="onDrop">
         <div class="flex items-center justify-center flex-col">
+            <label for="muni" style="color: #eeebe5">
+                <a class="underline decoration-sky-500"><p class="text-2xl ... font-bold ...">For PDF Documents</p></a>
+            </label>
             <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color" />
-            <p class="mt-6 mb-0" @upload="onTemplatedUpload($event)">Drag and drop files to here to upload.</p>
+            <p class="mt-6 mb-0" @upload="onTemplatedUpload($event)" style="color: #eeebe5">
+                <a class="underline decoration-sky-500"><p class="text-2xl ... font-bold ...">Drag and drop files to here to upload.</p></a>
+            </p>
         </div>
         <div class="flex flex-wrap gap-4">
             <div v-for="(file, index) of files" :key="index + file.url + file.size" class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
@@ -120,13 +126,17 @@ const saveFileLocally = async (file) => {
 
 <style>
 .dropzone {
-    width: 100%;
+    width: 80%;
     height: 300px;
-    border: 2px dashed #ccc;
+    border: 6px dashed #157fc6;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px 0;
+    margin-top: 25px;
     cursor: pointer;
+    background-image: url('/demo/images/blueprnt.jpeg');
+    background-size: cover; /* Options: contain, cover, auto */
+    background-position: center;
 }
 </style>

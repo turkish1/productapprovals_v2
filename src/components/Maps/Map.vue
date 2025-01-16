@@ -1,6 +1,7 @@
 <script setup>
-// import RoofSystemApp from '@/components/RoofSystemApp.vue';
-import { useprocStore } from '@/stores/processStore'; // import { usePermitappStore } from '@/stores/permitapp';
+import { useprocStore } from '@/stores/processStore';
+// import { usePermitappStore } from '@/stores/permitapp';
+import RoofSystem from '@/views/uikit/RoofSystem.vue';
 import { onMounted, ref, watchEffect } from 'vue';
 import '../../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import mapboxgl from '../../../node_modules/mapbox-gl';
@@ -88,8 +89,10 @@ watchEffect(map, getCoordinates, () => {});
     <!-- <div class="military-folder">
         <div class="folder-content"> -->
     <div class="tracking-software">
+        <RoofSystem />
         <div class="satellite-footage">
             <div ref="mapContainer" class="map-container"></div>
+
             <div class="coordinates">{{ coordinates }}</div>
             <div class="target-cross"></div>
             <div class="compass">
@@ -102,8 +105,8 @@ watchEffect(map, getCoordinates, () => {});
 </template>
 <style scoped>
 .map-container {
-    height: 1000px;
-    width: 1000px;
+    height: 100vh;
+    width: 100vw;
 }
 .military-folder {
     width: 380px;
@@ -170,17 +173,19 @@ watchEffect(map, getCoordinates, () => {});
     display: flex;
     justify-content: center;
     align-items: center;
-    /* width: 150%; */
-    width: 150vh;
-    height: 150vh;
+    width: 100%;
+    /* width: 150vh;
+    height: 150vh; */
     overflow: hidden;
 }
 
 .satellite-footage {
-    position: cover;
-    width: auto;
-    max-width: auto;
-    height: auto;
+    position: center;
+    width: 1200px;
+    height: 900px;
+
+    /* max-width: auto; */
+    /* height: auto; */
     overflow: hidden;
     border: 2px solid #00ff00;
     box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.5);
@@ -197,7 +202,7 @@ watchEffect(map, getCoordinates, () => {});
 
 .target-cross {
     position: absolute;
-    top: 50%;
+    top: 80%;
     left: 50%;
     width: 30%;
     height: 30%;
@@ -217,8 +222,8 @@ watchEffect(map, getCoordinates, () => {});
 }
 .compass {
     position: absolute;
-    top: 15%;
-    right: 15%;
+    top: 85%;
+    right: 55%;
     width: 40px;
     height: 40px;
     border: 2px solid #00ff00;

@@ -27,11 +27,6 @@ const store = useRoofListStore();
 // const systemAreaImport =  ref(roofStore.$state.roofList[0].dim1);
 const roofType = ref(store.$state.roofList);
 
-// const area = ref(roofStore.$state.roofList[0].dim1);
-// const address = ref(permitStore.$state.permitapp[0].formdt.address);
-// const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
-// const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-// const dba = ref(getUser.value[0].dba);
 let isRoofShingleValid = ref(false);
 const callState = tryOnMounted(() => {
     console.log(roofType);
@@ -77,6 +72,7 @@ const generatePDF = () => {
         const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
         const doc = new jsPDF();
+
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
         const approved = 'Approved';
@@ -528,7 +524,7 @@ const generatePDF = () => {
         }
         // Save the PDF
         // doc.save('Shingle.pdf');
-        const fName = 'LowSlope.pdf';
+        const fName = 'Shingle.pdf';
         const pdfBlob = doc.output('blob');
 
         const uploadFile = async (fName, pdfBlob) => {

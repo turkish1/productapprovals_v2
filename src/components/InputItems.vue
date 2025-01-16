@@ -16,6 +16,28 @@ import AutoComplete from './roofSystems/AutoComplete.vue';
 import AutoCompletePoly from './roofSystems/AutoCompletePoly.vue';
 import AutoCompleteSA from './roofSystems/AutoCompleteSA.vue';
 
+import { useMagicKeys } from '@vueuse/core';
+
+const { tab /* keys you want to monitor */ } = useMagicKeys();
+
+watch(tab, (v) => {
+    if (v) checkInput();
+    console.log('tab has been pressed');
+});
+
+watchEffect(() => {
+    if (tab.value) console.log('Tab  have been pressed');
+});
+
+// const { current } = useMagicKeys()
+
+// console.log(current) // Set { 'control', 'a' }
+
+// whenever(
+//   () => current.has('Enter') && !current.has('b'),
+//   () => console.log('A is pressed but not B'),
+// )
+
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
@@ -403,7 +425,7 @@ watch(
 
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <AutoCompletePoly @keydown.tab.exact.stop="checkInputPoly"></AutoCompletePoly>
+                <AutoCompletePoly @keydown.tab.exact.enter="checkInputPoly"></AutoCompletePoly>
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
@@ -413,17 +435,18 @@ watch(
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <AutoComplete @click.stop.prevent="checkInput" />
+                <!-- @click.stop.prevent -->
+                <AutoComplete @keydown.tab.exact.stop="checkInput" />
             </div>
         </div>
         <!-- <Button plain text class="min-w-1 min-h-0" @click="clearSelected"> <span style="font-size: 1.3rem; color: black; margin-left: 100px; margin-top: 90px" class="pi pi-refresh"></span></Button> -->
 
-        <div v-show="isSelectVisible2" class="card grid gap-2 grid-cols-1">
+        <div v-show="isSelectVisible2" class="md:w-1/3 grid gap-2 grid-cols-1" style="margin-left: 20px">
             <label style="color: red">Select Underlayment (S/A) *</label>
             <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
         </div>
 
-        <div v-show="isSelectVisible1" class="card grid gap-2 grid-cols-1">
+        <div v-show="isSelectVisible1" class="md:w-1/3 grid gap-2 grid-cols-1" style="margin-left: 20px">
             <label style="color: red">Select Underlayment (UDL) *</label>
             <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>

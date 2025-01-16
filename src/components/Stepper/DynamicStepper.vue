@@ -1,21 +1,24 @@
 <template>
-    <div class="stepper">
-        <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }" @click="goToStep(index)">
-            <div class="step">
-                <span>{{ step.label }}</span>
+    <div class="card">
+        <div class="stepper">
+            <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }" @click="goToStep(index)">
+                <div class="step">
+                    <span>{{ step.label }}</span>
+                </div>
+                <!-- Add a separator line between steps, but not after the last step -->
+                <div v-if="index < filteredSteps.length - 1" class="line"></div>
             </div>
-            <!-- Add a separator line between steps, but not after the last step -->
-            <div v-if="index < filteredSteps.length - 1" class="line"></div>
         </div>
-    </div>
-    <div class="step-content">
-        <VueSpinnerBall v-show="isSpinnerValid" />
-        <!-- <p>{{ filteredSteps[currentStepIndex].component }}</p> -->
-        <component :is="activeComponent" />
-    </div>
-    <div class="stepper-controls">
-        <button @click="prevStep" :disabled="isFirstStep">Back</button>
-        <button @click="nextStep" :disabled="isLastStep">Next</button>
+
+        <div v-if="!isloading" class="step-content">
+            <!-- <p>{{ filteredSteps[currentStepIndex].component }}</p> -->
+            <component :is="activeComponent" />
+        </div>
+        <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
+        <div class="stepper-controls">
+            <button @click="prevStep" :disabled="isFirstStep">Back</button>
+            <button @click="nextStep" :disabled="isLastStep">Next</button>
+        </div>
     </div>
 </template>
 
@@ -26,8 +29,10 @@ import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, reactive, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
+const isloading = ref(false);
+
 let isMiamiBeachValid = ref(false);
-const isSpinnerValid = ref(false);
+
 const permitStore = usePermitappStore();
 const mbVal = ref(2);
 if (permitStore.$state.permitapp.length !== 0) {
@@ -163,21 +168,25 @@ const currentStepIndex = ref(0);
 const activeComponent = computed(() => filteredSteps.value[currentStepIndex.value]?.component);
 
 const nextStep = () => {
+    isloading.value = true;
     if (currentStepIndex.value < filteredSteps.value.length - 1) {
         setTimeout(() => {
-            isSpinnerValid.value = true;
-        }, 2000);
+            isloading.value = false;
+        }, 3000);
 
         currentStepIndex.value += 1;
-        isSpinnerValid.value = false;
     }
     // console.log(steps);
 };
 
 const prevStep = () => {
-    if (currentStepIndex.value > 0) {
-        currentStepIndex.value -= 1;
-    }
+    isloading.value = true;
+    setTimeout(() => {
+        if (currentStepIndex.value > 0) {
+            currentStepIndex.value -= 1;
+        }
+        isloading.value = false;
+    }, 1500);
 };
 const goToStep = (index) => {
     currentStepIndex.value = index;
@@ -188,31 +197,35 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 </script>
 
 <style scoped>
+.card {
+    background-size: cover;
+}
 .stepper {
     display: flex;
     flex-direction: row;
-    align-items: left;
+    /* align-items: left; */
     width: 100%;
     height: 100%;
     margin-top: 16px;
+    background-attachment: fixed;
 }
 
 .step-wrapper {
     display: flex;
-    align-items: left;
-    margin-top: 25px;
+    /* align-items: left; */
+    margin-top: 75px;
 }
 
 .step {
     cursor: pointer;
-    padding: 4px 6px;
+    padding: 2px 4px;
     text-align: center;
     font-weight: bold;
-    border-radius: 80%;
+    border-radius: 100%;
     width: 90px;
-    height: 30px;
-    border: 2px solid #595959;
-    background-color: #595959;
+    height: 40px;
+    border: 2px solid #eae7e2;
+    background-color: #eae7e2;
 }
 
 .step.active {
@@ -222,7 +235,7 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 
 .line {
     width: 500px;
-    height: 1.5px;
+    height: 2.5px;
     background-color: #f5ece6;
     padding-inline-start: 5px;
     margin-top: 30px;
@@ -236,6 +249,6 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 .stepper-controls {
     display: flex;
     gap: 1500px;
-    margin-top: 175px;
+    margin-top: 105px;
 }
 </style>

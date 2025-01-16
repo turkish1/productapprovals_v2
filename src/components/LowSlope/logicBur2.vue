@@ -4,9 +4,15 @@ import useBurDetails from '@/composables/fetchTech/use-burdetailsdocs';
 import useS3download from '@/composables/fetchTech/use-S3download';
 import useburAxios from '@/composables/use-burAxios';
 import { useBurpdfStore } from '@/stores/burpdfStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import { invoke, until } from '@vueuse/shared';
 import { storeToRefs } from 'pinia';
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
+const permitStore = usePermitappStore();
+const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+
+const objName = ref('');
+objName.value = processNumber.value.length !== 0 ? processNumber.value : 'files';
 
 const { downloadFile, fileUrl } = useS3download();
 const fileName = ref('downloaded-file.pdf');
@@ -155,6 +161,43 @@ function prescriptiveThree(event) {
 }
 
 const handleDownload = async () => {
+    // ------- Move the files from one s3 to another ------ instead of download
+
+    //  const uploadFile = async (fName, pdfBlob) => {
+    //         const file = fName;
+
+    //         if (!file) {
+    //             alert('Please select a file to upload.');
+    //             return;
+    //         }
+
+    //         const fileName = file; // Keep original name or generate a new one
+    //         console.log(fileName);
+    //         const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+
+    //         try {
+    //             const response = await fetch(s3Url, {
+    //                 method: 'PUT',
+    //                 headers: {
+    //                     'Content-Type': file.type
+    //                 },
+    //                 body: pdfBlob
+    //             });
+
+    //             if (response.ok) {
+    //                 uploadUrl.value = s3Url;
+
+    //                 alert('File uploaded successfully!');
+    //             } else {
+    //                 alert(`Failed to upload file. Status: ${response.status}`);
+    //             }
+    //         } catch (error) {
+    //             console.error('Error uploading file:', error);
+    //             alert('An error occurred while uploading the file.');
+    //         }
+    //     };
+    //     uploadFile(fName, pdfBlob);
+
     console.log('handleDownload called');
     try {
         downloadFile(fileUrl, fileName.value);

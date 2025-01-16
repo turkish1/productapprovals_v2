@@ -1,5 +1,6 @@
 // import DataService from '@/services/DataService';
-
+// import { createGlobalState } from '@vueuse/core';
+import { useGlobalState } from '@/stores/pdfsignStore';
 // import { usePermitappStore } from '@/stores/permitapp';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { ref } from 'vue';
@@ -26,14 +27,18 @@ export default function useSignpdf() {
         // procNum.value = Number(inp.value);
         fetchData();
     }
+    const { confirmResponse, addResponse } = useGlobalState();
 
     const fetchData = async () => {
         try {
             const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((response) => {
                 procNum.value = data.value;
-                console.log(data.value);
-            });
 
+                addResponse(data.value);
+                console.log(confirmResponse);
+                console.log(data.value, confirmResponse);
+            });
+            console.log(data.value);
             return response;
         } catch (error) {
             console.log('Error, fectching data', error);
@@ -41,5 +46,5 @@ export default function useSignpdf() {
         }
     };
 
-    return { error, getNumbers, procNum, fetchData };
+    return { error, getNumbers, procNum, fetchData, confirmResponse, addResponse };
 }

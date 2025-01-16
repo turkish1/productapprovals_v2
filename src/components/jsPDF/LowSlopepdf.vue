@@ -59,7 +59,7 @@ const generatePDF = () => {
         const perimeter = ref(burpdfStore.$state.burpdfinput[0].burpdfData.per);
         const deckType = ref(burpdfStore.$state.burpdfinput[0].burpdfData.deckType);
         const doc = new jsPDF();
-        // Load an image (example with Base64)
+
         doc.setGState(new doc.GState({ opacity: 0.9 })); // Adjust opacity
         const approved = 'Approved';
         // Set font size, alignment, and rotation for the watermark

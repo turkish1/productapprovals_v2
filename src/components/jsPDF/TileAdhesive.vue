@@ -42,13 +42,14 @@ invoke(async () => {
 
 const generatePDF = () => {
     // Initialize jsPDF instance
-
+    console.log(tileStore.tilenoa);
     if (tileStore.tilenoa.value[0].length === 0) {
         console.log('lenghth is zero');
     } else {
         // console.log(sbsStore, polypropolyneStore);
 
         const doc = new jsPDF();
+
         let isUDLValidPresc = ref(false);
         let isSAValidPresc = ref(false);
         if (etileStore.$state.tilesysEinput.length !== 0) {

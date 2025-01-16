@@ -20,6 +20,7 @@ export default defineConfig({
         Components({
             resolvers: [PrimeVueResolver()]
         })
+
         // visualizer({
         //     filename: './dist/report.html',
         //     open: true // Open the report after the build
