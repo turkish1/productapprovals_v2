@@ -616,7 +616,8 @@ let isTileSelectionValid = ref(false);
 let showMaterialValid = ref(false);
 function checkInput() {
     if (datamountedMech.value.length !== null) {
-        tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
+        console.log(datamountedMech.value[0]);
+        // tilenoas.manufacturer = datamountedMech.value[0];
         tilenoas.description = datamountedMech.value[0].description;
         tilenoas.material = datamountedMech.value[0].material;
 
@@ -737,7 +738,6 @@ function checkMaterial() {
     zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
     zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
 
-    console.log(mechStore.tilemech);
     mechStore.tilemech.value[0].slope = dims.slope;
     mechStore.tilemech.value[0].height = dims.height;
     mechStore.tilemech.value[0].area = dims.area;

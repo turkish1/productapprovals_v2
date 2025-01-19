@@ -38,13 +38,13 @@ import { ref } from 'vue';
 
 const permitStore = usePermitappStore();
 
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const objName = processNumber.value.length !== 0 ? processNumber.value : 'filez';
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+const imageFolder = ref('Imagefiles');
 const images = ref([]); // Stores the image URLs
 const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
 const files = ref([]);
 const { getNumbers } = useSignpdf();
-const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${files}`;
+// const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${files}`;
 // Handle drag events
 
 function onDragEnter() {
@@ -55,6 +55,7 @@ function onDragLeave() {
     dragging.value = false; // Reset the state when the user leaves the zone
 }
 const pdfFile = ref('');
+
 // Handle drop event
 function onDrop(event) {
     dragging.value = false; // Reset dragging state
@@ -67,7 +68,7 @@ function onDrop(event) {
         // startsWith
         if (file.type.startsWith('image/') || file.type === 'application/pdf') {
             const reader = new FileReader();
-
+            // if it starts with image put is somewhere else
             reader.onload = (e) => {
                 images.value.push(e.target.result); // Add the image to the gallery
             };
@@ -75,57 +76,55 @@ function onDrop(event) {
             reader.readAsDataURL(file); // Read the file as a data URL for display
         }
         files.value.push(file);
-
+        fileName.value.push(file);
         console.log(files.value[0].name);
         // editPdf(pdfFile.value);
     }
+    uploadfiles();
 }
-// Format file size
-// const formatBytes = (bytes) => {
-//   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-//   if (bytes === 0) return '0 Bytes';
-//   const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
-//   return `${(bytes / 1024 ** i).toFixed(2)} ${sizes[i]}`;
-// };
+const fileName = ref([]);
+const tempFile = ref('');
+const file = ref('');
+const uploadUrl = ref('');
 
-// async function zipAndUpload() {
-//     try {
-//         if (!files.value.length) return;
+const uploadfiles = async () => {
+    try {
+        // Create a new zip files.value
+        // const zip = new JSZip();
+        console.log(fileName.value);
+        for (const file of fileName.value) {
+            console.log(file);
+            tempFile.value = file;
+            console.log(tempFile.value);
+        }
 
-//         // 1. Create a new JSZip instance
-//         const zip = new JSZip();
+        file.value = tempFile.value.name;
 
-//         // 2. Add each file to the ZIP
-//         for (const file of files.value) {
-//             // file.name is the filename
-//             // "file" is a Blob/File object
-//             zip.file(file.name, file);
-//         }
+        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${file.value}`;
 
-//         // 3. Generate the ZIP as a Blob
-//         const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const response = await fetch(s3Url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': file.type
+            },
+            body: file
+        });
 
-//         // 4. Upload the ZIP Blob to S3 via a presigned URL
-//         //    (or direct PUT if bucket is publicly writable — not recommended)
-//         const response = await fetch(s3Url, {
-//             method: 'PUT',
-//             body: zipBlob,
-//             headers: {
-//                 // If your presigned URL expects specific headers, set them here
-//                 // e.g. "Content-Type": "application/zip"
-//             }
-//         });
+        console.log(response);
 
-//         if (!response.ok) {
-//             throw new Error(`Upload failed with status ${response.status}`);
-//         }
+        if (response.ok) {
+            uploadUrl.value = s3Url;
+            console.log(s3Url);
+            alert('File uploaded successfully!');
+        } else {
+            alert(`Failed to upload file. Status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error uploading to S3:', error);
+        alert('Failed to upload file.');
+    }
+};
 
-//         alert('Upload succeeded!');
-//     } catch (error) {
-//         console.error('Error zipping/uploading:', error);
-//         alert('Error: ' + error.message);
-//     }
-// }
 const deleteImages = (index) => {
     // images.value.splice(index, 1);
     deleteFile(index);

@@ -48,7 +48,12 @@ const generatePDF = () => {
     } else {
         // console.log(sbsStore, polypropolyneStore);
 
-        const doc = new jsPDF();
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4', // Smaller page size
+            compress: true
+        });
 
         let isUDLValidPresc = ref(false);
         let isSAValidPresc = ref(false);

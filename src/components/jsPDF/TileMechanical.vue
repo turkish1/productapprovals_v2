@@ -81,7 +81,12 @@ const generatePDF = () => {
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
 
-        const doc = new jsPDF();
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4', // Smaller page size
+            compress: true
+        });
 
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity

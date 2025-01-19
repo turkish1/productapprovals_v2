@@ -147,22 +147,22 @@ invoke(async () => {});
                     </div>
 
                     <div class="flex flex-wrap gap-12 columns-3">
-                        <div class="flex flex-col md:w-1/3 grow basis-0 gap-3">
+                        <div class="p-2 flex flex-col md:w-1/3 grow basis-0 gap-3">
                             <label for="master" style="color: #eae7e2">Master Permit</label>
                             <InputText id="master" v-model="master" type="text" planceholder="permit number" />
                         </div>
 
-                        <div class="flex flex-col md:w-1/3 grow basis-0 gap-3">
+                        <div class="p-2 flex flex-col p-2 md:w-1/3 grow basis-0 gap-3">
                             <label for="process" style="color: #eae7e2">mEProcess Number</label>
                             <InputText id="process" v-model="process" type="text" planceholder="mEProcess" />
                         </div>
 
-                        <div class="flex flex-col md:w-1/3 grow basis-0 gap-2">
+                        <div class="flex flex-col p-2 md:w-1/3 grow basis-0 gap-3">
                             <label for="email1" style="color: #eae7e2">Job Address</label>
                             <InputText id="jobaddress" v-model="jobaddress" type="text" planceholder="" />
                         </div>
                     </div>
-                    <div class="flex flex-col md:w-1/3 gap-2">
+                    <div class="flex flex-col p-2 md:w-1/3 gap-3">
                         <label for="dba" style="color: #eae7e2">Licensed DBA Name </label>
                         <InputText id="dba" v-model="dba" type="text" />
                     </div>
@@ -228,7 +228,7 @@ invoke(async () => {});
                 </div>
                 <!-- <div class="md:w-2/3 flex flex-col bg-local hover:bg-fixed gap-4"></div> -->
 
-                <div class="md:w-1/3 flex mt-8 space-y-8 flex-col gap-2" style="margin-top: 80px">
+                <div class="md:w-1/3 flex p-2 mt-8 space-y-8 flex-col gap-2" style="margin-top: 80px">
                     <Button class="w-1/3" type="submit" label="Submit" style="background-color: #a4b5b9" raised @click="navigateNext" />
                 </div>
             </div>
@@ -249,7 +249,7 @@ invoke(async () => {});
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 800px;
-    min-width: 1050px;
+    min-width: 1000px;
     top: 10vh;
 }
 
@@ -285,10 +285,10 @@ invoke(async () => {});
 }
 
 @media (prefers-color-scheme: dark) {
-    html {
-        color: #fff;
-        background: #fff;
-    }
+    /* html {
+        /* color: #fff;
+        background: #fff; */
+    /* } */
 
     .pintura-editor {
         --color-background: 10, 10, 10;

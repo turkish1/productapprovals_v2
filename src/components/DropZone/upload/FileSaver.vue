@@ -29,16 +29,24 @@
 </template>
 
 <script setup>
+// import useS3upload from '@/composables/fetchTech/use-S3upload';
+import { usePermitappStore } from '@/stores/permitapp';
+// import { file } from 'jszip';
 import { usePrimeVue } from 'primevue/config';
 import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
+// const dir = ref('');
+const permitStore = usePermitappStore();
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+
 // Reactive reference for dropped files
 const files = ref([]);
 const $primevue = usePrimeVue();
 const toast = useToast();
 const totalSize = ref(0);
 const totalSizePercent = ref(0);
-
+const fileName = ref([]);
+// const { removeBeforeSlash } = useS3upload();
 // Handle drag over event
 const onDragOver = (event) => {
     event.dataTransfer.dropEffect = 'copy';
@@ -65,9 +73,12 @@ const onDrop = async (event) => {
 
     // Save each file locally
     for (const file of files.value) {
-        await saveFileLocally(file);
+        // await saveFileLocally(file);
         console.log(file);
+        fileName.value.push(file);
+        console.log(fileName.value);
     }
+    uploadfiles();
 };
 
 const removeFile = (index) => {
@@ -78,6 +89,75 @@ const uploadEvent = (callback) => {
     totalSizePercent.value = totalSize.value / 1;
     callback();
 };
+const tempFile = ref('');
+const file = ref('');
+const uploadUrl = ref('');
+const uploadfiles = async () => {
+    // try {
+
+    // was working code
+    //
+    // console.log(fileName.value);
+    // for (const file of fileName.value) {
+    //     console.log(file);
+    //     tempFile.value = file;
+    //     console.log(tempFile.value);
+    // }
+
+    // file.value = tempFile.value.name;
+
+    // const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${file.value}`;
+
+    for (const fileItem of fileName.value) {
+        console.log('Uploading file:', fileItem);
+
+        // Build the object key using the file's name (or any naming logic you like)
+        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileItem.name}`;
+
+        // If the File is already a PDF, you can just pass it directly in the body
+        // and set the Content-Type header appropriately.
+        // If you need to ensure it's recognized as a Blob,
+        // you can do: const pdfBlob = new Blob([fileItem], { type: 'application/pdf' });
+
+        const response = await fetch(s3Url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/pdf'
+            },
+            // Body should be a Blob/File, NOT the filename string
+            body: fileItem
+        });
+
+        if (!response.ok) {
+            console.error(`Failed to upload ${fileItem.name}. Status: ${response.status}`);
+            continue;
+        }
+
+        console.log(`Successfully uploaded ${fileItem.name} to S3.`);
+    }
+    // const response = await fetch(s3Url, {
+    //     method: 'PUT',
+    //     headers: {
+    //         'Content-Type': 'application/pdf'
+    //     },
+    //     body: file.value
+    // });
+
+    // console.log(response);
+
+    //     if (response.ok) {
+    //         uploadUrl.value = s3Url;
+    //         console.log(s3Url);
+    //         alert('File uploaded successfully!');
+    //     } else {
+    //         alert(`Failed to upload file. Status: ${response.status}`);
+    //     }
+    // } catch (error) {
+    //     console.error('Error uploading to S3:', error);
+    //     alert('Failed to upload file.');
+    // }
+};
+
 // Function to save a file locally
 const saveFileLocally = async (file) => {
     // Check if File System Access API is supported

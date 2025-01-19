@@ -1,30 +1,19 @@
 <script setup>
+import useS3upload from '@/composables/fetchTech/use-S3upload';
 import useBurDetails from '@/composables/fetchTech/use-burdetailsdocs';
 
 import useS3download from '@/composables/fetchTech/use-S3download';
 import useburAxios from '@/composables/use-burAxios';
 import { useBurpdfStore } from '@/stores/burpdfStore';
-import { usePermitappStore } from '@/stores/permitapp';
-import { invoke, until } from '@vueuse/shared';
+
+import { invoke } from '@vueuse/shared';
 import { storeToRefs } from 'pinia';
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
-const permitStore = usePermitappStore();
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
 
-const objName = ref('');
-objName.value = processNumber.value.length !== 0 ? processNumber.value : 'files';
-
+const { removeBeforeSlash } = useS3upload();
 const { downloadFile, fileUrl } = useS3download();
 const fileName = ref('downloaded-file.pdf');
 const { bMaters, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
-const { calldetailsdoc } = useBurDetails();
-const props = defineProps({
-    roofType: {
-        type: ref,
-        required: false,
-        default: 'LowSlope'
-    }
-});
 
 const burpdfStore = useBurpdfStore();
 const { burpdfinput, addpdfData } = storeToRefs(burpdfStore);
@@ -47,7 +36,7 @@ const primethree = ref();
 const sB = ref('');
 let selSytem = ref('');
 const maps = ref([]);
-
+const { calldetailsdoc } = useBurDetails();
 function findSelected() {
     mat.value = bMaters.value;
 }
@@ -85,6 +74,9 @@ const sp3 = ref('');
 const sp4 = ref('');
 const sp5 = ref('');
 const copiedString = ref('');
+// const obj_key = ref('');
+
+// Method to convert the string to lowercase
 
 function updateselectSystem(event) {
     selSytem.value = Object.entries(selectedSystem).map((obj) => {
@@ -135,16 +127,19 @@ function updateselectSystem(event) {
         return match ? match[0] : ''; // Return the matched part or an empty string if no match
     };
     const firstPart = computed(() => getFirstPart(event.value));
+
     console.log(firstPart.value);
+
     // Computed property to dynamically get the first part computed()
 
     // handleDownload();
+
     copyToClipboard(firstPart.value);
-    calldetailsdoc(firstPart.value);
+
+    // calldetailsdoc(firstPart.value);
 }
 
 function copyToClipboard(firstPart) {
-    console.log(firstPart);
     const copyToClipboard = () => {
         copiedString.value = firstPart.value; // Copy the first part
         console.log(copiedString.value);
@@ -163,40 +158,40 @@ function prescriptiveThree(event) {
 const handleDownload = async () => {
     // ------- Move the files from one s3 to another ------ instead of download
 
-    //  const uploadFile = async (fName, pdfBlob) => {
-    //         const file = fName;
+    const uploadFile = async (fName, pdfBlob) => {
+        const file = fName;
 
-    //         if (!file) {
-    //             alert('Please select a file to upload.');
-    //             return;
-    //         }
+        if (!file) {
+            alert('Please select a file to upload.');
+            return;
+        }
 
-    //         const fileName = file; // Keep original name or generate a new one
-    //         console.log(fileName);
-    //         const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+        const fileName = file; // Keep original name or generate a new one
+        console.log(fileName);
+        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
 
-    //         try {
-    //             const response = await fetch(s3Url, {
-    //                 method: 'PUT',
-    //                 headers: {
-    //                     'Content-Type': file.type
-    //                 },
-    //                 body: pdfBlob
-    //             });
+        try {
+            const response = await fetch(s3Url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type
+                },
+                body: pdfBlob
+            });
 
-    //             if (response.ok) {
-    //                 uploadUrl.value = s3Url;
+            if (response.ok) {
+                uploadUrl.value = s3Url;
 
-    //                 alert('File uploaded successfully!');
-    //             } else {
-    //                 alert(`Failed to upload file. Status: ${response.status}`);
-    //             }
-    //         } catch (error) {
-    //             console.error('Error uploading file:', error);
-    //             alert('An error occurred while uploading the file.');
-    //         }
-    //     };
-    //     uploadFile(fName, pdfBlob);
+                alert('File uploaded successfully!');
+            } else {
+                alert(`Failed to upload file. Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('An error occurred while uploading the file.');
+        }
+    };
+    uploadFile(fName, pdfBlob);
 
     console.log('handleDownload called');
     try {
@@ -206,7 +201,7 @@ const handleDownload = async () => {
     }
 };
 invoke(async () => {
-    await until(handleDownload).changed();
+    // await until(handleDownload).changed();
 });
 
 watch(findSelected, updateselection, updateselectSystem, handleDownload, syst, selSytem, prescriptiveOne, prescriptiveThree, copyToClipboard, () => {});
@@ -216,7 +211,7 @@ watchEffect(sB, syst, selectedSystem, () => {});
 <template>
     <!-- <div id="bur" class="flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 1px"> -->
     <!-- <div class="card flex flex-col gap-2"> -->
-    <div class="card md:w-1/2 grid gap-2 grid-cols-1 gap-2 shadow-md shadow-cyan-800" style="margin-left: 450px">
+    <div class="md:w-1/2 grid gap-2 grid-cols-1 gap-2 shadow-md shadow-cyan-800" style="margin-left: 450px">
         <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
         <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
         <label for="system" style="color: red">Type of Low Slope BUR System: *</label>

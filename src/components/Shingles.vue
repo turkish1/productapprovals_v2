@@ -34,10 +34,6 @@ let slope = ref(null);
 function checkSlope() {
     console.log(slope);
 }
-
-// expose({
-//     shingleStore
-// });
 </script>
 <template>
     <AgreementsDialogShingle v-show="isDialog === true"></AgreementsDialogShingle>

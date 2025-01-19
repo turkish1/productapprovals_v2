@@ -41,64 +41,36 @@
 
 <script setup>
 import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
-import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
+// import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { invoke, until } from '@vueuse/core';
+import { tryOnMounted, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
-
 const permitStore = usePermitappStore();
-const objName = ref('');
-const { getNumbers, res1 } = useSignpdf();
-const isdataValid = ref(false);
-const isloading = ref(false);
-const isSigned = ref(false);
-// changing the value from some external store/composables
-// const processNumber = ref('me20240000976');
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
 
-objName.value = processNumber.value.length !== 0 ? processNumber.value : 'files';
+// const processNumber = ref('me20240001022');
+
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 
 // State for the form and payment
-function signPdfs() {
-    getNumbers(objName.value);
-    isSigned.value = true;
-    console.log(objName.value);
-}
 
-onMounted(() => {
-    signPdfs();
-});
+// State for toggles
+const isdataValid = ref(false);
+const isloading = ref(false);
 
 const isUrldownloadValid = ref(false);
-const { getNumber } = useDownloadpdf();
+const status = ref(false);
+const timedOut = ref(false);
 const submitted = ref(false);
 const amount = 49.99;
-const { confirmResponse, res } = useGlobalState();
-console.log(res, confirmResponse);
-// const notNUll = ref(confirmResponse);
-const confirm = ref(confirmResponse);
 
-const timedOut = ref(false);
+// We want to create the zip file but not download id until we click submit
 
-const handleTime = () => {
-    setTimeout(() => {
-        timedOut.value = true;
-    }, 3000);
-    console.log('time passed', res, confirmResponse);
-    getNumber(objName.value);
-};
-invoke(async () => {
-    await until(isSigned).toBe(true);
-    // await until(notNUll).not.toBeNull();
-    console.log(confirmResponse);
-    await until(timedOut).toBe(true, { timeout: 4000 });
-    handleTime();
-    // will throw if timeout
-});
+// const isfinishedRes = ref(resp.isFinished);
+// console.log(isfinishedRes);
 
 const form = ref({
     cardholderName: '',
@@ -107,35 +79,58 @@ const form = ref({
     cvv: ''
 });
 // Example fixed payment amount
+const dataMessage = ref(false);
+const dataStatus = ref(false);
 
 // console.log(procNumber.value);
+
+// Download composable
+const { getNumber } = useDownloadpdf(processNumber.value);
 const pdfstore = usedownloadStore();
+const { downloadinput } = storeToRefs(pdfstore.$state);
 
-const { downloadinput } = storeToRefs(pdfstore.$state.downloadinput);
+// const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+console.log(pdfstore.$state.downloadinput[0]?.downloadData?.download_url);
+// Global state
+const { resp } = useGlobalState();
 
-const downloadState = ref(pdfstore.$state.downloadinput);
+// On mount
+onMounted(() => {
+    // Example: call your logic if the response is valid
+    if (resp.value?.status?.status === 200) {
+        status.value = true;
+        console.log(resp.value.status.status);
+    }
+});
 
+// Example function that triggers a store/composable call
+const handleTime = tryOnMounted(() => {
+    getNumber();
+    setTimeout(() => {
+        timedOut.value = true;
+    }, 1000);
+    console.log(processNumber.value);
+    console.log(pdfstore.downloadinput[0]?.downloadData?.message);
+});
+
+// Submitting the payment form
 const handleSubmit = () => {
-    console.log(objName.value);
-    console.log(downloadState.value.length);
-    console.log(downloadState.value[0].downloadData);
-
-    // Basic validation can be added here
+    // Quick validation
     if (!form.value.cardholderName || !form.value.cardNumber || !form.value.expiryDate || !form.value.cvv) {
         alert('Please fill out all fields.');
         return;
     }
 
-    // Fake submission
     submitted.value = true;
     isloading.value = true;
-    // Reset form after submission
 
     setTimeout(() => {
+        // reset
         form.value.cardholderName = '';
         form.value.cardNumber = '';
         form.value.expiryDate = '';
         form.value.cvv = '';
+
         submitted.value = false;
         isloading.value = false;
     }, 2000);
@@ -143,38 +138,36 @@ const handleSubmit = () => {
     downloadFile();
 };
 
+watchOnce(handleTime, () => {});
+// Download file if available in store
 const downloadFile = async () => {
-    // Define the file URL and filename
-    console.log(downloadState.value.length);
-    console.log(downloadState.value[0].downloadData);
-
-    const objState = ref(downloadState.value.length);
-    // const downloadState = await ref(pdfstore.$state.downloadinput.length)
-    if (objState.value === 0) {
-        return true;
-    } else {
-        isdataValid.value = true;
-        const dlData = ref(downloadState.value[0].downloadData);
-        console.log(dlData.value);
-
-        const fileUrl = dlData.value; // Replace with your actual file path
-        console.log(fileUrl);
-        // Replace with your actual file path
-
-        const fileName = 'processnumber.zip';
-
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.download = fileName;
-        isUrldownloadValid.value = true;
-        link.click();
-        link.remove();
-        // Programmatically click the anchor to trigger the download
+    console.log(pdfstore.downloadinput[0]?.downloadData?.download_url);
+    const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
+    console.log(arr);
+    if (!arr || arr.length === 0) {
+        return;
     }
+    console.log(arr);
 
-    // // Programmatically click the anchor to trigger the download
+    const dlData = pdfstore.downloadinput[0]?.downloadData?.download_url;
+    // arr[0]?.downloadData?.download_url;
+    if (!dlData) return;
 
-    // // Clean up by removing the temporary anchor link.remove()
+    isdataValid.value = true;
+
+    const fileUrl = dlData;
+    const fileName = 'processnumber.zip';
+
+    // Create an anchor & trigger download
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName;
+    link.click();
+    link.remove();
+
+    // Show or hide button as needed
+    isUrldownloadValid.value = false;
+    // OR isUrldownloadValid.value = true;
 };
 </script>
 
@@ -192,7 +185,7 @@ const downloadFile = async () => {
 }
 .payment-widget {
     max-width: 1200px;
-    margin-left: 350px;
+    margin-left: 320px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;

@@ -1,15 +1,20 @@
-// import DataService from '@/services/DataService';
-// import { createGlobalState } from '@vueuse/core';
 import { useGlobalState } from '@/stores/pdfsignStore';
-// import { usePermitappStore } from '@/stores/permitapp';
 import { useAxios } from '@vueuse/integrations/useAxios';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
-export default function useSignpdf() {
+export default function useSignpdf(proc) {
     const inp = ref();
+    const sentInput = ref(proc);
     const sendProcessnumber = ref('');
+    // let results = ref([]);
 
-    let results = ref([]);
+    const results = reactive({
+        status: '',
+        message: '',
+
+        isFinished: '',
+        isLoading: ''
+    });
 
     const procNum = ref();
     const error = ref('');
@@ -21,10 +26,9 @@ export default function useSignpdf() {
     function getNumbers(Input) {
         console.log(Input);
         inp.value = Input;
-
+        console.log(sentInput.value);
         sendProcessnumber.value = inp.value + '/';
-        // console.log(sendProcessnumber);
-        // procNum.value = Number(inp.value);
+
         fetchData();
     }
     const { confirmResponse, addResponse } = useGlobalState();
@@ -33,18 +37,21 @@ export default function useSignpdf() {
         try {
             const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((response) => {
                 procNum.value = data.value;
+                results.status = response.response.value.status;
 
-                addResponse(data.value);
-                console.log(confirmResponse);
-                console.log(data.value, confirmResponse);
+                results.message = response.data.value;
+                results.isFinished = response.isFinished;
+                results.isLoading = response.isLoading;
+                console.log(response);
             });
-            console.log(data.value);
-            return response;
+            addResponse(results);
+
+            return results;
         } catch (error) {
             console.log('Error, fectching data', error);
             // alert('An error occurred while fetching data.');
         }
     };
 
-    return { error, getNumbers, procNum, fetchData, confirmResponse, addResponse };
+    return { error, getNumbers, procNum, sentInput, fetchData, confirmResponse, results };
 }

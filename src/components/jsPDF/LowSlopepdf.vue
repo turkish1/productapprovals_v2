@@ -58,8 +58,13 @@ const generatePDF = () => {
         const slope = ref(burpdfStore.$state.burpdfinput[0].burpdfData.slope);
         const perimeter = ref(burpdfStore.$state.burpdfinput[0].burpdfData.per);
         const deckType = ref(burpdfStore.$state.burpdfinput[0].burpdfData.deckType);
-        const doc = new jsPDF();
-
+        // const doc = new jsPDF();
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4', // Smaller page size
+            compress: true
+        });
         doc.setGState(new doc.GState({ opacity: 0.9 })); // Adjust opacity
         const approved = 'Approved';
         // Set font size, alignment, and rotation for the watermark

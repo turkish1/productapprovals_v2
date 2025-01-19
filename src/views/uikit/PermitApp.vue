@@ -1,16 +1,13 @@
 <script>
-// import useinputValid from '@/composables/input.js';
-// import ZipUpload from '@/components/DropZone/upload/ZipUpload.vue';
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-import { onMounted, reactive, ref, toRefs } from 'vue';
+import { computed, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 // import useaccountStore from '@/stores/accountStore';
-
 import { invoke } from '@vueuse/core';
 import AOS from 'aos';
 const a = ref(1);
@@ -26,6 +23,14 @@ export default {
         const { accountUsers, getUser, addUser } = useGlobalState();
         console.log(accountUsers._value[0]);
 
+        // const selectedApplication = ref();
+
+        const type = ref([
+            { name: 'Roofing Permit', code: 'RP' },
+            { name: 'Doors Permit', code: 'DP' },
+            { name: 'Windows Permit', code: 'WP' }
+        ]);
+
         const prefix = ref('me');
         const store = usePermitappStore();
         const formData = reactive({
@@ -40,6 +45,7 @@ export default {
             // email: '',
             date: new Date()
         });
+        const cccValid = ref(true);
         const contractor = ref('');
         const email = ref('');
         const phone = ref('');
@@ -61,12 +67,15 @@ export default {
                 email.value = accountUsers._value[0].email;
                 phone.value = accountUsers._value[0].phone;
                 licenseStatus.value = accountUsers._value[0].secondary_status;
+
                 dba.value = accountUsers._value[0].dba;
-                console.log(accountUsers._value[0].phone);
                 // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
             }
         });
-        //
+
+        const selectedApplication = computed(() => {
+            return cccValid.value === true ? type.value[0] : '';
+        });
         // const pdfcleared = ref(false); changed 1/14/2025
         const loading = ref(false);
         const { pNum } = useProcess();
@@ -80,16 +89,38 @@ export default {
         onMounted(() => {
             isDialog.value = true;
         });
-        // const getData = reactive(accountinput);
+
+        // const defaultPermitType = async (formdt) => {
+        //     formdt = formData;
+        //     console.log(type.value[0].name);
+        //     const slicedString = computed(() => formdt.license.value.slice(0, 3));
+        //     console.log(slicedString);
+        //     if (formdt.length !== 0 && slicedString === 'ccc') {
+        //         selectedApplication.value = ref(type.value[1]);
+        //     } else {
+        //         selectedApplication.value = '';
+        //         // permType = selectedApplication.value;
+        //     }
+        // };
+
+        const slicedString = computed(() => formData.permit.slice(0, 3));
+        console.log(slicedString);
+        cccValid.value = slicedString.value === 'ccc' ? true : false;
+        console.log(cccValid);
+        const isnumberValid = ref(false);
         const load = async () => {
             try {
                 loading.value = true;
                 console.log(loading.value);
+                // const ftAddress = ref('3350 SW 23 ST')
                 const addr = ref(formData.address);
+                // const city = 'FT. FORT LAUDERDALE'
                 const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
-
+                // const baseBrowardURL = 'https://web.bcpa.net/BcpaClient/search.aspx/getParcelInformation'
                 const url = `${baseURL}&myAddress=${encodeURIComponent(addr.value)}&to=200`;
+                //  const url_ft = `${baseBrowardURL}&myCity${encodeURIComponent(city)}&myAddress=${encodeURIComponent(ftAddress.value)}&to=200`;
                 const response = await fetch(url);
+                // const resFtLauder await fetch(url_ft);
 
                 const data = await response.json();
                 console.log(data);
@@ -100,8 +131,9 @@ export default {
                 formData.folio = data.MinimumPropertyInfos[0].Strap;
                 console.log(lastNum.value);
                 let strLength = String(lastNum.value);
-                console.log(lastNum.value.length, lastNum.value, strLength);
+                // console.log(lastNum.value.length, lastNum.value, strLength);
                 let newNumber = strLength.substring(2, 13);
+                formData.permit = selectedApplication.value;
 
                 const number = useToNumber(newNumber);
                 let addNumber = number.value + 1;
@@ -127,29 +159,27 @@ export default {
             procReceive(formData);
         };
 
-        const selectedApplication = ref();
-
-        const type = ref([
-            { name: 'Roofing Permit', code: 'RP' },
-            { name: 'Doors Permit', code: 'DP' },
-            { name: 'Windows Permit', code: 'WP' }
-        ]);
         const navigateNext = () => {
             router.push('/roofsystem');
             // router.push('/map');
         };
+        // const selectedApplication = computed(() => {
+
+        //     console.log(type);
+        //     return type.value[0];
+        // });
 
         function addItemAndClear(formdt, permType) {
             formdt = formData;
             permType = selectedApplication.value;
+
             if (formdt.length === 0) {
                 return;
             }
             store.addSystem(formdt, permType, checkMB.value);
+            console.log(formdt, permType, checkMB.value, 'System added');
             // area.value = '';
             // type.value = '';
-
-            console.log(formdt, permType, checkMB.value, 'System added');
         }
 
         invoke(async () => {
@@ -189,29 +219,29 @@ export default {
 </script>
 
 <template>
-    <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #eae7e2"> -->
+    <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #eae7e2"> @click="selectPermitType"-->
     <PermitInitalAgreement v-if="isDialog" />
     <div class="grid grid-cols-2 gap-0">
         <!-- <div class="md:w-2/3"> -->
 
-        <div class="container md:w-2/3" style="margin-left: 90px; margin-top: 90px">
+        <div class="container md:w-2/3" style="margin-left: 130px">
             <form>
                 <div class="row">
-                    <div class="card flex flex-col gap-1">
+                    <div class="flex mt-4 space-y-2 flex-col gap-1">
                         <div class="font-semibold text-xl" style="color: #eae7e2">Permit Application</div>
-                        <div class="card flex justify-center">
+                        <div class="flex justify-center">
                             <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" />
                         </div>
-                        <div class="flex flex-col mt-3 grow basis-0 gap-3" style="max-width: 200px">
+                        <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3" style="max-width: 200px; margin-left: 30px">
                             <label for="license" style="color: #eae7e2">License Status</label>
                             <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
                             <!-- <Message severity="error">Contractor Name Required</Message> -->
                         </div>
                         <!-- style="background-color: #eae7e2" -->
-                        <div class="card flex flex-col gap-2">
+                        <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
                             <!-- <div class="flex flex-wrap gap-2"> -->
-                            <form class="w-3/4" @submit="onSubmit">
-                                <div class="flex flex-col grow basis-0 gap-2">
+                            <form class="w-2/3" @submit="onSubmit">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-2">
                                     <label for="addr" style="color: #eae7e2">Property Address</label>
                                     <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
 
@@ -223,42 +253,42 @@ export default {
                                     <!-- <Message severity="error">Property Address Required</Message> -->
                                 </div>
 
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="dba" style="color: #eae7e2">DBA </label>
                                     <InputText id="dba" v-model="dba" type="text" placeholder="name" />
                                     <!-- <Message severity="error">Contractor Name Required</Message> -->
                                 </div>
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="contractor" style="color: #eae7e2">Contractor Name</label>
                                     <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
                                     <!-- <Message severity="error">Contractor Name Required</Message> -->
                                 </div>
 
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="phone" style="color: #eae7e2">Cell Phone Number</label>
                                     <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
                                 </div>
 
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="Email" style="color: #eae7e2">Email</label>
                                     <InputText v-model="email" :invalid="email === null" :error="emailError" />
                                     <Message v-if="invalid" severity="error">Email is required</Message>
                                     <!-- @click="navigateNext" -->
                                 </div>
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="muni" style="color: #eae7e2">Municipality</label>
                                     <InputText id="muni" v-model="muni" type="text" placeholder="municipality" />
                                 </div>
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="folio" style="color: #eae7e2">Folio</label>
                                     <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" />
                                 </div>
 
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="permit" style="color: #eae7e2">Master Permit</label>
                                     <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
                                 </div>
-                                <div class="flex flex-col mt-3 grow basis-0 gap-3">
+                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                     <label for="processnum" style="color: #eae7e2">mEProcess Number</label>
                                     <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
                                 </div>
@@ -266,7 +296,7 @@ export default {
                                 <p v-if="responseMessage">{{ responseMessage }}</p>
                                 <!-- <Drop /> -->
                                 <br />
-                                <Button id="submit" type="submit" label="Submit" class="w-1/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" @change="generatePdf" />
+                                <Button id="submit" type="submit" label="Submit" class="w-1/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
                             </form>
                             <!-- <MapBox /> -->
                             <br />
@@ -277,25 +307,24 @@ export default {
             <!-- </div> -->
             <!-- </div> -->
         </div>
-        <div data-aos="fade-up-right" data-aos-delay="500" style="margin-top: 90px">
+        <!-- <div v-show="isnumberValid"   data-aos="fade-up-right" data-aos-delay="500" style="margin-top: 90px">
             <file-saver></file-saver>
-            <!-- <zip-upload></zip-upload>
-            <ZipUpload></ZipUpload> -->
-        </div>
+
+        </div> -->
     </div>
     <!-- </div> -->
 </template>
 <style scoped>
 .container {
-    padding-bottom: 30px;
+    padding-bottom: 10px;
     /* padding-top: 12px; */
     border: none;
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 170px;
-    margin-top: 30px;
-    top: 10vh;
+    min-height: 100px;
+    margin-top: 20px;
+    /* top: 10vh; */
 }
 
 .ql-container {

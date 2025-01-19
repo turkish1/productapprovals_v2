@@ -23,7 +23,7 @@
             </template>
         </Timeline>
     </div>
-    <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
+    <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 400px; margin-left: 850px" />
 
     <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
         <div class="flex mb-4">
@@ -76,6 +76,9 @@ import TileMechanical from '../jsPDF/TileMechanical.vue';
 const { accountUsers } = useGlobalState();
 
 const isloading = ref(false);
+const isSigned = ref(false);
+
+const objName = ref('');
 
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
@@ -89,39 +92,42 @@ const status = ref('');
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
-
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 const generalStore = useGeneralpdfStore();
 const generalType = ref(generalStore.$state.generalpdfinput);
-const processnumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-const { getNumbers } = useSignpdf();
-
+// const { getNumbers } = useSignpdf();
+const { getNumbers } = useSignpdf(processNumber.value);
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
         dba.value = item.dba;
     });
-    console.log(processnumber.value);
+
     // getNumber(processnumber.value);
 }
 
-// const callPdfSign = tryOnMounted(() => {
-//     getNumber(processnumber.value);
-// });
-
-function callPdfSign() {
-    // while (index.value < count.value) {
-    isloading.value = true;
-
-    getNumbers(processnumber.value);
-
+const callPdfSign = tryOnMounted(() => {
+    getNumbers(processNumber.value);
+    isSigned.value = true;
     setTimeout(() => {
-        isloading.value = false;
-    }, 3000);
-    console.log('called times');
-    // getNumber(processnumber.value);
-    //     index.value = index.value + 1;
-    // }
-    //     getNumber(processnumber.value);
-}
+        // isloading.value = true;
+        isSigned.value = true;
+    }, 1000);
+
+    console.log(processNumber.value);
+});
+
+// function callPdfSign() {
+
+//     isloading.value = true;
+
+//     getNumbers(processnumber.value);
+
+//     setTimeout(() => {
+//         isloading.value = false;
+//     }, 3000);
+//     console.log('called times');
+
+// }
 
 const callState = tryOnMounted(() => {
     if (roofType.value.length === 0) {
@@ -141,10 +147,11 @@ const callState = tryOnMounted(() => {
 
 onMounted(() => {
     displayUserInfo();
-    callPdfSign();
 });
-
-watchOnce(displayUserInfo, callState, () => {});
+// invoke(async () => {
+//     await until(handleTime).changed();
+// });
+watchOnce(displayUserInfo, callState, callPdfSign, () => {});
 // watch(callPdfSign, () => {
 //     console.log(callPdfSign());
 // });

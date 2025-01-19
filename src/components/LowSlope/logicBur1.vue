@@ -46,8 +46,6 @@ let slopeModel = ref('');
 let heightModel = ref('');
 
 function setRoofInputs() {
-    console.log(slopeModel, heightModel);
-    console.log(burinput, addData);
     dims.per = (dims.height * factor.value).toFixed(2);
 }
 
@@ -55,9 +53,8 @@ const dt = ref('');
 function getdeckType(event) {
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
-        console.log(dt.value);
+
         dims.deckType = dt.value;
-        console.log(dt.value, dims.deckType);
     }
 }
 onMounted(() => {
@@ -104,7 +101,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
 </script>
 <template>
     <!-- <div id="bur" class="flex flex-col gap-2" style="margin-left: 1px"> -->
-    <div class="card flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 500px">
+    <div class="md:w-1/2 flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 500px">
         <label for="title" style="color: whitesmoke; margin-left: 450px">Low Slope Roof</label>
 
         <div class="w-128 gap-2" style="margin-left: 12px">

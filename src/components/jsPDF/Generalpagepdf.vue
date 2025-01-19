@@ -55,13 +55,21 @@ const generatePDF = () => {
     } else {
         // Initialize jsPDF instance
 
-        const doc = new jsPDF();
+        // const doc = new jsPDF();
+
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4', // Smaller page size
+            compress: true
+        });
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.9 })); // Adjust opacity
         const approved = 'Approved';
         // Set font size, alignment, and rotation for the watermark
         doc.setFontSize(24);
         doc.setTextColor('black');
+        doc.setFont('helvetica');
         // doc.setFont('Courier', 'bolditalic');
         // Light gray color for watermark
         // doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2
@@ -97,7 +105,7 @@ const generatePDF = () => {
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         doc.setTextColor('green');
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();

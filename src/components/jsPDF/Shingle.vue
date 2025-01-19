@@ -71,7 +71,13 @@ const generatePDF = () => {
         const area = ref(roofStore.$state.roofList[0].dim1);
         const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
-        const doc = new jsPDF();
+
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4', // Smaller page size
+            compress: true
+        });
 
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity

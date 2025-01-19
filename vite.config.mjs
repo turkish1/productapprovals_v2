@@ -3,6 +3,8 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import vue from '@vitejs/plugin-vue';
 import dotenv from 'dotenv';
 import { fileURLToPath, URL } from 'node:url';
+
+import vueDevTools from 'vite-plugin-vue-devtools';
 // import { visualizer } from 'rollup-plugin-visualizer';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
@@ -16,6 +18,7 @@ export default defineConfig({
     },
     plugins: [
         vue(),
+        vueDevTools(),
         viteCommonjs(),
         Components({
             resolvers: [PrimeVueResolver()]
