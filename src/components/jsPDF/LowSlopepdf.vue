@@ -105,7 +105,7 @@ const generatePDF = () => {
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
         doc.setFontSize(14);
         // doc.setTextColor(190, 190, 190);
-        doc.setTextColor('red');
+        doc.setTextColor('green');
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();
         doc.text(approved, 10, 270, { align: 'left' });

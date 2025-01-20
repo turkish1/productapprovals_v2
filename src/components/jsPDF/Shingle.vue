@@ -535,7 +535,7 @@ const generatePDF = () => {
 
         const uploadFile = async (fName, pdfBlob) => {
             const file = fName;
-
+            console.log(file);
             if (!file) {
                 alert('Please select a file to upload.');
                 return;

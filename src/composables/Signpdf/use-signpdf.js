@@ -42,7 +42,7 @@ export default function useSignpdf(proc) {
                 results.message = response.data.value;
                 results.isFinished = response.isFinished;
                 results.isLoading = response.isLoading;
-                console.log(response);
+                console.log(results.status);
             });
             addResponse(results);
 

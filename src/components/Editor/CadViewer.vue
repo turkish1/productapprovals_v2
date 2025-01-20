@@ -44,12 +44,10 @@ const images = ref([]); // Stores the image URLs
 const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
 const files = ref([]);
 const { getNumbers } = useSignpdf();
-// const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${files}`;
 // Handle drag events
-
-function onDragEnter() {
+const imageFile = function onDragEnter() {
     dragging.value = true; // Change state when the user drags files over the zone
-}
+};
 
 function onDragLeave() {
     dragging.value = false; // Reset the state when the user leaves the zone
@@ -88,41 +86,40 @@ const file = ref('');
 const uploadUrl = ref('');
 
 const uploadfiles = async () => {
-    try {
-        // Create a new zip files.value
-        // const zip = new JSZip();
-        console.log(fileName.value);
-        for (const file of fileName.value) {
-            console.log(file);
-            tempFile.value = file;
-            console.log(tempFile.value);
-        }
+    // try {
 
-        file.value = tempFile.value.name;
+    for (const fileItem of fileName.value) {
+        console.log('Uploading file:', fileItem);
 
-        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${file.value}`;
+        // Build the object key using the file's name (or any naming logic you like)
+        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileItem.name}`;
+
+        // If the File is already a PDF, you can just pass it directly in the body
+        // and set the Content-Type header appropriately.
+        // If you need to ensure it's recognized as a Blob,
+        // you can do: const pdfBlob = new Blob([fileItem], { type: 'application/pdf' });
 
         const response = await fetch(s3Url, {
             method: 'PUT',
             headers: {
-                'Content-Type': file.type
+                'Content-Type': 'application/pdf'
             },
-            body: file
+            // Body should be a Blob/File, NOT the filename string
+            body: fileItem
         });
 
-        console.log(response);
-
-        if (response.ok) {
-            uploadUrl.value = s3Url;
-            console.log(s3Url);
-            alert('File uploaded successfully!');
-        } else {
-            alert(`Failed to upload file. Status: ${response.status}`);
+        if (!response.ok) {
+            console.error(`Failed to upload ${fileItem.name}. Status: ${response.status}`);
+            continue;
         }
-    } catch (error) {
-        console.error('Error uploading to S3:', error);
-        alert('Failed to upload file.');
+
+        console.log(`Successfully uploaded ${fileItem.name} to S3.`);
     }
+
+    // } catch (error) {
+    //     console.error('Error uploading to S3:', error);
+    //     alert('Failed to upload file.');
+    // }
 };
 
 const deleteImages = (index) => {

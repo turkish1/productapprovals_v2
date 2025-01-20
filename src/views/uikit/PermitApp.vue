@@ -71,12 +71,13 @@ export default {
                 dba.value = accountUsers._value[0].dba;
                 // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
             }
+            // defaultPermitType();
         });
 
         const selectedApplication = computed(() => {
             return cccValid.value === true ? type.value[0] : '';
         });
-        // const pdfcleared = ref(false); changed 1/14/2025
+
         const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
@@ -90,24 +91,16 @@ export default {
             isDialog.value = true;
         });
 
-        // const defaultPermitType = async (formdt) => {
-        //     formdt = formData;
-        //     console.log(type.value[0].name);
-        //     const slicedString = computed(() => formdt.license.value.slice(0, 3));
+        // const defaultPermitType = async () => {
+        //     const licenseType = accountUsers._value[0].license;
+        //     console.log(accountUsers._value[0]);
+        //     const slicedString = computed(() => licenseType.value.slice(0, 3));
         //     console.log(slicedString);
-        //     if (formdt.length !== 0 && slicedString === 'ccc') {
-        //         selectedApplication.value = ref(type.value[1]);
-        //     } else {
-        //         selectedApplication.value = '';
-        //         // permType = selectedApplication.value;
+        //     if (licenseType.value.length !== 0 && slicedString === 'ccc') {
+        //         selectedApplication.value = cccValid.value === true ? type.value[0] : '';
         //     }
         // };
 
-        const slicedString = computed(() => formData.permit.slice(0, 3));
-        console.log(slicedString);
-        cccValid.value = slicedString.value === 'ccc' ? true : false;
-        console.log(cccValid);
-        const isnumberValid = ref(false);
         const load = async () => {
             try {
                 loading.value = true;
@@ -133,7 +126,7 @@ export default {
                 let strLength = String(lastNum.value);
                 // console.log(lastNum.value.length, lastNum.value, strLength);
                 let newNumber = strLength.substring(2, 13);
-                formData.permit = selectedApplication.value;
+                // formData.permit = selectedApplication.value;
 
                 const number = useToNumber(newNumber);
                 let addNumber = number.value + 1;
@@ -163,11 +156,6 @@ export default {
             router.push('/roofsystem');
             // router.push('/map');
         };
-        // const selectedApplication = computed(() => {
-
-        //     console.log(type);
-        //     return type.value[0];
-        // });
 
         function addItemAndClear(formdt, permType) {
             formdt = formData;
@@ -181,10 +169,6 @@ export default {
             // area.value = '';
             // type.value = '';
         }
-
-        invoke(async () => {
-            // await until(pdfcleared).changed();
-        });
 
         return {
             isDialog,
@@ -221,97 +205,88 @@ export default {
 <template>
     <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #eae7e2"> @click="selectPermitType"-->
     <PermitInitalAgreement v-if="isDialog" />
-    <div class="grid grid-cols-2 gap-0">
-        <!-- <div class="md:w-2/3"> -->
+    <!-- <div class="grid grid-cols-1 gap-2"> -->
+    <div class="container md:w-1/2" style="margin-left: 330px">
+        <form>
+            <div class="flex flex-row">
+                <div class="flex mt-4 space-y-2 flex-col gap-2">
+                    <div class="font-semibold text-xl" style="color: #eae7e2; margin-left: 430px">Permit Application</div>
+                    <div class="flex justify-center">
+                        <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" style="margin-top: 30px" />
+                    </div>
+                    <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3" style="max-width: 200px; margin-left: 30px">
+                        <label for="license" style="color: #eae7e2">License Status</label>
+                        <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
+                        <!-- <Message severity="error">Contractor Name Required</Message> -->
+                    </div>
 
-        <div class="container md:w-2/3" style="margin-left: 130px">
-            <form>
-                <div class="row">
-                    <div class="flex mt-4 space-y-2 flex-col gap-1">
-                        <div class="font-semibold text-xl" style="color: #eae7e2">Permit Application</div>
-                        <div class="flex justify-center">
-                            <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" />
-                        </div>
-                        <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3" style="max-width: 200px; margin-left: 30px">
-                            <label for="license" style="color: #eae7e2">License Status</label>
-                            <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
-                            <!-- <Message severity="error">Contractor Name Required</Message> -->
-                        </div>
-                        <!-- style="background-color: #eae7e2" -->
-                        <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
-                            <!-- <div class="flex flex-wrap gap-2"> -->
-                            <form class="w-2/3" @submit="onSubmit">
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-2">
-                                    <label for="addr" style="color: #eae7e2">Property Address</label>
-                                    <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
+                    <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
+                        <form class="w-2/3" @submit="onSubmit">
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-2">
+                                <label for="addr" style="color: #eae7e2">Property Address</label>
+                                <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
 
-                                    <Button id="search" v-if="!loading" type="button" label="Search" class="w-1/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
+                                <Button id="search" v-if="!loading" type="button" label="Search" class="w-1/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
 
-                                    <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                                <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
 
-                                    <!-- pi-search-plus -->
-                                    <!-- <Message severity="error">Property Address Required</Message> -->
-                                </div>
+                                <!-- pi-search-plus -->
+                                <!-- <Message severity="error">Property Address Required</Message> -->
+                            </div>
 
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="dba" style="color: #eae7e2">DBA </label>
-                                    <InputText id="dba" v-model="dba" type="text" placeholder="name" />
-                                    <!-- <Message severity="error">Contractor Name Required</Message> -->
-                                </div>
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="contractor" style="color: #eae7e2">Contractor Name</label>
-                                    <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
-                                    <!-- <Message severity="error">Contractor Name Required</Message> -->
-                                </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="dba" style="color: #eae7e2">DBA </label>
+                                <InputText id="dba" v-model="dba" type="text" placeholder="name" />
+                                <!-- <Message severity="error">Contractor Name Required</Message> -->
+                            </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="contractor" style="color: #eae7e2">Contractor Name</label>
+                                <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
+                                <!-- <Message severity="error">Contractor Name Required</Message> -->
+                            </div>
 
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="phone" style="color: #eae7e2">Cell Phone Number</label>
-                                    <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
-                                </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="phone" style="color: #eae7e2">Cell Phone Number</label>
+                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
+                            </div>
 
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="Email" style="color: #eae7e2">Email</label>
-                                    <InputText v-model="email" :invalid="email === null" :error="emailError" />
-                                    <Message v-if="invalid" severity="error">Email is required</Message>
-                                    <!-- @click="navigateNext" -->
-                                </div>
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="muni" style="color: #eae7e2">Municipality</label>
-                                    <InputText id="muni" v-model="muni" type="text" placeholder="municipality" />
-                                </div>
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="folio" style="color: #eae7e2">Folio</label>
-                                    <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" />
-                                </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="Email" style="color: #eae7e2">Email</label>
+                                <InputText v-model="email" :invalid="email === null" :error="emailError" />
+                                <Message v-if="invalid" severity="error">Email is required</Message>
+                                <!-- @click="navigateNext" -->
+                            </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="muni" style="color: #eae7e2">Municipality</label>
+                                <InputText id="muni" v-model="muni" type="text" placeholder="municipality" />
+                            </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="folio" style="color: #eae7e2">Folio</label>
+                                <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" />
+                            </div>
 
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="permit" style="color: #eae7e2">Master Permit</label>
-                                    <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
-                                </div>
-                                <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                    <label for="processnum" style="color: #eae7e2">mEProcess Number</label>
-                                    <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
-                                </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="permit" style="color: #eae7e2">Master Permit</label>
+                                <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
+                            </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                                <label for="processnum" style="color: #eae7e2">mEProcess Number</label>
+                                <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
+                            </div>
 
-                                <p v-if="responseMessage">{{ responseMessage }}</p>
-                                <!-- <Drop /> -->
-                                <br />
-                                <Button id="submit" type="submit" label="Submit" class="w-1/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
-                            </form>
-                            <!-- <MapBox /> -->
+                            <p v-if="responseMessage">{{ responseMessage }}</p>
+
                             <br />
-                        </div>
+                            <Button id="submit" type="submit" label="Submit" class="w-1/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
+                        </form>
+
+                        <br />
                     </div>
                 </div>
-            </form>
-            <!-- </div> -->
-            <!-- </div> -->
-        </div>
-        <!-- <div v-show="isnumberValid"   data-aos="fade-up-right" data-aos-delay="500" style="margin-top: 90px">
-            <file-saver></file-saver>
-
-        </div> -->
+            </div>
+        </form>
     </div>
+
     <!-- </div> -->
 </template>
 <style scoped>

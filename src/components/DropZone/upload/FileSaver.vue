@@ -95,19 +95,6 @@ const uploadUrl = ref('');
 const uploadfiles = async () => {
     // try {
 
-    // was working code
-    //
-    // console.log(fileName.value);
-    // for (const file of fileName.value) {
-    //     console.log(file);
-    //     tempFile.value = file;
-    //     console.log(tempFile.value);
-    // }
-
-    // file.value = tempFile.value.name;
-
-    // const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${file.value}`;
-
     for (const fileItem of fileName.value) {
         console.log('Uploading file:', fileItem);
 
@@ -135,23 +122,7 @@ const uploadfiles = async () => {
 
         console.log(`Successfully uploaded ${fileItem.name} to S3.`);
     }
-    // const response = await fetch(s3Url, {
-    //     method: 'PUT',
-    //     headers: {
-    //         'Content-Type': 'application/pdf'
-    //     },
-    //     body: file.value
-    // });
 
-    // console.log(response);
-
-    //     if (response.ok) {
-    //         uploadUrl.value = s3Url;
-    //         console.log(s3Url);
-    //         alert('File uploaded successfully!');
-    //     } else {
-    //         alert(`Failed to upload file. Status: ${response.status}`);
-    //     }
     // } catch (error) {
     //     console.error('Error uploading to S3:', error);
     //     alert('Failed to upload file.');

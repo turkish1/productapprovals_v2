@@ -55,9 +55,6 @@ const Step5Component = defineAsyncComponent(() => import('@/components/Summary/C
 const Step6Component = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
 const { roofList } = storeToRefs(store);
 
-// const RoofList = ref(['', 'LowSlope', '', 'Mechanical', 'Checkout']);
-// This check will have asphalt dialog pop up
-
 const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
 tryOnMounted(() => {
     if (convertMB.value === null || convertMB.value === NaN) {
@@ -115,8 +112,7 @@ function validateState() {
     const nonEmptyValues = booleanValues.value.filter((value) => value !== '' && value !== null && value !== undefined);
     const countTrue = nonEmptyValues.filter((value) => value === true).length;
     console.log(booleanValues);
-    // for (let k = 0; k <= countTrue; k++) {
-    //     console.log(k);
+
     if (isValidshingle.value === true) {
         console.log(isValidshingle.value, 'Entered if statement shingle');
         steps.value[0].label = 'Shingles';
@@ -141,9 +137,6 @@ function validateState() {
         console.log(isValidpaymentgate.value, 'Entered if statement checkout!');
         steps.value[5].label = 'Payment Page';
     }
-
-    //     console.log(k);
-    // }
 
     for (let i = 0; i < booleanValues.value.length; i++) {
         // count the false values
@@ -172,7 +165,7 @@ const nextStep = () => {
     if (currentStepIndex.value < filteredSteps.value.length - 1) {
         setTimeout(() => {
             isloading.value = false;
-        }, 3000);
+        }, 1000);
 
         currentStepIndex.value += 1;
     }
@@ -186,7 +179,7 @@ const prevStep = () => {
             currentStepIndex.value -= 1;
         }
         isloading.value = false;
-    }, 1500);
+    }, 500);
 };
 const goToStep = (index) => {
     currentStepIndex.value = index;
@@ -249,6 +242,6 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 .stepper-controls {
     display: flex;
     gap: 1500px;
-    margin-top: 105px;
+    margin-top: 55px;
 }
 </style>

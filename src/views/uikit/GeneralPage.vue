@@ -119,6 +119,7 @@ function roofArea() {
     dataGeneral.steepData = steep.value;
     dataGeneral.totalData = Number(total.value);
     dataGeneral.roofCheck = checked;
+    console.log(dataGeneral.roofCheck);
     generalpageStore.addgeneralpdfData(dataGeneral);
 }
 

@@ -187,7 +187,7 @@ const generatePDF = () => {
             const valueTextWidth = doc.getTextWidth(item.value) * 2; // Get text width
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
-
+        doc.setTextColor('black');
         doc.setFontSize(10);
         const factor = 2;
         const initialYValue = 100;
@@ -272,8 +272,10 @@ const generatePDF = () => {
 
         doc.line(totalValue, param_y, totalValue + TotalTextWidth, param_y);
         currentX.value = totalValue + TotalTextWidth;
+        console.log(generalpageStore.$state.generalpdfinput[0]);
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeChk === true) {
             slopeChk.value = true;
+            console.log('Slope Checked');
         }
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.adtileChk === true) {
             adtileChk.value = true;
@@ -287,6 +289,7 @@ const generatePDF = () => {
         }
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk === true) {
             shingleChk.value = true;
+            console.log('Shingle Checked');
         }
         currentX.value = LeftStart;
         current_y = current_y + 10;
