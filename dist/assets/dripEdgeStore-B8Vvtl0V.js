@@ -1,1 +1,0 @@
-import{q as t}from"./index-CgNQnJ6L.js";const p=t("dripinput",{state:()=>({dripinput:[],id:0}),actions:{addDrip(e){this.dripinput.push({dripData:e,completed:!1})},reset(){this.$reset()}}});export{p as u};
