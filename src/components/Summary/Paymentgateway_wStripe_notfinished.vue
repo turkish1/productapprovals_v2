@@ -10,7 +10,17 @@
             <div class="payment-widget">
                 <h2 style="color: black">Credit Card Payment</h2>
 
-                <form @submit.prevent="handleSubmit">
+                <label>Card Number</label>
+                <div id="card-number"></div>
+                <label>Card Expiry</label>
+                <div id="card-expiry"></div>
+                <label>Card CVC</label>
+                <div id="card-cvc"></div>
+                <div id="card-error"></div>
+                <button id="custom-button" @click="createToken">Generate Token</button>
+                <stripe-element-card ref="elementRef" :pk="publishableKey" @token="tokenCreated" />
+                <Button severity="info" @click="handleSubmit">Pay Now</Button>
+                <!-- <form @submit.prevent="handleSubmit">
                     <div class="form-group">
                         <label for="cardholder-name">Cardholder Name</label>
                         <input type="text" id="cardholder-name" v-model="form.cardholderName" placeholder="Boris Gomez" required />
@@ -32,12 +42,13 @@
                         </div>
                     </div>
 
-                    <button type="submit">Pay</button>
-                </form>
 
-                <div v-if="submitted" class="confirmation">
+                    <button type="submit">Pay</button>
+                </form> -->
+
+                <!-- <div v-if="submitted" class="confirmation">
                     <p>Thank you, {{ form.cardholderName }}! Your payment of ${{ amount }} was processed.</p>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -48,10 +59,10 @@ import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
-// import { default as StripeCheckout, default as StripeElementCard } from '@vue-stripe/vue-stripe';
+import { default as StripeCheckout, default as StripeElementCard } from '@vue-stripe/vue-stripe';
 import { tryOnMounted, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
 
 const permitStore = usePermitappStore();
@@ -64,6 +75,7 @@ const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber
 const token = ref(null);
 const elementRef = ref(null);
 
+elementRef;
 // State for toggles
 const isdataValid = ref(false);
 const isloading = ref(false);
@@ -74,10 +86,13 @@ const timedOut = ref(false);
 const submitted = ref(false);
 const amount = 49.99;
 const checkoutRef = ref(null);
-
-// const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
-// const successURL = ref('/paymentprocessed');
-// const cancelURL = ref('/pages/notfound');
+const lineItems = reactive({
+    price: 'prod_RbrOFZ705d3c2E', // The id of the one-time price you created in your Stripe dashboard
+    quantity: 1
+});
+const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+const successURL = ref('/paymentprocessed');
+const cancelURL = ref('/pages/notfound');
 // We want to create the zip file but not download id until we click submit
 
 // const isfinishedRes = ref(resp.isFinished);
@@ -126,6 +141,8 @@ const handleTime = tryOnMounted(() => {
 
 // Submitting the payment form
 const handleSubmit = (event) => {
+    console.log(checkoutRef.value);
+    console.log(elementRef.value);
     // $refs.checkoutRef.redirectToCheckout();
     // Quick validation
     if (!form.value.cardholderName || !form.value.cardNumber || !form.value.expiryDate || !form.value.cvv) {
@@ -150,6 +167,18 @@ const handleSubmit = (event) => {
     downloadFile();
 };
 
+const createToken = async () => {
+    // const { token, error } = await stripe.createToken(cardNumber);
+    console.log(StripeElementCard);
+    if (error) {
+        // handle error here
+        document.getElementById('card-error').innerHTML = error.message;
+        return;
+    }
+    console.log(token);
+    // handle the token
+    // send it to your server
+};
 watchOnce(handleTime, () => {});
 // Download file if available in store
 const downloadFile = async () => {
@@ -178,7 +207,7 @@ const downloadFile = async () => {
     link.remove();
 
     // Show or hide button as needed
-    isUrldownloadValid.value = true;
+    isUrldownloadValid.value = false;
     // OR isUrldownloadValid.value = true;
 };
 </script>

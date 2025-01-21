@@ -1,5 +1,5 @@
 <script setup>
-import Checkout from '@/components/Summary/Checkout.vue';
+import Checkout from '@/components/Summary/Summarys.vue';
 
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';

@@ -8,7 +8,8 @@ const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
 
 const { accountUsers } = useGlobalState();
-
+console.log(accountUsers);
+// const accountuser =  ref(accountUsers.value[0]?.formdt?.processNumber || '');
 let master = ref();
 let process = ref();
 let dba = ref();
@@ -23,10 +24,10 @@ const lines = [
     'Loading modules...',
     'Connecting to server...',
     'Server connection established.',
-    `${accountUsers._value[0].dba}...`,
-    `${accountUsers._value[0].license}...`,
-    `${accountUsers._value[0].expiration_date}...`,
-    `${accountUsers._value[0].secondary_status}...`,
+    // `${accountUsers._value[0].dba}...`,
+    // `${accountUsers._value[0].license}...`,
+    // `${accountUsers._value[0].expiration_date}...`,
+    // `${accountUsers._value[0].secondary_status}...`,
     `${process.value}...`,
     `${jobaddress.value}...`,
     `${contractor.value}...`
@@ -59,13 +60,13 @@ onMounted(() => {
     scrollTerminal();
 });
 onMounted(() => {
-    if (accountUsers._value[0].DBA === '') {
-        console.log(accountUsers._value[0]);
-        return null;
-    } else {
-        dba.value = accountUsers._value[0].dba;
-        console.log(accountUsers._value[0]);
-    }
+    // if (accountUsers._value[0].DBA === '') {
+    //     console.log(accountUsers._value[0]);
+    //     return null;
+    // } else {
+    //     dba.value = accountUsers._value[0].dba;
+    //     console.log(accountUsers._value[0]);
+    // }
 });
 </script>
 

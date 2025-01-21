@@ -166,10 +166,17 @@ const router = createRouter({
         //     component: () => import('@/views/pages/Landing.vue')
         // },
         {
+            path: '/paymentprocessed',
+            name: 'paymentprocessed',
+            component: () => import('@/components/Summary/Paymentprocessed.vue')
+        },
+
+        {
             path: '/firstpage',
             name: 'firstpage',
             component: () => import('@/views/pages/Firstpage.vue')
         },
+
         {
             path: '/pages/notfound',
             name: 'notfound',

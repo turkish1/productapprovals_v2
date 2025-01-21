@@ -12,7 +12,8 @@
                 <div class="images-grid">
                     <div v-for="(image, index) in images" :key="index" class="image-wrapper">
                         <img :src="image" alt="Uploaded Image" class="uploaded-image" />
-                        <Button label="" severity="info" rounded @click="deleteImages(index)"></Button>
+                        <!-- rounded -->
+                        <Button label="" severity="info" @click="deleteImages(index)"></Button>
                     </div>
                 </div>
             </div>
@@ -32,18 +33,17 @@
 </template>
 
 <script setup>
-import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { usePermitappStore } from '@/stores/permitapp';
 import { ref } from 'vue';
 
 const permitStore = usePermitappStore();
 
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-const imageFolder = ref('Imagefiles');
+// const imageFolder = ref('Imagefiles');
 const images = ref([]); // Stores the image URLs
 const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
 const files = ref([]);
-const { getNumbers } = useSignpdf();
+
 // Handle drag events
 const imageFile = function onDragEnter() {
     dragging.value = true; // Change state when the user drags files over the zone
@@ -52,7 +52,6 @@ const imageFile = function onDragEnter() {
 function onDragLeave() {
     dragging.value = false; // Reset the state when the user leaves the zone
 }
-const pdfFile = ref('');
 
 // Handle drop event
 function onDrop(event) {
@@ -67,6 +66,7 @@ function onDrop(event) {
         if (file.type.startsWith('image/') || file.type === 'application/pdf') {
             const reader = new FileReader();
             // if it starts with image put is somewhere else
+            console.log(file.type);
             reader.onload = (e) => {
                 images.value.push(e.target.result); // Add the image to the gallery
             };
@@ -76,21 +76,22 @@ function onDrop(event) {
         files.value.push(file);
         fileName.value.push(file);
         console.log(files.value[0].name);
-        // editPdf(pdfFile.value);
     }
     uploadfiles();
 }
 const fileName = ref([]);
-const tempFile = ref('');
+
 const file = ref('');
-const uploadUrl = ref('');
 
 const uploadfiles = async () => {
     // try {
 
     for (const fileItem of fileName.value) {
         console.log('Uploading file:', fileItem);
+        // if (file.type === 'image/') {
+        //     const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileItem.name}`;
 
+        // }
         // Build the object key using the file's name (or any naming logic you like)
         const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileItem.name}`;
 
@@ -102,7 +103,7 @@ const uploadfiles = async () => {
         const response = await fetch(s3Url, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/pdf'
+                'Content-Type': 'image/'
             },
             // Body should be a Blob/File, NOT the filename string
             body: fileItem
@@ -114,6 +115,7 @@ const uploadfiles = async () => {
         }
 
         console.log(`Successfully uploaded ${fileItem.name} to S3.`);
+        alert(`Successfully uploaded ${fileItem.name} to the cloud `);
     }
 
     // } catch (error) {

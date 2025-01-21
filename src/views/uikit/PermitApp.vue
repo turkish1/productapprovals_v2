@@ -7,7 +7,7 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { computed, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
-// import useaccountStore from '@/stores/accountStore';
+
 import { invoke } from '@vueuse/core';
 import AOS from 'aos';
 const a = ref(1);

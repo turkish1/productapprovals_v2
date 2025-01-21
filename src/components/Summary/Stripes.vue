@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { StripeCheckout } from '@vue-stripe/vue-stripe';
+import StripeCheckout from '@vue-stripe/vue-stripe';
 
 export default {
     components: {
@@ -22,8 +22,8 @@ export default {
                     quantity: 1
                 }
             ],
-            successURL: 'your-success-url',
-            cancelURL: 'your-cancel-url'
+            successURL: '/paymentprocessed',
+            cancelURL: '/pages/notfound'
         };
     },
     methods: {

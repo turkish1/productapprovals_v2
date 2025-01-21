@@ -45,14 +45,17 @@ const isValidshingle = ref(false);
 const isValidbur = ref(false);
 const isValidtile = ref(false);
 const isValidmechanical = ref(false);
-const isValidcheckout = ref(true);
+const isValidsummary = ref(true);
 const isValidpaymentgate = ref(true);
+// const isValidpaymentprocessed = ref(true);
 const Step1Component = defineAsyncComponent(() => import('@/components/Shingles.vue'));
 const Step2Component = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
 const Step3Component = defineAsyncComponent(() => import('@/components/Tile.vue'));
 const Step4Component = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
-const Step5Component = defineAsyncComponent(() => import('@/components/Summary/Checkout.vue'));
+const Step5Component = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
 const Step6Component = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
+// const Step7Component = defineAsyncComponent(() => import('@/components/Summary/SuccessUrl.vue'));
+
 const { roofList } = storeToRefs(store);
 
 const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
@@ -85,7 +88,7 @@ function checkState() {
 
     validateState();
 }
-
+// , Step7Component
 const comp = reactive({ component: [Step1Component, Step2Component, Step3Component, Step4Component, Step5Component, Step6Component] });
 
 const booleanValues = ref([]);
@@ -106,8 +109,9 @@ function validateState() {
     booleanValues.value[1] = isValidbur.value;
     booleanValues.value[2] = isValidtile.value;
     booleanValues.value[3] = isValidmechanical.value;
-    booleanValues.value[4] = isValidcheckout.value;
+    booleanValues.value[4] = isValidsummary.value;
     booleanValues.value[5] = isValidpaymentgate.value;
+    // booleanValues.value[7] = isValidpaymentprocessed.value;
 
     const nonEmptyValues = booleanValues.value.filter((value) => value !== '' && value !== null && value !== undefined);
     const countTrue = nonEmptyValues.filter((value) => value === true).length;
@@ -129,14 +133,18 @@ function validateState() {
         console.log(isValidmechanical.value, 'Entered if statement tile!');
         steps.value[3].label = 'Mechanical Tile';
     }
-    if (isValidcheckout.value === true) {
+    if (isValidsummary.value === true) {
         console.log(isValidtile.value, 'Entered if statement checkout!');
-        steps.value[4].label = 'Checkout';
+        steps.value[4].label = 'Summary';
     }
     if (isValidpaymentgate.value === true) {
         console.log(isValidpaymentgate.value, 'Entered if statement checkout!');
         steps.value[5].label = 'Payment Page';
     }
+    // if (isValidpaymentprocessed.value === true) {
+    //     console.log(isValidpaymentprocessed.value, 'Entered if statement checkout!');
+    //     steps.value[6].label = 'Payment Page';
+    // }
 
     for (let i = 0; i < booleanValues.value.length; i++) {
         // count the false values
@@ -165,7 +173,7 @@ const nextStep = () => {
     if (currentStepIndex.value < filteredSteps.value.length - 1) {
         setTimeout(() => {
             isloading.value = false;
-        }, 1000);
+        }, 200);
 
         currentStepIndex.value += 1;
     }
@@ -227,11 +235,11 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 }
 
 .line {
-    width: 500px;
-    height: 2.5px;
+    width: 400px;
+    height: 4.5px;
     background-color: #f5ece6;
     padding-inline-start: 5px;
-    margin-top: 30px;
+    margin-top: 40px;
 }
 
 .step-content {

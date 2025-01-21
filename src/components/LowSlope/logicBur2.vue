@@ -136,7 +136,7 @@ function updateselectSystem(event) {
 
     copyToClipboard(firstPart.value);
 
-    // calldetailsdoc(firstPart.value);
+    calldetailsdoc(firstPart.value);
 }
 
 function copyToClipboard(firstPart) {
