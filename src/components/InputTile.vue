@@ -1,4 +1,5 @@
 <script setup>
+import Buttons from '@/components/Features/Buttons.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
@@ -15,8 +16,10 @@ import { useGlobalState } from '@/stores/exposurecStore';
 import { useExposureD } from '@/stores/exposuredStore';
 import { usemultiStore } from '@/stores/multitileStore';
 import { useRoofListStore } from '@/stores/roofList';
+import { usePaddyStore } from '@/stores/singlepaddyStore';
 import { useGlobalStates } from '@/stores/tilenoaStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
+import { usevalueStore } from '@/stores/tilevalueStore';
 import { useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
@@ -25,7 +28,11 @@ import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const tileStore = useGlobalStates();
+
 const pdfStore = useGlobalState();
+// const sinpadStore = usePaddyStore();
+const { addSystemvalues, tileInputvalues } = usevalueStore();
+const { addtileData } = usePaddyStore();
 
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
@@ -158,13 +165,15 @@ function grabInput() {
             console.log(selectedOption.value, 'Entered double');
             callFunctions();
             getTilenoa(datatilenoa.value);
+            tileData2.noa = datatilenoa.value;
         }
         if (selectedOption.value === 'single') {
             console.log(selectedOption.value, 'Entered single');
 
             callFunction();
             getTilenoas(datatilenoas.value);
-            console.log('called getTile single paddy');
+            console.log('called getTile single paddy', datatilenoas);
+            tileData2.noa = datatilenoas.value;
         }
     }
 }
@@ -264,7 +273,7 @@ const selectSuggestion = (suggestion) => {
 // Method to handle input change
 const onInput = () => {
     showSuggestions.value = true;
-    checkTile();
+    // checkTile();
 };
 
 // Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
@@ -525,13 +534,14 @@ const validateInput = () => {
 
 const validateHeightInput = () => {
     validateTileHeight(dims.height);
-    console.log(dims.height);
 };
 
 function addCheckmarks() {
-    if (errorMessage.value === null || errorHeightMessage.value === null) {
-        isvalueValid = true;
+    if (errorMessage.value !== null || errorHeightMessage.value !== null || dims.height < 40) {
+        isvalueValid.value = true;
         console.log('Entered checkmarks');
+    } else {
+        isvalueValid.value = false;
     }
 }
 function validateHeight() {
@@ -551,22 +561,65 @@ function setRoofInputs() {
     dims.per = (dims.height * factor.value).toFixed(2);
     addCheckmarks();
 }
-
+const tileData2 = reactive({
+    noa: '',
+    applicant: '',
+    material: [],
+    description: '',
+    Table2: [],
+    Table3: [],
+    expiration_date: '',
+    resistance: [],
+    selection: '',
+    select_tile: [],
+    tile_map: [],
+    table2_map: [],
+    height: '',
+    area: '',
+    slope: '',
+    Decktype: '',
+    perimeter: '',
+    zoneone: {
+        zone1: '',
+        lambda1: '',
+        mg1: '',
+        mr1: '',
+        mf1: ''
+    },
+    zonetwo: {
+        zone2: '',
+        lambda2: '',
+        mg2: '',
+        mr2: '',
+        mf2: ''
+    },
+    zonethree: {
+        zone3: '',
+        lambda3: '',
+        mg3: '',
+        mr3: '',
+        mf3: ''
+    }
+});
 const isExposureC = ref(false);
 const exposureChoosen = ref('');
 const selectedExposures = ref(null);
-function selectedExposure() {
-    console.log(selectedExposures);
-    if (selectedExposures.value === 'c') {
+
+function selectedExposure(event) {
+    console.log(event);
+    if (event === 'c') {
         exposureChoosen.value = 'c';
+        console.log(exposureChoosen.value);
+        grabInput();
         console.log(isExposureC);
     } else {
         exposureChoosen.value = 'd';
-
+        grabInput();
         isExposureC.value = false;
     }
-    grabInput();
+    // grabInput();
 }
+// Multitile
 function updateTile(event) {
     let type = multiTiles.table2_map;
 
@@ -665,24 +718,31 @@ function checkInputSA() {
 }
 let isTileSelectionValid = ref(false);
 let showMaterialValid = ref(false);
+
 function checkInput() {
     if (datatilenoa.value.length !== null) {
+        console.log(datatilenoa);
         tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
         // console.log(zoneone.lambda1);
-        if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple') {
+
+        if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple' || tileDatas.Table2.content === '') {
             isTileSelectionValid = true;
             isMultiTileValid = true;
             showMaterialValid = false;
+            checkTile();
         } else {
             showMaterialValid = true;
             isMultiTileValid = false;
             isTileValid = true;
             isTileSelectionValid = false;
             tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
+            // tileData2.applicant = tilenoas.manufacturer;
+            tileData2.description = tilenoas.description;
+            console.log(tileData2);
+            checkTile();
         }
     }
     selectedExposure();
-    checkTile();
 }
 let ismrValidMR1 = ref(false);
 let ismrValidMR2 = ref(false);
@@ -694,9 +754,12 @@ const tileValue = reactive({
     k: '',
     v: []
 });
+
+console.log(exposureChoosen.value);
+// multitile related, which means that table2 will have content as muliple
 function checkTile() {
     if (exposureChoosen.value === 'd') {
-        // console.log(zoned, zones);
+        console.log('Exposure d', exposureChoosen.value);
         getDatas(dims.slope, dims.height);
 
         zoned.value.forEach((item) => {
@@ -704,6 +767,8 @@ function checkTile() {
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
+
+        console.log(zones.value);
     } else {
         getData(dims.slope, dims.height);
         zones.value.forEach((item) => {
@@ -716,7 +781,7 @@ function checkTile() {
             console.log(zoneone.lambda1, tileSel.values, tileSel);
         });
     }
-
+    console.log(tileData.Table2.content);
     if (tileData.Table2.content === 'multiple') {
         workoutData(tileData);
         console.log(multiTiles.select_tile);
@@ -726,26 +791,27 @@ function checkTile() {
     }
 }
 
+// seems singleTile exposure C
 function checkMaterial() {
     if (tileData.Table2.content === 'multiple') {
         checkTile();
 
         console.log('Sent to checkTile()');
     }
-    if (exposureChoosen.value === 'd') {
-        console.log('D exposure');
-        console.log(tbd, zoned);
-        console.log(useExposured());
-        zoned.value.forEach((item, index) => {
+    if (exposureChoosen.value === 'c') {
+        console.log('Else C exposure', exposureChoosen);
+
+        zones.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
+        console.log(zones.value);
     } else {
-        console.log('Else C exposure');
-        console.log(zones);
-
-        zones.value.forEach((item, index) => {
+        console.log('D exposure');
+        console.log(tbd, zoned);
+        console.log(useExposured());
+        zoned.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
@@ -800,6 +866,7 @@ function checkMaterial() {
         zoneone.lambda1 = tileSel.values;
         zonetwo.lambda2 = tileSel.values;
         zonethree.lambda3 = tileSel.values;
+        console.log(zoneone, zonetwo, zonethree);
     } else {
         zoneone.lambda1 = tileData.Table2.Direct_Deck;
         zonetwo.lambda2 = tileData.Table2.Direct_Deck;
@@ -822,28 +889,7 @@ function checkMaterial() {
     zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
     zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
     zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
-
-    tileStore.tilenoa.value[0].slope = dims.slope;
-    tileStore.tilenoa.value[0].height = pdfStore.getHeight.value[0];
-    tileStore.tilenoa.value[0].area = dims.area;
-    tileStore.tilenoa.value[0].perimeter = dims.per;
-    tileStore.tilenoa.value[0].deckType = dt.value;
-    tileStore.tilenoa.value[0].select_tile = tilenoas.material;
-    tileStore.tilenoa.value[0].prescriptiveSelection = selectedUnderlayment.value;
-    tileStore.tilenoa.value[0].zoneone = zoneone.zone;
-    tileStore.tilenoa.value[0].lambda1 = zoneone.lambda1;
-    tileStore.tilenoa.value[0].mg1 = zoneone.mg1;
-    tileStore.tilenoa.value[0].mr1 = zoneone.mr1;
-    tileStore.tilenoa.value[0].zonetwo = zonetwo.zone;
-    tileStore.tilenoa.value[0].lambda2 = zonetwo.lambda2;
-    tileStore.tilenoa.value[0].mg2 = zonetwo.mg2;
-    tileStore.tilenoa.value[0].mr2 = zonetwo.mr2;
-    tileStore.tilenoa.value[0].zonethree = zonethree.zone;
-    tileStore.tilenoa.value[0].lambda3 = zonethree.lambda3;
-    tileStore.tilenoa.value[0].mg3 = zonethree.mg3;
-    tileStore.tilenoa.value[0].mr3 = zonethree.mr3;
-
-    console.log(tileStore);
+    saveTileData();
 }
 
 const maps = ref([]);
@@ -865,17 +911,22 @@ function updateMF(event) {
     for (let i = 0; i < maps.value.length; i++) {
         console.log(vals.value[i]);
         mfupdate.value = vals.value[i];
+        //      tileData2.applicant = tilenoas.manufacturer;
+        // tileData2.description = tilenoas.description;
+        tileData2.material = event.value;
 
-        console.log(event.value, maps.value[i], mfupdate.value[i]);
+        console.log(tileData2.material);
+        console.log(mfupdate.value[i]);
+        console.log(maps.value[i]);
         if (maps.value[i] === event.value) {
             zoneone.mf1 = vals.value[i];
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
+            tileData2.zoneone.mf1 = zoneone.mf1;
+            tileData2.zonetwo.mf2 = zonetwo.mf2;
+            tileData2.zonethree.mf3 = zonethree.mf3;
+            console.log(tileData2.zoneone.mf1, tileData2.zonetwo.mf2, tileData2.zonethree.mf3);
         }
-        console.log(tileStore.tilenoa.value[0]);
-        tileStore.tilenoa.value[0].mf1 = zoneone.mf1;
-        tileStore.tilenoa.value[0].mf2 = zonetwo.mf2;
-        tileStore.tilenoa.value[0].mf3 = zonethree.mf3;
 
         if ((!zoneone.mf1.includes('.') && zoneone.mf1.length === 6) || (!zonetwo.mf2.includes('.') && zonetwo.mf2.length === 4) || (!zonethree.mf3.includes('.') && zonethree.mf3.length === 4)) {
             const superscripts = detectSuperscripts(zoneone.mf1, zonetwo.mf2, zonethree.mf3);
@@ -890,7 +941,7 @@ function updateMF(event) {
             const mfc2 = useToNumber(mfcheck2);
             const mfc3 = useToNumber(mfcheck3);
             console.log(mfc1.value, mfc2.value, mfc3.value);
-            console.log(typeof mfc1.value, typeof mfc2.value, typeof mfc3.value);
+            // console.log(typeof mfc1.value, typeof mfc2.value, typeof mfc3.value);
             const convertmr1 = useToNumber(zoneone.mr1);
             const convertmr2 = useToNumber(zonetwo.mr2);
             const convertmr3 = useToNumber(zonethree.mr3);
@@ -1021,6 +1072,47 @@ function checkMR3() {
         }
     }
 }
+
+const saveTileData = async () => {
+    // const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+    // if (sinpadStore.$state.inputdata[0].length !== 0) {
+    console.log(dims.slope, pdfStore.getHeight.value[0]);
+    tileData2.slope = dims.slope;
+    tileData2.height = dims.height;
+    tileData2.area = dims.area;
+    tileData2.perimeter = dims.per;
+    tileData2.zoneone.zone1 = zoneone.zone;
+    tileData2.zoneone.lambda1 = zoneone.lambda1;
+    tileData2.zoneone.mg1 = zoneone.mg1;
+    tileData2.zoneone.mr1 = zoneone.mr1;
+    tileData2.zonetwo.zone2 = zonetwo.zone;
+    tileData2.zonetwo.lambda2 = zonetwo.lambda2;
+    tileData2.zonetwo.mg2 = zonetwo.mg2;
+    tileData2.zonetwo.mr2 = zonetwo.mr2;
+
+    tileData2.applicant = tilenoas.manufacturer;
+    tileData2.description = tilenoas.description;
+    // tileData2.material = tilenoas.select_tile;
+    // sinpadStore.$state.inputdata[0].singlepaddydata.area = dims.area;
+    // sinpadStore.$state.inputdata[0].singlepaddydata.perimeter = dims.per;
+    tileData2.Decktype = dt.value;
+    // sinpadStore.$state.inputdata[0].singlepaddydata.select_tile = tilenoas.material;
+    tileData2.prescriptiveSelection = selectedUnderlayment.value;
+
+    tileData2.zonethree.zone3 = zonethree.zone;
+    tileData2.zonethree.lambda3 = zonethree.lambda3;
+    tileData2.zonethree.mg3 = zonethree.mg3;
+    tileData2.zonethree.mr3 = zonethree.mr3;
+
+    tileData2.zoneone.mf1 = zoneone.mf1;
+    tileData2.zonetwo.mf2 = zonetwo.mf2;
+    tileData2.zonethree.mf3 = zonethree.mf3;
+    addSystemvalues(tileData2);
+    // addtileData(tileData2);
+    console.log(tileInputvalues);
+
+    // }
+};
 const keyValueSystemFPairsValues = ref({});
 const keyValueSystemFPairsKeys = ref({});
 function updateselectSystem(selectedsystemf) {
@@ -1264,7 +1356,26 @@ function callReset() {
     resetSingle();
 }
 
-watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, updateTile, () => {});
+watch(
+    checkInputSystem,
+    MF,
+    validateRoofSlope,
+    saveTileData,
+    query,
+    ismrValidMR3,
+    ismrValidMR1,
+    ismrValidMR2,
+    ismrInvalid2,
+    ismrInvalid3,
+    ismrInvalid1,
+    checkMaterial,
+    updateselectSystem,
+    EcheckInputSystem,
+    updateselectSystemE,
+    checkMaterial,
+    updateTile,
+    () => {}
+);
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -1302,6 +1413,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
         <DripEdgeComponent />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
+            <Buttons label="Double Click" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
@@ -1310,13 +1422,14 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
             <label style="color: red">Select Exposure</label>
             <div class="flex items-center space-x-2">
-                <div class="field-radiobutton space-x-4 gap-2">
-                    <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
+                <div class="field-radiobutton space-x-4 gap-4">
+                    <!-- <RadioButton inputId="option4" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" /> -->
                     <label style="color: whitesmoke" for="option3">C</label>
+                    <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" />
                 </div>
-                <div class="field-radiobutton space-x-4 gap-2">
-                    <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
-                    <label style="color: whitesmoke" for="option4">D</label>
+                <div class="field-radiobutton space-x-4 gap-6">
+                    <label style="color: whitesmoke; margin-left: 10px" for="option4">D</label>
+                    <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" />
                 </div>
             </div>
             <Divider />
@@ -1347,10 +1460,13 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
                                 @focus="showSuggestions = true"
                                 @blur="hideSuggestions"
                                 @input="onInput"
-                                @click="selectedExposure"
+                                @update="selectedExposure"
                                 @keydown.tab.exact.stop="checkInput"
                             />
+                            <Buttons label="Search" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>
                             <label for="ac">Tile NOA: 00000000</label>
+
+                            <!--   -->
                         </FloatLabel>
                     </div>
                     <!-- Suggestions list -->
@@ -1450,7 +1566,7 @@ watch(checkInputSystem, MF, validateRoofSlope, query, ismrValidMR3, ismrValidMR1
             <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2">
                 <!--  @click="checkMaterial" -->
                 <label style="color: whitesmoke" for="material">Tile Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @change="updateMF" />
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
 
             <div v-show="showMaterialValid" class="w-128 flex flex-col gap-2">

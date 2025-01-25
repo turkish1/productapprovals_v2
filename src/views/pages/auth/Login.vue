@@ -108,11 +108,11 @@ const navigateNext = () => {
                 <div style="border-radius: 56px; padding: 0.3rem">
                     <div class="w-full py-20 px-8 sm:px-20" style="border-radius: 53px">
                         <div>
-                            <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: #a4b5b9; margin-left: 150px" @click="register" />
-                            <label style="color: whitesmoke" for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
+                            <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: black; margin-left: 150px" @click="register" />
+                            <label style="color: black" for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
                             <InputText id="username" type="text" placeholder="username" class="w-full md:w-[30rem] mb-8" v-model="username" :error="userError" />
 
-                            <label style="color: whitesmoke" for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
+                            <label style="color: black" for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
                             <Password
                                 id="password1"
                                 v-tooltip.bottom="'Press Enter after value'"
@@ -131,10 +131,10 @@ const navigateNext = () => {
                                     <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
                                     <label for="rememberme1">Remember me</label>
                                 </div>
-                                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
+                                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-contrast">Forgot password?</span>
                             </div>
                             <!-- as="router-link" to="/roofsystem" @change="checkAu"-->
-                            <Button id="singin" data-testid="SignIn" label="Sign In" class="w-1/3" style="background-color: #a4b5b9" @click="submit" raised @keyup.enter="submit"></Button>
+                            <Button id="singin" data-testid="SignIn" label="Sign In" class="w-1/3" style="background-color: black" @click="submit" raised @keyup.enter="submit"></Button>
                         </div>
                     </div>
                     <pdfGen />
@@ -161,8 +161,9 @@ const navigateNext = () => {
     left: 0;
     width: 90%;
     height: 100%;
-    /* background-color: rgba(0, 0, 0, 0); Semi-transparent background for blending */
-    mix-blend-mode: difference; /* Blending mode for overlay */
+    /* Semi-transparent background for blending */
+    background-color: rgba(0, 0, 0, 0);
+    /* mix-blend-mode: difference; Blending mode for overlay */
     display: flex;
     align-items: center;
     justify-content: center;

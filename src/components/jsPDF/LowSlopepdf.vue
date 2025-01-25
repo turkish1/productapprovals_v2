@@ -8,7 +8,9 @@
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
 import { useBurpdfStore } from '@/stores/burpdfStore';
+import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { usePermitappStore } from '@/stores/permitapp';
+
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
@@ -21,16 +23,15 @@ const { getUser } = useGlobalState();
 const permitStore = usePermitappStore();
 const roofStore = useRoofListStore();
 const burpdfStore = useBurpdfStore();
-const area = ref(roofStore.$state.roofList[0].dim2);
-const address = ref(permitStore.$state.permitapp[0].formdt.address);
-const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-
-const dba = ref(getUser.value[0].dba);
+const area = ref(roofStore.$state.roofList[0]?.dim2 || '');
+const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
+const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+const usedripStore = usedripedgeStore();
+const dba = ref(getUser.value[0]?.dba || '');
 const burType = ref(burpdfStore.$state.burpdfinput);
 let isBurValid = ref(false);
 
-const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
 const uploadUrl = ref('');
 function testBurType() {
     if (burType.value.length !== 1) {
@@ -263,6 +264,34 @@ const generatePDF = () => {
 
         currentX.value = LeftStart;
 
+        const dripEdgeMaterial = 'DripEdge Materiall: ';
+
+        const dripEdgeSize = 'DripEdge Size: ';
+
+        const dripedgeMaterials = ref(usedripStore.$state.dripinput[0].dripData);
+        const dripedgeSize = ref(usedripStore.$state.dripinput[3].dripData);
+
+        const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
+        const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);
+        const dMaterialStartXValue = LeftStart;
+        doc.text(dripEdgeMaterial, dMaterialStartXValue, current_y);
+        const dripMaterialStartValue = dripMaterialTextWidth + dMaterialStartXValue;
+        doc.text(`${dripedgeMaterials.value}`, dripMaterialStartValue, current_y);
+
+        doc.line(dripMaterialStartValue, current_y, dripMaterialStartValue + materialTextWidth, current_y);
+
+        current_y = current_y + 10;
+
+        const dripEdgeSizeTextWidth = doc.getTextWidth(dripEdgeSize);
+        const dripEdgeTextWidth = doc.getTextWidth(`${dripedgeSize.value}`);
+        const dSizeStartXValue = LeftStart;
+        doc.text(dripEdgeSize, dSizeStartXValue, current_y);
+        const dripSizeStartValue = dripEdgeSizeTextWidth + dSizeStartXValue;
+        doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
+
+        doc.line(dripSizeStartValue, current_y, dripSizeStartValue + dripEdgeTextWidth, current_y);
+        current_y = current_y + 10;
+
         const tburMaterialTextWidth = doc.getTextWidth(burMaterialText);
         const MaterialTextWidth = doc.getTextWidth(`${material.value}`);
         const materialStartXValue = currentX.value;
@@ -335,7 +364,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

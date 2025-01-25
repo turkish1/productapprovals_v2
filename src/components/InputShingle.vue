@@ -29,15 +29,6 @@ watchEffect(() => {
     if (tab.value) console.log('Tab  have been pressed');
 });
 
-// const { current } = useMagicKeys()
-
-// console.log(current) // Set { 'control', 'a' }
-
-// whenever(
-//   () => current.has('Enter') && !current.has('b'),
-//   () => console.log('A is pressed but not B'),
-// )
-
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();

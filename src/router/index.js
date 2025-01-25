@@ -96,6 +96,11 @@ const router = createRouter({
                     component: () => import('@/components/Tile.vue')
                 },
                 {
+                    path: '/summary',
+                    name: 'summary',
+                    component: () => import('@/components/Summary/Summarys.vue')
+                },
+                {
                     path: '/scroll',
                     name: 'scroll',
                     component: () => import('@/views/pages/vIntersection.vue')

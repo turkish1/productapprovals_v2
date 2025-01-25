@@ -7,14 +7,14 @@
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
-import { usedripedgeStore } from '@/stores/dripEdgeStore';
+// import { usedripedgeStore } from '@/stores/dripEdgeStore';
+import useMech from '@/composables/InputLogic/use-tileMechanical';
+import { usedripedgemtileStore } from '@/stores/dripEdgeMechTileStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
-
-import useMech from '@/composables/InputLogic/use-tileMechanical';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
 
@@ -26,7 +26,8 @@ const roofType = ref(roofStore.$state.roofList);
 const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
-const usedripStore = usedripedgeStore();
+// const usedripStore = usedripedgeStore();
+const dripmechTileStore = usedripedgemtileStore();
 // const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 
 const callState = tryOnMounted(() => {
@@ -75,8 +76,8 @@ const generatePDF = () => {
         const address = ref(permitStore.$state.permitapp[0].formdt.address);
         const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
         const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-        const dripedgeMaterials = ref(usedripStore.$state.dripinput[0].dripData);
-        const dripedgeSize = ref(usedripStore.$state.dripinput[3].dripData);
+        const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[0].dripMTileData);
+        const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[3].dripMTileData);
         const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);

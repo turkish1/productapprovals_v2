@@ -3,7 +3,13 @@
 import usedripAxios from '@/composables/use-dripAxios';
 import { storeToRefs } from 'pinia';
 
+import { usedripedgeadtileStore } from '@/stores/dripEdgeADTileStore';
 import { usedripedgeStore } from '@/stores/dripEdgeStore';
+
+import { usedripedgemtileStore } from '@/stores/dripEdgeMechTileStore';
+
+import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
+
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { type, holdSize } = usedripAxios();
@@ -21,24 +27,37 @@ const selectSizeRef = ref(null);
 // Define emits
 const emit = defineEmits(['update-valuesize']);
 const dripStore = usedripedgeStore();
+const dripadTileStore = usedripedgeadtileStore();
+const dripmechTileStore = usedripedgemtileStore();
+const dripShingleStore = usedripedgeshingleStore();
 
 const { dripedgeStore } = storeToRefs(dripStore);
+const { dripedgeadTileStore } = storeToRefs(dripadTileStore);
+const { dripedgemechTileStore } = storeToRefs(dripmechTileStore);
+const { dripedgeShingleStore } = storeToRefs(dripShingleStore);
 const typeSizes = ref();
 const storeMaterial = ref('');
 const storeSize = ref('');
-// Emit the value on change
-// const emitValue = () => {
-//     emit('update-value', selectDripEdge.value);
-
-//     storeMaterial.value = selectDripEdge.value;
-//     console.log(storeMaterial.value);
-// };
 
 const dripData = reactive({
     DripEdgeMaterial: '',
     DripEdgeSize: ''
 });
 
+const dripShinData = reactive({
+    DripEdgeMaterial: '',
+    DripEdgeSize: ''
+});
+
+const dripTileData = reactive({
+    DripEdgeMaterial: '',
+    DripEdgeSize: ''
+});
+
+const dripMTileData = reactive({
+    DripEdgeMaterial: '',
+    DripEdgeSize: ''
+});
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
 
@@ -75,20 +94,59 @@ function getdripSize() {
     }
     calldrip();
 }
+const storeId = ref(dripStore.$state.id || '');
+const shinstoreId = ref(dripShingleStore.$state.id || '');
+const mtilestoreId = ref(dripmechTileStore.$state.id || '');
+const tilestoreId = ref(dripadTileStore.$state.id || '');
+
+console.log(mtilestoreId);
 
 function calldrip() {
-    dripData.DripEdgeMaterial = selectDripEdge.value;
+    console.log(dripShingleStore.$state);
+    // console.log( dripadTileStore.$state)
 
-    dripStore.addDrip(dripData.DripEdgeMaterial);
-
-    console.log(dripStore.$state);
+    if (storeId.value === 0) {
+        dripData.DripEdgeMaterial = selectDripEdge.value;
+        dripStore.addDrip(dripData.DripEdgeMaterial);
+    }
+    if (shinstoreId.value === 1) {
+        dripShinData.DripEdgeMaterial = selectDripEdge.value;
+        dripShingleStore.addShinDrip(dripShinData.DripEdgeMaterial);
+    }
+    if (mtilestoreId.value === 2) {
+        dripMTileData.DripEdgeMaterial = selectDripEdge.value;
+        dripmechTileStore.addMTileDrip(dripMTileData.DripEdgeMaterial);
+    }
+    if (tilestoreId.value === 3) {
+        dripTileData.DripEdgeMaterial = selectDripEdge.value;
+        console.log(dripTileData);
+        dripadTileStore.addDripTile(dripTileData.DripEdgeMaterial);
+    }
 
     storeDripEdgeSize(selectDripEdgeSize.value);
 }
 
 const storeDripEdgeSize = (value) => {
-    dripData.DripEdgeSize = value;
-    dripStore.addDrip(dripData.DripEdgeSize);
+    if (storeId.value === 0) {
+        dripData.DripEdgeSize == value;
+        dripStore.addDrip(dripData.DripEdgeSize);
+    }
+
+    if (shinstoreId.value === 1) {
+        dripShinData.DripEdgeSize = value;
+        dripShingleStore.addShinDrip(dripShinData.DripEdgeSize);
+    }
+
+    if (mtilestoreId.value === 2) {
+        dripMTileData.DripEdgeSize = value;
+        dripmechTileStore.addMTileDrip(dripMTileData.DripEdgeSize);
+    }
+    if (tilestoreId.value === 3) {
+        dripTileData.DripEdgeSize = value;
+        dripadTileStore.addDripTile(dripTileData.DripEdgeSize);
+    }
+
+    console.log(dripadTileStore.$state.dripinputadt);
 };
 
 watch(types, typeSizes, type, () => {});

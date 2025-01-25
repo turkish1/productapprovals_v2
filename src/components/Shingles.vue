@@ -2,7 +2,7 @@
 import { useRoofListStore } from '@/stores/roofList';
 import { onMounted, ref } from 'vue';
 import AgreementsDialogShingle from './AgreementsDialogShingle.vue';
-import InputItems from './InputItems.vue';
+import InputShingle from './InputShingle.vue';
 
 import { storeToRefs } from 'pinia';
 const store = useRoofListStore();
@@ -39,7 +39,7 @@ function checkSlope() {
     <AgreementsDialogShingle v-show="isDialog === true"></AgreementsDialogShingle>
 
     <div id="shingle" class="card w-full space-y-1">
-        <input-items :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-items>
+        <input-shingle :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-shingle>
     </div>
 </template>
 <style scoped>

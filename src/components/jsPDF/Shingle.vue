@@ -7,6 +7,8 @@
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
+// import { usedripedgeStore } from '@/stores/dripEdgeStore';
+import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
@@ -16,6 +18,8 @@ import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 import { ref } from 'vue';
 
+// const usedripStore = usedripedgeStore();
+
 const { getUser } = useGlobalState();
 const sbsStore = usesystemfStore();
 const permitStore = usePermitappStore();
@@ -23,6 +27,7 @@ const roofStore = useRoofListStore();
 const shingleStore = useShingleStore();
 const polypropolyneStore = usePolyStore();
 const store = useRoofListStore();
+const dripShingleStore = usedripedgeshingleStore();
 
 // const systemAreaImport =  ref(roofStore.$state.roofList[0].dim1);
 const roofType = ref(store.$state.roofList);
@@ -247,6 +252,34 @@ const generatePDF = () => {
         doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
         doc.line(perscriptiveValue, current_y, perscriptiveValue + perscriptiveTextValue, current_y);
 
+        current_y = current_y + 10;
+
+        const dripEdgeMaterial = 'DripEdge Materiall: ';
+
+        const dripEdgeSize = 'DripEdge Size: ';
+
+        const dripedgeMaterials = ref(dripShingleStore.$state.dripinputshin[0].dripShinData);
+        const dripedgeSize = ref(dripShingleStore.$state.dripinputshin[3].dripShinData);
+
+        const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
+        const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);
+        const dMaterialStartXValue = LeftStart;
+        doc.text(dripEdgeMaterial, dMaterialStartXValue, current_y);
+        const dripMaterialStartValue = dripMaterialTextWidth + dMaterialStartXValue;
+        doc.text(`${dripedgeMaterials.value}`, dripMaterialStartValue, current_y);
+
+        doc.line(dripMaterialStartValue, current_y, dripMaterialStartValue + materialTextWidth, current_y);
+
+        current_y = current_y + 10;
+
+        const dripEdgeSizeTextWidth = doc.getTextWidth(dripEdgeSize);
+        const dripEdgeTextWidth = doc.getTextWidth(`${dripedgeSize.value}`);
+        const dSizeStartXValue = LeftStart;
+        doc.text(dripEdgeSize, dSizeStartXValue, current_y);
+        const dripSizeStartValue = dripEdgeSizeTextWidth + dSizeStartXValue;
+        doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
+
+        doc.line(dripSizeStartValue, current_y, dripSizeStartValue + dripEdgeTextWidth, current_y);
         current_y = current_y + 10;
 
         const valueTextWidthShingleCategory = doc.getTextWidth(applicantText);

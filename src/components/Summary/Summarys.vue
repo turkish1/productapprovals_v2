@@ -42,7 +42,7 @@
         <div v-show="isRoofShingleValid">
             <Shingle />
         </div>
-
+        <!-- v-show="isRoofTileADValid" -->
         <div v-show="isRoofTileADValid">
             <TileAdhesive />
         </div>
@@ -123,6 +123,7 @@ const callState = tryOnMounted(() => {
     } else if (roofType.value[0].item === 'Low Slope') {
         isRoofLowslopeValid.value = true;
     } else if (roofType.value[0].item === 'Adhesive Set Tile') {
+        console.log(roofType.value[0].item);
         isRoofTileADValid.value = true;
     } else if (roofType.value[0].item === 'Mechanical Fastened Tile') {
         isRoofTileMechanicalValid.value = true;

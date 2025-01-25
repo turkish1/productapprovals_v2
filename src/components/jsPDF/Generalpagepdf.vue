@@ -1,5 +1,7 @@
 <template>
-    <div></div>
+    <div>
+        <button @click="generatePDF">Download PDF</button>
+    </div>
 </template>
 
 <script setup>
@@ -9,21 +11,21 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
-import { ref } from 'vue';
 
+import { ref } from 'vue';
 const { getUser } = useGlobalState();
 
 let isGenaralPageValid = ref(false);
 const permitStore = usePermitappStore();
 const roofStore = useRoofListStore();
 const generalpageStore = useGeneralpdfStore();
-const address = ref(permitStore.$state.permitapp[0].formdt.address);
-const masterPermit = ref(permitStore.$state.permitapp[0].formdt.permit);
-const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
+const masterPermit = ref(permitStore.$state.permitapp[0]?.formdt?.permit || '');
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 
-const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+// const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
 
-const dba = ref(getUser.value[0].dba);
+const dba = ref(getUser.value[0]?.dba || '');
 
 const uploadUrl = ref('');
 const generalType = ref(generalpageStore.$state.generalpdfinput);
@@ -193,40 +195,52 @@ const generatePDF = () => {
         const initialYValue = 100;
         const param_y = initialYValue;
         const isReroof = ref(false);
-
+        const isNewRoof = ref(false);
+        console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0]);
         if (generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0] === 'reroof') {
             isReroof.value = true;
             console.log(isReroof.value);
+        } else {
+            isNewRoof.value = true;
         }
 
         currentX.value = LeftStart + 70;
         current_y = param_y - 15;
         console.log(current_y);
+
         const checkBox6 = new jsPDF.API.AcroFormCheckBox();
+        console.log(checkBox6);
+        // new jsPDF.API.AcroFormCheckBox();
         doc.text('Re-Roof: ', currentX.value, current_y);
         // doc.text('New Roof: ', currentX.value, current_y);
-        const alignCheckbox6 = current_y - 3;
-        checkBox6.fieldName = 'CheckBox6';
-        console.log(isReroof.value);
-        checkBox6.Rect = [currentX.value + 20, alignCheckbox6, 4, 4];
-        currentX.value = currentX.value + 20;
-        checkBox6.value = isReroof.value === true ? 'On' : 'Off';
-        checkBox6.appearanceState = isReroof.value === true ? 'On' : 'Off';
-        doc.addField(checkBox6);
+        const alignCheckbox0 = current_y - 3;
+        // checkBox6.fieldName = 'CheckBox6';
+
+        const checkedBox0 = isReroof.value === true ? doc.rect(currentX.value + 20, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox0, 4, 4);
+        // checkBox6.Rect = [currentX.value + 20, alignCheckbox6, 8, 8];
+        // console.log(checkBox6.Rect);
+        // currentX.value = currentX.value + 20;
+        // checkBox6.value = isReroof.value === true ? 'On' : 'Off';
+        // checkBox6.appearanceState = isReroof.value === true ? 'On' : 'Off';
+        // console.log(checkBox6.appearanceState);
+        // doc.addField(checkBox6);
         // }else {
         currentX.value = LeftStart + 120;
         current_y = param_y - 15;
         console.log(current_y);
-        const checkBox7 = new jsPDF.API.AcroFormCheckBox();
+        // const checkBox7 = new jsPDF.API.AcroFormCheckBox();
+        // new jsPDF.API.AcroFormCheckBox();
         doc.text('New Roof: ', currentX.value, current_y);
         // : [currentX.value + 20, alignCheckbox7, 4, 4, 'FD']
-        const alignCheckbox7 = current_y - 3;
-        checkBox7.fieldName = 'CheckBox7';
-        checkBox7.Rect = [currentX.value + 20, alignCheckbox7, 4, 4];
-        checkBox7.value = isReroof.value === true ? 'Off' : 'On';
-        checkBox7.appearanceState = isReroof.value === true ? 'Off' : 'On';
-        currentX.value = currentX.value + 20;
-        doc.addField(checkBox7);
+        const checkedBox1 = isNewRoof.value === true ? doc.rect(currentX.value + 20, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox0, 4, 4);
+        console.log(checkedBox0, checkedBox1);
+        // const alignCheckbox7 = current_y - 3;
+        // checkBox7.fieldName = 'CheckBox7';
+        // checkBox7.Rect = [currentX.value + 20, alignCheckbox7, 4, 4];
+        // checkBox7.value = isReroof.value === true ? 'Off' : 'On';
+        // checkBox7.appearanceState = isReroof.value === true ? 'Off' : 'On';
+        // currentX.value = currentX.value + 20;
+        // doc.addField(checkBox7);
         // }
         const tTotal = 'Total: ';
 
@@ -374,7 +388,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

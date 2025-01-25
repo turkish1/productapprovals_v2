@@ -1,20 +1,23 @@
 <template>
     <div class="card">
         <div class="stepper">
+            <!-- Iterate over filtered steps to build the stepper UI -->
             <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }" @click="goToStep(index)">
                 <div class="step">
                     <span>{{ step.label }}</span>
                 </div>
-                <!-- Add a separator line between steps, but not after the last step -->
+                <!-- Separator line (not after the last step) -->
                 <div v-if="index < filteredSteps.length - 1" class="line"></div>
             </div>
         </div>
 
-        <div v-if="!isloading" class="step-content">
-            <!-- <p>{{ filteredSteps[currentStepIndex].component }}</p> -->
+        <!-- Step Content -->
+        <div v-if="!isLoading" class="step-content">
             <component :is="activeComponent" />
         </div>
         <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
+
+        <!-- Navigation Buttons -->
         <div class="stepper-controls">
             <button @click="prevStep" :disabled="isFirstStep">Back</button>
             <button @click="nextStep" :disabled="isLastStep">Next</button>
@@ -27,172 +30,144 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { computed, defineAsyncComponent, reactive, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
-const isloading = ref(false);
 
-let isMiamiBeachValid = ref(false);
-
+// Composables / Stores
 const permitStore = usePermitappStore();
-const mbVal = ref(2);
-if (permitStore.$state.permitapp.length !== 0) {
-    isMiamiBeachValid = true;
-}
-const MB = ref(permitStore.$state.permitapp);
-
 const store = useRoofListStore();
-const isValidshingle = ref(false);
-const isValidbur = ref(false);
-const isValidtile = ref(false);
-const isValidmechanical = ref(false);
-const isValidsummary = ref(true);
-const isValidpaymentgate = ref(true);
-// const isValidpaymentprocessed = ref(true);
-const Step1Component = defineAsyncComponent(() => import('@/components/Shingles.vue'));
-const Step2Component = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
-const Step3Component = defineAsyncComponent(() => import('@/components/Tile.vue'));
-const Step4Component = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
-const Step5Component = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
-const Step6Component = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
-// const Step7Component = defineAsyncComponent(() => import('@/components/Summary/SuccessUrl.vue'));
-
 const { roofList } = storeToRefs(store);
 
-const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
+// Reactive State
+const isLoading = ref(false);
+
+// Booleans that decide which steps are valid / included
+const isValidShingle = ref(false);
+const isValidBur = ref(false);
+const isValidTile = ref(false);
+const isValidMechanical = ref(false);
+const isValidSummary = ref(true);
+const isValidPayment = ref(true);
+
+// Permitapp / miami beach logic
+const MB = ref(permitStore.$state.permitapp);
+const mbVal = ref(2);
+const isMiamiBeachValid = ref(false);
+
+// Convert a possible MB value
+const convertMB = MB.value.length ? useToNumber(MB.value[0].miamibeach) : ref(null);
+
+// Step Components (lazy-loaded)
+const Step1Shingle = defineAsyncComponent(() => import('@/components/Shingles.vue'));
+const Step2LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.vue'));
+const Step3AdhesiveTile = defineAsyncComponent(() => import('@/components/Tile.vue'));
+const Step4MechanicalTile = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
+const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
+const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
+
+// Array of step definitions (we'll fill label and component conditionally)
+const steps = ref([
+    { label: '', component: null }, // Shingles
+    { label: '', component: null }, // Low Slope
+    { label: '', component: null }, // Adhesive Tile
+    { label: '', component: null }, // Mechanical Tile
+    { label: '', component: null }, // Summary
+    { label: '', component: null } // Payment
+]);
+
+// Predefine actual components to map them easily
+const availableComponents = [
+    Step1Shingle, // Shingles
+    Step2LowSlope, // Low Slope
+    Step3AdhesiveTile, // Adhesive Tile
+    Step4MechanicalTile,
+    Step5Summary,
+    Step6Payment
+];
+
+const stepLabels = ['Shingles', 'Low Slope', 'Adhesive Tile', 'Mechanical Tile', 'Summary', 'Payment Page'];
+
+// Check if we have a valid Miami Beach scenario
 tryOnMounted(() => {
-    if (convertMB.value === null || convertMB.value === NaN) {
-        return true;
-    } else if (convertMB.value === mbVal.value) {
-        console.log('Entry');
+    if (convertMB.value && convertMB.value === mbVal.value) {
+        console.log('Miami Beach check passed.');
         isMiamiBeachValid.value = true;
-        isValidshingle.value = true;
+        // Possibly set isValidShingle if MB logic says so:
+        // isValidShingle.value = true
     }
 });
 
+// Gather booleans from roofList
 function checkState() {
-    for (let i = 0; i <= roofList.value.length - 1; i++) {
-        console.log(i);
-        if (roofList.value[i].item === 'Asphalt Shingle') {
-            isValidshingle.value = true;
+    // Evaluate each roof item & set booleans
+    roofList.value.forEach((item) => {
+        if (item.item === 'Asphalt Shingle') {
+            isValidShingle.value = true;
         }
-        if (roofList.value[i].item === 'Low Slope') {
-            isValidbur.value = true;
+        if (item.item === 'Low Slope') {
+            isValidBur.value = true;
         }
-        if (roofList.value[i].item === 'Mechanical Fastened Tile') {
-            isValidmechanical.value = true;
+        if (item.item === 'Mechanical Fastened Tile') {
+            isValidMechanical.value = true;
         }
-        if (roofList.value[i].item === 'Adhesive Set Tile') {
-            isValidtile.value = true;
+        if (item.item === 'Adhesive Set Tile') {
+            isValidTile.value = true;
         }
-    }
+    });
 
-    validateState();
-}
-// , Step7Component
-const comp = reactive({ component: [Step1Component, Step2Component, Step3Component, Step4Component, Step5Component, Step6Component] });
+    // Map booleans to our steps array in one pass
+    // The order of these booleans must match the steps definition
+    const bools = [isValidShingle.value, isValidBur.value, isValidTile.value, isValidMechanical.value, isValidSummary.value, isValidPayment.value];
 
-const booleanValues = ref([]);
-const steps = ref([
-    // use tenerary option
-    { label: '', component: '' },
-    { label: '', component: '' },
-    { label: '', component: '' },
-    { label: '', component: '' },
-    { label: '', component: '' },
-    { label: '', component: '' },
-    { label: '', component: '' }
-]);
-
-function validateState() {
-    // assign the boolean to each array
-    booleanValues.value[0] = isValidshingle.value;
-    booleanValues.value[1] = isValidbur.value;
-    booleanValues.value[2] = isValidtile.value;
-    booleanValues.value[3] = isValidmechanical.value;
-    booleanValues.value[4] = isValidsummary.value;
-    booleanValues.value[5] = isValidpaymentgate.value;
-    // booleanValues.value[7] = isValidpaymentprocessed.value;
-
-    const nonEmptyValues = booleanValues.value.filter((value) => value !== '' && value !== null && value !== undefined);
-    const countTrue = nonEmptyValues.filter((value) => value === true).length;
-    console.log(booleanValues);
-
-    if (isValidshingle.value === true) {
-        console.log(isValidshingle.value, 'Entered if statement shingle');
-        steps.value[0].label = 'Shingles';
-    }
-    if (isValidbur.value === true) {
-        console.log(isValidbur.value, 'Entered if statement bur');
-        steps.value[1].label = 'Low Slope';
-    }
-    if (isValidtile.value === true) {
-        console.log(isValidtile.value, 'Entered if statement tile!');
-        steps.value[2].label = 'Adhesive Tile';
-    }
-    if (isValidmechanical.value === true) {
-        console.log(isValidmechanical.value, 'Entered if statement tile!');
-        steps.value[3].label = 'Mechanical Tile';
-    }
-    if (isValidsummary.value === true) {
-        console.log(isValidtile.value, 'Entered if statement checkout!');
-        steps.value[4].label = 'Summary';
-    }
-    if (isValidpaymentgate.value === true) {
-        console.log(isValidpaymentgate.value, 'Entered if statement checkout!');
-        steps.value[5].label = 'Payment Page';
-    }
-    // if (isValidpaymentprocessed.value === true) {
-    //     console.log(isValidpaymentprocessed.value, 'Entered if statement checkout!');
-    //     steps.value[6].label = 'Payment Page';
-    // }
-
-    for (let i = 0; i < booleanValues.value.length; i++) {
-        // count the false values
-
-        for (let j = 0; j <= nonEmptyValues.length; j++) {
-            if (nonEmptyValues[j] === true) {
-                if (booleanValues.value[i] === true) {
-                    steps.value[i].component = comp.component[i];
-                }
-            }
+    bools.forEach((val, i) => {
+        if (val) {
+            steps.value[i].label = stepLabels[i];
+            steps.value[i].component = availableComponents[i];
+        } else {
+            steps.value[i].label = '';
+            steps.value[i].component = null;
         }
-    }
+    });
 }
 
-tryOnMounted(() => {
+// Init checks on mount
+onMounted(() => {
     checkState();
 });
 
+// Filter only the steps that have a component
 const filteredSteps = computed(() => steps.value.filter((step) => step.component));
-console.log(filteredSteps);
+
+// Active step index & component
 const currentStepIndex = ref(0);
 const activeComponent = computed(() => filteredSteps.value[currentStepIndex.value]?.component);
 
-const nextStep = () => {
-    isloading.value = true;
-    if (currentStepIndex.value < filteredSteps.value.length - 1) {
-        setTimeout(() => {
-            isloading.value = false;
-        }, 200);
+// Navigation
+function nextStep() {
+    isLoading.value = true;
+    setTimeout(() => {
+        if (currentStepIndex.value < filteredSteps.value.length - 1) {
+            currentStepIndex.value++;
+        }
+        isLoading.value = false;
+    }, 200);
+}
 
-        currentStepIndex.value += 1;
-    }
-    // console.log(steps);
-};
-
-const prevStep = () => {
-    isloading.value = true;
+function prevStep() {
+    isLoading.value = true;
     setTimeout(() => {
         if (currentStepIndex.value > 0) {
-            currentStepIndex.value -= 1;
+            currentStepIndex.value--;
         }
-        isloading.value = false;
-    }, 500);
-};
-const goToStep = (index) => {
-    currentStepIndex.value = index;
-};
+        isLoading.value = false;
+    }, 200);
+}
 
+function goToStep(index) {
+    currentStepIndex.value = index;
+}
+
+// Disable states
 const isFirstStep = computed(() => currentStepIndex.value === 0);
 const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value.length - 1);
 </script>
@@ -201,19 +176,17 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 .card {
     background-size: cover;
 }
+
+/* Stepper Layout */
 .stepper {
     display: flex;
     flex-direction: row;
-    /* align-items: left; */
     width: 100%;
-    height: 100%;
     margin-top: 16px;
-    background-attachment: fixed;
 }
 
 .step-wrapper {
     display: flex;
-    /* align-items: left; */
     margin-top: 75px;
 }
 
@@ -238,8 +211,8 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     width: 400px;
     height: 4.5px;
     background-color: #f5ece6;
-    padding-inline-start: 5px;
     margin-top: 40px;
+    margin-left: 5px;
 }
 
 .step-content {
@@ -247,6 +220,8 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
     margin-left: -30px;
     font-size: 14px;
 }
+
+/* Controls Layout */
 .stepper-controls {
     display: flex;
     gap: 1500px;

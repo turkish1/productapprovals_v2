@@ -17,8 +17,8 @@ export default function usetileInputdouble() {
     const tileData = reactive({
         noa: '',
         applicant: '',
-        material: [],
-        description: '',
+        material: '',
+        description: [],
         Table2: [],
         Table3: [],
         expiration_date: '',

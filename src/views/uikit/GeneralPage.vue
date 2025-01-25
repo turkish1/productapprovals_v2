@@ -138,33 +138,33 @@ invoke(async () => {});
             <div class="row">
                 <div class="flex flex-col mt-4 space-y-6 gap-4">
                     <div class="grid grid-cols-1 gap-1 place-content-center h-6 ...">
-                        <p class="text-center font-semibold text-xl" style="color: #eae7e2">2023 HVHZ</p>
+                        <p class="text-center font-semibold text-xl" style="color: #122620">2023 HVHZ</p>
                     </div>
                     <div class="grid grid-cols-1 gap-1 place-content-center h-5 ...">
-                        <p class="text-center italic font-semibold text-xl" style="color: #eae7e2">mEPermit</p>
+                        <p class="text-center italic font-semibold text-xl" style="color: #122620">mEPermit</p>
                     </div>
                     <div class="grid grid-cols-1 gap-1 place-content-center h-4 ...">
-                        <p class="text-center font-semibold text-xl" style="color: #eae7e2">General Information Page</p>
+                        <p class="text-center font-semibold text-xl" style="color: #122620">General Information Page</p>
                     </div>
 
                     <div class="flex flex-wrap gap-12 columns-3">
                         <div class="p-2 flex flex-col md:w-1/3 grow basis-0 gap-3">
-                            <label for="master" style="color: #eae7e2">Master Permit</label>
+                            <label for="master" style="color: #122620">Master Permit</label>
                             <InputText id="master" v-model="master" type="text" planceholder="permit number" />
                         </div>
 
                         <div class="p-2 flex flex-col p-2 md:w-1/3 grow basis-0 gap-3">
-                            <label for="process" style="color: #eae7e2">mEProcess Number</label>
+                            <label for="process" style="color: #122620">mEProcess Number</label>
                             <InputText id="process" v-model="process" type="text" planceholder="mEProcess" />
                         </div>
 
                         <div class="flex flex-col p-2 md:w-1/3 grow basis-0 gap-3">
-                            <label for="email1" style="color: #eae7e2">Job Address</label>
+                            <label for="email1" style="color: #122620">Job Address</label>
                             <InputText id="jobaddress" v-model="jobaddress" type="text" planceholder="" />
                         </div>
                     </div>
                     <div class="flex flex-col p-2 md:w-1/3 gap-3">
-                        <label for="dba" style="color: #eae7e2">Licensed DBA Name </label>
+                        <label for="dba" style="color: #122620">Licensed DBA Name </label>
                         <InputText id="dba" v-model="dba" type="text" />
                     </div>
                 </div>
@@ -172,56 +172,56 @@ invoke(async () => {});
                 <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-6">
                     <div class="flex items-center mt-4 space-y-6">
                         <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
-                        <label for="newroof" class="ml-2" style="color: #eae7e2"> New Roof</label>
+                        <label for="newroof" class="ml-2" style="color: #122620"> New Roof</label>
                     </div>
                     <div class="flex items-center mt-4 space-y-6">
                         <Checkbox v-model="checked" :invalid="!checked" inputId="reroof" name="checked" value="reroof" />
-                        <label for="reroof" class="ml-2" style="color: #eae7e2"> Re-Roof</label>
+                        <label for="reroof" class="ml-2" style="color: #122620"> Re-Roof</label>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-4">
                     <div class="flex items-left gap-4" style="margin-top: 20px">
                         <Checkbox v-model="checkedslp" inputId="slope1" name="lowslope" value="Low Slope" severity="contrast" :binary="true" />
-                        <label for="slope1" class="ml-2" style="color: #eae7e2">Low Slope</label>
+                        <label for="slope1" class="ml-2" style="color: #122620">Low Slope</label>
                     </div>
                     <div class="flex items-left gap-5">
                         <Checkbox v-model="checkedmtile" inputId="mtile1" name="mtile" value="Mechanical Fastened Tile" severity="contrast" :binary="true" />
-                        <label for="mtile1" class="ml-2" style="color: #eae7e2"> Mechanical Fastened Tile </label>
+                        <label for="mtile1" class="ml-2" style="color: #122620"> Mechanical Fastened Tile </label>
                     </div>
                     <div class="flex items-center gap-4">
                         <Checkbox v-model="checkedadtile" inputId="adtile1" name="adtile" value="Mortar/Adhesive Set Tile" severity="contrast" :binary="true" />
-                        <label for="adtile1" class="ml-2" style="color: #eae7e2"> Adhesive Set Tile </label>
+                        <label for="adtile1" class="ml-2" style="color: #122620"> Adhesive Set Tile </label>
                     </div>
                     <!-- <br />
                         <label></label> -->
 
                     <div class="flex items-center gap-4">
                         <Checkbox v-model="checkedshingle" inputId="shingle1" name="shingle" value="Asphalt Shingle" severity="contrast" :binary="true" />
-                        <label for="shingle1" class="ml-2" style="color: #eae7e2"> Asphalt Shingle </label>
+                        <label for="shingle1" class="ml-2" style="color: #122620"> Asphalt Shingle </label>
                     </div>
                     <div class="flex items-center gap-4">
                         <Checkbox v-model="checkedmetal" inputId="metal1" name="metal1" value="metal panel" severity="contrast" :binary="true" />
-                        <label for="metal" class="ml-2" style="color: #eae7e2"> Metal Panel </label>
+                        <label for="metal" class="ml-2" style="color: #122620"> Metal Panel </label>
                     </div>
-                    <div class="flex items-center gap-4"><label style="color: #eae7e2">Roof Area </label></div>
-                    <!-- <label style="margin-left: 50px; margin-top: 30px; color: #eae7e2">Roof Area </label> -->
+                    <div class="flex items-center gap-4"><label style="color: #122620">Roof Area </label></div>
+                    <!-- <label style="margin-left: 50px; margin-top: 30px; color: #122620">Roof Area </label> -->
                 </div>
 
                 <div class="flex flex-col md:w-3/4 mt-4 space-y-6 md:flex-row gap-6">
-                    <!-- <div><label for="lowslope" class="ml-1 text-left" style="color: #eae7e2">Low Slope </label></div> -->
-                    <label for="" style="margin-top: 20px; color: #eae7e2">Low Slope </label>
+                    <!-- <div><label for="lowslope" class="ml-1 text-left" style="color: #122620">Low Slope </label></div> -->
+                    <label for="" style="margin-top: 20px; color: #122620">Low Slope </label>
                     <InputGroup style="margin-left: 10px">
                         <InputText v-model="lowslope" placeholder="Low Slope" @change="roofArea" />
                         <InputGroupAddon> </InputGroupAddon>
                     </InputGroup>
-                    <div class="ml-1 text-left"><label for="" style="color: #eae7e2">Steep Slope </label></div>
+                    <div class="ml-1 text-left"><label for="" style="color: #122620">Steep Slope </label></div>
                     <InputGroup>
                         <InputNumber v-model="steep" placeholder="Steep Sloped" @change="roofArea" />
 
                         <InputGroupAddon></InputGroupAddon>
                     </InputGroup>
-                    <label for="" class="ml-1" style="color: #eae7e2">Total </label>
+                    <label for="" class="ml-1" style="color: #122620">Total </label>
                     <InputGroup>
                         <InputGroupAddon>Total</InputGroupAddon>
                         <InputText v-model="total" placeholder="Total" />
