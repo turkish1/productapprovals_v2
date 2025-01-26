@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 export function useNumberValidation({ min = null, max = null, required = false }) {
     const errorMessage = ref(null);
-
+    const result = ref('');
     const validateNumber = (value) => {
         const num = value;
 
@@ -24,11 +24,13 @@ export function useNumberValidation({ min = null, max = null, required = false }
         }
 
         errorMessage.value = null;
+        result.value = true;
         return true;
     };
 
     return {
         errorMessage,
-        validateNumber
+        validateNumber,
+        result
     };
 }

@@ -21,7 +21,7 @@
             <!-- Uploaded Files List -->
             <div v-if="files.length" class="file-list">
                 <h2 class="underline hover:underline-offset-4"></h2>
-                <ul class="list-image-[url(/demo/images/checkmark.png)] ...">
+                <ul class="list-image-[url(/demo/images/checkmark_resized.png)] ...">
                     <li v-for="(file, index) in files" :key="index">
                         {{ file.name }}
                         <Button @click="deleteFile(index)" severity="contrast">Delete</Button>

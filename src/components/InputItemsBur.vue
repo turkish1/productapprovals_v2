@@ -18,7 +18,8 @@ const { roofList } = storeToRefs(storeroof);
 const factor = ref(0.6);
 const lowslopeStore = useBurStore();
 const { burinput, addData } = storeToRefs(lowslopeStore);
-
+const isHeightValid = ref(false);
+const isSlopeValid = ref(false);
 const props = defineProps({
     roofType: {
         type: ref,

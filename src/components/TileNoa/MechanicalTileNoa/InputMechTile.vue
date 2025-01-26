@@ -70,7 +70,8 @@ const tilenoas = reactive({
 });
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
-
+const isHeightValid = ref(false);
+const isSlopeValid = ref(false);
 const mechanical = ref([]);
 
 let heightModel = ref('');

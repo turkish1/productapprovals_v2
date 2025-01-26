@@ -95,6 +95,7 @@ let isSelectVisible2 = ref(false);
 let isSlopeValid = ref(true);
 let slope = ref(null);
 let data = ref();
+const isHeightValid = ref(false);
 
 let datasbs = ref();
 let datapoly = ref();

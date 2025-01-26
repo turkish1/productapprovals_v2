@@ -43,6 +43,10 @@ const { multiinput } = storeToRefs(multipleStore);
 const query = ref('');
 const isSinglepaddyValid = ref(false);
 const paddySeleted = ref('');
+const isHeightValid = ref(false);
+// const isSlopeValid = ref(false);
+const isDisabledslope = ref(true);
+const isDisabled = ref(true);
 // Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
 const suggestions = ref([]);
 // State to control suggestions visibility
@@ -124,6 +128,8 @@ function getdeckType(event) {
     console.log(selectedDeck._value.name, event.value.name);
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
+        isDisabledslope.value = false;
+
         console.log(dt.value);
     }
 }
@@ -154,6 +160,10 @@ watch(
 );
 let datatilenoa = ref(tileData);
 let datatilenoas = ref(tileDatas);
+function reset() {
+    resetSingle();
+}
+
 function grabInput() {
     datatilenoa.value = query.value;
     datatilenoas.value = query.value;
@@ -526,6 +536,14 @@ const { errorHeightMessage, validateTileHeight } = useHeightValidation({
 
 function validateRoofSlope() {
     validateInput();
+
+    if (dims.slope >= 2) {
+        isDisabled.value = false;
+        addCheckmarks();
+        console.log('entered slope');
+    } else {
+        isDisabled.value = true;
+    }
 }
 const validateInput = () => {
     validateNumber(dims.slope);
@@ -534,10 +552,21 @@ const validateInput = () => {
 
 const validateHeightInput = () => {
     validateTileHeight(dims.height);
+    isHeightValid.value = true;
+    addCheckmarks();
 };
 
+// function addCheckmarks() {
+//     if (errorMessage.value !== null || errorHeightMessage.value !== null || dims.height < 40) {
+//         isvalueValid.value = true;
+//         console.log('Entered checkmarks');
+//     } else {
+//         isvalueValid.value = false;
+//     }
+// }
+
 function addCheckmarks() {
-    if (errorMessage.value !== null || errorHeightMessage.value !== null || dims.height < 40) {
+    if (isHeightValid.value || isDisabledslope.value) {
         isvalueValid.value = true;
         console.log('Entered checkmarks');
     } else {
@@ -1092,11 +1121,8 @@ const saveTileData = async () => {
 
     tileData2.applicant = tilenoas.manufacturer;
     tileData2.description = tilenoas.description;
-    // tileData2.material = tilenoas.select_tile;
-    // sinpadStore.$state.inputdata[0].singlepaddydata.area = dims.area;
-    // sinpadStore.$state.inputdata[0].singlepaddydata.perimeter = dims.per;
+
     tileData2.Decktype = dt.value;
-    // sinpadStore.$state.inputdata[0].singlepaddydata.select_tile = tilenoas.material;
     tileData2.prescriptiveSelection = selectedUnderlayment.value;
 
     tileData2.zonethree.zone3 = zonethree.zone;
@@ -1289,7 +1315,6 @@ function udlDescPressure() {
         etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
         etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
         etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
-        // etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value;
     }
 }
 function saDescPressure() {
@@ -1352,9 +1377,6 @@ function saDescPressure() {
         ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
     }
 }
-function callReset() {
-    resetSingle();
-}
 
 watch(
     checkInputSystem,
@@ -1379,35 +1401,35 @@ watch(
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
-        <label for="title" style="color: whitesmoke; margin-left: 650px">Tile Adhesive Roof</label>
+        <label for="title" style="color: #122620; margin-left: 650px">Tile Adhesive Roof</label>
 
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="slope" style="color: whitesmoke">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />
+            <label for="slope" style="color: #122620">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
+            <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" :disabled="isDisabledslope" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="height" style="color: whitesmoke">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+            <label for="height" style="color: #122620">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
+            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" :disabled="isDisabled" @input="setRoofInputs" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
         <div></div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label style="color: whitesmoke" for="area">Area of Tile</label>
+            <label style="color: #122620" for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
-            <label style="color: whitesmoke" for="perimeter">Roof Permeter(a) = 4h</label>
+            <label style="color: #122620" for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
         <div class="md:w-1/2 flex flex-col w-96 mb-4 mt-6 gap-3 space-y-2">
-            <label style="color: whitesmoke" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
+            <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="pickUnderlayment" />
         </div>
         <DripEdgeComponent />
@@ -1424,11 +1446,11 @@ watch(
             <div class="flex items-center space-x-2">
                 <div class="field-radiobutton space-x-4 gap-4">
                     <!-- <RadioButton inputId="option4" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" /> -->
-                    <label style="color: whitesmoke" for="option3">C</label>
+                    <label style="color: #122620" for="option3">C</label>
                     <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" />
                 </div>
                 <div class="field-radiobutton space-x-4 gap-6">
-                    <label style="color: whitesmoke; margin-left: 10px" for="option4">D</label>
+                    <label style="color: #122620; margin-left: 10px" for="option4">D</label>
                     <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" />
                 </div>
             </div>
@@ -1437,11 +1459,11 @@ watch(
             <div class="flex items-center">
                 <div class="field-radiobutton space-x-3 gap-2">
                     <RadioButton inputId="option1" name="options" value="single" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
-                    <label style="color: whitesmoke" for="option1">Single</label>
+                    <label style="color: #122620" for="option1">Single</label>
                 </div>
                 <div class="field-radiobutton space-x-3 gap-2">
                     <RadioButton style="margin-left: 5px" inputId="option2" name="options" value="double" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
-                    <label style="color: whitesmoke" for="option2">Double</label>
+                    <label style="color: #122620" for="option2">Double</label>
                 </div>
             </div>
         </div>
@@ -1464,6 +1486,8 @@ watch(
                                 @keydown.tab.exact.stop="checkInput"
                             />
                             <Buttons label="Search" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>
+                            <!-- <Buttons label="Reset" severity="danger" variant="outlined" @click="reset" style="margin-left: 5px"></Buttons> -->
+
                             <label for="ac">Tile NOA: 00000000</label>
 
                             <!--   -->
@@ -1487,11 +1511,11 @@ watch(
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2">
-                    <label style="color: whitesmoke" for="manufacturer">(UDL) NOA Applicant</label>
+                    <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
                     <InputText id="manufacturer" v-model="udlTile.manufacturer" />
                 </div>
                 <div class="flex flex-col gap-2">
-                    <label style="color: whitesmoke" for="material">(UDL) Material</label>
+                    <label style="color: #122620" for="material">(UDL) Material</label>
                     <InputText id="material" v-model="udlTile.material" />
                 </div>
                 <div class="w-56 flex flex-col gap-1">
@@ -1500,7 +1524,7 @@ watch(
                     <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
                 </div>
                 <div class="flex flex-col gap-2">
-                    <label style="color: whitesmoke" for="designPressure">Design psf:</label>
+                    <label style="color: #122620" for="designPressure">Design psf:</label>
                     <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
                 </div>
             </div>
@@ -1508,11 +1532,11 @@ watch(
         <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 2px">
                 <div class="min-w-[680px] flex flex-col gap-2">
-                    <label style="color: whitesmoke" class="mt-3" for="anchor">Anchor Base Sheet</label>
+                    <label style="color: #122620" class="mt-3" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
                 </div>
                 <div class="min-w-[480px] flex flex-col gap-2">
-                    <label style="color: whitesmoke" for="description">(UDL) Description</label>
+                    <label style="color: #122620" for="description">(UDL) Description</label>
                     <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" @change="updateselectSystemE" />
                 </div>
             </div>
@@ -1521,11 +1545,11 @@ watch(
         <div class="gap-4 mt-10 space-x-10 space-y-6">
             <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
                 <div class="w-128 flex flex-col gap-2">
-                    <label style="color: whitesmoke" for="saapplicant">S/A Applicant</label>
+                    <label style="color: #122620" for="saapplicant">S/A Applicant</label>
                     <InputText id="saapplicant" v-model="saTiles.manufacturer" />
                 </div>
                 <div class="w-128 flex flex-col gap-2">
-                    <label style="color: whitesmoke" for="samaterial">S/A Material Type</label>
+                    <label style="color: #122620" for="samaterial">S/A Material Type</label>
                     <InputText id="saaterial" v-model="saTiles.material" />
                 </div>
 
@@ -1536,41 +1560,41 @@ watch(
                 </div>
 
                 <div class="w-72 flex flex-col gap-2">
-                    <label style="color: whitesmoke" for="designpressure">Design psf:</label>
+                    <label style="color: #122620" for="designpressure">Design psf:</label>
                     <InputText id="designpressure" v-model="saTiles.designpressure" />
                 </div>
             </div>
             <div v-show="isSAValid" class="max-w-screen-lg gap-2 flex flex-col gap-2">
-                <label style="color: whitesmoke" for="sadescription">S/A Description</label>
+                <label style="color: #122620" for="sadescription">S/A Description</label>
                 <InputText id="capsheetdescription" v-model="saTiles.description" />
             </div>
         </div>
 
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
             <div class="min-w-[450px] flex flex-col gap-2">
-                <label style="color: whitesmoke" for="manufacturer">Tile Applicant</label>
+                <label style="color: #122620" for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
             <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2">
-                <label style="color: whitesmoke" for="material">Tile Type</label>
+                <label style="color: #122620" for="material">Tile Type</label>
 
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
         </div>
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
             <div class="min-w-[770px] flex flex-col gap-2">
-                <label style="color: whitesmoke" for="description">Tile Description</label>
+                <label style="color: #122620" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
             <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2">
                 <!--  @click="checkMaterial" -->
-                <label style="color: whitesmoke" for="material">Tile Material</label>
+                <label style="color: #122620" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
 
             <div v-show="showMaterialValid" class="w-128 flex flex-col gap-2">
-                <label style="color: whitesmoke" for="material">Tile Material</label>
+                <label style="color: #122620" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
         </div>
@@ -1584,12 +1608,12 @@ watch(
                                 <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
                                     <tbody>
                                         <tr>
-                                            <td style="color: whitesmoke">Zone 1:</td>
-                                            <td style="color: whitesmoke"><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
+                                            <td style="color: #122620">Zone 1:</td>
+                                            <td style="color: #122620"><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
                                             <i class="pi pi-check" v-show="ismrValidMR1" style="color: green; font-size: 1.5rem" @change="updateMF"></i
                                             >&nbsp;
                                             <i class="pi pi-times" v-show="ismrInvalid1" style="color: red; font-size: 1.5rem" @change="checkMR1"></i
@@ -1597,12 +1621,12 @@ watch(
                                         </tr>
 
                                         <tr>
-                                            <td style="color: whitesmoke">Zone 2:</td>
-                                            <td style="color: whitesmoke"><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
+                                            <td style="color: #122620">Zone 2:</td>
+                                            <td style="color: #122620"><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
                                             <i class="pi pi-check" v-show="ismrValidMR2" style="color: green; font-size: 1.5rem" @change="updateMF"></i
                                             >&nbsp;
                                             <i class="pi pi-times" v-show="ismrInvalid2" style="color: red; font-size: 1.5rem" @change="checkMR2"></i
@@ -1610,12 +1634,12 @@ watch(
                                         </tr>
 
                                         <tr>
-                                            <td style="color: whitesmoke">Zone 3:</td>
-                                            <td style="color: whitesmoke"><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
-                                            <td style="color: whitesmoke"><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: whitesmoke"><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
+                                            <td style="color: #122620">Zone 3:</td>
+                                            <td style="color: #122620"><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                            <td style="color: #122620"><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
+                                            <td style="color: #122620"><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
                                             <i class="pi pi-check" v-show="ismrValidMR3" style="color: green; font-size: 1.5rem" @change="updateMF"></i
                                             >&nbsp;
                                             <i class="pi pi-times" v-show="ismrInvalid3" style="color: red; font-size: 1.5rem" @change="checkMR3"></i

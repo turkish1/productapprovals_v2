@@ -244,13 +244,13 @@ invoke(async () => {});
 <style scoped>
 .container {
     padding-bottom: 25px;
-    padding-top: 10px;
+    padding-top: 50px;
     border: none;
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
     min-height: 800px;
-    min-width: 1000px;
+    min-width: 900px;
     top: 10vh;
 }
 
