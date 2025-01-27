@@ -1,7 +1,7 @@
 <template>
     <div>
-        <!-- <h1>Generate PDF with Columns and Underlined Text</h1>
-        <button @click="generatePDF">Download PDF</button> -->
+        <h1>Generate PDF with Columns and Underlined Text</h1>
+        <button @click="generatePDF">Download PDF</button>
     </div>
 </template>
 
@@ -55,10 +55,10 @@ const generatePDF = () => {
         console.log('lenghth is zero');
     } else {
         // Initialize jsPDF instance
-        const height = ref(burpdfStore.$state.burpdfinput[0].burpdfData.height);
-        const slope = ref(burpdfStore.$state.burpdfinput[0].burpdfData.slope);
-        const perimeter = ref(burpdfStore.$state.burpdfinput[0].burpdfData.per);
-        const deckType = ref(burpdfStore.$state.burpdfinput[0].burpdfData.deckType);
+        const height = ref(burpdfStore.$state.burpdfinput[0]?.burpdfData?.height);
+        const slope = ref(burpdfStore.$state.burpdfinput[0]?.burpdfData?.slope);
+        const perimeter = ref(burpdfStore.$state.burpdfinput[0]?.burpdfData?.per);
+        const deckType = ref(burpdfStore.$state.burpdfinput[0]?.burpdfData?.deckType);
         // const doc = new jsPDF();
         const doc = new jsPDF({
             orientation: 'portrait',
@@ -200,10 +200,10 @@ const generatePDF = () => {
         const primeOneText = "Attach P(1') Prime using P(1) Field Prescriptive Basesheet: ";
         const primeThreeText = 'Attach P(2) Perimeter using P(3) Corner Prescriptive: ';
 
-        const material = ref(burpdfStore.$state.burpdfinput[1].burpdfData.burMaterial);
-        const system = ref(burpdfStore.$state.burpdfinput[1].burpdfData.burSystem);
-        const primeone = ref(burpdfStore.$state.burpdfinput[1].burpdfData.p1);
-        const primethree = ref(burpdfStore.$state.burpdfinput[1].burpdfData.p3);
+        const material = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.burMaterial || '');
+        const system = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.burSystem || '');
+        const primeone = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.p1 || '');
+        const primethree = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.p3 || '');
 
         currentX.value = LeftStart;
 
@@ -267,9 +267,9 @@ const generatePDF = () => {
         const dripEdgeMaterial = 'DripEdge Materiall: ';
 
         const dripEdgeSize = 'DripEdge Size: ';
-
-        const dripedgeMaterials = ref(usedripStore.$state.dripinput[0].dripData);
-        const dripedgeSize = ref(usedripStore.$state.dripinput[3].dripData);
+        console.log(usedripStore.$state.dripinput[0]);
+        const dripedgeMaterials = ref(usedripStore.$state.dripinput[0]?.dripData || '');
+        const dripedgeSize = ref(usedripStore.$state.dripinput[3]?.dripData || '');
 
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
         const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);

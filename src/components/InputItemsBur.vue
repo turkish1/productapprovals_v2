@@ -56,13 +56,21 @@ const maps = ref([]);
 const pdfcleared = ref(false);
 let slopeModel = ref('');
 let heightModel = ref('');
-
+const isDisabledslope = ref(true);
+const isDisabled = ref(true);
 function setRoofInputs() {
     console.log(slopeModel, heightModel);
     console.log(burinput, addData);
     dims.per = (dims.height * factor.value).toFixed(2);
 }
-
+function addCheckmarks() {
+    if (isHeightValid.value || isDisabledslope.value) {
+        isvalueValid.value = true;
+        console.log('Entered checkmarks');
+    } else {
+        isvalueValid.value = false;
+    }
+}
 function findSelected() {
     mat.value = bMaters.value;
 }
@@ -71,6 +79,7 @@ function getdeckType(event) {
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
         console.log(dt.value);
+        isDisabledslope.value = false;
     }
 }
 onMounted(() => {
@@ -115,15 +124,23 @@ const { errorburHeightMessage, validateburHeight } = useburValidation({
 
 function validateRoofSlope() {
     validateInput();
+    if (dims.slope >= 0.128) {
+        isDisabled.value = false;
+        addCheckmarks();
+        console.log('entered slope');
+    } else {
+        isDisabled.value = true;
+    }
+    addCheckmarks();
 }
 const validateInput = () => {
     validateburSlope(dims.slope);
-    console.log(errorburMessage.value);
 };
 
 const validateHeightInput = () => {
     validateburHeight(dims.height);
-    console.log(errorburHeightMessage.value);
+    isHeightValid.value = true;
+    addCheckmarks();
 };
 function validateHeight() {
     validateHeightInput();
@@ -198,7 +215,7 @@ watchEffect(setRoofInputs, sB, whatChanged, syst, selectedSystem, validateRoofSl
             <div class="w-64 flex flex-col gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px">
                 <label for="slope" style="color: red">Slope *</label>
 
-                <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :invalid="slope === null" @change="validateRoofSlope" />
+                <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :disabled="isDisabledslope" :invalid="slope === null" @change="validateRoofSlope" />
                 <Message v-if="errorburMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorburMessage }}</Message>
             </div>
 

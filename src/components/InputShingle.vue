@@ -108,10 +108,14 @@ const dims = reactive({
     height: ''
 });
 const dt = ref('');
+
+const isDisabledslope = ref(true);
+const isDisabled = ref(true);
 function getdeckType(event) {
     console.log(selectedDeck._value.name, event.value.name);
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
+        isDisabledslope.value = false;
         console.log(dt.value);
     }
 }
@@ -246,6 +250,7 @@ watch(slope, (newVal, oldVal) => {
     validateInput(newVal);
 });
 let isvalueValid = ref(false);
+
 const { errorshingleMessage, validateShingleSlope } = useShingleValidation({
     min: 2,
     max: 12,
@@ -260,6 +265,13 @@ const { errorshHeightMessage, validateShingleHeight } = useShingleHghtValidation
 
 function validateRoofSlope() {
     validateInput();
+    if (dims.slope >= 2) {
+        isDisabled.value = false;
+        addCheckmarks();
+        console.log('entered slope');
+    } else {
+        isDisabled.value = false;
+    }
     addCheckmarks();
 }
 const validateInput = () => {
@@ -271,7 +283,8 @@ const validateInput = () => {
 
 const validateshHeightInput = () => {
     validateShingleHeight(dims.height);
-    console.log(errorshHeightMessage.value);
+    isHeightValid.value = true;
+    addCheckmarks();
 };
 
 function validateHeight() {
@@ -280,10 +293,19 @@ function validateHeight() {
 
     // getDims(dims.height, slope.value);
 }
+// function addCheckmarks() {
+//     if (errorshingleMessage.value === null || errorshHeightMessage.value === null) {
+//         isvalueValid = true;
+//         console.log('Entered checkmarks');
+//     }
+// }
+
 function addCheckmarks() {
-    if (errorshingleMessage.value === null || errorshHeightMessage.value === null) {
-        isvalueValid = true;
+    if (isHeightValid.value || isDisabledslope.value) {
+        isvalueValid.value = true;
         console.log('Entered checkmarks');
+    } else {
+        isvalueValid.value = false;
     }
 }
 function getIndexs() {
@@ -342,6 +364,7 @@ function valueEntered() {
             isSlopeLessFour.value = true;
             isSelectVisible1 = true;
             isSelectVisible2 = false;
+            isDisabled.value = false;
         }
         if (slopeNumber > 4 && slopeNumber <= 12) {
             isSlopeValid = true;
@@ -400,13 +423,13 @@ watch(
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Roof Slope *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
 
-            <InputText id="slope" v-model.number="slope" type="text" placeholder="slope" :invalid="slope === null" @input="valueEntered" @change="validateRoofSlope" />
+            <InputText id="slope" v-model.number="slope" type="text" placeholder="slope" :invalid="slope === null" :disabled="isDisabledslope" @input="valueEntered" @change="validateRoofSlope" />
             <Message v-if="errorshingleMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorshingleMessage }}</Message>
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" @change="validateHeight" />
+            <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
         </div>
 

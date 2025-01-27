@@ -14,7 +14,10 @@ let isvalueValid = ref(false);
 const factor = ref(0.6);
 const lowslopeStore = useBurStore();
 const { burinput, addData } = storeToRefs(lowslopeStore);
+const isHeightValid = ref(false);
 
+const isDisabled = ref(true);
+const isDisabledslope = ref(true);
 const props = defineProps({
     roofType: {
         type: ref,
@@ -42,14 +45,20 @@ const whatChanged = computed(() => {
 
 const selectedDeck = ref();
 
+// function addCheckmarks() {
+//     if (errorburMessage.value === null || errorburHeightMessage.value === null) {
+//         isvalueValid = true;
+//         console.log('Entered checkmarks');
+//     }
+// }
 function addCheckmarks() {
-    if (errorburMessage.value === null || errorburHeightMessage.value === null) {
-        isvalueValid = true;
+    if (isHeightValid.value || isDisabledslope.value) {
+        isvalueValid.value = true;
         console.log('Entered checkmarks');
+    } else {
+        isvalueValid.value = false;
     }
 }
-let slopeModel = ref('');
-let heightModel = ref('');
 
 function setRoofInputs() {
     dims.per = (dims.height * factor.value).toFixed(2);
@@ -62,6 +71,7 @@ function getdeckType(event) {
         dt.value = event.value.name;
 
         dims.deckType = dt.value;
+        isDisabledslope.value = false;
     }
 }
 onMounted(() => {
@@ -87,21 +97,29 @@ const { errorburHeightMessage, validateburHeight } = useburValidation({
 
 function validateRoofSlope() {
     validateInput();
+    if (dims.slope >= 0.128) {
+        isDisabled.value = false;
+        addCheckmarks();
+        console.log('entered slope');
+    } else {
+        isDisabled.value = true;
+    }
 }
 const validateInput = () => {
     validateburSlope(dims.slope);
-    addCheckmarks();
+
     console.log(errorburMessage.value);
 };
 
 const validateHeightInput = () => {
     validateburHeight(dims.height);
-    addCheckmarks();
+
     console.log(errorburHeightMessage.value);
 };
 function validateHeight() {
     validateHeightInput();
-
+    isHeightValid.value = true;
+    addCheckmarks();
     burpdfStore.addpdfData(dims);
 }
 
@@ -120,13 +138,13 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Roof Slope *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
 
-            <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :invalid="slope === null" @change="validateRoofSlope" />
+            <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :invalid="slope === null" :disabled="isDisabledslope" @change="validateRoofSlope" />
             <Message v-if="errorburMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorburMessage }}</Message>
         </div>
         <!-- div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px" -->
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+            <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :disabled="isDisabled" @input="setRoofInputs" @change="validateHeight" />
             <Message v-if="errorburHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorburHeightMessage }}</Message>
         </div>
 

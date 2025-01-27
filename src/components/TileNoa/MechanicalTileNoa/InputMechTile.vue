@@ -71,7 +71,10 @@ const tilenoas = reactive({
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const isHeightValid = ref(false);
-const isSlopeValid = ref(false);
+// const isSlopeValid = ref(false);
+
+const isDisabledslope = ref(true);
+const isDisabled = ref(true);
 const mechanical = ref([]);
 
 let heightModel = ref('');
@@ -572,6 +575,14 @@ const { errorHeightMessage, validateTileHeight } = useHeightValidation({
 
 function validateRoofSlope() {
     validateInput();
+
+    if (dims.slope >= 4) {
+        isDisabled.value = false;
+        addCheckmarks();
+        console.log('entered slope');
+    } else {
+        isDisabled.value = true;
+    }
 }
 const validateInput = () => {
     validateNumber(dims.slope);
@@ -581,14 +592,25 @@ const validateInput = () => {
 const validateHeightInput = () => {
     validateTileHeight(dims.height);
     console.log(dims.height);
+    isHeightValid.value = true;
+    addCheckmarks();
 };
 
 function addCheckmarks() {
-    if (errorMessage.value === null || errorHeightMessage.value === null) {
-        isvalueValid = true;
+    if (isHeightValid.value || isDisabledslope.value) {
+        isvalueValid.value = true;
         console.log('Entered checkmarks');
+    } else {
+        isvalueValid.value = false;
     }
 }
+
+// function addCheckmarks() {
+//     if (errorMessage.value === null || errorHeightMessage.value === null) {
+//         isvalueValid = true;
+//         console.log('Entered checkmarks');
+//     }
+// }
 function validateHeight() {
     validateHeightInput();
     console.log(height.value);
@@ -1145,13 +1167,13 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="slope">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" @change="validateRoofSlope" />
+            <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" :disabled="isDisabledslope" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" @change="validateHeight" />
+            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
         <div></div>

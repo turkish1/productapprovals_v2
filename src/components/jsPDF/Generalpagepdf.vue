@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click="generatePDF">Download PDF</button>
+        <!-- <button @click="generatePDF">Download PDF</button> -->
     </div>
 </template>
 
@@ -208,50 +208,31 @@ const generatePDF = () => {
         current_y = param_y - 15;
         console.log(current_y);
 
-        const checkBox6 = new jsPDF.API.AcroFormCheckBox();
-        console.log(checkBox6);
-        // new jsPDF.API.AcroFormCheckBox();
         doc.text('Re-Roof: ', currentX.value, current_y);
-        // doc.text('New Roof: ', currentX.value, current_y);
+
         const alignCheckbox0 = current_y - 3;
-        // checkBox6.fieldName = 'CheckBox6';
 
         const checkedBox0 = isReroof.value === true ? doc.rect(currentX.value + 20, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox0, 4, 4);
-        // checkBox6.Rect = [currentX.value + 20, alignCheckbox6, 8, 8];
-        // console.log(checkBox6.Rect);
-        // currentX.value = currentX.value + 20;
-        // checkBox6.value = isReroof.value === true ? 'On' : 'Off';
-        // checkBox6.appearanceState = isReroof.value === true ? 'On' : 'Off';
-        // console.log(checkBox6.appearanceState);
-        // doc.addField(checkBox6);
-        // }else {
+
         currentX.value = LeftStart + 120;
         current_y = param_y - 15;
         console.log(current_y);
-        // const checkBox7 = new jsPDF.API.AcroFormCheckBox();
-        // new jsPDF.API.AcroFormCheckBox();
+
         doc.text('New Roof: ', currentX.value, current_y);
-        // : [currentX.value + 20, alignCheckbox7, 4, 4, 'FD']
+
         const checkedBox1 = isNewRoof.value === true ? doc.rect(currentX.value + 20, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox0, 4, 4);
         console.log(checkedBox0, checkedBox1);
-        // const alignCheckbox7 = current_y - 3;
-        // checkBox7.fieldName = 'CheckBox7';
-        // checkBox7.Rect = [currentX.value + 20, alignCheckbox7, 4, 4];
-        // checkBox7.value = isReroof.value === true ? 'Off' : 'On';
-        // checkBox7.appearanceState = isReroof.value === true ? 'Off' : 'On';
-        // currentX.value = currentX.value + 20;
-        // doc.addField(checkBox7);
-        // }
+
         const tTotal = 'Total: ';
 
         const tSlope = 'Low Slope: ';
         const tSteep = 'Steep Slope: ';
-
-        const total = ref(generalpageStore.$state.generalpdfinput[0].generalpdfData.totalData);
-        const slope = ref(generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeData);
-        const steep = ref(generalpageStore.$state.generalpdfinput[0].generalpdfData.steepData);
+        permitStore.$state.permitapp[0]?.formdt?.muni || '';
+        const total = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.totalData || '');
+        const slope = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.slopeData || '');
+        const steep = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.steepData || '');
         console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData);
-        currentX.value = LeftStart;
+        currentX.value = LeftStart + 25;
 
         const SlopesTextWidth = doc.getTextWidth(tSlope);
         const slopeValueTextWidth = doc.getTextWidth(`${slope.value}`);
@@ -306,72 +287,43 @@ const generatePDF = () => {
             console.log('Shingle Checked');
         }
         currentX.value = LeftStart;
-        current_y = current_y + 10;
-        console.log(current_y);
-        const checkBox = new jsPDF.API.AcroFormCheckBox();
+        console.log(currentX.value);
+        // currentX.value = LeftStart + 20;
+
         doc.text('Low Slope: ', LeftStart, current_y);
-        const alignCheckbox = current_y - 3;
-        checkBox.fieldName = 'CheckBox1';
-        checkBox.Rect = [LeftStart + 20, alignCheckbox, 4, 4];
-        checkBox.value = slopeChk.value === true ? 'On' : 'Off';
-        checkBox.appearanceState = slopeChk.value === true ? 'On' : 'Off';
-        currentX.value = LeftStart + 20;
-
-        doc.addField(checkBox);
-
-        // mtileChk
-
-        const checkBox2TextWidth = currentX.value + 10;
-        const checkBox2 = new jsPDF.API.AcroFormCheckBox();
-        doc.text('Mechanical Fastened Tile: ', checkBox2TextWidth, current_y);
         const alignCheckbox2 = current_y - 3;
-        checkBox2.fieldName = 'CheckBox2';
-        checkBox2.Rect = [checkBox2TextWidth + 45, alignCheckbox2, 4, 4];
-        checkBox2.value = slopeChk.value === true ? 'On' : 'Off';
-        checkBox2.appearanceState = slopeChk.value === true ? 'On' : 'Off';
-        currentX.value = checkBox2TextWidth + 20;
-
-        doc.addField(checkBox2);
-
-        const checkBox3TextWidth = currentX.value + 30;
-        const checkBox3 = new jsPDF.API.AcroFormCheckBox();
+        const checkedBox2 = slopeChk.value === true ? doc.rect(currentX.value + 20, alignCheckbox2, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox2, 4, 4);
+        console.log(checkedBox0, checkedBox1, checkedBox2);
+        // mtileChk
+        currentX.value = currentX.value + 10;
+        console.log(currentX.value);
+        const checkBox3TextWidth = currentX.value + 18;
+        console.log(currentX.value);
         doc.text('Adhesive Set Tile: ', checkBox3TextWidth, current_y);
-        const alignCheckbox3 = current_y - 3;
-        checkBox3.fieldName = 'CheckBox3';
-        checkBox3.Rect = [checkBox3TextWidth + 35, alignCheckbox3, 4, 4];
-        checkBox3.value = adtileChk.value === true ? 'On' : 'Off';
-        checkBox3.appearanceState = adtileChk.value === true ? 'On' : 'Off';
-        currentX.value = checkBox3TextWidth + 10;
+        const checkedBox3 = adtileChk.value === true ? doc.rect(checkBox3TextWidth + 30, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox3TextWidth + 30, alignCheckbox2, 4, 4);
+        console.log(checkedBox0, checkedBox1, checkedBox3);
+        console.log(currentX.value);
+        const checkBox4TextWidth = checkBox3TextWidth + 40;
+        console.log(currentX.value);
+        doc.text('Metal Panel: ', checkBox4TextWidth, current_y);
+        const checkBox4 = metalChk.value === true ? doc.rect(checkBox4TextWidth + 25, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox4TextWidth + 25, alignCheckbox2, 4, 4);
 
-        doc.addField(checkBox3);
-
-        const checkBox4TextWidth = currentX.value + 35;
-        const checkBox4 = new jsPDF.API.AcroFormCheckBox();
-        doc.text('Shingle: ', checkBox4TextWidth, current_y);
-        const alignCheckbox4 = current_y - 3;
-        checkBox4.fieldName = 'CheckBox4';
-        checkBox4.Rect = [checkBox4TextWidth + 20, alignCheckbox4, 4, 4];
-        checkBox4.value = shingleChk.value === true ? 'On' : 'Off';
-        checkBox4.appearanceState = shingleChk.value === true ? 'On' : 'Off';
-
-        currentX.value = checkBox4TextWidth + 20;
-        // if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk) {
-        //     checkBox4.Rect = [checkBox4TextWidth + 20, alignCheckbox4, 4, 4, 'FD'];
-        // }
-        doc.addField(checkBox4);
-
-        // metalChk
-
+        currentX.value = checkBox4TextWidth + 10;
         const checkBox5TextWidth = currentX.value + 25;
-        const checkBox5 = new jsPDF.API.AcroFormCheckBox();
-        doc.text('Metal Panel: ', checkBox5TextWidth, current_y);
-        const alignCheckbox5 = current_y - 3;
-        checkBox5.fieldName = 'CheckBox5';
-        checkBox5.Rect = [checkBox5TextWidth + 20, alignCheckbox5, 4, 4];
-        checkBox5.value = metalChk.value === true ? 'on' : 'Off';
-        checkBox5.appearanceState = metalChk.value === true ? 'On' : 'Off';
-        currentX.value = checkBox5TextWidth + 20;
-        doc.addField(checkBox5);
+        console.log(currentX.value);
+        doc.text('Shingle: ', checkBox5TextWidth, current_y);
+
+        const checkBox5 = shingleChk.value === true ? doc.rect(checkBox5TextWidth + 15, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox5TextWidth + 15, alignCheckbox2, 4, 4);
+        currentX.value = checkBox5TextWidth;
+
+        // const alignCheckbox6 = current_y - 3;
+        const checkBox6TextWidth = checkBox5TextWidth + 35;
+        console.log(currentX.value);
+        doc.text('Mechanical Fastened Tile: ', checkBox6TextWidth, current_y);
+
+        const checkBox6 = mtileChk.value === true ? doc.rect(checkBox6TextWidth + 45, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox6TextWidth + 45, alignCheckbox2, 4, 4);
+        console.log(checkBox6, checkBox5, checkBox4);
+
         current_y = current_y + 10;
         // Save the PDF
         doc.addImage(drapdropImage, 'JPEG', LeftStart + 40, current_y, 120, 120);
