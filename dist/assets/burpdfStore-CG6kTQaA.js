@@ -1,1 +1,0 @@
-import{q as p}from"./index-0CNf4FOS.js";const d=p("burpdfinput",{state:()=>({burpdfinput:[],id:0}),actions:{addpdfData(t){this.burpdfinput.push({burpdfData:t,completed:!1})}},getters:{burpdfData:t=>t.burpdfData}});export{d as u};
