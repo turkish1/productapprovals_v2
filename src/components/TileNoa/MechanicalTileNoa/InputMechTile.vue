@@ -1213,7 +1213,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="card md:w-1/2 flex flex-col w-96 mb-4 gap-2" style="margin-left: 1px">
+        <div class="card md:w-1/2 flex flex-col w-96 mb-4 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 1px">
             <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
@@ -1225,14 +1225,14 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
         </div>
 
-        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
+        <div v-show="isTileValid" class="w-56 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 100px">
             <label style="color: red">Select Exposure</label>
             <div class="flex items-center space-x-2">
-                <div class="field-radiobutton space-x-4 gap-2">
+                <div class="field-radiobutton space-x-4 gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
                     <label for="option3">C</label>
                 </div>
-                <div class="field-radiobutton space-x-4 gap-2">
+                <div class="field-radiobutton space-x-4 gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
                     <label for="option4">D</label>
                 </div>
@@ -1276,21 +1276,21 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     <div class="card md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
-                <div class="w-96 flex flex-col gap-2">
+                <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
                     <InputText id="manufacturer" v-model="udlTile.manufacturer" />
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="material">(UDL) Material</label>
                     <InputText id="material" v-model="udlTile.material" />
                 </div>
 
-                <div class="w-56 flex flex-col gap-1">
+                <div class="w-56 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: red">Select System E *</label>
                     <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="designPressure">Design psf:</label>
                     <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
                 </div>
@@ -1298,12 +1298,12 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
         </div>
         <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 2px">
-                <div class="min-w-[680px] flex flex-col gap-2">
+                <div class="min-w-[680px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" class="mt-3" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
                     <!-- @click="EcheckInputSystem" -->
                 </div>
-                <div class="min-w-[480px] flex flex-col gap-2">
+                <div class="min-w-[480px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="description">(UDL) Description</label>
                     <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" @change="updateselectSystemE" />
                 </div>
@@ -1312,50 +1312,50 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 
         <div class="card gap-4 mt-10 space-x-10 space-y-6">
             <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
-                <div class="w-128 flex flex-col gap-2">
+                <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="saapplicant">S/A Applicant</label>
                     <InputText id="saapplicant" v-model="saTiles.manufacturer" />
                 </div>
-                <div class="w-128 flex flex-col gap-2">
+                <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="samaterial">S/A Material Type</label>
                     <InputText id="saaterial" v-model="saTiles.material" />
                 </div>
 
-                <div class="w-72 flex flex-col gap-2">
+                <div class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: red">Select System F *</label>
                     <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
                 </div>
 
-                <div class="w-72 flex flex-col gap-2">
+                <div class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="designpressure">Design psf:</label>
                     <InputText id="designpressure" v-model="saTiles.designpressure" />
                 </div>
             </div>
-            <div v-show="isSAValid" class="max-w-screen-lg gap-2 flex flex-col gap-2">
+            <div v-show="isSAValid" class="max-w-screen-lg flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="sadescription">S/A Description</label>
                 <InputText id="capsheetdescription" v-model="saTiles.description" />
             </div>
         </div>
 
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div class="min-w-[450px] flex flex-col gap-2">
+            <div class="min-w-[450px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
-            <div class="w-128 flex flex-col gap-2">
+            <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Material</label>
                 <!-- <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" /> -->
                 <InputText id="description" v-model="tilenoas.material" />
             </div>
             <!-- v-show="!isTileTypeValid" -->
-            <div v-show="!isMultiTileValid" class="min-w-[700px] flex flex-col gap-2">
+            <div v-show="!isMultiTileValid" class="min-w-[700px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
         </div>
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2">
+            <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
                 <!-- @click="checkInputSystem" @change="updateselectSystem" @click="checkMaterial"-->
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @change="updateMF" />
@@ -1363,11 +1363,11 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
         </div>
 
         <div v-show="isMultiTileValid" class="w-full flex flex-row mt-8 space-x-10">
-            <div class="min-w-[500px] flex flex-col gap-2">
+            <div class="min-w-[500px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="selecttile">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
-            <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2">
+            <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
                 <!-- @click="checkMaterial"   -->
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="updateMF" />

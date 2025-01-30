@@ -25,7 +25,7 @@ const { getUser } = useGlobalState();
 const { addSystemvalue, tileInputvalues, tileValues } = usevalueStore();
 // const tileStores = usePaddyStore();
 // const { inputdata, addtileData, tileData } = usePaddyStore();
-console.log(addSystemvalue, tileInputvalues, tileValues);
+
 const permitStore = usePermitappStore();
 // const roofStore = useRoofListStore();
 const store = useRoofListStore();
@@ -34,13 +34,18 @@ const tileStore = useGlobalStates();
 
 const dripadTileStore = usedripADStore();
 let isRoofTileADValid = ref(false);
+
 const callState = tryOnMounted(() => {
-    console.log(roofType);
     if (roofType.value.length === 0) {
         return '';
-    } else if (roofType.value[0].item === 'Adhesive Set Tile') {
-        isRoofTileADValid.value = true;
-        generatePDF();
+    } else {
+        for (let i = 0; i < roofType.value.length; i++) {
+            if (roofType.value[i].item === 'Adhesive Set Tile') {
+                console.log(roofType.value[i].item);
+                isRoofTileADValid.value = true;
+                generatePDF();
+            }
+        }
     }
 });
 

@@ -130,7 +130,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
 <template>
     <!-- <div id="bur" class="flex flex-col gap-2" style="margin-left: 1px"> -->
     <div class="md:w-1/2 flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 500px">
-        <label for="title" style="color: whitesmoke; margin-left: 450px">Low Slope Roof</label>
+        <label for="title" style="color: #122620; margin-left: 250px">Low Slope Roof</label>
 
         <div class="w-128 gap-2" style="margin-left: 12px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" @change="getdeckType" />
@@ -150,7 +150,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label style="color: whitesmoke" for="area">Area</label>
+            <label style="color: #122620" for="area">Area</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 

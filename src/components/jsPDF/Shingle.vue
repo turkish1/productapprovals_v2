@@ -35,11 +35,17 @@ const roofType = ref(store.$state.roofList);
 let isRoofShingleValid = ref(false);
 const callState = tryOnMounted(() => {
     console.log(roofType);
+
     if (roofType.value.length === 0) {
         return '';
-    } else if (roofType.value[0].item === 'Asphalt Shingle') {
-        isRoofShingleValid.value = true;
-        generatePDF();
+    } else {
+        for (let i = 0; i < roofType.value.length; i++) {
+            if (roofType.value[i].item === 'Asphalt Shingle') {
+                console.log(roofType.value[i].item);
+                isRoofShingleValid.value = true;
+                generatePDF();
+            }
+        }
     }
 });
 

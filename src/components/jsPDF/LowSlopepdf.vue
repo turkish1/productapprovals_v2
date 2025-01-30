@@ -38,6 +38,7 @@ const uploadUrl = ref('');
 function testBurType() {
     if (burType.value.length !== 1) {
         isBurValid.value = true;
+
         generatePDF();
     }
 }

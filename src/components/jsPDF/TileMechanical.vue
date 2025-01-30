@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1>Generate PDF with Columns and Underlined Text</h1>
-        <button @click="generatePDF">Download PDF</button>
+        <!-- <h1>Generate PDF Mechanical Tile </h1>
+        <button @click="generatePDF">Download PDF</button> -->
     </div>
 </template>
 
@@ -33,9 +33,14 @@ const dripmechTileStore = usedripMStore();
 const callState = tryOnMounted(() => {
     if (roofType.value.length === 0) {
         return '';
-    } else if (roofType.value[0].item === 'Mechanical Fastened Tile') {
-        isRoofTileMechanicalValid.value = true;
-        generatePDF();
+    } else {
+        for (let i = 0; i < roofType.value.length; i++) {
+            if (roofType.value[i].item === 'Mechanical Fastened Tile') {
+                console.log(roofType.value[i].item);
+                isRoofTileMechanicalValid.value = true;
+                generatePDF();
+            }
+        }
     }
 });
 
@@ -67,7 +72,7 @@ const generatePDF = () => {
         const deckType = ref(mechStore.tilemech.value[0]?.deckType || '');
         const perimeter = ref(mechStore.tilemech.value[0]?.perimeter || '');
         const prescriptive = ref(mechStore.tilemech.value[0]?.prescriptiveSelection?.selectedBasesheet || '');
-        const area = ref(roofStore.$state.roofList[0].dim3);
+        const area = ref(mechStore.tilemech.value[0]?.area || '');
         const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
         const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
         const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
@@ -646,7 +651,7 @@ const generatePDF = () => {
         current_y = current_y + 10;
         // Data for each row
         doc.setFont('times', 'normal');
-        const λ = 'λ';
+
         // Using doc.text()
         // console.log('\u03BB'); // outputs λ
         // const lambdaSymbol = ref('\u03BB');
@@ -655,7 +660,7 @@ const generatePDF = () => {
         // console.log(lambImage.value);
         const tableData = [
             // Zone 1
-            ['Zone 1:', `${zoneone.value}`, 'x' + λ, `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
             ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
             ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
