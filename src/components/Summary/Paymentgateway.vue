@@ -4,9 +4,9 @@
 
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
             <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="downloadFile" />
-
-            <stripe-checkout ref="checkoutRef" mode="payment" :pk="publishableKey" :line-items="lineItems" :success-url="successURL" :cancel-url="cancelURL" @loading="(v) => (loading = v)" />
-
+            <Stripes />
+            <!-- <stripe-checkout ref="checkoutRef" mode="payment" :pk="publishableKey" :line-items="lineItems" :success-url="successURL" :cancel-url="cancelURL" @loading="(v) => (loading = v)" /> -->
+            <!--
             <div class="payment-widget">
                 <h2 style="color: black">Credit Card Payment</h2>
 
@@ -38,7 +38,7 @@
                 <div v-if="submitted" class="confirmation">
                     <p>Thank you, {{ form.cardholderName }}! Your payment of ${{ amount }} was processed.</p>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
@@ -49,11 +49,11 @@ import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
 // import { default as StripeCheckout, default as StripeElementCard } from '@vue-stripe/vue-stripe';
+import Stripes from '@/components/Summary/Stripes.vue';
 import { tryOnMounted, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
-
 const permitStore = usePermitappStore();
 
 // const processNumber = ref('me20240001022');
@@ -201,7 +201,8 @@ const downloadFile = async () => {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background: #eae7e2;
+    /* background: #eae7e2; */
+    background: #e8ae1b;
 }
 
 h2 {

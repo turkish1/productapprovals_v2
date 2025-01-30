@@ -14,19 +14,11 @@ import { VueSpinnersPlugin } from 'vue3-spinners';
 import App from './App.vue';
 import router from './router';
 
-import StripePlugin from '@vue-stripe/vue-stripe';
-
-const options = {
-    pk: process.env.STRIPE_PUBLISHABLE_KEY,
-    stripeAccount: process.env.STRIPE_ACCOUNT,
-    apiVersion: process.env.API_VERSION,
-    locale: process.env.LOCALE
-};
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 const app = createApp(App);
 app.use(useGeolocation);
-app.use(StripePlugin, options);
+
 app.use(VueSpinnersPlugin);
 app.use(AOS);
 app.use(pinia);

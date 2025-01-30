@@ -1,14 +1,14 @@
 <template>
     <div>
         <h1>Generate PDF with Columns and Underlined Text</h1>
-        <!-- <button @click="generatePDF">Download PDF</button> -->
+        <button @click="generatePDF">Download PDF</button>
     </div>
 </template>
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
 // import { usedripedgeStore } from '@/stores/dripEdgeStore';
-import { usedripedgeadtileStore } from '@/stores/dripEdgeADTileStore';
+import { usedripADStore } from '@/stores/dripEdgeADTileStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { useGlobalStates } from '@/stores/tilenoaStore';
@@ -32,7 +32,7 @@ const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const tileStore = useGlobalStates();
 
-const dripadTileStore = usedripedgeadtileStore();
+const dripadTileStore = usedripADStore();
 let isRoofTileADValid = ref(false);
 const callState = tryOnMounted(() => {
     console.log(roofType);
@@ -249,10 +249,10 @@ const generatePDF = () => {
         const anchordescriptionText = 'Anchor Base Sheet: ';
         const udldescriptionText = 'UDL Description: ';
         const Prescriptive = 'Prescriptive: ';
-        const dripEdgeMaterial = 'DripEdge Materiall: ';
+        const dripEdgeMaterial = 'DripEdge Material: ';
         const dripEdgeSize = 'DripEdge Size: ';
-        const dripedgeMaterials = ref(dripadTileStore.$state.dripinputadt[0].dripTileData);
-        const dripedgeSize = ref(dripadTileStore.$state.dripinputadt[3].dripTileData);
+        const dripedgeMaterials = ref(dripadTileStore.$state.dripinputadt[4]?.dripTileMaterial || '');
+        const dripedgeSize = ref(dripadTileStore.$state.dripinputadt[6]?.dripTileMaterial || '');
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
         const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);
         const dMaterialStartXValue = LeftStart;

@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia';
 
-export const usedripedgemtileStore = defineStore('dripinputmecht', {
+export const usedripMStore = defineStore('dripinputmecht', {
     //state
     state: () => ({
         dripinputmecht: [],
+        dripMTileMaterial: [],
+        selectDripEdges: '',
+        selectDripEdgeSizes: '',
         id: 2
     }),
 
@@ -12,8 +15,16 @@ export const usedripedgemtileStore = defineStore('dripinputmecht', {
         addMTileDrip(dripMTileData) {
             this.dripinputmecht.push({ dripMTileData, completed: false });
         },
-        reset() {
+        insertDripAtIndex(index, dripMTileMaterial) {
+            this.dripinputmecht.splice(index, 0, {
+                dripMTileMaterial,
+                completed: false
+            });
+        },
+
+        resetState() {
             this.$reset();
+            this.dripMTileMaterial = [];
         }
     }
 

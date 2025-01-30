@@ -67,14 +67,14 @@ const generatePDF = () => {
         // Initialize jsPDF instance
         const address = ref(permitStore.$state.permitapp[0].formdt.address);
         const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
-        const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+        const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
         const dba = ref(getUser.value[0].dba);
         const height = ref(shingleStore.$state.inputshingle[0].shingleData.height);
         const slope = ref(shingleStore.$state.inputshingle[0].shingleData.slope);
         const deckType = ref(shingleStore.$state.inputshingle[0].shingleData.deckType);
         // console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
         const area = ref(roofStore.$state.roofList[0].dim1);
-        const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+        // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
 
         const doc = new jsPDF({
@@ -254,13 +254,13 @@ const generatePDF = () => {
 
         current_y = current_y + 10;
 
-        const dripEdgeMaterial = 'DripEdge Materiall: ';
+        const dripEdgeMaterial = 'DripEdge Material: ';
 
         const dripEdgeSize = 'DripEdge Size: ';
-
-        const dripedgeMaterials = ref(dripShingleStore.$state.dripinputshin[0].dripShinData);
-        const dripedgeSize = ref(dripShingleStore.$state.dripinputshin[3].dripShinData);
-
+        console.log(dripShingleStore);
+        const dripedgeMaterials = ref(dripShingleStore.$state.dripinputshin[1]?.dripShinMaterial || '');
+        const dripedgeSize = ref(dripShingleStore.$state.dripinputshin[3]?.dripShinMaterial || '');
+        console.log(dripedgeMaterials, dripedgeSize);
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
         const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);
         const dMaterialStartXValue = LeftStart;
@@ -576,7 +576,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

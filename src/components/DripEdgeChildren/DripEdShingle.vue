@@ -1,13 +1,11 @@
 <script setup>
 // import DripEdgeMaterial from '@/components/DripEdgeChildren/DripEgdeMaterial.vue';
 // import usedripAxios from '@/composables/use-dripAxios';
-import useLowslopeDrip from '@/composables/DripEdge/use-LowslopeDrip';
+
 import useShingleDrip from '@/composables/DripEdge/use-ShingleDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-import { usedripedgeadtileStore } from '@/stores/dripEdgeADTileStore';
-import { usedripedgemtileStore } from '@/stores/dripEdgeMechTileStore';
+
 import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
-import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
@@ -21,8 +19,6 @@ const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 const typesSh = ref();
-const typesLw = ref();
-const { typeSize, ltype } = useLowslopeDrip();
 
 const { typeSizeshingle, stype, holdSizeshingle } = useShingleDrip();
 // Reactive value bound to the select dropdown
@@ -32,26 +28,16 @@ const selectSizeRef = ref(null);
 
 // Define emits
 const emit = defineEmits(['update-valuesize']);
-const dripStore = usedripedgeStore();
-const dripadTileStore = usedripedgeadtileStore();
-const dripmechTileStore = usedripedgemtileStore();
+
 const dripShingleStore = usedripedgeshingleStore();
 const { dripinputshin, selectDripEdges, selectDripEdgeSizes, dripShinMaterial } = storeToRefs(dripShingleStore);
 const { resetState } = dripShingleStore;
 
-// const { dripedgeStore } = storeToRefs(dripStore);
-// const { dripedgeadTileStore } = storeToRefs(dripadTileStore);
-// const { dripedgemechTileStore } = storeToRefs(dripmechTileStore);
-// const { dripedgeShingleStore } = storeToRefs(dripShingleStore);
-
-let isRoofTileADValid = ref(false);
-let isRoofTileMechanicalValid = ref(false);
 let isRoofShingleValid = ref(false);
-let isRoofLowslopeValid = ref(false);
 
 const typeSizes = ref();
 const typeSizeSh = ref();
-const typeSizeLw = ref();
+
 // const storeMaterial = ref('');
 // const storeSize = ref('');
 
@@ -65,21 +51,9 @@ const callState = tryOnMounted(() => {
             console.log(roofType.value[i].item);
             isRoofShingleValid.value = true;
             typesSh.value = stype.value;
-        } else if (roofType.value[i].item === 'Low Slope') {
-            isRoofLowslopeValid.value = true;
-            typesLw.value = ltype.value;
-        } else if (roofType.value[i].item === 'Adhesive Set Tile') {
-            isRoofTileADValid.value = true;
-        } else if (roofType.value[i].item === 'Mechanical Fastened Tile') {
-            isRoofTileMechanicalValid.value = true;
         }
     }
     checkRoof();
-});
-
-const dripData = reactive({
-    DripEdgeMaterial: '',
-    DripEdgeSize: ''
 });
 
 const dripShinData = reactive({
@@ -87,18 +61,9 @@ const dripShinData = reactive({
     DripEdgeSize: ''
 });
 
-const dripTileData = reactive({
-    DripEdgeMaterial: '',
-    DripEdgeSize: ''
-});
-
-const dripMTileData = reactive({
-    DripEdgeMaterial: '',
-    DripEdgeSize: ''
-});
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
-
+    dripShinData.DripEdgeSize = selectDripEdgeSize.value;
     getdripSize();
 };
 
@@ -119,8 +84,6 @@ function checkRoof() {
             console.log(roofType.value[i].item);
 
             shingles();
-        } else if (roofType.value[i].item === 'Low Slope') {
-            lowslope();
         }
     }
 }
@@ -154,56 +117,25 @@ function getdripSize() {
     checkRoof();
 }
 
-function lowslope() {
-    console.log(selectDripEdge.value);
-
-    console.log(ltype.value);
-    dripData.DripEdgeMaterial = selectDripEdge.value;
-    console.log(dripData.DripEdgeMaterial);
-
-    dripStore.insertDripAtIndex(0, dripData.DripEdgeMaterial);
-    console.log(dripStore);
-    // storeDripEdgeSize(selectDripEdgeSize.value);
-}
-
 function shingles() {
     console.log(selectDripEdge.value);
     // console.log(selectSizeRef.value)
     typeSizeSh.value = holdSizeshingle.value;
-    console.log(typeSizeSh.value);
+
     dripShinData.DripEdgeMaterial = selectDripEdge.value;
     console.log(dripShinData.DripEdgeMaterial);
-    // dripShingleStore.insertShinDripAtIndex(1, dripShinData.DripEdgeMaterial);
-    // dripShingleStore.addShinDrip[0](dripShinData.DripEdgeMaterial);
-    console.log(dripShingleStore);
+
     storeDripEdgeSize();
 }
 
 const storeDripEdgeSize = (value) => {
+    console.log(dripShinData.DripEdgeSize);
     if (isRoofShingleValid.value === true) {
         dripShinData.DripEdgeSize = selectDripEdgeSize.value;
         console.log(dripShinData.DripEdgeSize);
         dripShingleStore.insertShinDripAtIndex(1, dripShinData.DripEdgeMaterial);
         dripShingleStore.insertShinDripAtIndex(3, dripShinData.DripEdgeSize);
         console.log(dripShingleStore);
-        // isRoofShingleValid.value = false;
-    }
-    if (isRoofLowslopeValid.value === true) {
-        dripData.DripEdgeSize = value;
-        console.log(dripData.DripEdgeSize);
-
-        dripStore.insertDripAtIndex(2, dripData.DripEdgeSize);
-        console.log(dripStore.$state.dripinput);
-        isRoofLowslopeValid.value = false;
-    }
-
-    if (isRoofTileMechanicalValid.value === true) {
-        dripMTileData.DripEdgeSize = value;
-        dripmechTileStore.addMTileDrip(dripMTileData.DripEdgeSize);
-    }
-    if (isRoofTileADValid.value === true) {
-        dripTileData.DripEdgeSize = value;
-        dripadTileStore.addDripTile(dripTileData.DripEdgeSize);
     }
 };
 

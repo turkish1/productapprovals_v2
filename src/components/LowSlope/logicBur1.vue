@@ -1,5 +1,5 @@
 <script setup>
-import DripEdgeComponent from '@/components/DripEdgeComponent.vue';
+import DripEdLowslope from '@/components/DripEdgeChildren/DripEdLowslope.vue';
 import { useburValidation } from '@/composables/Validation/use-burHeight';
 import { useburSlopeValidation } from '@/composables/Validation/use-burSlope';
 import { useBurStore } from '@/stores/burStore';
@@ -51,14 +51,6 @@ const selectedDeck = ref();
 //         console.log('Entered checkmarks');
 //     }
 // }
-function addCheckmarks() {
-    if (isHeightValid.value || isDisabledslope.value) {
-        isvalueValid.value = true;
-        console.log('Entered checkmarks');
-    } else {
-        isvalueValid.value = false;
-    }
-}
 
 function setRoofInputs() {
     dims.per = (dims.height * factor.value).toFixed(2);
@@ -102,8 +94,9 @@ function validateRoofSlope() {
         addCheckmarks();
         console.log('entered slope');
     } else {
-        isDisabled.value = true;
+        isDisabled.value = false;
     }
+    addCheckmarks();
 }
 const validateInput = () => {
     validateburSlope(dims.slope);
@@ -121,6 +114,14 @@ function validateHeight() {
     isHeightValid.value = true;
     addCheckmarks();
     burpdfStore.addpdfData(dims);
+}
+function addCheckmarks() {
+    if (isHeightValid.value || isDisabledslope.value) {
+        isvalueValid.value = true;
+        console.log('Entered checkmarks');
+    } else {
+        isvalueValid.value = false;
+    }
 }
 
 watch(setRoofInputs, validateRoofSlope, validateHeight, dims.per, type, () => {});
@@ -158,7 +159,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
             <InputText id="per" v-model="dims.per" type="text" placeholder="per" @change="setRoofInputs" />
         </div>
 
-        <DripEdgeComponent />
+        <DripEdLowslope />
     </div>
     <!-- </div> -->
 </template>

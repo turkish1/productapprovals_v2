@@ -276,7 +276,6 @@ function validateRoofSlope() {
 }
 const validateInput = () => {
     validateShingleSlope(slope.value);
-    console.log(errorshingleMessage.value);
 
     // shingleData.slope = slope.value;
 };

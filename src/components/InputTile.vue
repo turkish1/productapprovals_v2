@@ -1,4 +1,5 @@
 <script setup>
+import DripEdAdTile from '@/components/DripEdgeChildren/DripEdAdTile.vue';
 import Buttons from '@/components/Features/Buttons.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
@@ -25,7 +26,6 @@ import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-import DripEdgeComponent from './DripEdgeComponent.vue';
 
 const tileStore = useGlobalStates();
 
@@ -1394,7 +1394,7 @@ watch(
     updateselectSystem,
     EcheckInputSystem,
     updateselectSystemE,
-    checkMaterial,
+
     updateTile,
     () => {}
 );
@@ -1432,7 +1432,7 @@ watch(
             <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="pickUnderlayment" />
         </div>
-        <DripEdgeComponent />
+        <DripEdAdTile />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
             <Buttons label="Double Click" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>

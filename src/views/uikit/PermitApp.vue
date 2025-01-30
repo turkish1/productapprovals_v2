@@ -14,6 +14,7 @@ const a = ref(1);
 
 export default {
     setup() {
+        const loading = ref(false);
         const responseMessage = ref('');
         const router = useRouter();
         const isDialog = ref(false);
@@ -78,7 +79,6 @@ export default {
             return cccValid.value === true ? type.value[0] : '';
         });
 
-        const loading = ref(false);
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
         // fix the phone error with if statement and validation
@@ -104,8 +104,11 @@ export default {
         const load = async () => {
             try {
                 loading.value = true;
-                console.log(loading.value);
-                // const ftAddress = ref('3350 SW 23 ST')
+                setTimeout(() => {
+                    loading.value = false;
+                }, 3000);
+                // // const ftAddress = ref('3350 SW 23 ST')
+                // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
                 const addr = ref(formData.address);
                 // const city = 'FT. FORT LAUDERDALE'
                 const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
@@ -140,9 +143,9 @@ export default {
                 procReceive(formData);
                 // if checkMB.value === 13 after number conversion disable shingle roof.
 
-                setTimeout(() => {
-                    loading.value = false;
-                }, 2000);
+                // setTimeout(() => {
+                //     loading.value = false;
+                // }, 2000);
             } catch (error) {
                 alert(error);
             }
@@ -225,10 +228,10 @@ export default {
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-2">
                                 <label for="addr" style="color: #122620">Property Address</label>
                                 <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
+                                <!-- v-if="!loading"  -->
+                                <Button id="search" type="button" label="Search" class="w-1/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
 
-                                <Button id="search" v-if="!loading" type="button" label="Search" class="w-1/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
-
-                                <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                                <!-- <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i> -->
 
                                 <!-- pi-search-plus -->
                                 <!-- <Message severity="error">Property Address Required</Message> -->

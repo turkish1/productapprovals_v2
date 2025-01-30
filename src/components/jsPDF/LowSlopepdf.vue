@@ -16,8 +16,8 @@ import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 // import 'jspdf-acroform';
 // import { PDFDocument } from 'pdf-lib'
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
-
 const { getUser } = useGlobalState();
 
 const permitStore = usePermitappStore();
@@ -27,7 +27,9 @@ const area = ref(roofStore.$state.roofList[0]?.dim2 || '');
 const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
 const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-const usedripStore = usedripedgeStore();
+const dripStore = usedripedgeStore();
+const { dripedgeStore, dripinput } = storeToRefs(dripStore);
+
 const dba = ref(getUser.value[0]?.dba || '');
 const burType = ref(burpdfStore.$state.burpdfinput);
 let isBurValid = ref(false);
@@ -264,13 +266,14 @@ const generatePDF = () => {
 
         currentX.value = LeftStart;
 
-        const dripEdgeMaterial = 'DripEdge Materiall: ';
+        const dripEdgeMaterial = 'DripEdge Material: ';
 
         const dripEdgeSize = 'DripEdge Size: ';
-        console.log(usedripStore.$state.dripinput[0]);
-        const dripedgeMaterials = ref(usedripStore.$state.dripinput[0]?.dripData || '');
-        const dripedgeSize = ref(usedripStore.$state.dripinput[3]?.dripData || '');
-
+        // const dripedgeMaterials = ref(dripinput.value[0]?.dripData || '');
+        console.log(dripStore, dripinput);
+        const dripedgeMaterials = ref(dripStore.$state.dripinput[0]?.dripMaterial || '');
+        const dripedgeSize = ref(dripStore.$state.dripinput[2]?.dripMaterial || '');
+        console.log(dripedgeMaterials, dripedgeSize);
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
         const materialTextWidth = doc.getTextWidth(`${dripedgeMaterials.value}`);
         const dMaterialStartXValue = LeftStart;
@@ -364,7 +367,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

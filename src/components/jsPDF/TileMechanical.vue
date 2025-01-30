@@ -1,7 +1,7 @@
 <template>
     <div>
-        <!-- <h1>Generate PDF with Columns and Underlined Text</h1>
-        <button @click="generatePDF">Download PDF</button> -->
+        <h1>Generate PDF with Columns and Underlined Text</h1>
+        <button @click="generatePDF">Download PDF</button>
     </div>
 </template>
 
@@ -9,7 +9,7 @@
 import { useGlobalState } from '@/stores/accountsStore';
 // import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import useMech from '@/composables/InputLogic/use-tileMechanical';
-import { usedripedgemtileStore } from '@/stores/dripEdgeMechTileStore';
+import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
@@ -27,7 +27,7 @@ const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
 // const usedripStore = usedripedgeStore();
-const dripmechTileStore = usedripedgemtileStore();
+const dripmechTileStore = usedripMStore();
 // const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 
 const callState = tryOnMounted(() => {
@@ -67,18 +67,36 @@ const generatePDF = () => {
         }
         // Initialize jsPDF instance
         console.log(mechStore.tilemech.value[0]);
-        const height = ref(mechStore.tilemech.value[0].height);
-        const slope = ref(mechStore.tilemech.value[0].slope);
-        const deckType = ref(mechStore.tilemech.value[0].deckType);
-        // const perimeter = ref(mechStore.tilemech.value[0].perimeter);
-        // const prescriptive = ref(mechStore.tilemech.value[0].prescriptiveSelection);
+        const height = ref(mechStore.tilemech.value[0]?.height || '');
+        const slope = ref(mechStore.tilemech.value[0]?.slope || '');
+        const deckType = ref(mechStore.tilemech.value[0]?.deckType || '');
+        const perimeter = ref(mechStore.tilemech.value[0]?.perimeter || '');
+        const prescriptive = ref(mechStore.tilemech.value[0]?.prescriptiveSelection?.selectedBasesheet || '');
         const area = ref(roofStore.$state.roofList[0].dim3);
-        const address = ref(permitStore.$state.permitapp[0].formdt.address);
-        const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
-        const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-        const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[0].dripMTileData);
-        const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[3].dripMTileData);
-        const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
+        const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
+        const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
+        const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+        console.log(dripmechTileStore.$state);
+        const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[5]?.dripMTileMaterial || '');
+        const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[7]?.dripMTileMaterial || '');
+        console.log(mechStore.tilemech);
+        current_y = current_y + 10;
+        const mf1 = ref(mechStore.tilemech.value[0]?.mf1 || '');
+        const lambda1 = ref(mechStore.tilemech.value[0]?.lambda1 || '');
+        const mg1 = ref(mechStore.tilemech.value[0]?.g1 || '');
+        const mr1 = ref(mechStore.tilemech.value[0]?.mr1 || '');
+        const zoneone = ref(mechStore.tilemech.value[0]?.zoneone || '');
+        const mf2 = ref(mechStore.tilemech.value[0]?.mf2 || '');
+        const lambda2 = ref(mechStore.tilemech.value[0]?.lambda2 || '');
+        const mg2 = ref(mechStore.tilemech.value[0]?.mg2 || '');
+        const mr2 = ref(mechStore.tilemech.value[0]?.mr2 || '');
+        const zonetwo = ref(mechStore.tilemech.value[0]?.zonetwo || '');
+        const mf3 = ref(mechStore.tilemech.value[0]?.mf3 || '');
+        const lambda3 = ref(mechStore.tilemech.value[0]?.lambda3 || '');
+        const mg3 = ref(mechStore.tilemech.value[0]?.mg3 || '');
+        const mr3 = ref(mechStore.tilemech.value[0]?.mr3);
+        const zonethree = ref(mechStore.tilemech.value[0]?.zonethree || '');
+
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
 
@@ -238,7 +256,7 @@ const generatePDF = () => {
         const udldescriptionText = '(UDL) Description: ';
         const Prescriptive = 'Prescriptive: ';
 
-        const dripEdgeMaterial = 'DripEdge Matetiral: ';
+        const dripEdgeMaterial = 'DripEdge Material: ';
 
         const dripEdgeSize = 'DripEdge Size: ';
 
@@ -266,8 +284,8 @@ const generatePDF = () => {
         doc.text(Prescriptive, perspectiveStartXValue, current_y);
         const perscriptiveValue = LeftStart;
         current_y = current_y + 10;
-        // doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
-        //  doc.line(perscriptiveValue, current_y, perscriptiveValue + valueTextWidthTile, current_y);
+        doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
+        doc.line(perscriptiveValue, current_y, perscriptiveValue + valueTextWidth_0, current_y);
         current_y = current_y + 10;
 
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
@@ -344,24 +362,25 @@ const generatePDF = () => {
             const udlMaterial = 'n/a';
             const udlDescription = 'n/a';
 
-            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
-            const valueTextWidth_1 = doc.getTextWidth(udlNoa);
-            const udlNoaStartXValue = LeftStart;
-            doc.text(polynoaText, udlNoaStartXValue, current_y);
-            const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
-            doc.text(udlNoa, udlNoaValue, current_y);
-            doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
-            currentX.value = udlNoaValue + valueTextWidth_1;
+            // const valueTextWidthNOA = doc.getTextWidth(polynoaText);
+            // const valueTextWidth_1 = doc.getTextWidth(udlNoa);
+            // const udlNoaStartXValue = LeftStart;
+            // doc.text(polynoaText, udlNoaStartXValue, current_y);
+            // const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
+            // doc.text(udlNoa, udlNoaValue, current_y);
+            // doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
+            // currentX.value = udlNoaValue + valueTextWidth_1;
 
-            console.log(currentX.value);
-            const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
-            const valueTextWidth_ = doc.getTextWidth(udlApplicant);
-            const udlApplicantStartXValue = currentX.value + 2;
-            doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
-            const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
-            doc.text(udlApplicant, udlApplicantValue, current_y);
-            doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
-            currentX.value = udlApplicantValue + valueTextWidth_;
+            // console.log(currentX.value);
+            // const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
+            // // const valueTextWidth_ = doc.getTextWidth(udlApplicant);
+            // const udlApplicantStartXValue = currentX.value + 2;
+            // doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
+
+            // const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
+            // doc.text(udlApplicant, udlApplicantValue, current_y);
+            // doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
+            // currentX.value = udlApplicantValue + valueTextWidth_;
 
             console.log(currentX.value);
             if (currentX.value > max_width) current_y = current_y + 10;
@@ -376,7 +395,7 @@ const generatePDF = () => {
             console.log(currentX.value);
             if (currentX.value > max_width) current_y = current_y + 10;
 
-            console.log(currentX.value);
+            // console.log(currentX.value);
 
             const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(udlDescription);
@@ -606,7 +625,52 @@ const generatePDF = () => {
             if (currentX.value >= max_width) current_y = current_y + 10;
             console.log(currentX.value);
         }
+        current_y = current_y + 10;
+        // Data for each row
+        doc.setFont('times', 'normal');
+        // Using doc.text()
+        // console.log('\u03BB'); // outputs λ
+        // const lambdaSymbol = ref('\u03BB');
 
+        const tableData = [
+            // Zone 1
+            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+        ];
+        console.log(tableData);
+        // const colWidths = [
+        //     22, // "Zone 1:" label cell
+        //     14, // numeric field (e.g., "82", "108", "142")
+        //     15, // "x λ"
+        //     18, // numeric field (e.g., "0.23")
+        //     19, // label (e.g., "- Mg:")
+        //     21, // numeric field (e.g., "2.473")
+        //     23, // label (e.g., "= Mr1:")
+        //     18, // numeric field (e.g., "16.39")
+        //     23, // label (e.g., "NOA Mf:")
+        //     21 // numeric field (e.g., "31.3°")
+        // ];
+        // Top-left corner where we start drawing the table
+        let startX = LeftStart - 5;
+        let startYY = current_y;
+        // doc.setFillColor(15, 20, 30); // some dark color
+        // doc.rect(0, 0, doc.internal.pageSize.getWidth(), 100, 'F');
+        // White text color for the "Zone X" labels placed over dark background:
+        // doc.setTextColor(0, 0, 0);
+        // Render the table manually
+        tableData.forEach((row) => {
+            let x = startX; // Starting x-coordinate for each row
+            row.forEach((cell) => {
+                // if (typeof cell === 'number' || String(cell).match(/^[-+]?\d*\.?\d+$/)) {
+                //     // Draw rectangle around numerical value
+                //     doc.rect(x - 2, startYY - 2, 20, 12); // Adjust the rectangle size and position
+                // }
+                doc.text(String(cell), x, startYY);
+                x += 18; // Space between columns
+            });
+            startYY += 5; // Move to next row
+        });
         // Save the PDF
         // doc.save('Mechanical.pdf');
         const fName = 'MechanicalTile.pdf';
@@ -622,7 +686,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {
