@@ -83,7 +83,7 @@ const generatePDF = () => {
         current_y = current_y + 10;
         const mf1 = ref(mechStore.tilemech.value[0]?.mf1 || '');
         const lambda1 = ref(mechStore.tilemech.value[0]?.lambda1 || '');
-        const mg1 = ref(mechStore.tilemech.value[0]?.g1 || '');
+        const mg1 = ref(mechStore.tilemech.value[0]?.mg1 || '');
         const mr1 = ref(mechStore.tilemech.value[0]?.mr1 || '');
         const zoneone = ref(mechStore.tilemech.value[0]?.zoneone || '');
         const mf2 = ref(mechStore.tilemech.value[0]?.mf2 || '');
@@ -216,6 +216,8 @@ const generatePDF = () => {
         doc.setFontSize(12);
         const factor = 2;
         const initialYValue = 100;
+
+        const tPerimeter = 'Roof Perimeter: ';
         doc.text('Roof Area:', 10, initialYValue);
 
         doc.text(`${area.value}`, 35, initialYValue);
@@ -240,8 +242,25 @@ const generatePDF = () => {
         const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`) * 2;
         doc.line(decktypeStartXValue, secondYCoordinate, decktypeStartXValue + valueTextWidth5, secondYCoordinate); // Get text width
 
-        // doc.text('Prescriptive ASTM # 30 with type IV hot asphalt applied # 90 Tile Capsheet:', 10, 70);
-        // doc.text('Fastened Underlayment (UDL) with Self Adhered (S/A) Tile Capsheet:', 10, 80);
+        // Fix this later
+        // const perimeterYCoordinate = secondYCoordinate;
+        // const tPermTextWidth = doc.getTextWidth('Perimeter');
+        // const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
+        // const permStartXValue = LeftStart + valueTextWidth5;
+        // doc.text('Perimeter', permStartXValue, perimeterYCoordinate);
+        // const perimeterValue = tPermTextWidth + permStartXValue;
+        // const decktypeStartXValue = 30 + valueTextWidth2;
+        // doc.text(`${perimeter.value}`, perimeterValue, perimeterYCoordinate);
+        //  doc.line(perimeterValue, perimeterYCoordinate, perimeterValue + PermTextWidth, perimeterYCoordinate);
+
+        //  const tPermTextWidth = doc.getTextWidth(tPerimeter);
+        // const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
+        // const permStartXValue = LeftStart;
+        // doc.text(tPerimeter, permStartXValue, current_y);
+        // const perimeterValue = tPermTextWidth + permStartXValue;
+        // doc.text(`${perimeter.value}`, perimeterValue, current_y);
+        // doc.line(perimeterValue, perimeterYCoordinate, perimeterValue + PermTextWidth, perimeterYCoordinate);
+
         const noaText = 'Tile NOA Number: ';
         const applicantText = 'Tile Applicant: ';
         const materialText = 'Tile Material: ';
@@ -279,13 +298,16 @@ const generatePDF = () => {
         const material = ref(mechStore.tilemech.value[0].material);
         const description = ref(mechStore.tilemech.value[0].description);
 
+        // console.log(current_y);
         const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
-        const perspectiveStartXValue = LeftStart;
-        doc.text(Prescriptive, perspectiveStartXValue, current_y);
+        const prescriptiveTextWidth = doc.getTextWidth(`${prescriptive.value}`);
+        const prescriptiveStartXValue = LeftStart;
+        doc.text(Prescriptive, prescriptiveStartXValue, current_y);
+        const prescriptiveStartValue = valueTextWidth_0 + prescriptiveStartXValue;
         const perscriptiveValue = LeftStart;
         current_y = current_y + 10;
-        doc.text(`${prescriptive.value.selectedBasesheet}`, perscriptiveValue, current_y);
-        doc.line(perscriptiveValue, current_y, perscriptiveValue + valueTextWidth_0, current_y);
+        doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
+        doc.line(perscriptiveValue, current_y, perscriptiveValue + prescriptiveTextWidth, current_y);
         current_y = current_y + 10;
 
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
@@ -362,25 +384,25 @@ const generatePDF = () => {
             const udlMaterial = 'n/a';
             const udlDescription = 'n/a';
 
-            // const valueTextWidthNOA = doc.getTextWidth(polynoaText);
-            // const valueTextWidth_1 = doc.getTextWidth(udlNoa);
-            // const udlNoaStartXValue = LeftStart;
-            // doc.text(polynoaText, udlNoaStartXValue, current_y);
-            // const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
-            // doc.text(udlNoa, udlNoaValue, current_y);
-            // doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
-            // currentX.value = udlNoaValue + valueTextWidth_1;
+            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
+            const valueTextWidth_1 = doc.getTextWidth(udlNoa);
+            const udlNoaStartXValue = LeftStart;
+            doc.text(polynoaText, udlNoaStartXValue, current_y);
+            const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
+            doc.text(udlNoa, udlNoaValue, current_y);
+            doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
+            currentX.value = udlNoaValue + valueTextWidth_1;
 
-            // console.log(currentX.value);
-            // const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
-            // // const valueTextWidth_ = doc.getTextWidth(udlApplicant);
-            // const udlApplicantStartXValue = currentX.value + 2;
-            // doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
+            console.log(currentX.value);
+            const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
+            const valueTextWidth_ = doc.getTextWidth(udlApplicant);
+            const udlApplicantStartXValue = currentX.value + 2;
+            doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
 
-            // const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
-            // doc.text(udlApplicant, udlApplicantValue, current_y);
-            // doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
-            // currentX.value = udlApplicantValue + valueTextWidth_;
+            const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
+            doc.text(udlApplicant, udlApplicantValue, current_y);
+            doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
+            currentX.value = udlApplicantValue + valueTextWidth_;
 
             console.log(currentX.value);
             if (currentX.value > max_width) current_y = current_y + 10;
@@ -396,7 +418,7 @@ const generatePDF = () => {
             if (currentX.value > max_width) current_y = current_y + 10;
 
             // console.log(currentX.value);
-
+            current_y = current_y + 10;
             const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(udlDescription);
             const udldescStartXValue = LeftStart;

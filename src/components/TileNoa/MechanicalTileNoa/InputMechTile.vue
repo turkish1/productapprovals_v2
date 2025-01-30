@@ -664,12 +664,12 @@ const exposureChoosen = ref('');
 const selectedExposures = ref('');
 function selectedExposure() {
     console.log(selectedExposures);
-    if (selectedExposures.value === 'd') {
-        exposureChoosen.value = 'd';
+    if (selectedExposures.value === 'c') {
+        exposureChoosen.value = 'c';
         console.log(isExposureC);
         console.log(selectedExposures);
     } else {
-        exposureChoosen.value = 'c';
+        exposureChoosen.value = 'd';
         console.log(selectedExposures);
         isExposureC.value = true;
     }
@@ -792,7 +792,6 @@ function checkMaterial() {
     mechStore.tilemech.value[0].zonethree = zonethree.zone;
     mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
     mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
-
     mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
     mechStore.tilemech.value[0].mg1 = zoneone.mg1;
     mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
@@ -800,6 +799,9 @@ function checkMaterial() {
     mechStore.tilemech.value[0].mr1 = zoneone.mr1;
     mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
     mechStore.tilemech.value[0].mr3 = zonethree.mr3;
+    mechStore.tilemech.value[0].mf1 = zoneone.mf1;
+    mechStore.tilemech.value[0].mf2 = zonetwo.mf2;
+    mechStore.tilemech.value[0].mf3 = zonethree.mf3;
     console.log(mechStore.tilemech.value[0]);
     // mechStore.tilemech.value[0].select_tile = tilenoas.material;
     mechStore.tilemech.value[0].prescriptiveSelection = selectedUnderlayment.value;
@@ -816,20 +818,20 @@ function updateMF(event) {
     let mat = tilenoas.fastenerValues;
 
     console.log(mat);
-    if (exposureChoosen.value === 'd') {
-        console.log('D exposure');
-        console.log(tbd, zoned);
-        console.log(useExposured());
-        zoned.value.forEach((item, index) => {
+    if (exposureChoosen.value === 'c') {
+        console.log('Else C exposure');
+        console.log(zones);
+
+        zones.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
     } else {
-        console.log('Else C exposure');
-        console.log(zones);
-
-        zones.value.forEach((item, index) => {
+        console.log('D exposure');
+        console.log(tbd, zoned);
+        console.log(useExposured());
+        zoned.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
@@ -852,6 +854,10 @@ function updateMF(event) {
             zoneone.mf1 = vals.value[i];
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
+            mechStore.tilemech.value[0].mf1 = zoneone.mf1;
+            mechStore.tilemech.value[0].mf2 = zonetwo.mf2;
+            mechStore.tilemech.value[0].mf3 = zonethree.mf3;
+            console.log(mechStore.tilemech.value[0].mf1);
         }
 
         const mfcheck1 = zoneone.mf1;
@@ -1182,7 +1188,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
         <label for="title" style="color: #122620; margin-left: 650px">Mechanical Tile Roof</label>
 
-        <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px; margin-top: 30px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
         </div>
 
