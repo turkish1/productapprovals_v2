@@ -37,11 +37,6 @@ const callState = tryOnMounted(() => {
         isRoofTileMechanicalValid.value = true;
         generatePDF();
     }
-
-    // if (roofType.value[0].item === 'Mechanical Fastened Tile') {
-    //     isRoofTileMechanicalValid.value = true;
-    //     generatePDF();
-    // }
 });
 
 invoke(async () => {
@@ -124,9 +119,10 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
+        const lambdaImage = new Image();
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
-
+        lambdaImage.src = '/demo/images/lambda.jpeg';
         doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
 
         // Set background image for the entire PDF
@@ -650,37 +646,25 @@ const generatePDF = () => {
         current_y = current_y + 10;
         // Data for each row
         doc.setFont('times', 'normal');
+        const λ = 'λ';
         // Using doc.text()
         // console.log('\u03BB'); // outputs λ
         // const lambdaSymbol = ref('\u03BB');
 
+        // const lambImage = doc.addImage(lambdaImage, 'JPEG', 50, 30);
+        // console.log(lambImage.value);
         const tableData = [
             // Zone 1
-            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 1:', `${zoneone.value}`, 'x' + λ, `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
             ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
             ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
-        // const colWidths = [
-        //     22, // "Zone 1:" label cell
-        //     14, // numeric field (e.g., "82", "108", "142")
-        //     15, // "x λ"
-        //     18, // numeric field (e.g., "0.23")
-        //     19, // label (e.g., "- Mg:")
-        //     21, // numeric field (e.g., "2.473")
-        //     23, // label (e.g., "= Mr1:")
-        //     18, // numeric field (e.g., "16.39")
-        //     23, // label (e.g., "NOA Mf:")
-        //     21 // numeric field (e.g., "31.3°")
-        // ];
+
         // Top-left corner where we start drawing the table
         let startX = LeftStart - 5;
         let startYY = current_y;
-        // doc.setFillColor(15, 20, 30); // some dark color
-        // doc.rect(0, 0, doc.internal.pageSize.getWidth(), 100, 'F');
-        // White text color for the "Zone X" labels placed over dark background:
-        // doc.setTextColor(0, 0, 0);
-        // Render the table manually
+
         tableData.forEach((row) => {
             let x = startX; // Starting x-coordinate for each row
             row.forEach((cell) => {

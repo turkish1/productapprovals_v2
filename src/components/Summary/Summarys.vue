@@ -77,8 +77,6 @@ const { accountUsers } = useGlobalState();
 const isloading = ref(false);
 const isSigned = ref(false);
 
-const objName = ref('');
-
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
 let isRoofTileMechanicalValid = ref(false);
@@ -118,17 +116,23 @@ const callPdfSign = tryOnMounted(() => {
 const callState = tryOnMounted(() => {
     if (roofType.value.length === 0) {
         return '';
-    } else if (roofType.value[0].item === 'Asphalt Shingle') {
-        isRoofShingleValid.value = true;
-    } else if (roofType.value[0].item === 'Low Slope') {
-        isRoofLowslopeValid.value = true;
-    } else if (roofType.value[0].item === 'Adhesive Set Tile') {
-        console.log(roofType.value[0].item);
-        isRoofTileADValid.value = true;
-    } else if (roofType.value[0].item === 'Mechanical Fastened Tile') {
-        isRoofTileMechanicalValid.value = true;
-    } else if (generalType.value.length !== 1) {
-        isGenaralPageValid.value = true;
+    }
+
+    for (let i = 0; i < roofType.value.length; i++) {
+        if (roofType.value[i].item === 'Asphalt Shingle') {
+            isRoofShingleValid.value = true;
+        } else if (roofType.value[i].item === 'Low Slope') {
+            isRoofLowslopeValid.value = true;
+        } else if (roofType.value[i].item === 'Adhesive Set Tile') {
+            console.log(roofType.value[i].item);
+            isRoofTileADValid.value = true;
+        } else if (roofType.value[i].item === 'Mechanical Fastened Tile') {
+            console.log(roofType.value[i].item);
+            isRoofTileMechanicalValid.value = true;
+        } else if (generalType.value.length !== 1) {
+            isGenaralPageValid.value = true;
+        }
+        console.log(roofType.value);
     }
 });
 
