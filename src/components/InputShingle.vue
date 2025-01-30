@@ -1,4 +1,5 @@
 <script setup>
+import DripEdShingle from '@/components/DripEdgeChildren/DripEdShingle.vue';
 import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import useInputs from '@/composables/use-Inputs';
@@ -8,7 +9,6 @@ import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
 import { storeToRefs } from 'pinia';
-import DripEdgeComponent from './DripEdgeComponent.vue';
 
 import Divider from 'primevue/divider';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
@@ -464,7 +464,7 @@ watch(
             <label style="color: red">Select Underlayment (UDL) *</label>
             <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>
-        <DripEdgeComponent />
+        <DripEdShingle />
     </div>
 
     <Divider />
