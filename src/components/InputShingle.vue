@@ -213,7 +213,8 @@ function updateselectSystem(selectedsystemf) {
     }
     console.log(usesystemfStore.store.$state.systeminput.pdfSystemValue, selectedsystemf.value);
     usesystemfStore.store.$state.systeminput.pdfSystemValue = selectedsystemf.value;
-
+    usesystemfStore.store.$state.systeminput.description = selfadhered.sadescription;
+    console.log(usesystemfStore.store.$state.systeminput.systemData);
     // });
 }
 

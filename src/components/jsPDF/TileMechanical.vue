@@ -128,7 +128,7 @@ const generatePDF = () => {
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
         lambdaImage.src = '/demo/images/lambda.jpeg';
-        doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
+        doc.addImage(logoImage, 'JPEG', 10, 0, 50, 30);
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
@@ -156,7 +156,7 @@ const generatePDF = () => {
             doc.text(
                 'The tile roof system and its components shall be installed in strict compliance with the FBC 2023 HVHZ portions of Chapter 15, the HVHZ Tile Application Standards: RAS-119, RAS-120 & RAS-127 and the submitted MDC Notice of Acceptance(s).',
                 10,
-                20,
+                29,
                 { maxWidth: '200' }
             ); // Position at (x, y)
             doc.line(10, 41, 195, 41); // Draw a line below the header
@@ -215,7 +215,7 @@ const generatePDF = () => {
         });
 
         doc.setFontSize(12);
-        const factor = 2;
+        const factor = 1;
         const initialYValue = 100;
 
         const tPerimeter = 'Roof Perimeter: ';
@@ -650,7 +650,10 @@ const generatePDF = () => {
         }
         current_y = current_y + 10;
         // Data for each row
-        doc.setFont('times', 'normal');
+        const myFontBase64 = 'AAEAAA...';
+        doc.addFileToVFS('./GreekSymbol.ttf', myFontBase64);
+        doc.addFont('GreekSymbol.ttf', 'GreekSymbol', 'normal');
+        // doc.setFont('times', 'normal');
 
         // Using doc.text()
         // console.log('\u03BB'); // outputs λ
@@ -658,6 +661,7 @@ const generatePDF = () => {
 
         // const lambImage = doc.addImage(lambdaImage, 'JPEG', 50, 30);
         // console.log(lambImage.value);
+        //
         const tableData = [
             // Zone 1
             ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
@@ -665,13 +669,14 @@ const generatePDF = () => {
             ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
-
+        // doc.setFont('times', 'normal');
         // Top-left corner where we start drawing the table
         let startX = LeftStart - 5;
         let startYY = current_y;
 
         tableData.forEach((row) => {
             let x = startX; // Starting x-coordinate for each row
+
             row.forEach((cell) => {
                 // if (typeof cell === 'number' || String(cell).match(/^[-+]?\d*\.?\d+$/)) {
                 //     // Draw rectangle around numerical value
@@ -682,6 +687,10 @@ const generatePDF = () => {
             });
             startYY += 5; // Move to next row
         });
+        current_y = current_y + 20;
+        console.log(doc.getFontList());
+        doc.setFont('GreekSymbol');
+        doc.text('αβγδεζηθλ   - Greek sample', 10, current_y);
         // Save the PDF
         // doc.save('Mechanical.pdf');
         const fName = 'MechanicalTile.pdf';

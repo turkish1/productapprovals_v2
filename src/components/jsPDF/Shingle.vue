@@ -75,9 +75,9 @@ const generatePDF = () => {
         const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
         const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
         const dba = ref(getUser.value[0].dba);
-        const height = ref(shingleStore.$state.inputshingle[0].shingleData.height);
-        const slope = ref(shingleStore.$state.inputshingle[0].shingleData.slope);
-        const deckType = ref(shingleStore.$state.inputshingle[0].shingleData.deckType);
+        const height = ref(shingleStore.$state.inputshingle[0]?.shingleData?.height || '');
+        const slope = ref(shingleStore.$state.inputshingle[0]?.shingleData?.slope || '');
+        const deckType = ref(shingleStore.$state.inputshingle[0]?.shingleData?.deckType || '');
         // console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
         const area = ref(roofStore.$state.roofList[0].dim1);
         // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
@@ -108,7 +108,7 @@ const generatePDF = () => {
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
 
-        doc.addImage(logoImage, 'JPEG', 10, 10, 50, 30);
+        doc.addImage(logoImage, 'JPEG', 10, 0, 50, 30);
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
@@ -134,7 +134,7 @@ const generatePDF = () => {
             doc.text(
                 'The Shingle roof system and its components shall be installed in strict compliance  with the HVHZportions of Chapter 15 FBC, the HVHZ Roof Application Standards(RAS) 111 & 115, and the submitted MDC(NOA) Notice of Acceptance(s).The mePermit applicant agrees to comply with these installation requirements when obtaining this permit.',
                 10,
-                20,
+                25,
                 { maxWidth: '200' }
             ); // Position at (x, y)
             doc.line(10, 41, 195, 41); // Draw a line below the header
@@ -225,7 +225,7 @@ const generatePDF = () => {
         const materialText = 'Shingle Material: ';
         const descriptionText = 'Shingle Description: ';
 
-        const polynoaText = 'Fastened Underlayment(UDL)NOA: ';
+        const polynoaText = 'Fastened (UDL)NOA: ';
         const polyapplicantText = 'UDL NOA Applicant: ';
         const polymaterialText = 'Fastened UDL Material: ';
         const polydescriptionText = 'UDL Description: ';
@@ -243,12 +243,12 @@ const generatePDF = () => {
         var current_y = topRighty - thirdYCoordinate;
         currentX.value = LeftStart;
         currentY.value = current_y;
-        console.log(currentX.value, currentY.value);
-        const noa = ref(shingleStore.$state.inputshingle[0].shingleData.noa);
-        const applicant = ref(shingleStore.$state.inputshingle[0].shingleData.applicant);
-        const material = ref(shingleStore.$state.inputshingle[0].shingleData.material);
-        const description = ref(shingleStore.$state.inputshingle[0].shingleData.description);
-        const prescriptive = ref(shingleStore.$state.inputshingle[0].shingleData.prescriptiveSelection);
+        console.log(shingleStore.$state.inputshingle[0]);
+        const noa = ref(shingleStore.$state.inputshingle[0]?.shingleData?.noa || '');
+        const applicant = ref(shingleStore.$state.inputshingle[0]?.shingleData?.applicant);
+        const material = ref(shingleStore.$state.inputshingle[0]?.shingleData?.material);
+        const description = ref(shingleStore.$state.inputshingle[0]?.shingleData?.description);
+        const prescriptive = ref(shingleStore.$state.inputshingle[0]?.shingleData?.prescriptiveSelection);
 
         const valueTextWidth_0 = doc.getTextWidth(Perscriptive);
         const perscriptiveTextValue = doc.getTextWidth(`${prescriptive.value}`);
@@ -306,11 +306,11 @@ const generatePDF = () => {
         doc.line(noaValue, current_y, noaValue + valueTextWidth3, current_y);
         currentX.value = noaValue + valueTextWidth3;
 
-        if (currentX.value > max_width) current_y = current_y + 10;
-        console.log(currentX.value, max_width);
+        current_y = current_y + 10;
+
         // currentX provides the update of the x coordinate
 
-        const materialStartXValue = currentX.value + 2;
+        const materialStartXValue = LeftStart;
         const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
         const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
         doc.text(materialText, materialStartXValue, current_y);
@@ -319,13 +319,13 @@ const generatePDF = () => {
         doc.line(materialValue, current_y, materialValue + valueTextWidthMaterial, current_y);
         currentX.value = materialValue + valueTextWidthMaterial;
 
-        if (currentX.value > max_width) current_y = current_y + 10;
-        console.log(currentX.value, max_width);
+        // if (currentX.value > max_width) current_y = current_y + 10;
+        // console.log(currentX.value, max_width);
 
         const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
         const valueTextWidthDesc = doc.getTextWidth(descriptionText);
 
-        const descStartXValue = LeftStart;
+        const descStartXValue = currentX.value + 2;
         doc.text(descriptionText, descStartXValue, current_y);
 
         // this is the text we want to underline
@@ -401,7 +401,7 @@ const generatePDF = () => {
             const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
             const udlNoaStartXValue = LeftStart;
             doc.text(polynoaText, udlNoaStartXValue, current_y);
-            const udlNoaValue = descStartXValue + valueTextWidthNOA;
+            const udlNoaValue = descStartXValue - 23;
             doc.text(`${udlNoa.value}`, udlNoaValue, current_y);
             doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
             currentX.value = udlNoaValue + valueTextWidth_1;
@@ -506,13 +506,13 @@ const generatePDF = () => {
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             console.log(currentX.value);
         } else {
-            console.log('Entered sbs line 455', sbsStore.$state);
-            const saNoa = ref(sbsStore.$state.systeminput[0].systemData.noa);
-            const saApplicant = ref(sbsStore.$state.systeminput[0].systemData.manufacturer);
+            console.log('Entered sbs line 509', sbsStore.$state);
+            const saNoa = ref(sbsStore.$state.systeminput[0]?.systemData?.noa);
+            const saApplicant = ref(sbsStore.$state.systeminput[0]?.systemData?.manufacturer);
             const saSystemF = ref(sbsStore.$state.systeminput.pdfSystemValue);
-            const saMaterial = ref(sbsStore.$state.systeminput[0].systemData.material);
-            const saDescription = ref(sbsStore.$state.systeminput[0].systemData.description);
-
+            const saMaterial = ref(sbsStore.$state.systeminput[0]?.systemData?.material);
+            const saDescription = ref(sbsStore.$state.systeminput.description);
+            // [0]?.systemData?.
             const valueTextWidthsbsNOA = doc.getTextWidth(sbsnoaText);
             const valueTextWidth_4 = doc.getTextWidth(`${saNoa.value}`);
             const saNoaStartXValue = LeftStart;
