@@ -151,7 +151,7 @@ onMounted(() => {
 
 watch(
     selectPaddy,
-    selectedExposure,
+    // selectedExposure,
 
     () => {
         paddySeleted.value = selectedOption.value;
@@ -295,8 +295,8 @@ const hideSuggestions = () => {
 const selectedDeck = ref();
 const type = ref([{ name: 'Select Deck Type' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 const save = ref([]);
-
-watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
+//  selectedExposure,
+watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
 
 function sysEcheckInput() {
     console.log(Edatamounted.value);
@@ -369,8 +369,8 @@ function pickUnderlayment(event) {
         isTileValid = false;
     }
 }
-
-watch(selectedUnderlayment, checkInput, pickUnderlayment, () => {});
+// pickUnderlayment,
+watch(selectedUnderlayment, checkInput, () => {});
 
 const slopeOptions = {
     two: 2,
@@ -556,15 +556,6 @@ const validateHeightInput = () => {
     addCheckmarks();
 };
 
-// function addCheckmarks() {
-//     if (errorMessage.value !== null || errorHeightMessage.value !== null || dims.height < 40) {
-//         isvalueValid.value = true;
-//         console.log('Entered checkmarks');
-//     } else {
-//         isvalueValid.value = false;
-//     }
-// }
-
 function addCheckmarks() {
     if (isHeightValid.value || isDisabledslope.value) {
         isvalueValid.value = true;
@@ -634,9 +625,11 @@ const isExposureC = ref(false);
 const exposureChoosen = ref('');
 const selectedExposures = ref(null);
 
-function selectedExposure(event) {
-    console.log(event);
-    if (event === 'c') {
+// The event variable is empty
+function selectedExposure() {
+    console.log(selectedExposures.value);
+    // console.log(event.target._value);
+    if (selectedExposures.value === 'c') {
         exposureChoosen.value = 'c';
         console.log(exposureChoosen.value);
         grabInput();
@@ -787,18 +780,10 @@ const tileValue = reactive({
 console.log(exposureChoosen.value);
 // multitile related, which means that table2 will have content as muliple
 function checkTile() {
-    if (exposureChoosen.value === 'd') {
-        console.log('Exposure d', exposureChoosen.value);
-        getDatas(dims.slope, dims.height);
+    if (exposureChoosen.value === 'c') {
+        console.log('Exposure c', exposureChoosen.value);
+        // getDatas(dims.slope, dims.height);
 
-        zoned.value.forEach((item) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
-
-        console.log(zones.value);
-    } else {
         getData(dims.slope, dims.height);
         zones.value.forEach((item) => {
             zoneone.zone = item[0];
@@ -809,6 +794,19 @@ function checkTile() {
             zonethree.lambda3 = tileSel.values;
             console.log(zoneone.lambda1, tileSel.values, tileSel);
         });
+
+        console.log(zones.value);
+    } else {
+        console.log('Exposure d', exposureChoosen.value);
+        getDatas(dims.slope, dims.height);
+
+        zoned.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+
+        console.log(zoned.value);
     }
     console.log(tileData.Table2.content);
     if (tileData.Table2.content === 'multiple') {
@@ -822,11 +820,6 @@ function checkTile() {
 
 // seems singleTile exposure C
 function checkMaterial() {
-    if (tileData.Table2.content === 'multiple') {
-        checkTile();
-
-        console.log('Sent to checkTile()');
-    }
     if (exposureChoosen.value === 'c') {
         console.log('Else C exposure', exposureChoosen);
 
@@ -836,6 +829,12 @@ function checkMaterial() {
             zonethree.zone = item[2];
         });
         console.log(zones.value);
+        console.log(tileData.Table2.content);
+        if (tileData.Table2.content === 'multiple') {
+            checkTile();
+
+            console.log('Sent to checkTile()');
+        }
     } else {
         console.log('D exposure');
         console.log(tbd, zoned);
@@ -1444,14 +1443,15 @@ watch(
         <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
             <label style="color: red">Select Exposure</label>
             <div class="flex items-center space-x-2">
-                <div class="field-radiobutton space-x-4 gap-4">
+                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
                     <!-- <RadioButton inputId="option4" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" /> -->
-                    <label style="color: #122620" for="option3">C</label>
-                    <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" />
+                    <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 10px" />
+                    <label style="color: #122620; margin-left: 10px" for="option3">C</label>
                 </div>
-                <div class="field-radiobutton space-x-4 gap-6">
-                    <label style="color: #122620; margin-left: 10px" for="option4">D</label>
-                    <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" />
+                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
+                    <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 20px" />
+
+                    <label style="color: #122620; margin-left: 20px" for="option4">D</label>
                 </div>
             </div>
             <Divider />

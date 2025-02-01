@@ -687,25 +687,6 @@ function checkMaterial() {
         checkTile();
     }
 
-    // if (exposureChoosen.value === 'd') {
-    //     console.log('D exposure');
-    //     console.log(tbd, zoned);
-    //     console.log(useExposured());
-    //     zoned.value.forEach((item, index) => {
-    //         zoneone.zone = item[0];
-    //         zonetwo.zone = item[1];
-    //         zonethree.zone = item[2];
-    //     });
-    // } else {
-    //     console.log('Else C exposure');
-    //     console.log(zones);
-
-    //     zones.value.forEach((item, index) => {
-    //         zoneone.zone = item[0];
-    //         zonetwo.zone = item[1];
-    //         zonethree.zone = item[2];
-    //     });
-    // }
     if (exposureChoosen.value === 'c') {
         console.log('Else C exposure', exposureChoosen);
 
