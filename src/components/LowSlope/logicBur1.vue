@@ -88,7 +88,7 @@ const { errorburHeightMessage, validateburHeight } = useburValidation({
 });
 
 function validateRoofSlope() {
-    validateInput();
+    // validateInput();
     if (dims.slope >= 0.128) {
         isDisabled.value = false;
         addCheckmarks();
@@ -139,7 +139,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Roof Slope *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
 
-            <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :invalid="slope === null" :disabled="isDisabledslope" @change="validateRoofSlope" />
+            <InputText id="slope" v-model.number="dims.slope" type="text" :error="slopeError" placeholder="slope" :invalid="slope === null" :disabled="isDisabledslope" @input="validateInput" @change="validateRoofSlope" />
             <Message v-if="errorburMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorburMessage }}</Message>
         </div>
         <!-- div class="w-64 flex flex-col flex-row gap-2 mt-3 mb-3 ring ring-cyan-50 hover:ring-cyan-800" style="margin-left: 12px" -->

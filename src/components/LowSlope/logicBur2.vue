@@ -89,28 +89,29 @@ function updateselectSystem(event) {
         sp3.value = convert.split(/(?=[)³])/);
         sp4.value = convert.split(/(?=[)⁴])/);
         sp5.value = convert.split(/(?=[)⁵])/);
-        console.log(sp2.value);
-        console.log(sp2.value[3]);
-        if (sp2.value[2] === '²' || sp2.value[3] === '²' || sp2.value[4] === '²') {
+        console.log(sp1, sp2, sp3, sp4, sp5);
+        console.log(sp1.value[1], sp2.value, sp3.value, sp4.value, sp5.value);
+
+        if (sp2.value[2] === '²' || sp2.value[3] === '²' || sp5.value[1] === ')⁵' || sp2.value[4] === '²' || sp2.value[1] === '⁵') {
             primeone.value = Perimeters.p1_two;
             primethree.value = Perimeters.p2_two;
             // I need to separete, possibly the p1 and p2 to capture each event from the select box.
         }
-        if (sp3.value[3] === '³') {
+        if (sp3.value[3] === '³' || sp4.value[1] === '³' || sp3.value[1] === '⁵') {
             primeone.value = Perimeters.p1_three;
             primethree.value = Perimeters.p2_three;
         }
-        if (sp4.value[2] === '⁴' || sp4.value[2] === '⁵') {
+        if (sp4.value[2] === '⁴' || sp4.value[2] === '⁵' || sp4.value[1] === '⁵') {
             primeone.value = Perimeters.p1_four;
             primethree.value = Perimeters.p2_four;
             primeone.value = Perimeters.p1_five;
             primethree.value = Perimeters.p2_five;
         }
-        if (sp5.value[4] === '⁵') {
+        if (sp5.value[4] === '⁵' || sp5.value[1] === '⁵') {
             primeone.value = Perimeters.p1_five;
             primethree.value = Perimeters.p2_five;
         }
-        if (sp1.value[4] === '¹') {
+        if (sp1.value[4] === '¹' || sp1.value[1] === '⁵') {
             primeone.value = Perimeters.p1_one;
             primethree.value = Perimeters.p2_one;
         }
