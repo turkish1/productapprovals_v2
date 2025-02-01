@@ -39,6 +39,9 @@
             <Skeleton width="4rem" height="2rem"></Skeleton>
             <Skeleton width="4rem" height="2rem"></Skeleton>
         </div>
+        <div>
+            <GeneralPage />
+        </div>
         <div v-show="isRoofShingleValid">
             <Shingle />
         </div>
@@ -51,9 +54,6 @@
         </div>
         <div v-show="isRoofLowslopeValid">
             <LowSlope />
-        </div>
-        <div>
-            <GeneralPage />
         </div>
     </div>
 </template>
