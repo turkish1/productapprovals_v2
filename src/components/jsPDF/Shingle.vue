@@ -319,15 +319,17 @@ const generatePDF = () => {
         doc.line(materialValue, current_y, materialValue + valueTextWidthMaterial, current_y);
         currentX.value = materialValue + valueTextWidthMaterial;
 
-        // if (currentX.value > max_width) current_y = current_y + 10;
-        // console.log(currentX.value, max_width);
-
+        if (currentX.value > max_width) current_y = current_y + 10;
+        console.log(currentX.value, max_width);
+        const Newline = ref(false);
         const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
         const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-
-        const descStartXValue = currentX.value + 2;
+        currentX.value = materialValue + valueTextWidthMaterial + valueTextWidth4 + valueTextWidthDesc;
+        if (currentX.value > max_width) current_y = current_y + 10;
+        Newline.value = true;
+        console.log(currentX.value, max_width);
+        const descStartXValue = Newline.value === true ? LeftStart : currentX.value + 2;
         doc.text(descriptionText, descStartXValue, current_y);
-
         // this is the text we want to underline
         const descriptionValue = descStartXValue + valueTextWidthDesc;
         doc.text(`${description.value}`, descriptionValue, current_y);
@@ -348,6 +350,7 @@ const generatePDF = () => {
             const udlNoaStartXValue = LeftStart;
             doc.text(polynoaText, udlNoaStartXValue, current_y);
             const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
+
             doc.text(udlNoa, udlNoaValue, current_y);
             doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
             currentX.value = udlNoaValue + valueTextWidth_1;
@@ -373,7 +376,7 @@ const generatePDF = () => {
             doc.line(udlmaterialValue, current_y, udlmaterialValue + valueTextWidth_2, current_y);
             currentX.value = udlmaterialValue + valueTextWidth_2;
             console.log(currentX.value);
-            if (currentX.value > max_width) current_y = current_y + 10;
+            current_y = current_y + 10;
 
             console.log(currentX.value);
 

@@ -201,7 +201,7 @@ const downloadFile = async () => {
     border: 1px solid #ccc;
     border-radius: 10px;
     /* background: #eae7e2; */
-    background: #e8ae1b;
+    background: #eae7e2;
 }
 
 h2 {

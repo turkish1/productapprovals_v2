@@ -106,7 +106,7 @@ const navigateNext = () => {
         <div class="flex flex-col items-center justify-center">
             <div data-aos="flip-up" data-aos-duration="1000">
                 <div style="border-radius: 56px; padding: 0.3rem">
-                    <div class="w-full py-20 px-8 sm:px-20" style="border-radius: 53px">
+                    <div class="container w-full py-20 px-8 sm:px-20" style="border-radius: 53px">
                         <div>
                             <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: black; margin-left: 150px" @click="register" />
                             <label style="color: black" for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
@@ -137,7 +137,6 @@ const navigateNext = () => {
                             <Button id="singin" data-testid="SignIn" label="Sign In" class="w-1/3" style="background-color: black" @click="submit" raised @keyup.enter="submit"></Button>
                         </div>
                     </div>
-                    <pdfGen />
                 </div>
             </div>
         </div>
@@ -152,6 +151,17 @@ const navigateNext = () => {
 .pi-eye {
     transform: scale(1.6);
     margin-right: 1rem;
+}
+.container {
+    padding-bottom: 10px;
+    /* padding-top: 12px; */
+    border: none;
+    border-radius: 12px;
+    box-shadow: 4px 4px 16px rgb(22, 183, 183);
+    position: center;
+    min-height: 80px;
+    margin-top: 20px;
+    /* top: 10vh; */
 }
 #content {
     background-position: center; /* Centers the image */

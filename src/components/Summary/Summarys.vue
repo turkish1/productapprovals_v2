@@ -26,14 +26,14 @@
     <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 400px; margin-left: 850px" />
 
     <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
-        <!-- <div class="flex mb-4">
-            <Terminal />
+        <div class="flex mb-4" style="background-color: #eae7e2">
             <div>
                 <Skeleton width="10rem" class="mb-2"></Skeleton>
                 <Skeleton width="5rem" class="mb-2"></Skeleton>
                 <Skeleton height="2rem" width="30rem" v-model="dba">{{ db }}</Skeleton>
             </div>
-        </div> -->
+            <Terminal style="margin-left: 650px" />
+        </div>
         <Skeleton width="100%" height="150px"> </Skeleton>
         <div class="flex justify-between mt-4">
             <Skeleton width="4rem" height="2rem"></Skeleton>
@@ -42,7 +42,7 @@
         <div v-show="isRoofShingleValid">
             <Shingle />
         </div>
-        <!-- v-show="isRoofTileADValid" -->
+
         <div v-show="isRoofTileADValid">
             <TileAdhesive />
         </div>
@@ -65,8 +65,9 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
+import Terminal from '../Maps/Terminal.vue';
 import GeneralPage from '../jsPDF/Generalpagepdf.vue';
 import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
@@ -112,7 +113,10 @@ const callPdfSign = tryOnMounted(() => {
 
     console.log(processNumber.value);
 });
-
+const displayInfo = reactive({
+    dim: '',
+    item: ''
+});
 const callState = tryOnMounted(() => {
     if (roofType.value.length === 0) {
         return '';
@@ -121,6 +125,8 @@ const callState = tryOnMounted(() => {
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Asphalt Shingle') {
             isRoofShingleValid.value = true;
+            displayInfo.dim = roofType.value[i].dim1;
+            displayInfo.item = roofType.value[i].item;
         } else if (roofType.value[i].item === 'Low Slope') {
             isRoofLowslopeValid.value = true;
         } else if (roofType.value[i].item === 'Adhesive Set Tile') {
@@ -144,7 +150,8 @@ watchOnce(displayUserInfo, callState, callPdfSign, () => {});
 
 const events = ref([
     { status: 'RoofSystems', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: '/src/assets/img/roofing_tile.jpg' },
-    { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
+    { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
+    { status: displayInfo.item, date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
 ]);
 
 invoke(async () => {

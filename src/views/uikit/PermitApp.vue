@@ -213,7 +213,7 @@ export default {
         <form>
             <div class="flex flex-row">
                 <div class="flex mt-4 space-y-2 flex-col gap-2">
-                    <div class="font-semibold text-xl" style="color: #122620; margin-left: 430px">Permit Application</div>
+                    <div class="font-semibold text-xl" style="color: #122620; margin-left: 230px">Permit Application</div>
                     <div class="flex justify-center">
                         <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" style="margin-top: 30px" />
                     </div>
@@ -300,7 +300,7 @@ export default {
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 100px;
+    min-height: 80px;
     margin-top: 20px;
     /* top: 10vh; */
 }
