@@ -324,11 +324,11 @@ const generatePDF = () => {
         const Newline = ref(false);
         const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
         const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-        currentX.value = materialValue + valueTextWidthMaterial + valueTextWidth4 + valueTextWidthDesc;
+        currentX.value = materialValue + valueTextWidthMaterial + valueTextWidth4 + valueTextWidthDesc + 25;
         if (currentX.value > max_width) current_y = current_y + 10;
-        Newline.value = true;
+        // Newline.value = true;
         console.log(currentX.value, max_width);
-        const descStartXValue = Newline.value === true ? LeftStart : currentX.value + 2;
+        const descStartXValue = LeftStart;
         doc.text(descriptionText, descStartXValue, current_y);
         // this is the text we want to underline
         const descriptionValue = descStartXValue + valueTextWidthDesc;

@@ -26,14 +26,14 @@
     <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 400px; margin-left: 850px" />
 
     <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
-        <div class="flex mb-4" style="background-color: #eae7e2">
+        <!-- <div class="flex mb-4" style="background-color: #eae7e2">
             <div>
                 <Skeleton width="10rem" class="mb-2"></Skeleton>
                 <Skeleton width="5rem" class="mb-2"></Skeleton>
                 <Skeleton height="2rem" width="30rem" v-model="dba">{{ db }}</Skeleton>
             </div>
             <Terminal style="margin-left: 650px" />
-        </div>
+        </div> -->
         <Skeleton width="100%" height="150px"> </Skeleton>
         <div class="flex justify-between mt-4">
             <Skeleton width="4rem" height="2rem"></Skeleton>
@@ -67,7 +67,6 @@ import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
 import { onMounted, reactive, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
-import Terminal from '../Maps/Terminal.vue';
 import GeneralPage from '../jsPDF/Generalpagepdf.vue';
 import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
