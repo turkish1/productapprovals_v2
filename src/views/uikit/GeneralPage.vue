@@ -6,7 +6,7 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke } from '@vueuse/core';
-
+// import GeneralPage from '@/components/jsPDF/Generalpagepdf.vue';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';

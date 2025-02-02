@@ -108,8 +108,10 @@ const navigateNext = () => {
                 <div style="border-radius: 56px; padding: 0.3rem">
                     <div class="container w-full py-20 px-8 sm:px-20" style="border-radius: 53px">
                         <div>
-                            <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: black; margin-left: 150px" @click="register" />
-                            <label style="color: black" for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
+                            <Button label="Click to Register" severity="secondary" raised style="margin-left: 150px" @click="register" />
+
+                            <!-- <Button class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2" label="Click to Register" raised style="background-color: white; margin-left: 150px" @click="register" /> -->
+                            <label style="color: black" for="username" class="block text-surface-900 dark:text-surface-0 text-black text-xl font-medium mb-2">Username</label>
                             <InputText id="username" type="text" placeholder="username" class="w-full md:w-[30rem] mb-8" v-model="username" :error="userError" />
 
                             <label style="color: black" for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
@@ -134,7 +136,8 @@ const navigateNext = () => {
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-contrast">Forgot password?</span>
                             </div>
                             <!-- as="router-link" to="/roofsystem" @change="checkAu"-->
-                            <Button id="singin" data-testid="SignIn" label="Sign In" class="w-1/3" style="background-color: black" @click="submit" raised @keyup.enter="submit"></Button>
+                            <!-- <Button id="singin" data-testid="SignIn" label="Sign In" class="w-1/3" style="background-color: black" @click="submit" raised @keyup.enter="submit"></Button> -->
+                            <Button id="singin" class="w-1/3" data-testid="SignIn" label="Sign In" severity="secondary" @click="submit" raised @keyup.enter="submit" />
                         </div>
                     </div>
                 </div>

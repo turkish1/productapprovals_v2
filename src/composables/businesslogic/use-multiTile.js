@@ -33,13 +33,14 @@ export default function usemuliTile() {
     // const { tilenoa, getNoa } = useGlobalStates();
     const multiStore = usemultiStore();
     function workoutData(data) {
-        dt.value = data;
+        dt.value = data.value;
         console.log(data);
-        console.log(dt.value);
-        multiTiles.table2 = dt.value.Table2.content;
-        multiTiles.select_tile = dt.value.select_tile;
-        multiTiles.table2_map = dt.value.table2_map;
-        multiTiles.tile_map = dt.value.tile_map;
+        console.log(data.value);
+        console.log(dt.value[0].Table2.content);
+        multiTiles.table2 = dt.value[0].Table2.content;
+        multiTiles.select_tile = dt.value[0].select_tile;
+        multiTiles.table2_map = dt.value[0].table2_map;
+        multiTiles.tile_map = dt.value[0].tile_map;
         console.log(multiTiles);
         multiStore.addData(multiTiles);
     }

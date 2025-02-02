@@ -218,45 +218,45 @@ export default {
         <div class="card flex flex-col gap-7">
             <div class="font-semibold text-xl">Contractor Information</div>
             <div class="flex flex-col gap-2">
-                <label for="lic1" style="color: #eae7e2">State of Florida License No.</label>
+                <label for="lic1" style="color: #122620">State of Florida License No.</label>
 
                 <InputText type="text" v-model="formDatas.license" placeholder="CRC000000" :invalid="formDatas.license === ''" @input="checkLicense" />
             </div>
             <div class="flex flex-wrap gap-2">
-                <label for="trade" style="color: #eae7e2">Trade</label>
+                <label for="trade" style="color: #122620">Trade</label>
                 <Select id="trad" v-model="trades" :options="trade" optionLabel="name" placeholder="Select One" class="w-full"></Select>
             </div>
             <div class="flex flex-col gap-2">
-                <label for="dba" style="color: #eae7e2">DBA</label>
+                <label for="dba" style="color: #122620">DBA</label>
                 <InputText id="dba" type="text" v-model="formDatas.dba" placeholder=" " :invalid="formDatas.dba === ''" />
             </div>
             <div class="flex flex-col gap-2">
-                <label for="name" style="color: #eae7e2">Qualifier Name</label>
+                <label for="name" style="color: #122620">Qualifier Name</label>
                 <InputText id="name" type="text" v-model="formDatas.name" placeholder=" " :invalid="formDatas.name === ''" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <label for="secondary_status" style="color: #eae7e2">License Status</label>
+                <label for="secondary_status" style="color: #122620">License Status</label>
                 <InputText id="secondary_status" type="text" v-model="formDatas.secondary_status" placeholder=" " :invalid="formDatas.secondary_status === ''" />
             </div>
             <div class="flex flex-col gap-2">
-                <label for="license" style="color: #eae7e2">License Expiration Date</label>
+                <label for="license" style="color: #122620">License Expiration Date</label>
                 <InputText id="license" type="text" v-model="formDatas.expiration_date" placeholder=" " :invalid="formDatas.expiration_date === ''" />
             </div>
             <div class="flex flex-col gap-2">
-                <label for="license" style="color: #eae7e2">Insurance Policy Number</label>
+                <label for="license" style="color: #122620">Insurance Policy Number</label>
                 <InputText id="license" type="text" v-model="formDatas.insurance" placeholder=" " :invalid="formDatas.expiration_date === ''" />
             </div>
             <div class="flex flex-col gap-2">
-                <label for="license" style="color: #eae7e2">Insurance Carrier</label>
+                <label for="license" style="color: #122620">Insurance Carrier</label>
                 <InputText id="license" type="text" v-model="formDatas.carrier" placeholder=" " :invalid="formDatas.expiration_date === ''" />
             </div>
             <div class="flex flex-col gap-2">
-                <label for="username" style="color: #eae7e2">User Name</label>
+                <label for="username" style="color: #122620">User Name</label>
                 <InputText id="username" type="text" v-model="formDatas.username" placeholder="user name" :invalid="formDatas.username === ''" />
             </div>
             <div class="flex flex-col gap-2">
-                <label for="fname" style="color: #eae7e2">Password</label>
+                <label for="fname" style="color: #122620">Password</label>
                 <Password v-model="formDatas.password">
                     <template #header>
                         <div class="font-semibold text-xm mb-4">Pick a password</div>
@@ -275,30 +275,30 @@ export default {
                 <div class="font-semibold text-xl">Contact Info</div>
                 <div class="flex flex-wrap gap-4">
                     <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="addr" style="color: #eae7e2">Business Address</label>
+                        <label for="addr" style="color: #122620">Business Address</label>
                         <InputText id="addr" type="text" v-model="formDatas.address" placeholder="address" />
                     </div>
                     <div class="flex flex-col grow basis-1 gap-3">
-                        <label for="state" style="color: #eae7e2">City</label>
+                        <label for="state" style="color: #122620">City</label>
                         <!-- <Select id="state" v-model="dropdownItemct" :options="dropdownItemCt" optionLabel="name" placeholder="Select One" class="w-full"></Select> -->
                         <InputText id="city" type="text" v-model="formDatas.city" placeholder="city" />
                     </div>
                     <div class="flex flex-wrap gap-2 w-full">
-                        <label for="state" style="color: #eae7e2">State</label>
+                        <label for="state" style="color: #122620">State</label>
                         <Select id="state" v-model="dropdownItemst" :options="dropdownItemSt" optionLabel="name" placeholder="Select One" class="w-full"></Select>
                     </div>
 
                     <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="bphone" style="color: #eae7e2">Business Phone</label>
+                        <label for="bphone" style="color: #122620">Business Phone</label>
                         <InputMask v-model="formDatas.bphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.bphone === ''" />
                         <!-- <InputMask id="bphone" v-model="formDatas.phone" mask="000-000-0000" placeholder="000-000-0000" /> -->
                     </div>
                     <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="cphone" style="color: #eae7e2">Cell Phone Number</label>
+                        <label for="cphone" style="color: #122620">Cell Phone Number</label>
                         <InputMask v-model="formDatas.cphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.cphone === ''" />
                     </div>
                     <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="email1" style="color: #eae7e2">Email</label>
+                        <label for="email1" style="color: #122620">Email</label>
                         <InputText id="email1" v-model="formDatas.email" type="text" placeholder="email" :invalid="formDatas.email === ''" />
                     </div>
                 </div>
@@ -308,8 +308,8 @@ export default {
                 </div>
             </div>
 
-            <div class="card md:w-1/3 flex flex-col gap-2">
-                <label for="addr" style="color: #eae7e2">Upload Insurance Information</label>
+            <div class="card md:w-2/3 flex flex-col gap-2">
+                <label for="addr" style="color: #122620">Upload Insurance Information</label>
                 <Toast />
                 <file-saver class="w-2/3"></file-saver>
             </div>

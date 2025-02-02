@@ -101,6 +101,11 @@ const router = createRouter({
                     component: () => import('@/components/Summary/Summarys.vue')
                 },
                 {
+                    path: '/form',
+                    name: 'form',
+                    component: () => import('@/views/pages/auth/Signature-Form.vue')
+                },
+                {
                     path: '/scroll',
                     name: 'scroll',
                     component: () => import('@/views/pages/vIntersection.vue')
