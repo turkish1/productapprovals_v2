@@ -5,13 +5,11 @@ import { useGlobalState } from '@/stores/accountsStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke } from '@vueuse/core';
-// import GeneralPage from '@/components/jsPDF/Generalpagepdf.vue';
+import { invoke, until } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
 const store = useRoofListStore();
@@ -33,7 +31,7 @@ let checkedmtile = ref(false);
 let checkedadtile = ref(false);
 let checkedshingle = ref(false);
 let checkedmetal = ref(false);
-
+let isGenaralPageValid = ref(false);
 let master = ref();
 let process = ref();
 let dba = ref();
@@ -121,12 +119,19 @@ function roofArea() {
     dataGeneral.roofCheck = checked;
     console.log(dataGeneral.roofCheck);
     generalpageStore.addgeneralpdfData(dataGeneral);
+    isGenaralPageValid.value = true;
 }
 
+const generatePDf = () => {
+    isGenaralPageValid.value = true;
+};
 const navigateNext = () => {
     router.push('/dynamicstepper');
 };
-invoke(async () => {});
+
+invoke(async () => {
+    await until(generatePDf).toBe(true);
+});
 </script>
 
 <template>
@@ -230,7 +235,7 @@ invoke(async () => {});
                 <!-- <div class="md:w-2/3 flex flex-col bg-local hover:bg-fixed gap-4"></div> -->
 
                 <div class="md:w-1/3 flex p-2 mt-8 space-y-8 flex-col gap-2" style="margin-top: 80px">
-                    <Button class="w-1/3" type="submit" label="Submit" style="background-color: #a4b5b9" raised @click="navigateNext" />
+                    <Button class="w-1/3" type="submit" label="Submit" style="background-color: #a4b5b9" raised as="router-link" to="/dynamicstepper" @click="generatePDf" />
                 </div>
             </div>
         </div>

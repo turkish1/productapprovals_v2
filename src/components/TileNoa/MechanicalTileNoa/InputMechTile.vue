@@ -253,21 +253,30 @@ function checkTile() {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
+            mechStore.tilemech.value[0].zoneone = zoneone.zone;
+            mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
+            mechStore.tilemech.value[0].zonethree = zonethree.zone;
+            console.log(mechStore.tilemech.value[0].zoneone);
         });
+        mechStore.tilemech.value[0].zoned;
     } else {
         getData(dims.slope, dims.height);
         zones.value.forEach((item) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
+            mechStore.tilemech.value[0].zoneone = zoneone.zone;
+            mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
+            mechStore.tilemech.value[0].zonethree = zonethree.zone;
         });
     }
-
+    console.log(dims);
     if (datamountedMech.value[0].Table2.content === 'multiple') {
         console.log(datamountedMech, multiTiles.select_tile);
         workoutData(datamountedMech, multiTiles.select_tile);
         isMultiTileValid = true;
         tilenoas.select_tile = multiTiles.select_tile;
+        console.log(tilenoas);
     }
 
     //   if (datamountedMech.value[0].Table2.content === 'multiple' ) {
@@ -286,6 +295,8 @@ function getdeckType(event) {
     console.log(selectedDeck._value.name, event.value.name);
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
+        tilenoas.deckType = dt.value;
+        // mechStore.tilemech.value[0].deckType = dt.value;
         isDisabledslope.value = false;
         console.log(dt.value);
     }
@@ -300,15 +311,20 @@ function updateTile(event) {
     const valMulti = Object.entries(type).map((obj) => {
         const key = obj[0];
         const value = obj[1];
-        console.log(key);
+        console.log(key, value);
 
         if (event.value === key) {
             // let sel = tilenoas.select_tile;
+            console.log(event.value, obj[1]);
             tileSel.values = value[0];
-
+            console.log(tileSel.values);
             zoneone.lambda1 = tileSel.values;
             zonetwo.lambda2 = tileSel.values;
             zonethree.lambda3 = tileSel.values;
+            console.log(zoneone.lambda1);
+            mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
+            mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
+            mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
         }
     });
     let types = multiTiles.tile_map;
@@ -362,6 +378,14 @@ function updateTile(event) {
         zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
         zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
         zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+        console.log(zoneone.mr1);
+        mechStore.tilemech.value[0].mg1 = zoneone.mg1;
+        mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
+        mechStore.tilemech.value[0].mg3 = zonethree.mg3;
+
+        mechStore.tilemech.value[0].mr1 = zoneone.mr1;
+        mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
+        mechStore.tilemech.value[0].mr3 = zonethree.mr3;
     });
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
@@ -574,15 +598,14 @@ const { errorHeightMessage, validateTileHeight } = useHeightValidation({
 });
 
 function validateRoofSlope() {
-    validateInput();
-
     if (dims.slope >= 4) {
         isDisabled.value = false;
         addCheckmarks();
         console.log('entered slope');
     } else {
-        isDisabled.value = true;
+        isDisabled.value = false;
     }
+    validateInput();
 }
 const validateInput = () => {
     validateNumber(dims.slope);
@@ -605,12 +628,6 @@ function addCheckmarks() {
     }
 }
 
-// function addCheckmarks() {
-//     if (errorMessage.value === null || errorHeightMessage.value === null) {
-//         isvalueValid = true;
-//         console.log('Entered checkmarks');
-//     }
-// }
 function validateHeight() {
     validateHeightInput();
     console.log(height.value);
@@ -622,6 +639,20 @@ const { getDatas } = useExposured();
 function setRoofInputs() {
     dims.height = heightModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
+    console.log(dims);
+    tilenoas.height = dims.height;
+    tilenoas.perimeter = dims.per;
+    tilenoas.slope = dims.slope;
+    tilenoas.area = dims.area;
+
+    mechStore.tilemech.value[0].slope = tilenoas.slope;
+    mechStore.tilemech.value[0].height = tilenoas.height;
+    mechStore.tilemech.value[0].area = tilenoas.area;
+    mechStore.tilemech.value[0].perimeter = tilenoas.perimeter;
+    mechStore.tilemech.value[0].deckType = tilenoas.deckType;
+    // console.log(tilenoas);
+    // mechStore.addNoa(tilenoas.height);
+    console.log(mechStore);
     addCheckmarks();
 }
 
@@ -684,6 +715,7 @@ let ismrInvalid3 = ref(false);
 
 function checkMaterial() {
     if (datamountedMech.value[0].Table2.content === 'multiple') {
+        console.log('Entered multiple');
         checkTile();
     }
 
@@ -753,6 +785,8 @@ function checkMaterial() {
         console.log(zonethree.mg3);
     }
 
+    mechStore.tilemech.value[0].slope = dims.slope;
+    console.log(mechStore.tilemech.value[0].slope);
     const result1 = computed(() => zoneone.zone * zoneone.lambda1);
 
     const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
@@ -763,23 +797,24 @@ function checkMaterial() {
     zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
     zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
 
+    console.log(dims);
     mechStore.tilemech.value[0].slope = dims.slope;
     mechStore.tilemech.value[0].height = dims.height;
     mechStore.tilemech.value[0].area = dims.area;
     mechStore.tilemech.value[0].perimeter = dims.per;
     mechStore.tilemech.value[0].deckType = dt.value;
-    mechStore.tilemech.value[0].zoneone = zoneone.zone;
-    mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
-    mechStore.tilemech.value[0].zonethree = zonethree.zone;
-    mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
-    mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
-    mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
-    mechStore.tilemech.value[0].mg1 = zoneone.mg1;
-    mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
-    mechStore.tilemech.value[0].mg3 = zonethree.mg3;
-    mechStore.tilemech.value[0].mr1 = zoneone.mr1;
-    mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
-    mechStore.tilemech.value[0].mr3 = zonethree.mr3;
+    // mechStore.tilemech.value[0].zoneone = zoneone.zone;
+    // mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
+    // mechStore.tilemech.value[0].zonethree = zonethree.zone;
+    // mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
+    // mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
+    // mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
+    // mechStore.tilemech.value[0].mg1 = zoneone.mg1;
+    // mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
+    // mechStore.tilemech.value[0].mg3 = zonethree.mg3;
+    // mechStore.tilemech.value[0].mr1 = zoneone.mr1;
+    // mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
+    // mechStore.tilemech.value[0].mr3 = zonethree.mr3;
     mechStore.tilemech.value[0].mf1 = zoneone.mf1;
     mechStore.tilemech.value[0].mf2 = zonetwo.mf2;
     mechStore.tilemech.value[0].mf3 = zonethree.mf3;
@@ -801,7 +836,6 @@ function updateMF(event) {
     console.log(mat);
     if (exposureChoosen.value === 'c') {
         console.log('Else C exposure');
-        console.log(zones);
 
         zones.value.forEach((item, index) => {
             zoneone.zone = item[0];
@@ -1159,11 +1193,11 @@ function saDescPressure() {
         ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
     }
 }
-// function callReset() {
-//     resetSingle();
-// }
+function callReset() {
+    resetSingle();
+}
 
-watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, checkMaterial, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, () => {});
+watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">

@@ -16,37 +16,36 @@
                 <label>Signature:</label>
                 <!-- Canvas for signature capture -->
 
-                <canvas ref="signatureCanvas" width="500" height="200" style="border: 1px solid #000"></canvas>
+                <canvas ref="signatureCanvas" width="300" height="100" style="border: 1px solid #000"></canvas>
             </div>
 
             <div class="button-group">
-                <Button type="button" @click="clearSignature">Clear Signature</Button>
+                <Button severity="secondary" type="button" @click="clearSignature">Clear Signature</Button>
                 <!-- <Button type="button" @click="nextStep">Next</Button> -->
-                <Button type="submit">Submit</Button>
+                <Button severity="secondary" type="submit">Submit</Button>
             </div>
         </form>
         <!-- Step 3: Identity Verification -->
         <!-- v-if="step === 2" -->
         <div>
-            <h2>Step 3: Identity Verification</h2>
+            <h2>Step 1: Identity Verification</h2>
 
             <form @submit.prevent="handleIDUpload">
                 <div class="card">
                     <Toast />
                     <!-- url="/api/upload" -->
-
+                    <!--
                     <FileUpload name="demo[]" @change="onFileChange" :multiple="true" accept="image/*" :maxFileSize="1000000">
                         <template #empty>
                             <span>Drag and drop files to here to upload.</span>
                         </template>
-                        <!-- <Button type="submit">Upload & Verify</Button> -->
-                    </FileUpload>
+                        <Button type="submit">Upload & Verify</Button>
+                    </FileUpload> -->
 
-                    <!-- <label for="idUpload">Upload a photo of your ID:</label> -->
-                    <!-- <Input id="idUpload" type="file" @change="onFileChange" accept="image/*" required /> -->
-                    <!-- <Button type="submit">Upload & Verify</Button> -->
+                    <label for="idUpload">Upload a photo of your ID:</label>
+                    <Input id="idUpload" type="file" @change="onFileChange" accept="image/*" required />
+                    <Button severity="secondary" type="submit">Upload & Verify</Button>
                 </div>
-                <Button type="submit">Upload & Verify</Button>
             </form>
             <div v-if="uploading" class="info-message">Verifying identity...</div>
             <div v-if="verificationError" class="error-message">{{ verificationError }}</div>
@@ -55,9 +54,9 @@
         <!-- Step 4: Final Notarization -->
         <!-- v-if="step === 3" -->
         <div>
-            <h2>Step 4: Finalize Notarization</h2>
+            <h2>Step 2: Finalize Notarization</h2>
             <p>Your details, signature, and identity have been collected.</p>
-            <Button @click="finalizeNotarization">Finalize Notarization</Button>
+            <Button severity="secondary" @click="finalizeNotarization">Finalize Notarization</Button>
         </div>
 
         <!-- Step 5: Notarization Complete -->
@@ -210,28 +209,6 @@ async function finalizeNotarization() {
     console.log(notarizationCertificate.value);
     // step.value++; // Move to the final "Notarization Complete" step
 }
-// Function to handle form submission
-// function submitSignature() {
-//     // Ensure that a signature is present
-//     if (signaturePad.isEmpty()) {
-//         alert('Please provide a signature before submitting.');
-//         return;
-//     }
-
-//     // Capture the signature data as a Base64-encoded image
-//     const signatureData = signaturePad.toDataURL();
-
-//     // Here you could send the data to an API for verification
-//     // For demonstration, we log the details to the console.
-//     console.log('Customer Name:', formData.name);
-//     console.log('Signature Data:', signatureData);
-
-//     alert('Signature submitted successfully!');
-
-//     // Optionally, reset the form
-//     //   formData.name = '';
-//     // clearSignature();
-// }
 </script>
 
 <style scoped>
@@ -266,5 +243,6 @@ async function finalizeNotarization() {
 .button-group button {
     padding: 0.5rem 1rem;
     cursor: pointer;
+    color: #000;
 }
 </style>

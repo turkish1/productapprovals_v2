@@ -14,7 +14,16 @@
     // background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
-    padding: 1.2rem;
+    // padding: 1.2rem;
+    // background: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
+    backdrop-filter: blur(10px); /* Apply the blur effect */
+    -webkit-backdrop-filter: blur(60px); /* For Safari */
+    // border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+    //   max-width: 400px;
+    // text-align: center;
+    //   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     // margin-bottom: 1.5rem;
     // margin-top: 1rem;
     // border-radius: var(--content-border-radius);

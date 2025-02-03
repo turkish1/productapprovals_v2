@@ -209,7 +209,7 @@ export default {
     <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #122620"> @click="selectPermitType"-->
     <PermitInitalAgreement v-if="isDialog" />
     <!-- <div class="grid grid-cols-1 gap-2"> -->
-    <div class="container md:w-1/3" style="margin-left: 330px">
+    <div class="container md:w-1/3" style="margin-left: 530px">
         <form>
             <div class="flex flex-row">
                 <div class="flex mt-4 space-y-2 flex-col gap-2">
@@ -222,14 +222,14 @@ export default {
                         <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
                         <!-- <Message severity="error">Contractor Name Required</Message> -->
                     </div>
-
+                    <!-- grid grid-cols-2 gap-4    flex mt-3 space-y-2 flex-col gap-2-->
                     <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
-                        <form class="w-2/3" @submit="onSubmit">
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-2">
+                        <form class="md:w-3/4 grid grid-cols-2 gap-6" @submit="onSubmit">
+                            <div class="flex flex-col mt-3 w-full w-64 space-y-2 grow basis-0 gap-4">
                                 <label for="addr" style="color: #122620">Property Address</label>
                                 <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
                                 <!-- v-if="!loading"  -->
-                                <Button id="search" type="button" label="Search" class="w-1/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
+                                <Button id="search" type="button" label="Search" class="w-2/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
 
                                 <!-- <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i> -->
 
@@ -237,7 +237,7 @@ export default {
                                 <!-- <Message severity="error">Property Address Required</Message> -->
                             </div>
 
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                            <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">
                                 <label for="dba" style="color: #122620">DBA </label>
                                 <InputText id="dba" v-model="dba" type="text" placeholder="name" />
                                 <!-- <Message severity="error">Contractor Name Required</Message> -->
@@ -280,7 +280,7 @@ export default {
                             <p v-if="responseMessage">{{ responseMessage }}</p>
 
                             <br />
-                            <Button id="submit" type="submit" label="Submit" class="w-1/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
+                            <Button id="submit" type="submit" label="Submit" class="w-2/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
                         </form>
 
                         <br />

@@ -23,6 +23,7 @@ export default function usemuliTile() {
     //     expiration_date: '',
     //     prescriptiveSelection: ''
     // });
+    const selected = ref([]);
     const dt = ref([]);
     const multiTiles = reactive({
         select_tile: [],
@@ -32,9 +33,10 @@ export default function usemuliTile() {
     });
     // const { tilenoa, getNoa } = useGlobalStates();
     const multiStore = usemultiStore();
-    function workoutData(data) {
+    function workoutData(data, selectTiles) {
         dt.value = data.value;
-        console.log(data);
+        selected.value = selectTiles;
+        console.log(data, selectTiles);
         console.log(data.value);
         console.log(dt.value[0].Table2.content);
         multiTiles.table2 = dt.value[0].Table2.content;

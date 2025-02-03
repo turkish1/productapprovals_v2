@@ -94,10 +94,10 @@ function clear() {
         <div class="add">
             <i class="pi pi-plus-circle" style="font-size: 2rem; color: gray; margin-left: 1px; margin-top: 150px" @click="addItemAndClear(selectedItem, area)"></i>
         </div>
-
-        <div class="grid grid-cols-1 gap-2 place-content-end h42 ..">
+        <!-- grid grid-cols-1 mt-3 w-full w-64 gap-4 place-content-end h36 .. -->
+        <div class="flex flex-col gap-4">
             <div>
-                <Button class="button" label="Submit" raised style="margin-left: 1px; margin-top: 100px; background-color: #a4b5b9" as="router-link" to="/generalpage" @click="generatePdf"></Button>
+                <Button class="button" label="Submit" raised style="margin-right: 90px; margin-top: 230px; background-color: #a4b5b9" as="router-link" to="/generalpage"></Button>
             </div>
         </div>
     </div>

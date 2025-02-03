@@ -31,7 +31,12 @@ export default function useMech() {
         one_number_eight_screw: null,
         two_number_eight_screw: null,
         mechanicaltilefastener: [],
-        fastenerValues: []
+        fastenerValues: [],
+        height: null,
+        area: null,
+        slope: null,
+        perimeter: null,
+        decktype: null
     });
     function takeMechInput(inputMech) {
         input.value = inputMech;
