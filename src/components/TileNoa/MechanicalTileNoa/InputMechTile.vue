@@ -398,6 +398,7 @@ function sysEcheckInput() {
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;
+            console.log(udlTile.system);
         });
     }
 }
@@ -568,11 +569,13 @@ function EcheckInputSystem() {
         if (item.systemDataE.system.length > 1) {
         } else {
             udlTile.system = item.systemDataE.system;
+            console.log(udlTile.system);
         }
     });
 }
 function addFSystem() {
     saTiles.system = saTiles.system;
+    console.log(saTiles.system);
 }
 
 const resistanceCheck = ref(null);
@@ -644,8 +647,9 @@ function setRoofInputs() {
     tilenoas.perimeter = dims.per;
     tilenoas.slope = dims.slope;
     tilenoas.area = dims.area;
-
+    console.log(tilenoas.area);
     mechStore.tilemech.value[0].slope = tilenoas.slope;
+    console.log(mechStore.tilemech.value[0].slope);
     mechStore.tilemech.value[0].height = tilenoas.height;
     mechStore.tilemech.value[0].area = tilenoas.area;
     mechStore.tilemech.value[0].perimeter = tilenoas.perimeter;
@@ -674,7 +678,7 @@ function checkInput() {
         tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
         tilenoas.description = datamountedMech.value[0].description;
         tilenoas.material = datamountedMech.value[0].material;
-
+        console.log(datamountedMech.value[0].description);
         if (datamountedMech.value[0].Table2.content === 'multiple') {
             isTileSelectionValid = false;
             isMultiTileValid = true;
@@ -1191,6 +1195,7 @@ function saDescPressure() {
         ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
         ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
         ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
+        console.log(saTiles.description);
     }
 }
 function callReset() {

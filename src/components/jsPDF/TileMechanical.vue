@@ -294,7 +294,8 @@ const generatePDF = () => {
         var current_y = topRighty - thirdYCoordinate;
         currentX.value = LeftStart;
         currentY.value = current_y;
-        console.log(currentX.value, currentY.value);
+        console.log(mechStore.tilemech.value[0]);
+
         const noa = ref(mechStore.tilemech.value[0].noa);
         const applicant = ref(mechStore.tilemech.value[0].manufacturer);
         const material = ref(mechStore.tilemech.value[0].material);
@@ -439,6 +440,7 @@ const generatePDF = () => {
 
             current_y = current_y + 10;
         } else {
+            console.log(etileStore.$state.tilesysEinput);
             const udlNoa = ref(etileStore.$state.tilesysEinput[0].systemDataE.noa);
             const udlApplicant = ref(etileStore.$state.tilesysEinput[0].systemDataE.manufacturer);
             const udlMaterial = ref(etileStore.$state.tilesysEinput[0].systemDataE.material);

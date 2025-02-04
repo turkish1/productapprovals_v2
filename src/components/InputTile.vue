@@ -10,12 +10,12 @@ import useExposurec from '@/composables/Tiletables/exposure_c';
 import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-Height';
 import { useNumberValidation } from '@/composables/Validation/use-Slope';
-import usemultiTile from '@/composables/businesslogic/use-multiTile';
+import usemuliAdTile from '@/composables/businesslogic/use-multiTileAdhesive';
 import useDouble from '@/composables/fetchTech/use-doublepdNumber';
 import useSingle from '@/composables/fetchTech/use-singlepdNumber';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useExposureD } from '@/stores/exposuredStore';
-import { usemultiStore } from '@/stores/multitileStore';
+import { usemultiAdStore } from '@/stores/multitileADStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { usePaddyStore } from '@/stores/singlepaddyStore';
 import { useGlobalStates } from '@/stores/tilenoaStore';
@@ -26,7 +26,6 @@ import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-
 const tileStore = useGlobalStates();
 
 const pdfStore = useGlobalState();
@@ -36,9 +35,10 @@ const { addtileData } = usePaddyStore();
 
 const selectedOption = ref(null);
 const ftileStore = usetilesysfStore();
-const multipleStore = usemultiStore();
-const { workoutData, multiTiles } = usemultiTile();
-const { multiinput } = storeToRefs(multipleStore);
+const multipleStore = usemultiAdStore();
+const { workoutDataAD, multiTileAD } = usemuliAdTile();
+const { multiAdinput } = storeToRefs(multipleStore);
+
 // Input query
 const query = ref('');
 const isSinglepaddyValid = ref(false);
@@ -643,7 +643,7 @@ function selectedExposure() {
 }
 // Multitile
 function updateTile(event) {
-    let type = multiTiles.table2_map;
+    let type = multiTileAD.table2_map;
 
     const valMulti = Object.entries(type).map((obj) => {
         const key = obj[0];
@@ -665,7 +665,7 @@ function updateTile(event) {
             console.log(zoneone.lambda1);
         }
     });
-    let types = multiTiles.tile_map;
+    let types = multiTileAD.tile_map;
     console.log(types);
     const valMultis = Object.entries(types).map((obj) => {
         const key = obj[0];
@@ -810,9 +810,9 @@ function checkTile() {
     }
     console.log(tileData.Table2.content);
     if (tileData.Table2.content === 'multiple') {
-        workoutData(tileData);
-        console.log(multiTiles.select_tile);
-        tilenoas.select_tile = multiTiles.select_tile;
+        workoutDataAD(tileData);
+        console.log(multiTileAD.select_tile);
+        tilenoas.select_tile = multiTileAD.select_tile;
         isMultiTileValid = true;
         showMaterialValid = false;
     }
@@ -1308,7 +1308,6 @@ function udlDescPressure() {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E13;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E13;
     }
-    console.log(etileStore.$state.tilesysEinput);
     if (etileStore.$state.tilesysEinput.length !== 0) {
         etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base = udlTile.Anchor_Base_Sheet;
         etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
@@ -1434,7 +1433,7 @@ watch(
         <DripEdAdTile />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
-            <Buttons label="Double Click" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>
+            <!-- <Buttons label="Double Click" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons> -->
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
@@ -1485,7 +1484,7 @@ watch(
                                 @update="selectedExposure"
                                 @keydown.tab.exact.stop="checkInput"
                             />
-                            <Buttons label="Search" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>
+                            <Buttons label="Double Click" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>
                             <!-- <Buttons label="Reset" severity="danger" variant="outlined" @click="reset" style="margin-left: 5px"></Buttons> -->
 
                             <label for="ac">Tile NOA: 00000000</label>
