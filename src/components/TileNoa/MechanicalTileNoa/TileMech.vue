@@ -1,11 +1,11 @@
 <script setup>
 // import { invoke, until } from '@vueuse/shared';
 import AgreementsDialogMechTile from '@/components/Agreements/AgreementsDialogMechTile.vue';
+import InputTile from '@/components/TileNoa/MechanicalTileNoa/InputMechTile.vue';
 import { useRoofListStore } from '@/stores/roofList';
 import { useDocumentVisibility } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
-import InputTile from './InputMechTile.vue';
 
 const visibility = useDocumentVisibility();
 const store = useRoofListStore();

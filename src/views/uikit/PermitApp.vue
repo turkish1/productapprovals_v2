@@ -34,6 +34,7 @@ export default {
 
         const prefix = ref('me');
         const store = usePermitappStore();
+        const muniProcess = ref('');
         const formData = reactive({
             address: '',
             muni: '',
@@ -167,8 +168,9 @@ export default {
             if (formdt.length === 0) {
                 return;
             }
-            store.addSystem(formdt, permType, checkMB.value);
-            console.log(formdt, permType, checkMB.value, 'System added');
+            store.addSystem(formdt, permType, checkMB.value, muniProcess.value);
+
+            console.log(store);
             // area.value = '';
             // type.value = '';
         }
@@ -185,6 +187,7 @@ export default {
             phone,
             contractor,
             licenseStatus,
+            muniProcess,
             addUser,
             navigateNext,
             addItemAndClear,
@@ -236,13 +239,17 @@ export default {
                                 <!-- pi-search-plus -->
                                 <!-- <Message severity="error">Property Address Required</Message> -->
                             </div>
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
+                                <label for="processMuni" style="color: #122620">Municipality Process Number</label>
+                                <InputText id="processMuni" v-model="muniProcess" type="text" placeholder="municipal process number" />
+                            </div>
 
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">
                                 <label for="dba" style="color: #122620">DBA </label>
                                 <InputText id="dba" v-model="dba" type="text" placeholder="name" />
                                 <!-- <Message severity="error">Contractor Name Required</Message> -->
                             </div>
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                            <div class="flex flex-col w-full md:w-64 mt-3 space-y-2 grow basis-0 gap-4" style="margin-left: 55px">
                                 <label for="contractor" style="color: #122620">Contractor Name</label>
                                 <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
                                 <!-- <Message severity="error">Contractor Name Required</Message> -->
@@ -272,7 +279,7 @@ export default {
                                 <label for="permit" style="color: #122620">Master Permit</label>
                                 <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
                             </div>
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
+                            <div class="flex flex-col font-semibold mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="processnum" style="color: #122620">mEProcess Number</label>
                                 <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
                             </div>

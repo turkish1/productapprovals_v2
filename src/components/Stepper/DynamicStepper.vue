@@ -46,6 +46,10 @@ const isValidShingle = ref(false);
 const isValidBur = ref(false);
 const isValidTile = ref(false);
 const isValidMechanical = ref(false);
+const isValidShinglePDF = ref(false);
+const isValidBurPDF = ref(false);
+const isValidTilePDF = ref(false);
+const isValidMechanicalPDF = ref(false);
 const isValidSummary = ref(true);
 const isValidPayment = ref(true);
 
@@ -64,7 +68,8 @@ const Step3AdhesiveTile = defineAsyncComponent(() => import('@/components/Tile.v
 const Step4MechanicalTile = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
 const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
-
+// const Step3ADTilePDF = defineAsyncComponent(() => import('@/components/jsPDF/TileAdhesive.vue'));
+// const Step4TMechilePDF = defineAsyncComponent(() => import('@/components/jsPDF/TileMechanical.vue'));
 // Array of step definitions (we'll fill label and component conditionally)
 const steps = ref([
     { label: '', component: null }, // Shingles
@@ -79,12 +84,15 @@ const steps = ref([
 const availableComponents = [
     Step1Shingle, // Shingles
     Step2LowSlope, // Low Slope
-    Step3AdhesiveTile, // Adhesive Tile
+    Step3AdhesiveTile,
+    // Step3ADTilePDF,// Adhesive Tile
     Step4MechanicalTile,
+    // Step4TMechilePDF,
     Step5Summary,
     Step6Payment
 ];
 
+// const availableComponentsPDF = [Step3ADTilePDF, Step4TMechilePDF];
 const stepLabels = ['Shingles', 'Low Slope', 'Adhesive Tile', 'Mechanical Tile', 'Summary', 'Payment Page'];
 
 // Check if we have a valid Miami Beach scenario
@@ -103,15 +111,19 @@ function checkState() {
     roofList.value.forEach((item) => {
         if (item.item === 'Asphalt Shingle') {
             isValidShingle.value = true;
+            isValidShinglePDF.value = true;
         }
         if (item.item === 'Low Slope') {
             isValidBur.value = true;
+            isValidBurPDF.value = true;
         }
         if (item.item === 'Mechanical Fastened Tile') {
             isValidMechanical.value = true;
+            isValidMechanicalPDF.value = true;
         }
         if (item.item === 'Adhesive Set Tile') {
             isValidTile.value = true;
+            isValidTilePDF.value = true;
         }
     });
 
@@ -123,6 +135,8 @@ function checkState() {
         if (val) {
             steps.value[i].label = stepLabels[i];
             steps.value[i].component = availableComponents[i];
+            console.log(i, val);
+            console.log(steps.value[i].component);
         } else {
             steps.value[i].label = '';
             steps.value[i].component = null;
@@ -151,6 +165,18 @@ function nextStep() {
         }
         isLoading.value = false;
     }, 200);
+    // const pdfbools = [isValidTilePDF.value, isValidMechanicalPDF.value];
+    // pdfbools.forEach((val, i) => {
+    //     if (val) {
+    //         // steps.value[i].label = stepLabels[i];
+    //         steps.value[i].component = availableComponentsPDF[i];
+    //         console.log(i, val);
+    //         console.log(steps.value[i].component);
+    //     } else {
+    //         // steps.value[i].label = '';
+    //         steps.value[i].component = null;
+    //     }
+    // });
 }
 
 function prevStep() {
@@ -225,6 +251,6 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 .stepper-controls {
     display: flex;
     gap: 1500px;
-    margin-top: 55px;
+    margin-top: 45px;
 }
 </style>

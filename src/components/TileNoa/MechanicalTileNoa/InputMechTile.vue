@@ -6,7 +6,7 @@ import { useExposureD } from '@/stores/exposuredStore';
 
 import useMechNumber from '@/composables/fetchTech/use-systemMechNumber';
 
-import useMech from '@/composables/InputLogic/use-tileMechanical';
+import useMech from '@/composables/fetchTech/use-tileMechanical';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
 import { useHeightValidation } from '@/composables/Validation/use-mechHeight';
@@ -33,10 +33,11 @@ const { tbd, zoned } = useExposureD();
 const suggestions = ref([]);
 // State to control suggestions visibility
 const showSuggestions = ref(false);
-
+// This calls the NOAs
 const { callNumber, mechanicalStore } = useMechNumber();
 
 const { takeMechInput, mechanicalData, mechStore } = useMech();
+console.log(mechStore);
 const { Edatamounted, etileStore } = useUDL();
 
 const { zones } = useGlobalState();
@@ -58,14 +59,16 @@ const tilenoas = reactive({
     two_number_eight_screw: null,
     mechanicaltilefastener: [],
     fastenerValues: [],
-    slope: 0,
-    height: 0,
+    slope: '',
+    height: '',
     dripEdgeMaterial: [],
     dripEdgeSize: [],
     deckType: '',
     expiration_date: '',
     prescriptiveSelection: '',
-    perimeter: ''
+    perimeter: '',
+    tiletype: '',
+    savedfastener: ''
 });
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
@@ -128,7 +131,7 @@ function grabInput() {
     console.log(query.value);
     console.log(datamechnoas);
     datamechnoas.value = query.value;
-    console.log(query.value, datamechnoas.value);
+
     if (datamechnoas.value !== null) {
         // 18061905
 
@@ -235,7 +238,7 @@ const hideSuggestions = () => {
 const selectedDeck = ref();
 const type = ref([{ name: ' Select Deck Type ' }, { name: ' 5/8" Plywood  ' }, { name: ' 3/4" Plywood  ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 const save = ref([]);
-
+const saved_value = ref('');
 const tileSel = reactive({
     keys: '',
     values: []
@@ -301,6 +304,7 @@ function getdeckType(event) {
         console.log(dt.value);
     }
 }
+
 function updateTile(event) {
     console.log(event.value);
     console.log(multiTiles.table2_map);
@@ -315,7 +319,8 @@ function updateTile(event) {
 
         if (event.value === key) {
             // let sel = tilenoas.select_tile;
-            console.log(event.value, obj[1]);
+            tilenoas.tiletype = event.value;
+            console.log(event.value, obj[1], tilenoas.tiletype);
             tileSel.values = value[0];
             console.log(tileSel.values);
             zoneone.lambda1 = tileSel.values;
@@ -334,7 +339,10 @@ function updateTile(event) {
         console.log(key);
         if (event.value === key) {
             // let sel = tilenoas.select_tile;
+            // tilenoas.select_tile = event.value;
+            console.log(event.value);
             tileValue.v = value;
+
             console.log(tileValue.v);
             console.log(value);
         }
@@ -342,10 +350,12 @@ function updateTile(event) {
         const slopeRange = clampNumber1(2, Number(dims.slope), 12);
         console.log(slopeRange);
         if (slopeRange <= slopeOptions.three) {
+            console.log(tileValue.v);
             zoneone.mg1 = tileValue.v[0];
             zonetwo.mg2 = tileValue.v[0];
             zonethree.mg3 = tileValue.v[0];
         } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+            console.log(tileValue.v[1]);
             zoneone.mg1 = tileValue.v[1];
             zonetwo.mg2 = tileValue.v[1];
             zonethree.mg3 = tileValue.v[1];
@@ -389,10 +399,10 @@ function updateTile(event) {
     });
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+
     // checkMaterial();
 }
 function sysEcheckInput() {
-    console.log(Edatamounted.value);
     if (Edatamounted.value.length !== null) {
         Edatamounted.value.forEach((item, index) => {
             udlTile.manufacturer = item.systemDataE.manufacturer;
@@ -428,7 +438,7 @@ let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
 
-let selectedUnderlayment = ref();
+let selectedUnderlayment = ref('');
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
     { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
@@ -438,7 +448,8 @@ const underlaymentType = ref([
 
 watch(selectedUnderlayment, () => {
     save.value = selectedUnderlayment.value.key;
-
+    saved_value.value = selectedUnderlayment.value.selectedBasesheet;
+    console.log(saved_value.value);
     if (save.value === 1) {
         isTileValid.value = true;
         isUDLValid.value = false;
@@ -578,7 +589,7 @@ function addFSystem() {
     console.log(saTiles.system);
 }
 
-const resistanceCheck = ref(null);
+const resistanceCheck = ref();
 
 const MF = computed(updateMF, () => {
     zoneone.mf1 = mfupdate.value;
@@ -645,17 +656,10 @@ function setRoofInputs() {
     console.log(dims);
     tilenoas.height = dims.height;
     tilenoas.perimeter = dims.per;
-    tilenoas.slope = dims.slope;
+    // tilenoas.slope = dims.slope;
     tilenoas.area = dims.area;
-    console.log(tilenoas.area);
-    mechStore.tilemech.value[0].slope = tilenoas.slope;
-    console.log(mechStore.tilemech.value[0].slope);
-    mechStore.tilemech.value[0].height = tilenoas.height;
-    mechStore.tilemech.value[0].area = tilenoas.area;
-    mechStore.tilemech.value[0].perimeter = tilenoas.perimeter;
-    mechStore.tilemech.value[0].deckType = tilenoas.deckType;
-    // console.log(tilenoas);
-    // mechStore.addNoa(tilenoas.height);
+    console.log(tilenoas.area, dims.slope);
+
     console.log(mechStore);
     addCheckmarks();
 }
@@ -690,6 +694,14 @@ function checkInput() {
             isMultiTileValid = false;
         }
     }
+    console.log(tilenoas.height);
+
+    mechStore.tilemech.value[0].slope = dims.slope;
+    mechStore.tilemech.value[0].height = dims.height;
+    console.log(mechStore.tilemech.value[0]);
+    mechStore.tilemech.value[0].area = dims.area;
+    mechStore.tilemech.value[0].perimeter = dims.per;
+    mechStore.tilemech.value[0].decktype = dt.value;
     selectedExposure();
     checkTile();
 }
@@ -731,20 +743,20 @@ function checkMaterial() {
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
-        console.log(zones.value);
     } else {
         console.log('D exposure');
-        console.log(tbd, zoned);
-        console.log(useExposured());
+        // console.log(tbd, zoned);
+        // console.log(useExposured());
         zoned.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
     }
-
+    console.log(datamountedMech.value[0].mechanicaltilefastener);
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+
     console.log(datamountedMech);
     zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
     zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
@@ -789,8 +801,6 @@ function checkMaterial() {
         console.log(zonethree.mg3);
     }
 
-    mechStore.tilemech.value[0].slope = dims.slope;
-    console.log(mechStore.tilemech.value[0].slope);
     const result1 = computed(() => zoneone.zone * zoneone.lambda1);
 
     const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
@@ -802,29 +812,18 @@ function checkMaterial() {
     zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
 
     console.log(dims);
-    mechStore.tilemech.value[0].slope = dims.slope;
-    mechStore.tilemech.value[0].height = dims.height;
-    mechStore.tilemech.value[0].area = dims.area;
-    mechStore.tilemech.value[0].perimeter = dims.per;
-    mechStore.tilemech.value[0].deckType = dt.value;
-    // mechStore.tilemech.value[0].zoneone = zoneone.zone;
-    // mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
-    // mechStore.tilemech.value[0].zonethree = zonethree.zone;
-    // mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
-    // mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
-    // mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
-    // mechStore.tilemech.value[0].mg1 = zoneone.mg1;
-    // mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
-    // mechStore.tilemech.value[0].mg3 = zonethree.mg3;
-    // mechStore.tilemech.value[0].mr1 = zoneone.mr1;
-    // mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
-    // mechStore.tilemech.value[0].mr3 = zonethree.mr3;
+
     mechStore.tilemech.value[0].mf1 = zoneone.mf1;
     mechStore.tilemech.value[0].mf2 = zonetwo.mf2;
     mechStore.tilemech.value[0].mf3 = zonethree.mf3;
-    console.log(mechStore.tilemech.value[0]);
-    // mechStore.tilemech.value[0].select_tile = tilenoas.material;
-    mechStore.tilemech.value[0].prescriptiveSelection = selectedUnderlayment.value;
+    // console.log(selectedUnderlayment.value, mechStore.tilemech.value[0]);
+    mechStore.tilemech.value[0].height = dims.height;
+    mechStore.tilemech.value[0].slope = dims.slope;
+    console.log(mechStore.tilemech.value[0].slope);
+    mechStore.tilemech.value[0].area = tilenoas.area;
+    mechStore.tilemech.value[0].perimeter = tilenoas.perimeter;
+    mechStore.tilemech.value[0].decktype = tilenoas.deckType;
+    // console.log(selectedUnderlayment.value);
 }
 
 const maps = ref([]);
@@ -837,7 +836,7 @@ function updateMF(event) {
 
     let mat = tilenoas.fastenerValues;
 
-    console.log(mat);
+    console.log(mat, tilenoas.savedfastener);
     if (exposureChoosen.value === 'c') {
         console.log('Else C exposure');
 
@@ -845,7 +844,27 @@ function updateMF(event) {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
+            mechStore.tilemech.value[0].zoneone = zoneone.zone;
+            mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
+            mechStore.tilemech.value[0].zonethree = zonethree.zone;
+            console.log(mechStore.tilemech.value[0].zoneone);
         });
+        tilenoas.savedfastener = event.value;
+        mechStore.tilemech.value[0].savedfastener = tilenoas.savedfastener;
+        mechStore.tilemech.value[0].tiletype = tilenoas.tiletype;
+        mechStore.tilemech.value[0].prescriptiveSelection = saved_value.value;
+        mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
+        mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
+        mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
+        mechStore.tilemech.value[0].mg1 = zoneone.mg1;
+        mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
+        mechStore.tilemech.value[0].mg3 = zonethree.mg3;
+
+        mechStore.tilemech.value[0].mr1 = zoneone.mr1;
+        mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
+        mechStore.tilemech.value[0].mr3 = zonethree.mr3;
+        console.log(mechStore.tilemech.value[0]);
+        console.log(mechStore);
     } else {
         console.log('D exposure');
         console.log(tbd, zoned);
@@ -1072,6 +1091,9 @@ function udlDescPressure() {
         udlTile.designPressure = keyValueSystemEPairsValues.value.E2;
         udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E2;
         console.log(udlTile.TileCap_Sheet_Description_E2, keyValueSystemEPairsValues.value.E2, Anchor_Base.Anchor_Base_Sheet_E2);
+        console.log(udlTile.TileCap_Sheet_Description);
+        console.log(udlTile.designPressure);
+        console.log(udlTile.Anchor_Base_Sheet);
     }
     if (selectedsystemE.value === 'E3') {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E3;
@@ -1134,7 +1156,8 @@ function udlDescPressure() {
         etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
         etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
         etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
-        etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value;
+        etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
+        console.log(etileStore.$state.tilesysEinput[0]);
     }
 }
 function saDescPressure() {
@@ -1194,15 +1217,15 @@ function saDescPressure() {
     if (ftileStore.$state.tilefinput.length !== 0) {
         ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
         ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
-        ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
-        console.log(saTiles.description);
+        ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
+        console.log(saTiles.description, ftileStore.$state.tilefinput[0]);
     }
 }
 function callReset() {
     resetSingle();
 }
 
-watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, () => {});
+watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, dims, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -1376,7 +1399,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
         </div>
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
             <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: red">Select Mechanical Tile Fastnener *</label>
+                <label style="color: red">Select Mechanical Tile Fastener *</label>
                 <!-- @click="checkInputSystem" @change="updateselectSystem" @click="checkMaterial"-->
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @change="updateMF" />
             </div>

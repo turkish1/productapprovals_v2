@@ -275,14 +275,14 @@ const generatePDF = () => {
         doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
         doc.line(dripSizeStartValue, current_y + factor, dripSizeStartValue + dripEdgeTextWidth, current_y + factor);
         current_y = current_y + 10;
-        console.log(tileInputvalues[0].tilevalues);
+        console.log(tileInputvalues[0].tileValues.zonetwo.lambda2);
         const mf1 = ref(tileInputvalues[0]?.tileValues.zoneone.mf1 || '');
         const lambda1 = ref(tileInputvalues[0]?.tileValues?.zoneone.lambda1 || '');
         const mg1 = ref(tileInputvalues[0]?.tileValues?.zoneone.mg1 || '');
         const mr1 = ref(tileInputvalues[0]?.tileValues?.zoneone.mr1 || '');
         const zoneone = ref(tileInputvalues[0]?.tileValues?.zoneone.zone1 || '');
         const mf2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.mf2 || '');
-        const lambda2 = ref(tileInputvalues[0]?.tilevalues?.zonetwo.lambda2 || '');
+        const lambda2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.lambda2 || '');
         const mg2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.mg2 || '');
         const mr2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.mr2 || '');
         const zonetwo = ref(tileInputvalues[0]?.tileValues?.zonetwo.zone2 || '');

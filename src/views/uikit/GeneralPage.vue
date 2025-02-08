@@ -8,7 +8,8 @@ import { useRoofListStore } from '@/stores/roofList';
 import { invoke, until } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
-import { onMounted, ref } from 'vue';
+import Divider from 'primevue/divider';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
@@ -18,6 +19,10 @@ const router = useRouter();
 const generalpageStore = useGeneralpdfStore();
 const { accountUsers } = useGlobalState();
 const { addgeneralpdfData } = storeToRefs(generalpageStore);
+
+const stepGeneralPagePDF = defineAsyncComponent(() => import('@/components/jsPDF/Generalpagepdf.vue'));
+
+const availableComponentsPDF = [stepGeneralPagePDF];
 
 let total = ref('');
 let low1 = ref('');
@@ -122,8 +127,23 @@ function roofArea() {
     isGenaralPageValid.value = true;
 }
 
+const steps = ref([
+    { component: null } // General Page
+]);
 const generatePDf = () => {
     isGenaralPageValid.value = true;
+    const pdfpage = [isGenaralPageValid.value];
+    pdfpage.forEach((val, i) => {
+        if (val) {
+            // steps.value[i].label = stepLabels[i];
+            steps.value[i].component = availableComponentsPDF[i];
+            console.log(i, val);
+            console.log(steps.value[i].component);
+        } else {
+            // steps.value[i].label = '';
+            steps.value[i].component = null;
+        }
+    });
 };
 const navigateNext = () => {
     router.push('/dynamicstepper');
@@ -187,32 +207,34 @@ invoke(async () => {
 
                 <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-4">
                     <div class="flex items-left gap-4" style="margin-top: 20px">
-                        <Checkbox v-model="checkedslp" inputId="slope1" name="lowslope" value="Low Slope" severity="contrast" :binary="true" />
                         <label for="slope1" class="ml-2" style="color: #122620">Low Slope</label>
+                        <Checkbox v-model="checkedslp" inputId="slope1" name="lowslope" value="Low Slope" severity="contrast" :binary="true" />
                     </div>
                     <div class="flex items-left gap-5">
-                        <Checkbox v-model="checkedmtile" inputId="mtile1" name="mtile" value="Mechanical Fastened Tile" severity="contrast" :binary="true" />
                         <label for="mtile1" class="ml-2" style="color: #122620"> Mechanical Fastened Tile </label>
+                        <Checkbox v-model="checkedmtile" inputId="mtile1" name="mtile" value="Mechanical Fastened Tile" severity="contrast" :binary="true" />
                     </div>
                     <div class="flex items-center gap-4">
-                        <Checkbox v-model="checkedadtile" inputId="adtile1" name="adtile" value="Mortar/Adhesive Set Tile" severity="contrast" :binary="true" />
                         <label for="adtile1" class="ml-2" style="color: #122620"> Adhesive Set Tile </label>
+                        <Checkbox v-model="checkedadtile" inputId="adtile1" name="adtile" value="Mortar/Adhesive Set Tile" severity="contrast" :binary="true" />
                     </div>
                     <!-- <br />
                         <label></label> -->
 
                     <div class="flex items-center gap-4">
-                        <Checkbox v-model="checkedshingle" inputId="shingle1" name="shingle" value="Asphalt Shingle" severity="contrast" :binary="true" />
                         <label for="shingle1" class="ml-2" style="color: #122620"> Asphalt Shingle </label>
+                        <Checkbox v-model="checkedshingle" inputId="shingle1" name="shingle" value="Asphalt Shingle" severity="contrast" :binary="true" />
                     </div>
                     <div class="flex items-center gap-4">
-                        <Checkbox v-model="checkedmetal" inputId="metal1" name="metal1" value="metal panel" severity="contrast" :binary="true" />
                         <label for="metal" class="ml-2" style="color: #122620"> Metal Panel </label>
+                        <Checkbox v-model="checkedmetal" inputId="metal1" name="metal1" value="metal panel" severity="contrast" :binary="true" />
                     </div>
-                    <div class="flex items-center gap-4"><label style="color: #122620">Roof Area </label></div>
+
                     <!-- <label style="margin-left: 50px; margin-top: 30px; color: #122620">Roof Area </label> -->
                 </div>
-
+                <Divider />
+                <div class="flex items-center space-y-6 gap-4" style="margin-left: 350px"><label style="color: #122620">Roof Area </label></div>
+                <Divider />
                 <div class="flex flex-col md:w-3/4 mt-4 space-y-6 md:flex-row gap-6">
                     <!-- <div><label for="lowslope" class="ml-1 text-left" style="color: #122620">Low Slope </label></div> -->
                     <label for="" style="margin-top: 20px; color: #122620">Low Slope </label>

@@ -131,7 +131,7 @@ const Anchor_Base = reactive({
 });
 function EcheckInputSystem() {
     // 23111506
-
+    console.log(datamountedsystemE);
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
 
@@ -164,7 +164,7 @@ function EcheckInputSystem() {
         udlTile.TileCap_Sheet_Description_E12 = item.systemDataE.TileCap_Sheet_Description_E12;
         udlTile.TileCap_Sheet_Description_E13 = item.systemDataE.TileCap_Sheet_Description_E13;
         udlTile.arrDesignPressure = item.systemDataE.designPressure;
-
+        console.log(item.systemDataE.system);
         if (item.systemDataE.system.length > 1) {
         } else {
             udlTile.system = item.systemDataE.system;

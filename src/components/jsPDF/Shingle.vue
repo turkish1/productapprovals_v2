@@ -94,7 +94,7 @@ const generatePDF = () => {
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
         const approved = 'Approved';
         // Set font size, alignment, and rotation for the watermark
-        doc.setFontSize(24);
+        doc.setFontSize(18);
         doc.setTextColor(150, 150, 150);
 
         doc.text('mEPermits', 25, 250, {
@@ -112,8 +112,8 @@ const generatePDF = () => {
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
-        doc.setFontSize(20);
-        doc.setTextColor(190, 190, 190);
+        doc.setFontSize(15);
+        doc.setTextColor('green');
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();
         doc.text(approved, 10, 270, { align: 'left' });
@@ -125,7 +125,6 @@ const generatePDF = () => {
 
         // Add a paragraph of text
 
-        doc.setFontSize(12);
         // doc.text(wrappedText, 10, 60);
         // Function to add header
         const addHeader = () => {
@@ -137,22 +136,21 @@ const generatePDF = () => {
                 25,
                 { maxWidth: '200' }
             ); // Position at (x, y)
-            doc.line(10, 41, 195, 41); // Draw a line below the header
+            doc.line(10, 43, 195, 43); // Draw a line below the header
         };
         doc.setTextColor(0);
         // Add a circle to simulate a radio button
-        doc.circle(185, 38, 2, 'FD'); // Circle as radio button (x, y, radius)
+        doc.circle(185, 39, 2, 'FD'); // Circle as radio button (x, y, radius)
 
         // Add the "I agree" text next to the circle
-        doc.text('I agree', 165, 39);
+        doc.text('I agree', 165, 40);
         // Add header to the first page
         addHeader();
 
         // Add content below the header
-        doc.setFontSize(12);
 
         // Add a title
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
         const data = [
@@ -170,7 +168,7 @@ const generatePDF = () => {
         // Set starting position second data
 
         // Set font size
-        doc.setFontSize(12);
+        doc.setFontSize(11);
 
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -191,9 +189,9 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
-        doc.setFontSize(12);
-        const factor = 2;
-        const initialYValue = 100;
+        doc.setFontSize(11);
+        const factor = 1;
+        const initialYValue = 95;
         doc.text('Roof Area:', 10, initialYValue);
 
         doc.text(`${area.value}`, 35, initialYValue);
@@ -216,7 +214,7 @@ const generatePDF = () => {
         const decktypeStartXValue = 30 + valueTextWidth2;
         doc.text(`${deckType.value}`, decktypeStartXValue, secondYCoordinate);
         const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`) * 2;
-        doc.line(decktypeStartXValue, secondYCoordinate, decktypeStartXValue + valueTextWidth5, secondYCoordinate); // Get text width
+        doc.line(decktypeStartXValue, secondYCoordinate + factor, decktypeStartXValue + valueTextWidth5, secondYCoordinate + factor); // Get text width
 
         // doc.text('Prescriptive ASTM # 30 with type IV hot asphalt applied # 90 Tile Capsheet:', 10, 70);
         // doc.text('Fastened Underlayment (UDL) with Self Adhered (S/A) Tile Capsheet:', 10, 80);
@@ -245,10 +243,10 @@ const generatePDF = () => {
         currentY.value = current_y;
         console.log(shingleStore.$state.inputshingle[0]);
         const noa = ref(shingleStore.$state.inputshingle[0]?.shingleData?.noa || '');
-        const applicant = ref(shingleStore.$state.inputshingle[0]?.shingleData?.applicant);
-        const material = ref(shingleStore.$state.inputshingle[0]?.shingleData?.material);
-        const description = ref(shingleStore.$state.inputshingle[0]?.shingleData?.description);
-        const prescriptive = ref(shingleStore.$state.inputshingle[0]?.shingleData?.prescriptiveSelection);
+        const applicant = ref(shingleStore.$state.inputshingle[0]?.shingleData?.applicant) || '';
+        const material = ref(shingleStore.$state.inputshingle[0]?.shingleData?.material || '');
+        const description = ref(shingleStore.$state.inputshingle[0]?.shingleData?.description || '');
+        const prescriptive = ref(shingleStore.$state.inputshingle[0]?.shingleData?.prescriptiveSelection || '');
 
         const valueTextWidth_0 = doc.getTextWidth(Perscriptive);
         const perscriptiveTextValue = doc.getTextWidth(`${prescriptive.value}`);
@@ -256,9 +254,9 @@ const generatePDF = () => {
         doc.text(Perscriptive, perspectiveStartXValue, current_y);
         const perscriptiveValue = valueTextWidth_0 + 10;
         doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
-        doc.line(perscriptiveValue, current_y, perscriptiveValue + perscriptiveTextValue, current_y);
+        doc.line(perscriptiveValue, current_y + factor, perscriptiveValue + perscriptiveTextValue, current_y + factor);
 
-        current_y = current_y + 10;
+        current_y = current_y + 8;
 
         const dripEdgeMaterial = 'DripEdge Material: ';
 
@@ -274,7 +272,7 @@ const generatePDF = () => {
         const dripMaterialStartValue = dripMaterialTextWidth + dMaterialStartXValue;
         doc.text(`${dripedgeMaterials.value}`, dripMaterialStartValue, current_y);
 
-        doc.line(dripMaterialStartValue, current_y, dripMaterialStartValue + materialTextWidth, current_y);
+        doc.line(dripMaterialStartValue, current_y + factor, dripMaterialStartValue + materialTextWidth, current_y + factor);
 
         current_y = current_y + 10;
 
@@ -285,7 +283,7 @@ const generatePDF = () => {
         const dripSizeStartValue = dripEdgeSizeTextWidth + dSizeStartXValue;
         doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
 
-        doc.line(dripSizeStartValue, current_y, dripSizeStartValue + dripEdgeTextWidth, current_y);
+        doc.line(dripSizeStartValue, current_y + factor, dripSizeStartValue + dripEdgeTextWidth, current_y + factor);
         current_y = current_y + 10;
 
         const valueTextWidthShingleCategory = doc.getTextWidth(applicantText);
@@ -294,7 +292,7 @@ const generatePDF = () => {
         doc.text(applicantText, shingleApplicantStartXValue, current_y);
         const shingleApplicantValue = shingleApplicantStartXValue + valueTextWidthShingleCategory;
         doc.text(`${applicant.value}`, shingleApplicantValue, current_y);
-        doc.line(shingleApplicantValue, current_y, shingleApplicantValue + valueTextWidthShingle, current_y);
+        doc.line(shingleApplicantValue, current_y + factor, shingleApplicantValue + valueTextWidthShingle, current_y + factor);
         currentX.value = shingleApplicantValue + valueTextWidthShingle;
 
         const valueTextWidthNoa = doc.getTextWidth(noaText);
@@ -303,7 +301,7 @@ const generatePDF = () => {
         doc.text(noaText, shingleStartXValue, current_y);
         const noaValue = valueTextWidthNoa + shingleStartXValue;
         doc.text(`${noa.value}`, noaValue, current_y);
-        doc.line(noaValue, current_y, noaValue + valueTextWidth3, current_y);
+        doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
         currentX.value = noaValue + valueTextWidth3;
 
         current_y = current_y + 10;
@@ -316,10 +314,10 @@ const generatePDF = () => {
         doc.text(materialText, materialStartXValue, current_y);
         const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
         doc.text(`${material.value}`, materialValue, current_y);
-        doc.line(materialValue, current_y, materialValue + valueTextWidthMaterial, current_y);
+        doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
         currentX.value = materialValue + valueTextWidthMaterial;
-
         if (currentX.value > max_width) current_y = current_y + 10;
+
         console.log(currentX.value, max_width);
         const Newline = ref(false);
         const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
@@ -333,7 +331,7 @@ const generatePDF = () => {
         // this is the text we want to underline
         const descriptionValue = descStartXValue + valueTextWidthDesc;
         doc.text(`${description.value}`, descriptionValue, current_y);
-        doc.line(descriptionValue, current_y, descriptionValue + valueTextWidth4, current_y);
+        doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
         currentX.value = descriptionValue + valueTextWidth4;
 
         current_y = current_y + 10;
@@ -352,7 +350,7 @@ const generatePDF = () => {
             const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
 
             doc.text(udlNoa, udlNoaValue, current_y);
-            doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
+            doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
             currentX.value = udlNoaValue + valueTextWidth_1;
 
             console.log(currentX.value);
@@ -362,7 +360,7 @@ const generatePDF = () => {
             doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
             const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
             doc.text(udlApplicant, udlApplicantValue, current_y);
-            doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
+            doc.line(udlApplicantValue, current_y + factor, udlApplicantValue + valueTextWidth_, current_y + factor);
             currentX.value = udlApplicantValue + valueTextWidth_;
 
             console.log(currentX.value);
@@ -373,7 +371,7 @@ const generatePDF = () => {
             doc.text(polymaterialText, udlmatStartXValue, current_y);
             const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
             doc.text(udlMaterial, udlmaterialValue, current_y);
-            doc.line(udlmaterialValue, current_y, udlmaterialValue + valueTextWidth_2, current_y);
+            doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
             currentX.value = udlmaterialValue + valueTextWidth_2;
             console.log(currentX.value);
             current_y = current_y + 10;
@@ -390,10 +388,10 @@ const generatePDF = () => {
             const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
             // current_y = current_y + 10;
             doc.text(udlDescription, udldescriptionValue, current_y);
-            doc.line(udldescriptionValue, current_y, udldescriptionValue + valueTextWidth_3, current_y);
+            doc.line(udldescriptionValue, current_y + factor, udldescriptionValue + valueTextWidth_3, current_y + factor);
             currentX.value = udldescriptionValue + valueTextWidth_3;
 
-            current_y = current_y + 10;
+            current_y = current_y + 8;
         } else {
             const udlNoa = ref(polypropolyneStore.$state.polyinput[0].polyData.noa);
             const udlApplicant = ref(polypropolyneStore.$state.polyinput[0].polyData.applicant);
@@ -404,9 +402,9 @@ const generatePDF = () => {
             const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
             const udlNoaStartXValue = LeftStart;
             doc.text(polynoaText, udlNoaStartXValue, current_y);
-            const udlNoaValue = descStartXValue - 23;
+            const udlNoaValue = valueTextWidthNOA + 10;
             doc.text(`${udlNoa.value}`, udlNoaValue, current_y);
-            doc.line(udlNoaValue, current_y, udlNoaValue + valueTextWidth_1, current_y);
+            doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
             currentX.value = udlNoaValue + valueTextWidth_1;
 
             const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
@@ -415,25 +413,26 @@ const generatePDF = () => {
             doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
             const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
             doc.text(`${udlApplicant.value}`, udlApplicantValue, current_y);
-            doc.line(udlApplicantValue, current_y, udlApplicantValue + valueTextWidth_, current_y);
+            doc.line(udlApplicantValue, current_y + factor, udlApplicantValue + valueTextWidth_, current_y + factor);
             currentX.value = udlApplicantValue + valueTextWidth_;
-
-            if (currentX.value > max_width) current_y = current_y + 10;
+            //  if (currentX.value > max_width)
+            current_y = current_y + 10;
             const udlmatStartXValue = LeftStart;
             const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
             const valueTextWidth_2 = doc.getTextWidth(`${udlMaterial.value}`);
             doc.text(polymaterialText, udlmatStartXValue, current_y);
             const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
             doc.text(`${udlMaterial.value}`, udlmaterialValue, current_y);
-            doc.line(udlmaterialValue, current_y, udlmaterialValue + valueTextWidth_2, current_y);
+            doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
 
             currentX.value = udlmaterialValue + valueTextWidth_2;
-            if (currentX.value > max_width) current_y = current_y + 10;
+
+            current_y = current_y + 10;
             console.log(currentX.value);
 
             const valueTextWidthpolyDesc = doc.getTextWidth(polydescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(`${udlDescription.value}`);
-            const udldescStartXValue = currentX.value + 2;
+            const udldescStartXValue = LeftStart;
             const checkDescription = udldescStartXValue + valueTextWidth_3;
             console.log(checkDescription);
             doc.text('UDL Description:', udldescStartXValue, current_y);
@@ -441,7 +440,7 @@ const generatePDF = () => {
             const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
             // current_y = current_y + 10;
             doc.text(`${udlDescription.value}`, udldescriptionValue, current_y);
-            doc.line(udldescriptionValue, current_y, udldescriptionValue + valueTextWidth_3, current_y);
+            doc.line(udldescriptionValue, current_y + factor, udldescriptionValue + valueTextWidth_3, current_y + factor);
             currentX.value = udldescriptionValue + valueTextWidth_3;
             console.log(currentX.value);
             current_y = current_y + 10;
@@ -475,7 +474,7 @@ const generatePDF = () => {
             doc.text(sbsapplicantText, saApplicantStartXValue, current_y);
             const sbsapplicantValue = saApplicantStartXValue + valueTextWidthsbsApplicant;
             doc.text(saApplicant, sbsapplicantValue, current_y);
-            doc.line(sbsapplicantValue, current_y, sbsapplicantValue + valueTextWidthApp, current_y);
+            doc.line(sbsapplicantValue, current_y + factor, sbsapplicantValue + valueTextWidthApp, current_y + factor);
             currentX.value = sbsapplicantValue + valueTextWidthApp;
             console.log(currentX.value);
 
@@ -484,7 +483,7 @@ const generatePDF = () => {
             doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
             const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
             doc.text(saSystemF, sbsSystemFValue, current_y);
-            doc.line(sbsSystemFValue, current_y, sbsSystemFValue + valueTextWidthSystem, current_y);
+            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextWidthSystem, current_y + factor);
             currentX.value = sbsSystemFValue + valueTextWidthSystem;
             console.log(currentX.value);
             current_y = current_y + 10;
@@ -495,7 +494,7 @@ const generatePDF = () => {
             doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
             const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
             doc.text(saMaterial, sbsmaterialValue, current_y);
-            doc.line(sbsmaterialValue, current_y, sbsmaterialValue + valueTextWidthMat, current_y);
+            doc.line(sbsmaterialValue, current_y + factor, sbsmaterialValue + valueTextWidthMat, current_y + factor);
             currentX.value = sbsmaterialValue + valueTextWidthMat;
             console.log(currentX.value);
 
@@ -505,7 +504,7 @@ const generatePDF = () => {
             doc.text(sbsdescriptionText, saDescriptionStartXValue, current_y);
             const sbsdescriptionValue = saDescriptionStartXValue + valueTextWidthsbsDescription;
             doc.text(saDescription, sbsdescriptionValue, current_y);
-            doc.line(sbsdescriptionValue, current_y, sbsdescriptionValue + valueTextWidthDesc, current_y);
+            doc.line(sbsdescriptionValue, current_y + factor, sbsdescriptionValue + valueTextWidthDesc, current_y + factor);
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             console.log(currentX.value);
         } else {
@@ -514,7 +513,7 @@ const generatePDF = () => {
             const saApplicant = ref(sbsStore.$state.systeminput[0]?.systemData?.manufacturer);
             const saSystemF = ref(sbsStore.$state.systeminput.pdfSystemValue);
             const saMaterial = ref(sbsStore.$state.systeminput[0]?.systemData?.material);
-            const saDescription = ref(sbsStore.$state.systeminput.description);
+            const saDescription = ref(sbsStore.$state.systeminput[0]?.systemData?.description);
             // [0]?.systemData?.
             const valueTextWidthsbsNOA = doc.getTextWidth(sbsnoaText);
             const valueTextWidth_4 = doc.getTextWidth(`${saNoa.value}`);
@@ -522,7 +521,7 @@ const generatePDF = () => {
             doc.text(sbsnoaText, saNoaStartXValue, current_y);
             const sbsnoaValue = saNoaStartXValue + valueTextWidthsbsNOA;
             doc.text(`${saNoa.value}`, sbsnoaValue, current_y);
-            doc.line(sbsnoaValue, current_y, sbsnoaValue + valueTextWidth_4, current_y);
+            doc.line(sbsnoaValue, current_y + factor, sbsnoaValue + valueTextWidth_4, current_y + factor);
             currentX.value = sbsnoaValue + valueTextWidth_4;
 
             const valueTextWidthsbsApplicant = doc.getTextWidth(sbsapplicantText);
@@ -531,7 +530,7 @@ const generatePDF = () => {
             doc.text(sbsapplicantText, saApplicantStartXValue, current_y);
             const sbsapplicantValue = saApplicantStartXValue + valueTextWidthsbsApplicant;
             doc.text(`${saApplicant.value}`, sbsapplicantValue, current_y);
-            doc.line(sbsapplicantValue, current_y, sbsapplicantValue + valueTextWidthApp, current_y);
+            doc.line(sbsapplicantValue, current_y + factor, sbsapplicantValue + valueTextWidthApp, current_y + factor);
             currentX.value = sbsapplicantValue + valueTextWidthApp;
             console.log(currentX.value);
 
@@ -541,7 +540,7 @@ const generatePDF = () => {
             doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
             const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
             doc.text(`${saSystemF.value}`, sbsSystemFValue, current_y);
-            doc.line(sbsSystemFValue, current_y, sbsSystemFValue + valueTextWidthSys, current_y);
+            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextWidthSys, current_y + factor);
             currentX.value = sbsSystemFValue + valueTextWidthSys;
 
             current_y = current_y + 10;
@@ -553,7 +552,7 @@ const generatePDF = () => {
             doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
             const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
             doc.text(`${saMaterial.value}`, sbsmaterialValue, current_y);
-            doc.line(sbsmaterialValue, current_y, sbsmaterialValue + valueTextWidthMat, current_y);
+            doc.line(sbsmaterialValue, current_y + factor, sbsmaterialValue + valueTextWidthMat, current_y + factor);
             currentX.value = sbsmaterialValue + valueTextWidthMat;
 
             if (currentX.value > max_width) current_y = current_y + 10;
@@ -565,7 +564,7 @@ const generatePDF = () => {
             doc.text(sbsdescriptionText, saDescriptionStartXValue, current_y);
             const sbsdescriptionValue = saDescriptionStartXValue + valueTextWidthsbsDescription;
             doc.text(`${saDescription.value}`, sbsdescriptionValue, current_y);
-            doc.line(sbsdescriptionValue, current_y, sbsdescriptionValue + valueTextWidthDesc, current_y);
+            doc.line(sbsdescriptionValue, current_y + factor, sbsdescriptionValue + valueTextWidthDesc, current_y + factor);
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             if (currentX.value >= max_width) current_y = current_y + 10;
             console.log(currentX.value);
