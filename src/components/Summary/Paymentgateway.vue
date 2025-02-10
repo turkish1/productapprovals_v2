@@ -184,7 +184,7 @@ const downloadFile = async () => {
 
 <style>
 .card {
-    background-image: url('/demo/images/architectHomebg.jpeg');
+    background-image: url('/demo/images/blurredHouse.jpeg');
 
     background-repeat: no-repeat;
     background-size: cover;

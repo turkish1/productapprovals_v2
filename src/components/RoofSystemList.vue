@@ -72,8 +72,8 @@ onMounted(() => {
     width: 100%;
     max-width: 500px;
     height: 200px;
-    background-color: black;
-    color: #00ff00;
+    background-color: transparent;
+    color: black;
     font-family: monospace;
     overflow: hidden;
     padding: 10px;

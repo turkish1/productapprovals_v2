@@ -75,9 +75,9 @@ function clear() {
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
 
-        <div class="card flex justify-center">
+        <div class="flex justify-center">
             <form>
-                <div v-show="!isMiamiBeachValid" class="card flex flex-col gap-4">
+                <div v-show="!isMiamiBeachValid" class="flex flex-col gap-4">
                     <h1 class="h1">Select System</h1>
 
                     <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" />
