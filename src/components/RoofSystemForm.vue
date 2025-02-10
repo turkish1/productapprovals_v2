@@ -70,7 +70,7 @@ function clear() {
 }
 </script>
 <template>
-    <div id="roofselect" class="card flex justify-center">
+    <div id="roofselect" class="flex card justify-center">
         <div class="refresh">
             <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
@@ -78,22 +78,25 @@ function clear() {
         <div class="flex justify-center">
             <form>
                 <div v-show="!isMiamiBeachValid" class="flex flex-col gap-4">
-                    <h1 class="h1">Select System</h1>
-
-                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" />
+                    <label>Enter Square Footage</label>
                     <InputText type="text" v-model="area" />
+                    <label>Select System</label>
+
+                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" @click="addItemAndClear" />
                 </div>
                 <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
-                    <h1 class="h1">Select System</h1>
+                    <label>Enter Square Footage</label>
 
-                    <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" />
                     <InputText type="text" v-model="area" />
+                    <label>Select System</label>
+
+                    <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" @click="addItemAndClear" />
                 </div>
             </form>
         </div>
-        <div class="add">
+        <!-- <div class="add">
             <i class="pi pi-plus-circle" style="font-size: 2rem; color: gray; margin-left: 1px; margin-top: 150px" @click="addItemAndClear(selectedItem, area)"></i>
-        </div>
+        </div> -->
         <!-- grid grid-cols-1 mt-3 w-full w-64 gap-4 place-content-end h36 .. -->
         <div class="flex flex-col gap-4">
             <div>

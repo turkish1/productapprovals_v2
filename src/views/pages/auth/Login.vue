@@ -164,6 +164,7 @@ const navigateNext = () => {
     position: center;
     min-height: 80px;
     margin-top: 20px;
+    background-color: #ccc;
     /* top: 10vh; */
 }
 #content {

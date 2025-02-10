@@ -9,6 +9,7 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
 import { createApp } from 'vue';
 import { VueSpinnersPlugin } from 'vue3-spinners';
 import App from './App.vue';
@@ -19,6 +20,7 @@ pinia.use(piniaPluginPersistedstate);
 const app = createApp(App);
 app.use(useGeolocation);
 
+app.use('tooltip', Tooltip);
 app.use(VueSpinnersPlugin);
 app.use(AOS);
 app.use(pinia);

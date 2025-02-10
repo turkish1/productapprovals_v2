@@ -212,7 +212,7 @@ export default {
     <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #122620"> @click="selectPermitType"-->
     <PermitInitalAgreement v-if="isDialog" />
     <!-- <div class="grid grid-cols-1 gap-2"> -->
-    <div class="container md:w-1/3" style="margin-left: 530px">
+    <div class="container md:w-1/3" style="margin-left: 650px">
         <form>
             <div class="flex flex-row">
                 <div class="flex mt-4 space-y-2 flex-col gap-2">
@@ -241,7 +241,7 @@ export default {
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
                                 <label for="processMuni" style="color: #122620">Municipality Process Number</label>
-                                <InputText id="processMuni" v-model="muniProcess" type="text" placeholder="municipal process number" />
+                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" />
                             </div>
 
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">
@@ -309,6 +309,7 @@ export default {
     position: center;
     min-height: 80px;
     margin-top: 20px;
+    background-color: #ccc;
     /* top: 10vh; */
 }
 
