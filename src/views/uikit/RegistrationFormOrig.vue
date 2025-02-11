@@ -1,5 +1,6 @@
 <script>
 import usecreateAccount from '@/composables/Authentication/use-createAccount';
+
 import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
 import { tryOnUnmounted } from '@vueuse/core';
@@ -7,21 +8,19 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, reactive, ref, toRefs } from 'vue';
+import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
     setup() {
-        // Use a ref for events (assuming contractors is returned as a ref)
-        const events = ref([]);
-        const authStore = useAuthStore();
+        let events = reactive({});
+        const { authStore } = useAuthStore();
         const { message } = storeToRefs(authStore);
 
         const router = useRouter();
-        const disabled = ref(false);
+        let disabled = ref(false);
 
-        // Define form data. Note: removed duplicate "password" and added "city".
-        const formDatas = reactive({
+        let formDatas = reactive({
             license: '',
             dba: '',
             name: '',
@@ -30,33 +29,26 @@ export default {
             secondary_status: '',
             expiration_date: '',
             address: '',
-            city: '',
             projects: [],
+            password: '',
             cphone: '',
             bphone: '',
             email: '',
-            insurance: '',
-            carrier: '',
             date: new Date()
         });
-
-        // Get the contractors from the registration Axios composable.
         const { contractors } = useRegAxios();
         const dataLic = ref('');
+        // const contractStore = usecccStore();
+        // let contractor = ref(contractStore);
 
         onMounted(() => {
-            // Assuming contractors is a ref, assign its value to events.
-            events.value = contractors.value;
-            console.log('Contractors:', events.value);
+            events = contractors;
+            console.log(events);
         });
-
         const license_stat = ref('');
         const { Data, takp } = usecreateAccount();
-
-        // onSubmit calls your account creation function, resets fields, then navigates.
         const onSubmit = async () => {
             takp(formDatas);
-            // Reset fields
             formDatas.license = '';
             formDatas.name = '';
             formDatas.secondary_status = '';
@@ -71,38 +63,49 @@ export default {
             formDatas.carrier = '';
             navigateNext();
         };
-
-        // Check the license entered against the contractor list.
         function checkLicense() {
-            // Convert the entered license to uppercase.
-            dataLic.value = formDatas.license.toUpperCase();
-            if (Array.isArray(events.value)) {
-                events.value.forEach((item) => {
-                    if (dataLic.value === item.alt_license) {
-                        formDatas.dba = item.DBA;
-                        formDatas.name = item.name;
-                        formDatas.expiration_date = item.expiration_date;
-                        formDatas.address = item.address1;
-                        formDatas.city = item.city;
-                        license_stat.value = item.secondary_status;
-                        console.log('DBA:', item.DBA, 'formDatas.dba:', formDatas.dba);
-                    }
-                });
-            }
-            licenseStatus();
+            // if(events.value === '' || events.value === 'invalid'){}
+            events.value.forEach((item) => {
+                // CRC002120 CRC026270
+                dataLic.value = formDatas.license.toUpperCase();
+
+                // const current = Date.now();
+                if (dataLic.value === item.alt_license) {
+                    formDatas.dba = item.DBA;
+                    formDatas.name = item.name;
+                    formDatas.expiration_date = item.expiration_date;
+                    formDatas.address = item.address1;
+                    formDatas.city = item.city;
+                    license_stat.value = item.secondary_status;
+                    console.log(item.DBA, formDatas.dba);
+                }
+                licenseStatus();
+                // if (formDatas.secondary_status !== 'A') {
+                //     console.log('Not active', formDatas.secondary_status);
+                // alert('License is not Activite ');
+                // disabled = true;
+                // }
+                // if (item.expiration_date < current) {
+                //     console.log('Expired');
+                //     alert('Expired License');
+                //     disabled = true;
+                // }
+            });
         }
 
-        // Set the textual status based on the license secondary status.
+        watch(licenseStatus, () => {});
+
         function licenseStatus() {
             if (license_stat.value === '') {
                 formDatas.secondary_status = '';
-            } else if (license_stat.value === 'A') {
+            }
+            if (license_stat.value === 'A') {
                 formDatas.secondary_status = 'Active';
-            } else if (license_stat.value === 'I') {
+            }
+            if (license_stat.value === 'I') {
                 formDatas.secondary_status = 'Inactive';
             }
         }
-
         const navigateNext = () => {
             router.push('/');
         };
@@ -111,21 +114,12 @@ export default {
         const fileupload = ref();
 
         const upload = () => {
-            if (fileupload.value && fileupload.value.upload) {
-                fileupload.value.upload();
-            }
+            fileupload.value.upload();
         };
 
         const onUpload = () => {
-            toast.add({
-                severity: 'contrast',
-                summary: 'Contrast',
-                detail: 'File Uploaded',
-                life: 3000
-            });
+            toast.add({ severity: 'constrast', summary: 'Contrast', detail: 'File Uploaded', life: 3000 });
         };
-
-        // Dropdown items for state and city selections.
         const dropdownItemSt = ref([
             { name: 'Florida', code: 'Florida' },
             { name: 'Georgia', code: 'Georgia' }
@@ -141,55 +135,61 @@ export default {
             { name: 'General Contractor', code: 'General' }
         ]);
 
-        // Selected values for dropdowns.
         const trades = ref(null);
-        const dropdownItemstSelected = ref(null);
-        const dropdownItemctSelected = ref(null);
-
-        // Function to generate a PDF from the element with id "shingle".
+        const dropdownItemst = ref(null);
+        const dropdownItemct = ref(null);
         const generatePdf = () => {
             const element = document.getElementById('shingle');
-            console.log('Element to capture:', element);
-            if (!element) {
-                console.error('Element with id "shingle" not found');
-                return;
-            }
+            console.log(element);
+            // Use html2canvas to capture the element as a canvas
             html2canvas(element).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
+
+                // Create a new jsPDF instance
                 const pdf = new jsPDF();
+
+                // Add the captured image data to the PDF
                 pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
                 const pdfBlob = pdf.output('blob');
+
+                // Save the PDF Blob using the File System Access API
                 savePdfBlobSilently(pdfBlob);
             });
-        };
 
-        // Save the generated PDF using the File System Access API.
-        const savePdfBlobSilently = async (blob) => {
-            try {
-                const fileHandle = await window.showSaveFilePicker({
-                    suggestedName: 'permitapp.pdf',
-                    types: [
-                        {
-                            description: 'PDF file',
-                            accept: { 'application/pdf': ['.pdf'] }
-                        }
-                    ]
-                });
-                const writable = await fileHandle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                console.log('PDF saved successfully without popping download dialog!');
-            } catch (error) {
-                console.error('Error saving file:', error);
-            }
-        };
+            const savePdfBlobSilently = async (blob) => {
+                try {
+                    // Use the File System Access API to request a file handle
+                    const fileHandle = await window.showSaveFilePicker({
+                        suggestedName: 'permitapp.pdf',
+                        types: [
+                            {
+                                description: 'PDF file',
+                                accept: {
+                                    'application/pdf': ['.pdf']
+                                }
+                            }
+                        ]
+                    });
 
-        // When the component unmounts, generate the PDF.
-        tryOnUnmounted(() => {
-            generatePdf();
-            console.log('Component unmounted: PDF generated.');
+                    // Create a writable stream
+                    const writable = await fileHandle.createWritable();
+
+                    // Write the Blob data to the file
+                    await writable.write(blob);
+
+                    // Close the writable stream
+                    await writable.close();
+
+                    console.log('PDF saved successfully without popping download dialog!');
+                } catch (error) {
+                    console.error('Error saving file:', error);
+                }
+            };
+        };
+        tryOnUnmounted(generatePdf, () => {
+            console.log('Called Unmounted');
         });
-
         return {
             formDatas,
             ...toRefs(formDatas),
@@ -202,21 +202,22 @@ export default {
             trades,
             onSubmit,
             onUpload,
+            onMounted,
             upload,
             dropdownItemCt,
             dropdownItemSt,
-            dropdownItemct: dropdownItemctSelected,
-            dropdownItemst: dropdownItemstSelected,
-            generatePdf
+            dropdownItemct,
+            dropdownItemst
         };
     }
 };
 </script>
+
 <template>
-    <form class="container md:w-1/3" @submit.prevent="onSubmit" style="margin-left: 650px">
-        <div class="flex flex-col w-64 space-y-2 gap-4" style="margin-left: 50px">
+    <form class="container w-1/2" @submit.prevent="onSubmit" style="margin-left: 300px">
+        <div class="flex flex-col gap-7">
             <div class="font-semibold text-xl">Contractor Information</div>
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col mt-3 w-full w-64 space-y-2 gap-2">
                 <label for="lic1" style="color: #122620">State of Florida License No.</label>
 
                 <InputText type="text" v-model="formDatas.license" placeholder="CRC000000" :invalid="formDatas.license === ''" @input="checkLicense" />
@@ -306,11 +307,12 @@ export default {
                     <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
                 </div>
             </div>
-        </div>
-        <div class="md:w-2/3 flex flex-col gap-2">
-            <label for="addr" style="color: #122620">Upload Insurance Information</label>
-            <Toast />
-            <file-saver class="w-2/3"></file-saver>
+
+            <div class="md:w-2/3 flex flex-col gap-2">
+                <label for="addr" style="color: #122620">Upload Insurance Information</label>
+                <Toast />
+                <file-saver class="w-2/3"></file-saver>
+            </div>
         </div>
     </form>
     <p v-if="responseMessage">{{ responseMessage }}</p>
@@ -319,7 +321,7 @@ export default {
 </template>
 <style scoped>
 .container {
-    /* padding-bottom: 30px;
+    padding-bottom: 30px;
     padding-top: 12px;
     border: none;
     background-size: cover;
@@ -328,16 +330,7 @@ export default {
     position: center;
     min-height: 1000px;
     min-width: 400px;
-    top: 10vh; */
-    padding-bottom: 10px;
-    /* padding-top: 12px; */
-    border: none;
-    border-radius: 12px;
-    box-shadow: 4px 4px 16px rgb(22, 183, 183);
-    position: center;
-    min-height: 80px;
-    margin-top: 20px;
-    background-color: #ccc;
+    top: 10vh;
 }
 @keyframes slidedown-icon {
     0% {

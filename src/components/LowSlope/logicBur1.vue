@@ -155,7 +155,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="per" style="color: red">Roof Perimeter * (a') = .6 x h:</label>
+            <label for="per" style="color: #122620">Roof Perimeter * (a') = .6 x h:</label>
             <InputText id="per" v-model="dims.per" type="text" placeholder="per" @change="setRoofInputs" />
         </div>
 

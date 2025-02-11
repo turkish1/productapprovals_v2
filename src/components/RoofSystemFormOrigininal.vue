@@ -2,28 +2,22 @@
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-import { ref } from 'vue';
 
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
-
+import { ref } from 'vue';
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
 
-// Assume that permitStore.$state.permitapp is an array and that the first item
-// has a property "miamibeach" that can be converted to a number.
 const MB = ref(permitStore.$state.permitapp);
 
 const area = ref('');
-const selectedItem = ref(null);
+const selectedItem = ref('');
 const type = ref([{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
 const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
-
 const isMiamiBeachValid = ref(false);
 const mbVal = ref(2);
-// Use MB.value (not MB._value) to access the reactive value.
-const convertMB = useToNumber(MB.value[0].miamibeach);
+const convertMB = useToNumber(MB._value[0].miamibeach);
 
 tryOnMounted(() => {
     if (convertMB.value === mbVal.value) {
@@ -32,75 +26,78 @@ tryOnMounted(() => {
         console.log(isMiamiBeachValid.value);
     }
 });
-
-// Reset the roof list store.
 function clearSelected() {
     store.$reset();
 }
 
-// When the user changes the selection, add the item based on the entered area.
-function addItemAndClear() {
-    // Get the selected item name (if any)
-    const item = selectedItem.value ? selectedItem.value.name : '';
-    if (!item || item.trim() === '') {
+function addItemAndClear(item, dim1, dim2, dim3, dim4, dim5) {
+    item = selectedItem.value.name;
+
+    if (item.length === 0) {
         return;
     }
-    // Check the item name and call the appropriate store method.
     if (item === 'Asphalt Shingle') {
-        const dim1 = area.value;
+        dim1 = area.value;
         store.addSystemShingle(item, dim1);
         console.log(item, dim1);
-    } else if (item === 'Low Slope') {
-        const dim2 = area.value;
+    }
+    if (item === 'Low Slope') {
+        dim2 = area.value;
         store.addSystemBur(item, dim2);
-    } else if (item === 'Mechanical Fastened Tile') {
-        const dim3 = area.value;
+    }
+
+    if (item === 'Mechanical Fastened Tile') {
+        dim3 = area.value;
+
         store.addSystemMTile(item, dim3);
-    } else if (item === 'Adhesive Set Tile') {
-        const dim4 = area.value;
+    }
+    if (item === 'Adhesive Set Tile') {
+        dim4 = area.value;
         store.addSystemATile(item, dim4);
-    } else if (item === 'Metal Panel') {
-        const dim5 = area.value;
+    }
+    if (item === 'Metal Panel') {
+        dim5 = area.value;
         store.addSystemMetal(item, dim5);
     }
 
     clear();
 }
 
-// Clear the input fields.
 function clear() {
     area.value = '';
-    selectedItem.value = null;
+
+    selectedItem.value = '';
 }
 </script>
-
 <template>
     <div id="roofselect" class="flex card justify-center">
         <div class="refresh">
-            <Button plain text>
-                <i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i>
-            </Button>
+            <Button plain text><i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i></Button>
         </div>
 
         <div class="flex justify-center">
             <form>
-                <!-- If Miami Beach is NOT valid, use one set of options -->
                 <div v-show="!isMiamiBeachValid" class="flex flex-col gap-4">
                     <label>Enter Square Footage</label>
                     <InputText type="text" v-model="area" />
                     <label>Select System</label>
-                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" @change="addItemAndClear" />
+
+                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" @click="addItemAndClear" />
                 </div>
-                <!-- If Miami Beach IS valid, use a different set of options -->
                 <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
                     <label>Enter Square Footage</label>
+
                     <InputText type="text" v-model="area" />
                     <label>Select System</label>
-                    <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" @change="addItemAndClear" />
+
+                    <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" @click="addItemAndClear" />
                 </div>
             </form>
         </div>
-
+        <!-- <div class="add">
+            <i class="pi pi-plus-circle" style="font-size: 2rem; color: gray; margin-left: 1px; margin-top: 150px" @click="addItemAndClear(selectedItem, area)"></i>
+        </div> -->
+        <!-- grid grid-cols-1 mt-3 w-full w-64 gap-4 place-content-end h36 .. -->
         <div class="flex flex-col gap-4">
             <div>
                 <Button class="button" label="Submit" raised style="margin-right: 90px; margin-top: 230px; background-color: #a4b5b9" as="router-link" to="/generalpage"></Button>
