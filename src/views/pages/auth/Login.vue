@@ -25,9 +25,9 @@ let accountUser = reactive({
     secondary_status: '',
     license: ''
 });
-// const store = useLoginStore();
+
 const store = useAuthStore();
-// const { login } = storeToRefs(dataStore);
+
 function clearSelected() {
     store.$reset();
 }
