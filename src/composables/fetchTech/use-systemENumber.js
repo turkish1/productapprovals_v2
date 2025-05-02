@@ -21,18 +21,9 @@ export default function useENumber() {
     const { data } = useFetch(url).get().json();
 
     const fetchData = async () => {
-        // try {
-
         sysENumber.noa = data;
 
-        // for (let i = 0;)
-        // const response = await execute({ params: { noa: num.value } }).then((response) => {
-
-        // });
-
         systemEStore.addSystem(sysENumber);
-
-        console.log('System added');
     };
 
     return { sysENumber, fetchData, callFunction, errors, results, ...toRefs(sysENumber), systemEStore };

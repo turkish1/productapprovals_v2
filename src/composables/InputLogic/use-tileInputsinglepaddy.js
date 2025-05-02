@@ -1,36 +1,36 @@
-// import DataService from '@/services/DataService';
-// import { usetileStore } from '@/stores/tileStore';
 import { usePaddyStore } from '@/stores/singlepaddyStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 
-export default function usetileInputsingle() {
-    const input = ref();
-
+export default function useTileInputSingle() {
+    const input = ref(null);
     const noaNum = ref([]);
-    let results = ref([]);
-    const num = ref();
+    const results = ref([]);
+    const num = ref(null);
     const responseMessage = ref('');
     const error = ref('');
-    const { tileData, addtileData } = usePaddyStore();
+    const paddyStore = usePaddyStore();
 
-    let url = 'https://q5vantupjl.execute-api.us-east-1.amazonaws.com/singlepd/singlepd';
-
-    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
+    const url = 'https://q5vantupjl.execute-api.us-east-1.amazonaws.com/singlepd/singlepd';
+    const { execute, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     const tileDatas = reactive({
         noa: '',
         applicant: '',
         material: [],
+        content: '',
         description: '',
         Table2: [],
         Table3: [],
+        Table2_obj_map: [],
+        Table3_obj_map: [],
         expiration_date: '',
         resistance: [],
         selection: '',
         select_tile: [],
         tile_map: [],
         table2_map: [],
+        paddy_cat: '',
         height: '',
         area: '',
         slope: '',
@@ -38,49 +38,64 @@ export default function usetileInputsingle() {
         perimeter: ''
     });
 
-    async function getTilenoas(number) {
+    function getTilenoas(number) {
         input.value = number;
         num.value = Number(input.value);
-        console.log(num.value);
+        console.log('Fetching NOA for number:', num.value);
+        // await fetchData();
         fetchData();
     }
 
     const fetchData = async () => {
         try {
-            const response = await execute({ params: { NOA: num.value } }).then((response) => {
-                noaNum.value = data.value;
+            await execute({ params: { NOA: num.value } });
+            console.log(data.value[0]);
 
-                return noaNum.value;
-            });
-            console.log(response);
-            if (response.length === 0) {
-                // alert('No data found!');
+            if ((data.value.length > 0 && data.value[0].Table2.content) || data.value[0].Table3.content) {
+                console.log('Entered due to Table2 and Table3 content multiple');
+                const multiTile = await data.value[0];
+                console.log(multiTile);
+                tileDatas.noa = await multiTile.NOA;
+                tileDatas.content = await multiTile.content;
+                tileDatas.applicant = await multiTile.applicant;
+                tileDatas.material = await multiTile.AdhesiveMaterial;
+                tileDatas.selection = await multiTile.AdhesiveMaterials;
+                tileDatas.description = await multiTile.description;
+                tileDatas.select_tile = await multiTile.Select_Tile;
+                tileDatas.Table3_obj_map = await multiTile.Tile_Map;
+                tileDatas.Table2_obj_map = await multiTile.Table2_Map;
+                tileDatas.resistance = await multiTile.Resistance;
+                tileDatas.paddy_cat = await multiTile.paddy_category;
+                console.log('Tile data fetched:', tileDatas);
+                paddyStore.addtileData(tileDatas);
+            } else if (data.value.length > 0) {
+                const fetched = await data.value[0];
+                tileDatas.noa = await fetched.NOA;
+                tileDatas.applicant = await fetched.applicant;
+                tileDatas.material = await fetched.AdhesiveMaterial;
+                tileDatas.selection = await fetched.AdhesiveMaterials;
+                tileDatas.description = await fetched.description;
+                tileDatas.Table2 = await fetched.Table2;
+                tileDatas.Table3 = await fetched.Table3;
+                tileDatas.select_tile = await fetched.Select_Tile;
+                // Tile.Map is for table three conversion change this later
+                tileDatas.tile_map = await fetched.Tile_Map;
+                tileDatas.table2_map = await fetched.Table2_Map;
+                tileDatas.resistance = await fetched.Resistance;
+                // tileDatas.paddy_cat = await fetched.paddy_category[0];
+
+                console.log('Tile data fetched:', tileDatas);
+                paddyStore.addtileData(tileDatas);
+                // paddyStore.setSinglePaddyData({ tileDatas });
             } else {
-                console.log(noaNum.value, response);
-                tileDatas.noa = noaNum.value[0].NOA;
-                tileDatas.applicant = noaNum.value[0].applicant;
-                tileDatas.material = noaNum.value[0].AdhesiveMaterial;
-                tileDatas.selection = noaNum.value[0].AdhesiveMaterials;
-                tileDatas.description = noaNum.value[0].description;
-                tileDatas.Table2 = noaNum.value[0].Table2;
-                tileDatas.Table3 = noaNum.value[0].Table3;
-                tileDatas.select_tile = noaNum.value[0].Select_Tile;
-                tileDatas.tile_map = noaNum.value[0].Tile_Map;
-                tileDatas.table2_map = noaNum.value[0].Table2_Map;
-                tileDatas.resistance = noaNum.value[0].Resistance;
-
-                console.log(tileDatas, 'System added');
-
-                addtileData(tileDatas);
-
-                console.log(tileData, 'System added');
+                console.warn('No data found!');
             }
-        } catch (error) {
-            console.log('Error, fectching data', error);
-            // alert('An error occurred while fetching data.');
+        } catch (err) {
+            console.error('Error fetching tile data:', err);
+            error.value = err;
         }
         return results;
     };
 
-    return { getTilenoas, tileData, responseMessage, noaNum, error, results, tileDatas };
+    return { getTilenoas, responseMessage, fetchData, noaNum, error, results, tileDatas, paddyStore };
 }

@@ -11,12 +11,7 @@ export default function useS3upload() {
     const uploadUrl = ref('');
 
     const { permitStore } = usePermitappStore();
-    const { permitapp } = storeToRefs(permitStore);
-
-    // const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
-
-    // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
-    // console.log(objName);
+    // const { permitapp } = storeToRefs(permitStore);
 
     const docStore = useburDetailStore();
     const { detailinput } = storeToRefs(docStore);

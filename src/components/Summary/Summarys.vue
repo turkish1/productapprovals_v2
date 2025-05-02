@@ -1,6 +1,6 @@
 <template>
     <div class="card">
-        <Timeline :value="events" align="alternate" class="customized-timeline">
+        <Timeline :value="events" align="alternate" class="customized-timeline" style="margin-top: 50px">
             <template #marker="slotProps">
                 <span class="flex w-8 h-8 items-center justify-center text-white rounded-full z-10 shadow-sm" :style="{ backgroundColor: slotProps.item.color }">
                     <i :class="slotProps.item.icon"></i>
@@ -23,22 +23,13 @@
             </template>
         </Timeline>
     </div>
-    <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 400px; margin-left: 850px" />
+    <!-- <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 400px; margin-left: 850px" /> -->
 
     <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
         <!-- <div class="flex mb-4" style="background-color: #eae7e2">
-            <div>
-                <Skeleton width="10rem" class="mb-2"></Skeleton>
-                <Skeleton width="5rem" class="mb-2"></Skeleton>
-                <Skeleton height="2rem" width="30rem" v-model="dba">{{ db }}</Skeleton>
-            </div>
             <Terminal style="margin-left: 650px" />
         </div> -->
-        <Skeleton width="100%" height="150px"> </Skeleton>
-        <div class="flex justify-between mt-4">
-            <Skeleton width="4rem" height="2rem"></Skeleton>
-            <Skeleton width="4rem" height="2rem"></Skeleton>
-        </div>
+
         <div>
             <GeneralPage />
         </div>
@@ -66,12 +57,12 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
 import { onMounted, reactive, ref } from 'vue';
-import { VueSpinnerBall } from 'vue3-spinners';
 import GeneralPage from '../jsPDF/Generalpagepdf.vue';
 import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
 import TileAdhesive from '../jsPDF/TileAdhesive.vue';
 import TileMechanical from '../jsPDF/TileMechanical.vue';
+
 const { accountUsers } = useGlobalState();
 
 const isloading = ref(false);
@@ -92,8 +83,10 @@ const roofType = ref(store.$state.roofList);
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 const generalStore = useGeneralpdfStore();
 const generalType = ref(generalStore.$state.generalpdfinput);
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
+
 // const { getNumbers } = useSignpdf();
-const { getNumbers } = useSignpdf(processNumber.value);
+const { getNumbers } = useSignpdf(muniProcessNumber.value);
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
         dba.value = item.dba;
@@ -103,14 +96,14 @@ function displayUserInfo() {
 }
 
 const callPdfSign = tryOnMounted(() => {
-    getNumbers(processNumber.value);
+    getNumbers(muniProcessNumber.value);
     isSigned.value = true;
     setTimeout(() => {
         // isloading.value = true;
         isSigned.value = true;
     }, 2000);
 
-    console.log(processNumber.value);
+    console.log(muniProcessNumber.value);
 });
 const displayInfo = reactive({
     dim: '',

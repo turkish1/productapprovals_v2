@@ -62,7 +62,6 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = systemFStore.$state;
-    console.log(suggestions.value);
 });
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {

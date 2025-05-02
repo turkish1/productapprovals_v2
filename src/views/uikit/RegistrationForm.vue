@@ -337,7 +337,7 @@ export default {
     position: center;
     min-height: 80px;
     margin-top: 20px;
-    background-color: #ccc;
+    background-color: #eae7e2;
 }
 @keyframes slidedown-icon {
     0% {

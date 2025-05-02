@@ -28,14 +28,13 @@ const shingleStore = useShingleStore();
 const polypropolyneStore = usePolyStore();
 const store = useRoofListStore();
 const dripShingleStore = usedripedgeshingleStore();
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
 
 // const systemAreaImport =  ref(roofStore.$state.roofList[0].dim1);
 const roofType = ref(store.$state.roofList);
 
 let isRoofShingleValid = ref(false);
 const callState = tryOnMounted(() => {
-    console.log(roofType);
-
     if (roofType.value.length === 0) {
         return '';
     } else {
@@ -119,9 +118,12 @@ const generatePDF = () => {
         doc.text(approved, 10, 270, { align: 'left' });
         const approvedWidth = doc.getTextWidth(approved);
         doc.text('on: ' + formattedDate, approvedWidth + 15, 270);
-        doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
-        const procWidth = doc.getTextWidth(`${processNumber.value}`);
+        doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
+        const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
         doc.text(`${municipality.value}`, procWidth + 15, 280);
+        // doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
+        // const procWidth = doc.getTextWidth(`${processNumber.value}`);
+        // doc.text(`${municipality.value}`, procWidth + 15, 280);
 
         // Add a paragraph of text
 

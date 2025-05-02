@@ -7,8 +7,7 @@ export default function useauthAcct() {
     let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/getaccounts';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
-    // const loginStore = useacctStore();
-    // const username = ref('');
+
     let Data = reactive({});
     const acctCompare = ref([]);
     let accountUser = reactive({
@@ -37,8 +36,6 @@ export default function useauthAcct() {
             localData.value.forEach((item, index) => {
                 console.log(item);
                 for (let i = 0; i < item.length; i++) {
-                    // let a = [];
-
                     if (username.value === item[i].password) {
                         console.log(username.value, item[i].password);
                         acctCompare.value.push(item[i]);
@@ -56,8 +53,6 @@ export default function useauthAcct() {
                 accountUser.dba = acctCompare.value.dba;
             });
 
-            // store the values
-            // loginStore.addLogin(accountUser);
             console.log(accountUser, 'System added');
         });
     }

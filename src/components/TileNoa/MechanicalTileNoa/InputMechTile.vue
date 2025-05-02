@@ -299,7 +299,6 @@ function getdeckType(event) {
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
         tilenoas.deckType = dt.value;
-        // mechStore.tilemech.value[0].deckType = dt.value;
         isDisabledslope.value = false;
         console.log(dt.value);
     }
@@ -318,7 +317,6 @@ function updateTile(event) {
         console.log(key, value);
 
         if (event.value === key) {
-            // let sel = tilenoas.select_tile;
             tilenoas.tiletype = event.value;
             console.log(event.value, obj[1], tilenoas.tiletype);
             tileSel.values = value[0];
@@ -338,8 +336,6 @@ function updateTile(event) {
         const value = obj[1];
         console.log(key);
         if (event.value === key) {
-            // let sel = tilenoas.select_tile;
-            // tilenoas.select_tile = event.value;
             console.log(event.value);
             tileValue.v = value;
 
@@ -745,8 +741,7 @@ function checkMaterial() {
         });
     } else {
         console.log('D exposure');
-        // console.log(tbd, zoned);
-        // console.log(useExposured());
+
         zoned.value.forEach((item, index) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
@@ -1400,7 +1395,6 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
             <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: red">Select Mechanical Tile Fastener *</label>
-                <!-- @click="checkInputSystem" @change="updateselectSystem" @click="checkMaterial"-->
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @change="updateMF" />
             </div>
         </div>
@@ -1412,7 +1406,6 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
             <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
-                <!-- @click="checkMaterial"   -->
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="updateMF" />
             </div>
         </div>

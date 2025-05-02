@@ -1,4 +1,6 @@
-import { useGlobalStates } from '@/stores/tilenoaStore';
+// import { useGlobalStates } from '@/stores/tilenoaStore';
+
+import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 
@@ -10,7 +12,9 @@ export default function usetileInputdouble() {
     const num = ref();
     const responseMessage = ref('');
     const error = ref('');
-    const { tilenoa, getNoa, addNoa } = useGlobalStates();
+
+    const useDoublepaddy = useDoublePaddyStore();
+    // const { tilenoa, getNoa, addNoa } = useGlobalStates();
     let url = 'https://jtk1qa20ul.execute-api.us-east-1.amazonaws.com/doublepd/doublepd';
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -18,6 +22,7 @@ export default function usetileInputdouble() {
         noa: '',
         applicant: '',
         material: '',
+        content: '',
         description: [],
         Table2: [],
         Table3: [],
@@ -53,12 +58,28 @@ export default function usetileInputdouble() {
                 return noaNum.value;
             });
             console.log(response.length);
-            if (response.length === 0) {
+            if ((response.length > 0 && noaNum.value[0].Table2.content) || noaNum.value[0].Table3.content) {
                 // alert('No data found!');
-            } else {
+                // (data.value.length > 0 && noaNum.value[0].Table2.content) || noaNum.value[0].Table3.content;
                 console.log(noaNum.value);
                 tileData.noa = noaNum.value[0].NOA;
                 tileData.applicant = noaNum.value[0].applicant;
+                tileData.content = noaNum.value[0].Table2.content;
+                tileData.material = noaNum.value[0].AdhesiveMaterial;
+                tileData.selection = noaNum.value[0].AdhesiveMaterials;
+                tileData.description = noaNum.value[0].description;
+                tileData.Table2 = noaNum.value[0].Table2;
+                tileData.Table3 = noaNum.value[0].Table3;
+                tileData.select_tile = noaNum.value[0].Select_Tile;
+                tileData.tile_map = noaNum.value[0].Tile_Map;
+                tileData.table2_map = noaNum.value[0].Table2_Map;
+                tileData.resistance = noaNum.value[0].Resistance;
+                useDoublepaddy.addtileDatas(tileData);
+            } else if (response.length > 0) {
+                console.log(noaNum.value);
+                tileData.noa = noaNum.value[0].NOA;
+                tileData.applicant = noaNum.value[0].applicant;
+
                 tileData.material = noaNum.value[0].AdhesiveMaterial;
                 tileData.selection = noaNum.value[0].AdhesiveMaterials;
                 tileData.description = noaNum.value[0].description;
@@ -69,9 +90,11 @@ export default function usetileInputdouble() {
                 tileData.table2_map = noaNum.value[0].Table2_Map;
                 tileData.resistance = noaNum.value[0].Resistance;
 
-                addNoa(tileData);
+                useDoublepaddy.addtileDatas(tileData);
 
                 console.log(tileData, 'System added');
+            } else {
+                console.warn('No data found!');
             }
         } catch (error) {
             console.log('Error, fectching data', error);
@@ -80,5 +103,5 @@ export default function usetileInputdouble() {
         return results;
     };
 
-    return { getTilenoa, fetchData, tilenoa, getNoa, addNoa, responseMessage, noaNum, error, results, tileData };
+    return { getTilenoa, fetchData, useDoublepaddy, responseMessage, noaNum, error, results, tileData };
 }

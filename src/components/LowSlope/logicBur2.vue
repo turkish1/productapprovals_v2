@@ -208,11 +208,6 @@ const handleDownload = async () => {
         console.error('Error downloading file:', error);
     }
 };
-
-// You can add watchers for individual reactive values as needed. For example:
-// watch(selectedBur, (newVal) => {
-//   console.log('selectedBur changed:', newVal);
-// });
 </script>
 
 <template>

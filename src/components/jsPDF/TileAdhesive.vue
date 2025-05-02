@@ -11,6 +11,7 @@ import { useGlobalState } from '@/stores/accountsStore';
 import { usedripADStore } from '@/stores/dripEdgeADTileStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
+import { useSavedStore } from '@/stores/savedTiledataStore';
 import { useGlobalStates } from '@/stores/tilenoaStore';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
@@ -22,10 +23,10 @@ import { ref } from 'vue';
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
 const { getUser } = useGlobalState();
-const { addSystemvalue, tileInputvalues, tileValues } = usevalueStore();
+const { tileInputvalues } = usevalueStore();
 // const tileStores = usePaddyStore();
 // const { inputdata, addtileData, tileData } = usePaddyStore();
-
+const { savedTileinput } = useSavedStore();
 const permitStore = usePermitappStore();
 // const roofStore = useRoofListStore();
 const store = useRoofListStore();
@@ -55,14 +56,23 @@ invoke(async () => {
 
 const generatePDF = () => {
     // Initialize   jsPDF instance
-    console.log(tileInputvalues[0].tileValues);
+    // tileInputvalues[0]?.tileValues[0]
+    console.log(tileInputvalues, savedTileinput[0]?.savedValues?.paddySelection);
+    const paddyCheck = ref(savedTileinput[0]?.savedValues?.paddySelection || '');
+    const singlePaddy = ref(false);
+    const doublePaddy = ref(false);
+    console.log(paddyCheck.value);
+    if (paddyCheck.value === 'single') {
+        singlePaddy.value = true;
+        console.log(singlePaddy.value);
+    } else {
+        doublePaddy.value = true;
+        console.log(doublePaddy.value);
+    }
 
-    // const slope = ref(tileInputvalues[0].tilevalues);
-    // console.log(slope.value);
     if (tileInputvalues[0].length === 0) {
         console.log('lenghth is zero');
     } else {
-        // console.log(sbsStore, polypropolyneStore);
         const doc = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -92,16 +102,19 @@ const generatePDF = () => {
         var current_y = topRighty - thirdYCoordinate;
         currentX.value = LeftStart;
         currentY.value = current_y;
-        const height = ref(tileInputvalues[0]?.tileValues?.height || '');
 
-        const slope = ref(tileInputvalues[0]?.tileValues?.slope || '');
-
-        const area = ref(tileInputvalues[0]?.tileValues?.area || '');
-        const deckType = ref(tileInputvalues[0]?.tileValues?.Decktype || '');
-        const perimeter = ref(tileInputvalues[0]?.tileValues?.perimeter || '');
+        const Inputvalue = singlePaddy.value === true ? ref(tileInputvalues[0]?.tileValues[0].singlepaddyData || '') : ref(tileInputvalues[0]?.tileValues[0].doublepaddyData || '');
+        console.log(Inputvalue.value);
+        const height = ref(savedTileinput[0]?.savedValues?.height || '');
+        // RFR2502803
+        const slope = ref(savedTileinput[0]?.savedValues?.slope || '');
+        console.log(permitStore.$state.permitapp[0].muniNum);
+        const area = ref(savedTileinput[0]?.savedValues?.area || '');
+        const deckType = ref(savedTileinput[0]?.savedValues?.Decktype || '');
+        const perimeter = ref(savedTileinput[0]?.savedValues?.perimeter || '');
         const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
         const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
-
+        const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
         const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 
         const uploadUrl = ref('');
@@ -133,8 +146,8 @@ const generatePDF = () => {
         doc.text(approved, 10, 270, { align: 'left' });
         const approvedWidth = doc.getTextWidth(approved);
         doc.text('on: ' + formattedDate, approvedWidth + 15, 270);
-        doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
-        const procWidth = doc.getTextWidth(`${processNumber.value}`);
+        doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
+        const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
         doc.text(`${municipality.value}`, procWidth + 15, 280);
         // Add a paragraph of text
         doc.setFontSize(12);
@@ -242,6 +255,7 @@ const generatePDF = () => {
         const decktypeStartValue = tDeckTextWidth + deckStartXValue;
         doc.text(`${deckType.value}`, decktypeStartValue, current_y);
         doc.line(decktypeStartValue, current_y + factor, decktypeStartValue + DeckTextWidth, current_y + factor); // Get text width
+
         current_y = current_y + 10;
         const noaText = 'Tile NOA Number: ';
         const applicantText = 'Tile Applicant: ';
@@ -254,7 +268,7 @@ const generatePDF = () => {
         const designPSFText = 'Design psf: ';
         const anchordescriptionText = 'Anchor Base Sheet: ';
         const udldescriptionText = 'UDL Description: ';
-        const Prescriptive = 'Prescriptive: ';
+        const Underlayment = 'Select Underlayment: ';
         const dripEdgeMaterial = 'DripEdge Material: ';
         const dripEdgeSize = 'DripEdge Size: ';
         const dripedgeMaterials = ref(dripadTileStore.$state.dripinputadt[4]?.dripTileMaterial || '');
@@ -275,35 +289,38 @@ const generatePDF = () => {
         doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
         doc.line(dripSizeStartValue, current_y + factor, dripSizeStartValue + dripEdgeTextWidth, current_y + factor);
         current_y = current_y + 10;
-        console.log(tileInputvalues[0].tileValues.zonetwo.lambda2);
-        const mf1 = ref(tileInputvalues[0]?.tileValues.zoneone.mf1 || '');
-        const lambda1 = ref(tileInputvalues[0]?.tileValues?.zoneone.lambda1 || '');
-        const mg1 = ref(tileInputvalues[0]?.tileValues?.zoneone.mg1 || '');
-        const mr1 = ref(tileInputvalues[0]?.tileValues?.zoneone.mr1 || '');
-        const zoneone = ref(tileInputvalues[0]?.tileValues?.zoneone.zone1 || '');
-        const mf2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.mf2 || '');
-        const lambda2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.lambda2 || '');
-        const mg2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.mg2 || '');
-        const mr2 = ref(tileInputvalues[0]?.tileValues?.zonetwo.mr2 || '');
-        const zonetwo = ref(tileInputvalues[0]?.tileValues?.zonetwo.zone2 || '');
-        const mf3 = ref(tileInputvalues[0]?.tileValues?.zonethree.mf3 || '');
-        const lambda3 = ref(tileInputvalues[0]?.tileValues?.zonethree.lambda3 || '');
-        const mg3 = ref(tileInputvalues[0]?.tileValues?.zonethree.mg3 || '');
-        const mr3 = ref(tileInputvalues[0]?.tileValues?.zonethree.mr3);
-        const zonethree = ref(tileInputvalues[0]?.tileValues?.zonethree.zone3 || '');
-        const prescriptive = ref(tileInputvalues[0]?.tileValues?.prescriptiveSelection.selectedBasesheet);
-        const persValueTextWidth = doc.getTextWidth(`${prescriptive.value.selectedBasesheet}`);
-        const perspectiveStartXValue = LeftStart;
-        doc.text(Prescriptive, perspectiveStartXValue, current_y + factor);
-        const perscriptiveValue = LeftStart;
+
+        console.log(savedTileinput);
+        const mf1 = ref(savedTileinput[0]?.savedValues?.zoneone.mf1 || '');
+        const lambda1 = ref(savedTileinput[0]?.savedValues?.zoneone.lambda1 || '');
+        const mg1 = ref(savedTileinput[0]?.savedValues?.zoneone.mg1 || '');
+        const mr1 = ref(savedTileinput[0]?.savedValues?.zoneone.mr1 || '');
+        const zoneone = ref(savedTileinput[0]?.savedValues?.zoneone.zone1 || '');
+        const mf2 = ref(savedTileinput[0]?.savedValues?.zonetwo.mf2 || '');
+        const lambda2 = ref(savedTileinput[0]?.savedValues?.zonetwo.lambda2 || '');
+        const mg2 = ref(savedTileinput[0]?.savedValues?.zonetwo.mg2 || '');
+        const mr2 = ref(savedTileinput[0]?.savedValues?.zonetwo.mr2 || '');
+        const zonetwo = ref(savedTileinput[0]?.savedValues?.zonetwo.zone2 || '');
+        const mf3 = ref(savedTileinput[0]?.savedValues?.zonethree.mf3 || '');
+        const lambda3 = ref(savedTileinput[0]?.savedValues?.zonethree.lambda3 || '');
+        const mg3 = ref(savedTileinput[0]?.savedValues?.zonethree.mg3 || '');
+        const mr3 = ref(savedTileinput[0]?.savedValues?.zonethree.mr3);
+        const zonethree = ref(savedTileinput[0]?.savedValues?.zonethree.zone3 || '');
+        const prescriptive = ref(savedTileinput[0]?.savedValues?.prescriptiveSelection.selectedBasesheet);
+        const persValueTextWidth = doc.getTextWidth(prescriptive.value);
+        console.log(prescriptive, persValueTextWidth);
+        const prescriptiveStartXValue = LeftStart;
+        doc.text(Underlayment, prescriptiveStartXValue, current_y + factor);
+        const prescriptiveValue = LeftStart;
         current_y = current_y + 10;
-        doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
-        doc.line(perscriptiveValue, current_y + factor, perscriptiveValue + persValueTextWidth, current_y + factor);
+        doc.text(`${prescriptive.value}`, prescriptiveValue, current_y);
+        doc.line(prescriptiveValue, current_y + factor, prescriptiveValue + persValueTextWidth, current_y + factor);
         current_y = current_y + 10;
-        const noa = ref(tileInputvalues[0]?.tileValues?.noa);
-        const applicant = ref(tileInputvalues[0]?.tileValues?.applicant);
-        const material = ref(tileInputvalues[0]?.tileValues?.material);
-        const description = ref(tileInputvalues[0]?.tileValues?.description);
+        console.log(tileInputvalues);
+        const noa = ref(Inputvalue.value.noa);
+        const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
+        const material = ref(savedTileinput[0]?.savedValues?.material);
+        const description = ref(Inputvalue.value.description);
         const valueTextWidthTileCategory = doc.getTextWidth(applicantText);
         const valueTextWidthTile = doc.getTextWidth(`${applicant.value}`);
         const tileApplicantStartXValue = LeftStart;
@@ -321,9 +338,9 @@ const generatePDF = () => {
         doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
         current_y = current_y + 10;
         const nextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        // if (currentX.value > max_width) current_y = current_y + 10;
+        if (currentX.value > max_width) current_y = current_y + 10;
 
-        // currentX.value = noaValue + nextWidthMaterial;
+        currentX.value = noaValue + nextWidthMaterial;
 
         // currentX provides the update of the x coordinate
         const materialStartXValue = LeftStart;
@@ -367,7 +384,7 @@ const generatePDF = () => {
             console.log(currentX.value);
             const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
             const valueTextWidth_ = doc.getTextWidth(udlApplicant);
-            const udlApplicantStartXValue = currentX.value + 2;
+            const udlApplicantStartXValue = currentX.value + 0;
             doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
             const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
             doc.text(udlApplicant, udlApplicantValue, current_y);
@@ -599,10 +616,9 @@ const generatePDF = () => {
         // const lambdaSymbol = ref('\u03BB');
 
         const tableData = [
-            // Zone 1
-            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
-            ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
-            ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+            ['Zone 1:', `${zoneone.value}`, 'xλ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'xλ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'xλ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
         // const colWidths = [
@@ -647,7 +663,7 @@ const generatePDF = () => {
             }
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileName}`;
             try {
                 const response = await fetch(s3Url, {
                     method: 'PUT',

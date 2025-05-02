@@ -301,7 +301,7 @@ export default {
 </template>
 <style scoped>
 .container {
-    padding-bottom: 10px;
+    padding-bottom: 170px;
     /* padding-top: 12px; */
     border: none;
     border-radius: 12px;
@@ -309,7 +309,7 @@ export default {
     position: center;
     min-height: 80px;
     margin-top: 20px;
-    background-color: #ccc;
+    background-color: #eae7e2;
     /* top: 10vh; */
 }
 

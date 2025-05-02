@@ -165,18 +165,6 @@ function nextStep() {
         }
         isLoading.value = false;
     }, 200);
-    // const pdfbools = [isValidTilePDF.value, isValidMechanicalPDF.value];
-    // pdfbools.forEach((val, i) => {
-    //     if (val) {
-    //         // steps.value[i].label = stepLabels[i];
-    //         steps.value[i].component = availableComponentsPDF[i];
-    //         console.log(i, val);
-    //         console.log(steps.value[i].component);
-    //     } else {
-    //         // steps.value[i].label = '';
-    //         steps.value[i].component = null;
-    //     }
-    // });
 }
 
 function prevStep() {

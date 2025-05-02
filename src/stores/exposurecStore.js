@@ -22,6 +22,7 @@ export const useGlobalState = createGlobalState(() => {
     }
 
     function addDimzones(zone) {
+        console.log(zone);
         zones.value.push(zone);
     }
 

@@ -22,7 +22,8 @@ const generalpageStore = useGeneralpdfStore();
 const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
 const masterPermit = ref(permitStore.$state.permitapp[0]?.formdt?.permit || '');
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
+const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
 // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
 
 const dba = ref(getUser.value[0]?.dba || '');
@@ -114,10 +115,12 @@ const generatePDF = () => {
         doc.text(approved, 10, 270, { align: 'left' });
         const approvedWidth = doc.getTextWidth(approved);
         doc.text('on: ' + formattedDate, approvedWidth + 15, 270);
-        doc.text(`${processNumber.value}`, 10, 258, { align: 'left' });
-        const procWidth = doc.getTextWidth(`${processNumber.value}`);
+        // doc.text(`${processNumber.value}`, 10, 258, { align: 'left' });
+        // const procWidth = doc.getTextWidth(`${processNumber.value}`);
+        doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
+        const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
+        doc.text(`${municipality.value}`, procWidth + 15, 280);
 
-        console.log(address, masterPermit, processNumber, dba);
         const adtileChk = ref(false);
         const metalChk = ref(false);
         const mtileChk = ref(false);
@@ -227,7 +230,7 @@ const generatePDF = () => {
 
         const tSlope = 'Low Slope: ';
         const tSteep = 'Steep Slope: ';
-        permitStore.$state.permitapp[0]?.formdt?.muni || '';
+        // permitStore.$state.permitapp[0]?.formdt?.muni || '';
         const total = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.totalData || '');
         const slope = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.slopeData || '');
         const steep = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.steepData || '');
@@ -340,7 +343,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

@@ -2,27 +2,6 @@ import { usemultiAdStore } from '@/stores/multitileADStore';
 import { reactive, ref } from 'vue';
 
 export default function usemuliAdTile() {
-    // const tileData = reactive({
-    //     noa: '',
-    //     applicant: '',
-    //     material: '',
-    //     description: [],
-    //     Table2: [],
-    //     Table3: [],
-    //     expiration_date: '',
-    //     resistance: [],
-    //     selection: '',
-    //     select_tile: [],
-    //     tile_map: [],
-    //     table2_map: [],
-    //     slope: 0,
-    //     height: 0,
-    //     dripEdgeMaterial: [],
-    //     dripEdgeSize: [],
-    //     deckType: '',
-    //     expiration_date: '',
-    //     prescriptiveSelection: ''
-    // });
     const selected = ref([]);
     const dt = ref([]);
     const multiTileAD = reactive({
@@ -31,7 +10,7 @@ export default function usemuliAdTile() {
         table2_map: [],
         table2: ''
     });
-    // const { tilenoa, getNoa } = useGlobalStates();
+
     const multiAdStore = usemultiAdStore();
     function workoutDataAD(data, selectTiles) {
         dt.value = data.value;

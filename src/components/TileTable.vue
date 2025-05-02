@@ -1,5 +1,4 @@
 <template>
-    <!-- grid grid-cols-3 gap-4 card flex flex-row gap-16-->
     <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
         <table width="100%" align="left">
             <tbody>
@@ -45,11 +44,6 @@
                 </tr>
             </tbody>
         </table>
-        <!-- <div class="basis-1/7"><InputNumber v-model="value1" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
-        <div class="basis-1/7"><InputNumber v-model="value2" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
-        <div class="basis-1/7"><InputNumber v-model="value3" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
-        <div class="basis-1/7"><InputNumber v-model="value4" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div>
-        <div class="basis-1/7"><InputNumber v-model="value5" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" fluid /></div> -->
     </div>
 </template>
 

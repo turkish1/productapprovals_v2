@@ -25,9 +25,9 @@ let accountUser = reactive({
     secondary_status: '',
     license: ''
 });
-
+// const store = useLoginStore();
 const store = useAuthStore();
-
+// const { login } = storeToRefs(dataStore);
 function clearSelected() {
     store.$reset();
 }
@@ -164,7 +164,7 @@ const navigateNext = () => {
     position: center;
     min-height: 80px;
     margin-top: 20px;
-    background-color: #ccc;
+    background-color: #eae7e2;
     /* top: 10vh; */
 }
 #content {

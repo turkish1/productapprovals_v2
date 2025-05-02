@@ -8,7 +8,7 @@ export default function useExposured() {
     const slopeNumber = ref();
     const height = ref();
     const results = ref([]);
-    const zoneData = ref();
+    const zoneDatas = ref();
     const loading = ref(false);
     const error = ref(null);
     const type = ref([]);
@@ -57,7 +57,7 @@ export default function useExposured() {
         height.value = Number(height.value);
 
         if (slope.value >= slopeRange2) {
-            // tables.table1 = zoneData.value.slp_two_four;
+            // tables.table1 = zoneDatas.value.slp_two_four;
             console.log('Six is true');
             passData('table3');
         }
@@ -78,28 +78,27 @@ export default function useExposured() {
                 console.log('table3 executed');
                 console.log(result);
 
-                zoneData.value = result.data.value.WindExposureD2023_db.slp_six_twelve;
+                zoneDatas.value = result.data.value.WindExposureD2023_db.slp_six_twelve;
 
-                console.log('table3', zoneData.value);
-                slopeSelection(slope.value, height.value, zoneData.value);
+                slopeSelection(slope.value, height.value, zoneDatas.value);
                 addDimsloped(slope.value);
                 addDimheightd(height.value);
             }
             if (type.value === 'table2') {
                 console.log('table2 executed');
-                console.log(result);
-                zoneData.value = result.data.value.WindExposureD2023_db.slp_four_six;
 
-                slopeSelection(slope.value, height.value, zoneData.value);
+                zoneDatas.value = result.data.value.WindExposureD2023_db.slp_four_six;
+
+                slopeSelection(slope.value, height.value, zoneDatas.value);
                 addDimsloped(slope.value);
                 addDimheightd(height.value);
             }
             if (type.value === 'table1') {
                 console.log('table1 executed');
-                console.log(result.data.value.WindExposureD2023_db.slp_two_four);
-                zoneData.value = result.data.value.WindExposureD2023_db.slp_two_four;
-                console.log(zoneData.value);
-                slopeSelection(slope.value, height.value, zoneData.value);
+
+                zoneDatas.value = result.data.value.WindExposureD2023_db.slp_two_four;
+
+                slopeSelection(slope.value, height.value, zoneDatas.value);
                 addDimsloped(slope.value);
                 addDimheightd(height.value);
             }
@@ -126,10 +125,9 @@ export default function useExposured() {
         const thirty = Number(heightOptions.thirty);
         const thirtyfive = Number(heightOptions.thirtyfive);
         const forty = Number(heightOptions.forty);
-        console.log(typeof newHgt.value, newHgt.value, typeof twenty, twenty, typeof twentyfive, twentyfive);
         if (newHgt.value < fifteen) {
             zoned = z1.lessfifteen;
-            console.log(zoned);
+
             console.log('if 15 statement was executed');
             // lessthanfifteen(zoned);
             Object.entries(zoned).map((obj) => {
@@ -195,7 +193,6 @@ export default function useExposured() {
                 tables.zoned.thirty.push(val);
             });
             tbd = tables.zoned.thirty;
-            console.log(tbd);
             addDimzoned(tbd);
         } else if (newHgt.value < forty && newHgt.value >= thirtyfive) {
             zoned = z1.thirtyfive;
@@ -214,5 +211,5 @@ export default function useExposured() {
     }
     loading.value = false;
     // slopeSelection_fourtosix, slopeSelection_sixtotwelve,
-    return { type, error, newSlp, tbd, processData, newHgt, slopeSelection, loading, zoneData, slope, tables, results, getDatas };
+    return { type, error, newSlp, tbd, processData, newHgt, slopeSelection, loading, zoneDatas, slope, tables, results, getDatas };
 }

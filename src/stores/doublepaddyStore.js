@@ -1,26 +1,26 @@
 import storeReset from '@/composables/Reset/reset-store';
 import { createPinia, defineStore } from 'pinia';
-export const usePaddyStore = defineStore('inputdata', {
+export const useDoublePaddyStore = defineStore('inputdatas', {
     //state
     state: () => ({
-        inputdata: [],
+        inputdatas: [],
         id: 0
     }),
 
     //actions
     actions: {
-        addtileData(singlepaddyData) {
-            this.inputdata.push({ singlepaddyData, completed: false });
+        addtileDatas(doublepaddyData) {
+            this.inputdatas.push({ doublepaddyData, completed: false });
         },
         reset() {
-            this.singlepaddyData = [];
+            this.doublepaddyData = [];
         }
     },
 
     //getters
 
     getters: {
-        tileData: (state) => state.singlepaddyData
+        tileDatas: (state) => state.doublepaddyData
     }
 
     // persist: true

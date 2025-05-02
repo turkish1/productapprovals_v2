@@ -78,10 +78,9 @@ function clear() {
     <div id="roofselect" class="flex card justify-center">
         <div class="refresh">
             <Button plain text>
-                <i class="pi pi-refresh" style="font-size: 2rem; color: grey; margin-left: 10px; margin-top: 90px" @click="clearSelected"></i>
+                <i class="pi pi-refresh" style="font-size: 1.5rem; color: grey; margin-left: 50px; margin-top: 90px" @click="clearSelected"></i>
             </Button>
         </div>
-
         <div class="flex justify-center">
             <form>
                 <!-- If Miami Beach is NOT valid, use one set of options -->
@@ -112,5 +111,6 @@ function clear() {
 <style scoped>
 .card {
     background-size: cover;
+    background-color: grey;
 }
 </style>

@@ -26,6 +26,8 @@ const roofType = ref(roofStore.$state.roofList);
 const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
+
 // const usedripStore = usedripedgeStore();
 const dripmechTileStore = usedripMStore();
 // const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
@@ -150,9 +152,16 @@ const generatePDF = () => {
         doc.text(approved, 10, 270, { align: 'left' });
         const approvedWidth = doc.getTextWidth(approved);
         doc.text('on: ' + formattedDate, approvedWidth + 15, 270);
-        doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
-        const procWidth = doc.getTextWidth(`${processNumber.value}`);
+
+        doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
+        const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
         doc.text(`${municipality.value}`, procWidth + 15, 280);
+        // doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
+        // const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
+        // doc.text(`${municipality.value}`, procWidth + 15, 280);
+        // doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
+        // const procWidth = doc.getTextWidth(`${processNumber.value}`);
+        // doc.text(`${municipality.value}`, procWidth + 15, 280);
 
         // Add a paragraph of text
         // const paragraphText = "This PDF contains a watermark that says 'CONFIDENTIAL' across the center of the page. You can adjust the size, rotation, and opacity of the watermark.";

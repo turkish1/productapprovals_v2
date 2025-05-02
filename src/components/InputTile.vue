@@ -1,65 +1,225 @@
 <script setup>
 import DripEdAdTile from '@/components/DripEdgeChildren/DripEdAdTile.vue';
-import Buttons from '@/components/Features/Buttons.vue';
+// import Buttons from '@/components/Features/Buttons.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
+
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
 import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-Height';
 import { useNumberValidation } from '@/composables/Validation/use-Slope';
-import usemuliAdTile from '@/composables/businesslogic/use-multiTileAdhesive';
-import useDouble from '@/composables/fetchTech/use-doublepdNumber';
-import useSingle from '@/composables/fetchTech/use-singlepdNumber';
+
+import tileNoaNumber from '@/components/roofSystems/tileNoaNumber.vue';
+import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useExposureD } from '@/stores/exposuredStore';
 import { usemultiAdStore } from '@/stores/multitileADStore';
+import { usePaddyoptionStore } from '@/stores/paddyCatStore';
 import { useRoofListStore } from '@/stores/roofList';
+import { useSavedStore } from '@/stores/savedTiledataStore';
 import { usePaddyStore } from '@/stores/singlepaddyStore';
-import { useGlobalStates } from '@/stores/tilenoaStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
 import { useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
-import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-const tileStore = useGlobalStates();
+import { computed, nextTick, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
-const pdfStore = useGlobalState();
-// const sinpadStore = usePaddyStore();
-const { addSystemvalues, tileInputvalues } = usevalueStore();
-const { addtileData } = usePaddyStore();
+const { addPaddyCatval } = usePaddyoptionStore();
+const paddyStore = usePaddyStore();
+const { inputdata } = storeToRefs(paddyStore);
 
-const selectedOption = ref(null);
+const useDoublepaddy = useDoublePaddyStore();
+const { inputdatas } = storeToRefs(useDoublepaddy);
+// State and Store Initialization
+const store = usevalueStore();
+
 const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
-const { workoutDataAD, multiTileAD } = usemuliAdTile();
+
 const { multiAdinput } = storeToRefs(multipleStore);
-
-// Input query
-const query = ref('');
-const isSinglepaddyValid = ref(false);
-const paddySeleted = ref('');
-const isHeightValid = ref(false);
-// const isSlopeValid = ref(false);
-const isDisabledslope = ref(true);
-const isDisabled = ref(true);
-// Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
-const suggestions = ref([]);
-// State to control suggestions visibility
-const showSuggestions = ref(false);
-
-const { callFunction, singleStore } = useSingle();
-const { callFunctions, doubleStore } = useDouble();
-const { getTilenoa, tileData } = usetileInputdouble();
+const { addSystemvalues, tileInputvalues, reset } = usevalueStore();
+const { addSavedvalues } = useSavedStore();
 const { Edatamounted, etileStore } = useUDL();
 
-const { getTilenoas, tileDatas, resetSingle } = usetileInputsingle();
+const { tileData } = usetileInputdouble();
+const { tileDatas } = usetileInputsingle();
 const { zones } = useGlobalState();
-const { tbd, zoned } = useExposureD();
+const { zoned } = useExposureD();
+const storeroof = useRoofListStore();
+const { roofList } = storeToRefs(storeroof);
+
+// Reactive State
+const selectedOption = ref('');
+const query = ref('');
+const isPaddySingle = ref(false);
+const paddySeleted = ref('');
+const isHeightValid = ref(false);
+const isDisabledslope = ref(true);
+const isDisabled = ref(true);
+
+const dt = ref('');
+
+const heightModel = ref('');
+const dims = reactive({ area: '', per: '', height: '', slope: '' });
+const zoneone = reactive({ zone: '', lambda1: '', mg1: '', mr1: '', mf1: '' });
+const zonetwo = reactive({ zone: '', lambda2: '', mg2: '', mr2: '', mf2: '' });
+const zonethree = reactive({ zone: '', lambda3: '', mg3: '', mr3: '', mf3: '' });
+const selectedDeck = ref();
+const type = ref([{ name: 'Select Deck Type' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
+const save = ref([]);
+let selectedUnderlayment = ref('');
+const underlaymentType = ref([
+    { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
+    { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
+    { selectedBasesheet: '(S/A) Tile Capsheet adhered diretly to a wood deck, per the NOA System F', key: 2 },
+    { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
+]);
+
+let isUDLValid = ref(false);
+let isUDLNOAValid = ref(false);
+let isSAValid = ref(false);
+let isTileValid = ref(false);
+let isMultiTileValid = ref(false);
+
+let ismrValidMR1 = ref(false);
+let ismrValidMR2 = ref(false);
+let ismrValidMR3 = ref(false);
+let ismrInvalid1 = ref(false);
+let ismrInvalid2 = ref(false);
+let ismrInvalid3 = ref(false);
+let isDataValid = ref(true);
+let isvalueValid = ref(false);
+
+const visible = ref(false);
+const selectedExposures = ref('');
+const exposureChoosen = ref('');
+const isExposureC = ref(false);
+const { getData } = useExposurec();
+const { getDatas } = useExposured();
+// Computed Properties
+const dimensions = computed(() => {
+    setRoofInputs();
+});
+
+const SelectionKey = ref([]);
+const SelectionValue = ref([]);
+
+//  a check if single is change to double, and tile input boxes have data clear it.
+const selectPaddy = computed(() => {
+    if (selectedOption.value === 'single') {
+        isPaddySingle.value = true;
+
+        addPaddyCatval(selectedOption);
+
+        console.log(isPaddySingle.value);
+    } else {
+        console.log(selectedOption.value);
+        isPaddySingle.value = false;
+        addPaddyCatval(selectedOption);
+    }
+});
+
+// function clearTileSystem(event) {
+//     console.log(event);
+// }
+
+watch(
+    selectPaddy,
+    () => {
+        paddySeleted.value = selectedOption.value;
+    },
+    { immediate: true }
+);
+const dtMounted = ref();
+const dtMounteds = ref();
+
+// Methods
+function getdeckType(event) {
+    if (selectedDeck._value.name === event.value.name) {
+        dt.value = event.value.name;
+        isDisabledslope.value = false;
+    }
+}
+
+function validateRoofSlope() {
+    validateInput();
+    if (dims.slope >= 2) {
+        isDisabled.value = false;
+        addCheckmarks();
+    } else {
+        isDisabled.value = true;
+    }
+}
+
+function validateHeight() {
+    validateHeightInput();
+}
+
+function addCheckmarks() {
+    if (isHeightValid.value || isDisabledslope.value) {
+        isvalueValid.value = true;
+    } else {
+        isvalueValid.value = false;
+    }
+}
+
+function setRoofInputs() {
+    dims.height = heightModel.value;
+    dims.per = (dims.height * factor.value).toFixed(2);
+    addCheckmarks();
+}
+
+// 1. First Exposure selected
+
+function selectedExposure() {
+    console.log(selectedExposures.value);
+    if (selectedExposures.value === 'c') {
+        exposureChoosen.value = 'c';
+        console.log(exposureChoosen.value);
+        checkZones();
+    } else {
+        exposureChoosen.value = 'd';
+
+        console.log(exposureChoosen.value);
+        isExposureC.value = false;
+        checkZones();
+    }
+}
+
+// 2. Underlayment is picked and we reviel the respective components. Then zones are checked
+function pickUnderlayment(event) {
+    save.value = selectedUnderlayment.value.key;
+    if (save.value === 1) {
+        isTileValid.value = true;
+        isUDLValid.value = false;
+        isUDLNOAValid.value = false;
+        isSAValid.value = false;
+    } else if (save.value === 2) {
+        isTileValid.value = true;
+        isUDLValid.value = false;
+        isUDLNOAValid.value = false;
+        isSAValid.value = true;
+    } else if (save.value === 3) {
+        isTileValid.value = true;
+        isUDLValid.value = true;
+        isUDLNOAValid.value = true;
+        isSAValid.value = false;
+    } else if (save.value === 0) {
+        isUDLValid.value = false;
+        isUDLNOAValid.value = false;
+        isSAValid.value = false;
+        isTileValid.value = false;
+    }
+}
+const tileSel = reactive({
+    keys: '',
+    values: ''
+});
 const tilenoas = reactive({
     manufacturer: '',
     material: [],
@@ -79,127 +239,234 @@ const tilenoas = reactive({
     prescriptiveSelection: '',
     perimeter: ''
 });
-const storeroof = useRoofListStore();
-const { roofList } = storeToRefs(storeroof);
-const singles = ref([]);
-const doubles = ref([]);
-let slopeModel = ref('');
-let heightModel = ref('');
-const dims = reactive({
-    area: '',
-    per: '',
-    height: '',
-    slope: ''
-});
 
-const zoneone = reactive({
-    zone: '',
-    lambda1: '',
-    mg1: '',
-    mr1: '',
-    mf1: ''
-});
+const singlePaddyData = ref(inputdata);
+const doublePaddyData = ref(inputdatas);
+let datamounted_f = ref(ftileStore.$state.tilefinput);
+// let Edatamounted = ref(etileStore.$state.tilesysEinput);
 
-const zonetwo = reactive({
-    zone: '',
-    lambda2: '',
-    mg2: '',
-    mr2: '',
-    mf2: ''
+watchEffect(() => {
+    dtMounted.value = singlePaddyData.value;
+    dtMounteds.value = doublePaddyData.value;
 });
-const zonethree = reactive({
-    zone: '',
-    lambda3: '',
-    mg3: '',
-    mr3: '',
-    mf3: ''
-});
-const dimensions = computed(() => {
-    setRoofInputs();
-});
-function selectPaddy() {
-    if (selectedOption.value === 'single') {
-        isSinglepaddyValid.value = true;
-    } else isSinglepaddyValid.value = false;
-}
+// const dataComp =  computed(() =>   async  (dtMounted.value = singlePaddyData.value));
+let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 
-const dt = ref('');
-function getdeckType(event) {
-    console.log(selectedDeck._value.name, event.value.name);
-    if (selectedDeck._value.name === event.value.name) {
-        dt.value = event.value.name;
-        isDisabledslope.value = false;
+let datatilenoaDoublePaddy = ref('');
 
-        console.log(dt.value);
+let datatilenoas = ref('');
+
+//
+async function grabInput() {
+    if (selectedOption.value === 'double') {
+        console.log(selectedOption.value, 'Entered double');
+        datatilenoaDoublePaddy.value = query.value;
+
+        isPaddySingle.value = false;
+
+        updateDoubletick();
+    } else if (selectedOption.value === 'single') {
+        console.log(selectedOption.value, 'Entered single');
+
+        isPaddySingle.value = true;
+        updateTick();
+    } else {
+        console.log('all was skipped');
     }
 }
-onMounted(() => {
-    callFunction();
-    callFunctions();
+const manufacturerData = ref('');
+const manufacturerDoubleData = ref('');
 
-    singles.value = singleStore.$state.singlepdInput[0].singlepdNumber;
-    doubles.value = doubleStore.$state.doublepdInput[0].doublepdNumber;
+const updateTick = () => {
+    dtMounted.value = singlePaddyData.value?.[0];
+    manufacturerData.value = dtMounted.value?.singlepaddyData ?? [];
+
+    nextTick(() => {
+        if (manufacturerData.value.content === 'multiple') {
+            isMultiTileValid.value = true;
+            tilenoas.manufacturer = manufacturerData.value.applicant;
+            tilenoas.select_tile = manufacturerData.value.select_tile;
+        } else {
+            // This is for the rest of the NOAs
+            tilenoas.manufacturer = manufacturerData.value.applicant;
+            tilenoas.description = manufacturerData.value.description;
+            tilenoas.material = manufacturerData.value.material;
+            // checkZones();
+        }
+        addSystemvalues(tilenoas);
+        checkZones();
+    });
+};
+
+const updateDoubletick = () => {
+    dtMounteds.value = doublePaddyData.value?.[0];
+    manufacturerDoubleData.value = dtMounteds.value?.doublepaddyData ?? [];
+    console.log(manufacturerDoubleData.value);
+    nextTick(() => {
+        // manufacturerDoubleData.value.content === 'multiple'
+        console.log(manufacturerDoubleData.value.content);
+        if (manufacturerDoubleData.value.content === 'multiple') {
+            isMultiTileValid.value = true;
+            tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
+            tilenoas.select_tile = manufacturerDoubleData.value.select_tile;
+        } else {
+            tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
+            tilenoas.description = manufacturerDoubleData.value.description;
+            tilenoas.material = manufacturerDoubleData.value.material;
+        }
+        addSystemvalues(tilenoas);
+        checkZones();
+    });
+};
+
+// This could clear the data: Now
+function clearData() {
+    // paddyStore.clearAllData();
+    isTileValid.value = false;
+    isUDLValid.value = false;
+    isUDLNOAValid.value = false;
+    isSAValid.value = false;
+    tilenoas.manufacturer = '';
+    tilenoas.description = '';
+    tilenoas.material = [];
+    tilenoas.select_tile = [];
+
+    zoneone.lambda1 = '';
+    zonetwo.lambda2 = '';
+    zonethree.lambda3 = '';
+
+    zoneone.zone = '';
+    zonetwo.zone = '';
+    zonethree.zone = '';
+
+    zoneone.mg1 = '';
+    zonetwo.mg2 = '';
+    zonethree.mg3 = '';
+
+    zoneone.mr1 = '';
+    zonetwo.mr2 = '';
+    zonethree.mr3 = '';
+
+    zoneone.mf1 = '';
+    zonetwo.mf2 = '';
+    zonethree.mf3 = '';
+}
+const tileValue = reactive({
+    k: '',
+    v: []
 });
 
-onMounted(() => {
-    roofList.value.forEach((item, index) => {
-        if (item.item === 'Adhesive Set Tile') {
-            dims.area = item.dim4;
+function checkZones() {
+    if (selectedExposures.value === 'c') {
+        // This Function gets the zones
+        getData(dims.slope, dims.height);
+
+        zones.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    } else {
+        getDatas(dims.slope, dims.height);
+
+        zoned.value.forEach((item) => {
+            zoneone.zone = item[0];
+            zonetwo.zone = item[1];
+            zonethree.zone = item[2];
+        });
+    }
+}
+// Multi-tile
+function updateTile(event) {
+    let type = selectedOption.value === 'double' ? manufacturerDoubleData.value.table2_map : manufacturerData.value.Table2_obj_map;
+    console.log(type);
+    const valMulti = Object.entries(type).map((obj) => {
+        const key = obj[0];
+        const value = obj[1];
+        console.log(key, value);
+        if (event.value === key) {
+            console.log(key);
+            tilenoas.description = key;
+            tileSel.values = value[0];
+            console.log(tileSel.values);
         }
     });
-});
+    zones.value.forEach((item) => {
+        zoneone.zone = item[0];
+        zonetwo.zone = item[1];
+        zonethree.zone = item[2];
+    });
+    zoneone.lambda1 = tileSel.values;
+    zonetwo.lambda2 = tileSel.values;
+    zonethree.lambda3 = tileSel.values;
 
-watch(
-    selectPaddy,
-    // selectedExposure,
+    // These I may need to separate further: 04232025 15:45 - Hugo Table2_obj_map
+    let types = selectedOption.value === 'double' ? manufacturerDoubleData.value.tile_map : manufacturerData.value.Table3_obj_map;
+    // console.log(types);
+    const valMultis = Object.entries(types).map((obj) => {
+        const key = obj[0];
+        const value = obj[1];
+        console.log(key, value);
+        if (event.value === key) {
+            tileValue.v = value;
+            console.log(tileValue.v);
+        }
+        const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+        const slopeRange = clampNumber1(2, Number(dims.slope), 12);
+        console.log(slopeRange);
+        if (slopeRange <= slopeOptions.three) {
+            console.log('Is Less then three', tileValue.v[0]);
+            tileValue.v[0];
+            zoneone.mg1 = tileValue.v[0];
+            zonetwo.mg2 = tileValue.v[0];
+            zonethree.mg3 = tileValue.v[0];
+            console.log(zoneone.mg1);
+        } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+            zoneone.mg1 = tileValue.v[1];
+            zonetwo.mg2 = tileValue.v[1];
+            zonethree.mg3 = tileValue.v[1];
+        } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
+            console.log('Is Less');
+            zoneone.mg1 = tileValue.v[2];
+            zonetwo.mg2 = tileValue.v[2];
+            zonethree.mg3 = tileValue.v[2];
+        } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
+            console.log('Is Less');
+            zoneone.mg1 = tileValue.v[3];
+            zonetwo.mg2 = tileValue.v[3];
+            zonethree.mg3 = tileValue.v[3];
+        } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
+            zoneone.mg1 = tileValue.v[4];
+            zonetwo.mg2 = tileValue.v[4];
+            zonethree.mg3 = tileValue.v[4];
+        } else if (slopeRange >= slopeOptions.seven) {
+            console.log('Is Less');
+            zoneone.mg1 = tileValue.v[5];
+            zonetwo.mg2 = tileValue.v[5];
+            zonethree.mg3 = tileValue.v[5];
+        }
 
-    () => {
-        paddySeleted.value = selectedOption.value;
-    },
-    { immediate: true }
-);
-let datatilenoa = ref(tileData);
-let datatilenoas = ref(tileDatas);
-function reset() {
-    resetSingle();
+        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+
+        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+
+        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+        console.log(zoneone.mg1, result1);
+        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+        console.log(zoneone.mg1, zoneone.mr1);
+    });
+
+    tilenoas.material = isPaddySingle.value === true ? manufacturerData.value.material : manufacturerDoubleData.value.material;
+    tilenoas.paddies = isPaddySingle.value === true ? manufacturerData.value.resistance : manufacturerDoubleData.value.resistance;
+
+    // updateMF();
 }
 
-function grabInput() {
-    datatilenoa.value = query.value;
-    datatilenoas.value = query.value;
-
-    if (datatilenoa.value !== null) {
-        // 18061905
-        console.log(selectedOption.value, 'Outside');
-        if (selectedOption.value === 'double') {
-            console.log(selectedOption.value, 'Entered double');
-            callFunctions();
-            getTilenoa(datatilenoa.value);
-            tileData2.noa = datatilenoa.value;
-        }
-        if (selectedOption.value === 'single') {
-            console.log(selectedOption.value, 'Entered single');
-
-            callFunction();
-            getTilenoas(datatilenoas.value);
-            console.log('called getTile single paddy', datatilenoas);
-            tileData2.noa = datatilenoas.value;
-        }
-    }
-}
-// Computed property to filter suggestions based on user input
-const filteredSuggestions = computed(() => {
-    // if (!query.value) return [];
-    console.log(doubles.value);
-    if (selectedOption.value === 'double') {
-        console.log('double');
-        return (suggestions.value = doubles.value.noa.filter((item) => item.toString().includes(query.value)));
-
-        // [0].singlepdNumber.noa.filter((item) => item.toString().includes(query.value));
-    } else return (suggestions.value = singles.value.noa.filter((item) => item.toString().includes(query.value)));
-
-    // the real solution
-    // return suggestions.value.filter((item) => item.toString().includes(query.value));
+watch(underlaymentType, checkZones, () => {
+    grabInput();
+    // checkInput();
 });
 const saTiles = reactive({
     noa: '',
@@ -269,33 +536,7 @@ const udlTile = reactive({
     syst: '',
     pressure: ''
 });
-let datamounted = ref(ftileStore.$state.tilefinput);
-// let Edatamounted = ref(etileStore.$state.tilesysEinput);
-let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 
-let tilenoaInput = ref(null);
-// Method to update the input field with selected suggestion
-const selectSuggestion = (suggestion) => {
-    query.value = suggestion;
-    showSuggestions.value = false;
-};
-
-// Method to handle input change
-const onInput = () => {
-    showSuggestions.value = true;
-    // checkTile();
-};
-
-// Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
-const hideSuggestions = () => {
-    setTimeout(() => {
-        showSuggestions.value = false;
-    }, 200);
-};
-const selectedDeck = ref();
-const type = ref([{ name: 'Select Deck Type' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
-const save = ref([]);
-//  selectedExposure,
 watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
 
 function sysEcheckInput() {
@@ -309,8 +550,6 @@ function sysEcheckInput() {
     }
 }
 
-// const selSytemE = ref();
-const selSytem = ref();
 const whatChanged = computed(() => {
     checkInput();
     checkMR1();
@@ -324,53 +563,11 @@ const whatChanged = computed(() => {
     validateHeight();
     validateRoofSlope();
 });
+
 const selectedsystemf = ref(null);
 const selectedsysNoa = ref(null);
 const selectedMulti = ref(null);
 const selectedsystemE = ref(null);
-
-let isUDLValid = ref(false);
-let isUDLNOAValid = ref(false);
-let isSAValid = ref(false);
-let isTileValid = ref(false);
-let isMultiTileValid = ref(false);
-
-let selectedUnderlayment = ref('');
-const underlaymentType = ref([
-    { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
-    { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
-    { selectedBasesheet: '(S/A) Tile Capsheet adhered diretly to a wood deck, per the NOA System F', key: 2 },
-    { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
-]);
-
-function pickUnderlayment(event) {
-    console.log(event);
-    save.value = selectedUnderlayment.value.key;
-    console.log(selectedUnderlayment.value.key);
-    if (save.value === 1) {
-        isTileValid = true;
-        isUDLValid = false;
-        isUDLNOAValid = false;
-        isSAValid = false;
-    } else if (save.value === 2) {
-        isTileValid = true;
-        isUDLValid = false;
-        isUDLNOAValid = false;
-        isSAValid = true;
-    } else if (save.value === 3) {
-        isTileValid = true;
-        isUDLValid = true;
-        isUDLNOAValid = true;
-        isSAValid = false;
-    } else if (save.value === 0) {
-        isUDLValid = false;
-        isUDLNOAValid = false;
-        isSAValid = false;
-        isTileValid = false;
-    }
-}
-// pickUnderlayment,
-watch(selectedUnderlayment, checkInput, () => {});
 
 const slopeOptions = {
     two: 2,
@@ -380,8 +577,6 @@ const slopeOptions = {
     six: 6,
     seven: 7
 };
-
-const isDataValid = ref(true);
 
 watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, underlaymentType, () => {});
 
@@ -405,8 +600,14 @@ function checkData() {
         isDataValid.value = false;
     }
 }
-
+// function clear() {
+//   ignoreUpdates(() => {
+//     source.value = 0
+//     log.value = ''
+//   })
+// }
 function checkDatas() {
+    console.log(datatilenoas.value);
     if (tileDatas.Table3.two.Direct_Deck === 'N/A') {
         isDataValid.value = false;
     }
@@ -427,12 +628,12 @@ function checkDatas() {
     }
 }
 
-const visible = ref(false);
+// const visible = ref(false);
 
 function checkInputSystem() {
     // 23061202 23070604
 
-    datamounted.value.forEach((item, index) => {
+    datamounted_f.value.forEach((item, index) => {
         saTiles.Description_F1 = item.systemData.Description_F1;
         saTiles.Description_F2 = item.systemData.Description_F2;
         saTiles.Description_F3 = item.systemData.Description_F3;
@@ -470,7 +671,7 @@ function EcheckInputSystem() {
 
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
-
+        console.log(Anchor_Base.Anchor_Base_Sheet_E2);
         Anchor_Base.Anchor_Base_Sheet_E1 = item.systemDataE.Anchor_Base_Sheet_E1;
         Anchor_Base.Anchor_Base_Sheet_E2 = item.systemDataE.Anchor_Base_Sheet_E2;
         Anchor_Base.Anchor_Base_Sheet_E3 = item.systemDataE.Anchor_Base_Sheet_E3;
@@ -512,15 +713,7 @@ function addFSystem() {
     saTiles.system = saTiles.system;
 }
 
-const resistanceCheck = ref(null);
-
-const MF = computed(updateMF, () => {
-    zoneone.mf1 = mfupdate.value;
-    zonetwo.mf2 = mfupdate.value;
-    zonethree.mf3 = mfupdate.value;
-});
-
-let isvalueValid = ref(false);
+// let isvalueValid = ref(false);
 
 const { errorMessage, validateNumber } = useNumberValidation({
     min: 2,
@@ -534,17 +727,6 @@ const { errorHeightMessage, validateTileHeight } = useHeightValidation({
     required: true
 });
 
-function validateRoofSlope() {
-    validateInput();
-
-    if (dims.slope >= 2) {
-        isDisabled.value = false;
-        addCheckmarks();
-        console.log('entered slope');
-    } else {
-        isDisabled.value = true;
-    }
-}
 const validateInput = () => {
     validateNumber(dims.slope);
     console.log(dims.slope);
@@ -555,35 +737,22 @@ const validateHeightInput = () => {
     isHeightValid.value = true;
     addCheckmarks();
 };
+// Lifecycle Hooks
+onMounted(() => {
+    // Recent changes
 
-function addCheckmarks() {
-    if (isHeightValid.value || isDisabledslope.value) {
-        isvalueValid.value = true;
-        console.log('Entered checkmarks');
-    } else {
-        isvalueValid.value = false;
-    }
-}
-function validateHeight() {
-    validateHeightInput();
-    console.log(height.value);
-}
-const tileSel = reactive({
-    keys: '',
-    values: ''
+    roofList.value.forEach((item, index) => {
+        if (item.item === 'Adhesive Set Tile') {
+            dims.area = item.dim4;
+        }
+    });
 });
-const factor = ref(0.4);
-const { getData } = useExposurec();
-const { getDatas } = useExposured();
-function setRoofInputs() {
-    dims.height = heightModel.value;
 
-    dims.per = (dims.height * factor.value).toFixed(2);
-    addCheckmarks();
-}
+const factor = ref(0.4);
+
 const tileData2 = reactive({
     noa: '',
-    applicant: '',
+    manufacturerData: '',
     material: [],
     description: '',
     Table2: [],
@@ -621,116 +790,10 @@ const tileData2 = reactive({
         mf3: ''
     }
 });
-const isExposureC = ref(false);
-const exposureChoosen = ref('');
-const selectedExposures = ref(null);
 
-// The event variable is empty
-function selectedExposure() {
-    console.log(selectedExposures.value);
-    // console.log(event.target._value);
-    if (selectedExposures.value === 'c') {
-        exposureChoosen.value = 'c';
-        console.log(exposureChoosen.value);
-        grabInput();
-        console.log(isExposureC);
-    } else {
-        exposureChoosen.value = 'd';
-        grabInput();
-        isExposureC.value = false;
-    }
-    // grabInput();
-}
-// Multitile
-function updateTile(event) {
-    let type = multiTileAD.table2_map;
-
-    const valMulti = Object.entries(type).map((obj) => {
-        const key = obj[0];
-        const value = obj[1];
-        console.log(key, value);
-
-        if (event.value === key) {
-            tilenoas.description = key;
-            // let sel = tilenoas.select_tile;
-
-            tileSel.values = value;
-
-            tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : key;
-
-            // tilenoas.select_tile;
-            zoneone.lambda1 = tileSel.values;
-            zonetwo.lambda2 = tileSel.values;
-            zonethree.lambda3 = tileSel.values;
-            console.log(zoneone.lambda1);
-        }
-    });
-    let types = multiTileAD.tile_map;
-    console.log(types);
-    const valMultis = Object.entries(types).map((obj) => {
-        const key = obj[0];
-        const value = obj[1];
-        console.log(key);
-        if (event.value === key) {
-            // let sel = tilenoas.select_tile;
-            tileValue.v = value;
-            console.log(tileValue.v);
-        }
-        const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-        const slopeRange = clampNumber1(2, Number(dims.slope), 12);
-        console.log(slopeRange);
-        if (slopeRange <= slopeOptions.three) {
-            console.log('Is Less then three', tileDatas.Table3.two, tileValue.v[0]);
-            tileValue.v[0];
-            zoneone.mg1 = tileValue.v[0];
-            zonetwo.mg2 = tileValue.v[0];
-            zonethree.mg3 = tileValue.v[0];
-            console.log(zoneone.mg1);
-        } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-            console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, tileData.Table3.three);
-
-            zoneone.mg1 = tileValue.v[1];
-            zonetwo.mg2 = tileValue.v[1];
-            zonethree.mg3 = tileValue.v[1];
-        } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
-            console.log('Is Less');
-            zoneone.mg1 = tileValue.v[2];
-            zonetwo.mg2 = tileValue.v[2];
-            zonethree.mg3 = tileValue.v[2];
-        } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
-            console.log('Is Less');
-            zoneone.mg1 = tileValue.v[3];
-            zonetwo.mg2 = tileValue.v[3];
-            zonethree.mg3 = tileValue.v[3];
-        } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-            zoneone.mg1 = tileValue.v[4];
-            zonetwo.mg2 = tileValue.v[4];
-            zonethree.mg3 = tileValue.v[4];
-        } else if (slopeRange >= slopeOptions.seven) {
-            console.log('Is Less');
-            zoneone.mg1 = tileValue.v[5];
-            zonetwo.mg2 = tileValue.v[5];
-            zonethree.mg3 = tileValue.v[5];
-        }
-
-        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
-
-        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
-
-        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
-        console.log(zoneone.mg1, result1);
-        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
-        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
-        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
-    });
-    tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
-    tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
-    console.log(tilenoas.material, tilenoas.paddies);
-    // checkMaterial();
-}
 function checkInputSA() {
-    if (datamounted.value.length !== null) {
-        datamounted.value.forEach((item, index) => {
+    if (datamounted_f.value.length !== null) {
+        datamounted_f.value.forEach((item, index) => {
             console.log(item);
             saTiles.manufacturer = item.systemData.manufacturer;
             saTiles.material = item.systemData.material;
@@ -738,176 +801,90 @@ function checkInputSA() {
         });
     }
 }
-let isTileSelectionValid = ref(false);
-let showMaterialValid = ref(false);
+
+const showMaterialValid = ref(false);
 
 function checkInput() {
-    if (datatilenoa.value.length !== null) {
-        console.log(datatilenoa);
-        tilenoas.manufacturer = isSinglepaddyValid.value === true ? tileDatas.applicant : tileData.applicant;
-        // console.log(zoneone.lambda1);
+    // recently removed || datatilenoas.value.Table2.content === 'multiple' || datatilenoas.value.Table2.content === ''
 
-        if (tileData.Table2.content === 'multiple' || tileDatas.Table2.content === 'multiple' || tileDatas.Table2.content === '') {
-            isTileSelectionValid = true;
-            isMultiTileValid = true;
-            showMaterialValid = false;
-            checkTile();
-        } else {
-            showMaterialValid = true;
-            isMultiTileValid = false;
-            isTileValid = true;
-            isTileSelectionValid = false;
-            tilenoas.description = isSinglepaddyValid.value === true ? tileDatas.description : tileData.description;
-            // tileData2.applicant = tilenoas.manufacturer;
-            tileData2.description = tilenoas.description;
-            console.log(tileData2);
-            checkTile();
-        }
+    console.log(isMultiTileValid);
+    if (isMultiTileValid) {
+        isMultiTileValid = true;
+        showMaterialValid.value = false;
+        checkTile();
+    } else {
+        showMaterialValid.value = true;
+        isMultiTileValid = false;
+        isTileValid = true;
+
+        // checkTile();
     }
-    selectedExposure();
 }
-let ismrValidMR1 = ref(false);
-let ismrValidMR2 = ref(false);
-let ismrValidMR3 = ref(false);
-let ismrInvalid1 = ref(false);
-let ismrInvalid2 = ref(false);
-let ismrInvalid3 = ref(false);
-const tileValue = reactive({
-    k: '',
-    v: []
-});
 
-console.log(exposureChoosen.value);
-// multitile related, which means that table2 will have content as muliple
+// For Exposure D it seems and multi content on tables 2 and 3
 function checkTile() {
     if (exposureChoosen.value === 'c') {
-        console.log('Exposure c', exposureChoosen.value);
-        // getDatas(dims.slope, dims.height);
+        // getData(dims.slope, dims.height) this will get a different zone than d exposure
 
         getData(dims.slope, dims.height);
         zones.value.forEach((item) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
-            zoneone.lambda1 = tileSel.values;
-            zonetwo.lambda2 = tileSel.values;
-            zonethree.lambda3 = tileSel.values;
-            console.log(zoneone.lambda1, tileSel.values, tileSel);
         });
-
-        console.log(zones.value);
     } else {
-        console.log('Exposure d', exposureChoosen.value);
         getDatas(dims.slope, dims.height);
-
         zoned.value.forEach((item) => {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
-
-        console.log(zoned.value);
-    }
-    console.log(tileData.Table2.content);
-    if (tileData.Table2.content === 'multiple') {
-        workoutDataAD(tileData);
-        console.log(multiTileAD.select_tile);
-        tilenoas.select_tile = multiTileAD.select_tile;
-        isMultiTileValid = true;
-        showMaterialValid = false;
+        checkZones();
     }
 }
 
 // seems singleTile exposure C
 function checkMaterial() {
-    if (exposureChoosen.value === 'c') {
-        console.log('Else C exposure', exposureChoosen);
-
-        zones.value.forEach((item, index) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
-        console.log(zones.value);
-        console.log(tileData.Table2.content);
-        if (tileData.Table2.content === 'multiple') {
-            checkTile();
-
-            console.log('Sent to checkTile()');
-        }
-    } else {
-        console.log('D exposure');
-        console.log(tbd, zoned);
-        console.log(useExposured());
-        zoned.value.forEach((item, index) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
-    }
-
     const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
     const slopeRange = clampNumber1(2, Number(dims.slope), 12);
     console.log(slopeRange);
     if (slopeRange <= slopeOptions.three) {
-        console.log('Is Less then three', tileDatas.Table3.two);
-
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.two.Direct_Deck : tileData.Table3.two;
-        console.log(zonethree.mg3);
+        zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.two.Direct_Deck : manufacturerDoubleData.value.Table3.two;
+        zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.two.Direct_Deck : manufacturerDoubleData.value.Table3.two;
+        zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.two.Direct_Deck : manufacturerDoubleData.value.Table3.two;
     } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-        console.log('Is Less than four but equal to or higher than three', tileDatas.Table3.three.Direct_Deck, tileData.Table3.three);
+        // console.log('Is Less than four but equal to or higher than three', ileDatas1.value.tileValues.Table3.three.Direct_Deck, manufacturerDoubleData.value.Table3.three);
 
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.three.Direct_Deck : tileData.Table3.three;
+        zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.three.Direct_Deck : manufacturerDoubleData.value.Table3.three;
+        zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.three.Direct_Deck : manufacturerDoubleData.value.Table3.three;
+        zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.three.Direct_Deck : manufacturerDoubleData.value.Table3.three;
         console.log(zonethree.mg3);
     } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.four.Direct_Deck : tileData.Table3.four;
+        zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
+        zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
+        zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
     } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.five.Direct_Deck : tileData.Table3.five;
-        console.log(zonethree.mg3);
+        zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.five.Direct_Deck : manufacturerDoubleData.value.Table3.five;
+        zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.five.Direct_Deck : manufacturerDoubleData.value.Table3.five;
+        zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.five.Direct_Deck : manufacturerDoubleData.value.Table3.five;
     } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.six.Direct_Deck : tileData.Table3.six;
+        zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.six.Direct_Deck : manufacturerDoubleData.value.Table3.six;
+        zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.six.Direct_Deck : manufacturerDoubleData.value.Table3.six;
+        zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.six.Direct_Deck : manufacturerDoubleData.value.Table3.six;
     } else if (slopeRange >= slopeOptions.seven) {
         console.log('Is Less');
-        zoneone.mg1 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
-        zonetwo.mg2 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
-        zonethree.mg3 = isSinglepaddyValid.value === true ? tileDatas.Table3.seven.Direct_Deck : tileData.Table3.seven;
-        console.log(zonethree.mg3);
+        zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.seven.Direct_Deck : manufacturerDoubleData.value.Table3.seven;
+        zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.seven.Direct_Deck : manufacturerDoubleData.value.Table3.seven;
+        zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.seven.Direct_Deck : manufacturerDoubleData.value.Table3.seven;
     }
 
-    // if (tileData.table2_map === '') {
-    tilenoas.material = isSinglepaddyValid.value === true ? tileDatas.material : tileData.material;
-    tilenoas.paddies = isSinglepaddyValid.value === true ? tileDatas.resistance : tileData.resistance;
-    console.log(tilenoas.material, tilenoas.paddies);
-    if (isSinglepaddyValid.value === false && tileData.Table2.content === 'multiple') {
-        zoneone.lambda1 = tileSel.values;
-        zonetwo.lambda2 = tileSel.values;
-        zonethree.lambda3 = tileSel.values;
-        console.log(zoneone, zonetwo, zonethree);
-    } else {
-        zoneone.lambda1 = tileData.Table2.Direct_Deck;
-        zonetwo.lambda2 = tileData.Table2.Direct_Deck;
-        zonethree.lambda3 = tileData.Table2.Direct_Deck;
-    }
-    if (isSinglepaddyValid.value === true) {
-        zoneone.lambda1 = tileDatas.Table2.Direct_Deck;
-        zonetwo.lambda2 = tileDatas.Table2.Direct_Deck;
-        zonethree.lambda3 = tileDatas.Table2.Direct_Deck;
-    }
+    tilenoas.paddies = isPaddySingle.value === true ? manufacturerData.value.resistance : manufacturerDoubleData.value.resistance;
+    zoneone.lambda1 = isPaddySingle.value === true ? manufacturerData.value.Table2.Direct_Deck : manufacturerDoubleData.value.Table2.Direct_Deck;
+    zonetwo.lambda2 = isPaddySingle.value === true ? manufacturerData.value.Table2.Direct_Deck : manufacturerDoubleData.value.Table2.Direct_Deck;
+    zonethree.lambda3 = isPaddySingle.value === true ? manufacturerData.value.Table2.Direct_Deck : manufacturerDoubleData.value.Table2.Direct_Deck;
 
-    // }
-    console.log(zoneone.lambda1, tileSel.values);
     const result1 = computed(() => zoneone.zone * zoneone.lambda1);
 
     const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
@@ -917,97 +894,82 @@ function checkMaterial() {
     zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
     zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
     zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+
     saveTileData();
 }
 
-const maps = ref([]);
-const vals = ref([]);
-const mfupdate = ref();
+const savedKey = ref([]);
+const savedValue = ref([]);
 
 function updateMF(event) {
-    console.log(event.value);
-    let mat = isSinglepaddyValid.value === true ? tileDatas.selection : tileData.selection;
-    console.log(mat);
-    resistanceCheck.value = Object.entries(mat).map((obj) => {
-        const k = obj[0];
-        const v = obj[1];
+    let mat = isPaddySingle.value === true ? manufacturerData.value.resistance : manufacturerDoubleData.value.resistance;
+    console.log(mat, tilenoas.material[0]);
+    // almost there fix this section by changing SelectionKey, start with
+    const count = ref(0);
 
-        maps.value.push(k);
-        vals.value.push(v);
-        console.log(v, k);
-    });
-    for (let i = 0; i < maps.value.length; i++) {
-        console.log(vals.value[i]);
-        mfupdate.value = vals.value[i];
-        //      tileData2.applicant = tilenoas.manufacturer;
-        // tileData2.description = tilenoas.description;
-        tileData2.material = event.value;
-
-        console.log(tileData2.material);
-        console.log(mfupdate.value[i]);
-        console.log(maps.value[i]);
-        if (maps.value[i] === event.value) {
-            zoneone.mf1 = vals.value[i];
-            zonetwo.mf2 = vals.value[i];
-            zonethree.mf3 = vals.value[i];
-            tileData2.zoneone.mf1 = zoneone.mf1;
-            tileData2.zonetwo.mf2 = zonetwo.mf2;
-            tileData2.zonethree.mf3 = zonethree.mf3;
-            console.log(tileData2.zoneone.mf1, tileData2.zonetwo.mf2, tileData2.zonethree.mf3);
-        }
-
-        if ((!zoneone.mf1.includes('.') && zoneone.mf1.length === 6) || (!zonetwo.mf2.includes('.') && zonetwo.mf2.length === 4) || (!zonethree.mf3.includes('.') && zonethree.mf3.length === 4)) {
-            const superscripts = detectSuperscripts(zoneone.mf1, zonetwo.mf2, zonethree.mf3);
-            console.log('Entered superscript', superscripts);
-        } else {
-            const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
-            const mfcheck1 = zoneone.mf1.replace(superscriptRegex, '');
-
-            const mfcheck2 = zonetwo.mf2.replace(superscriptRegex, '');
-            const mfcheck3 = zonethree.mf3.replace(superscriptRegex, '');
-            const mfc1 = useToNumber(mfcheck1);
-            const mfc2 = useToNumber(mfcheck2);
-            const mfc3 = useToNumber(mfcheck3);
-            console.log(mfc1.value, mfc2.value, mfc3.value);
-            // console.log(typeof mfc1.value, typeof mfc2.value, typeof mfc3.value);
-            const convertmr1 = useToNumber(zoneone.mr1);
-            const convertmr2 = useToNumber(zonetwo.mr2);
-            const convertmr3 = useToNumber(zonethree.mr3);
-
-            if (convertmr3.value < mfc3.value) {
-                console.log('I am less than MF3', convertmr3.value, mfc3.value);
-                ismrValidMR3 = true;
-                ismrInvalid3 = false;
-                console.log(ismrValidMR3.value);
-            } else {
-                checkMR3();
-                console.log('Entered Else');
-            }
-            if (convertmr1.value < mfc1.value) {
-                console.log('I am less than MF1', convertmr1.value);
-
-                ismrValidMR1 = true;
-                ismrInvalid1 = false;
-            } else {
-                checkMR1();
-                console.log('entered else');
-            }
-            if (convertmr2.value < mfc2.value) {
-                console.log('I am less than MF2');
-                ismrValidMR2 = true;
-                ismrInvalid2 = false;
-            } else {
-                checkMR2();
-            }
+    for (let i = 0; i < tilenoas.material.length; i++) {
+        if (tilenoas.material[i] === event.value) {
+            zoneone.mf1 = mat[i];
+            zonetwo.mf2 = mat[i];
+            zonethree.mf3 = mat[i];
         }
     }
+
+    tileData2.material = event.value;
+    console.log(tileData2.material);
+    if ((!zoneone.mf1.includes('.') && zoneone.mf1.length === 6) || (!zonetwo.mf2.includes('.') && zonetwo.mf2.length === 4) || (!zonethree.mf3.includes('.') && zonethree.mf3.length === 4)) {
+        const superscripts = detectSuperscripts(zoneone.mf1, zonetwo.mf2, zonethree.mf3);
+    } else {
+        const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+        const mfcheck1 = zoneone.mf1.replace(superscriptRegex, '');
+
+        const mfcheck2 = zonetwo.mf2.replace(superscriptRegex, '');
+        const mfcheck3 = zonethree.mf3.replace(superscriptRegex, '');
+        const mfc1 = useToNumber(mfcheck1);
+        const mfc2 = useToNumber(mfcheck2);
+        const mfc3 = useToNumber(mfcheck3);
+
+        const convertmr1 = useToNumber(zoneone.mr1);
+        const convertmr2 = useToNumber(zonetwo.mr2);
+        const convertmr3 = useToNumber(zonethree.mr3);
+
+        if (convertmr3.value < mfc3.value) {
+            console.log('I am less than MF3', convertmr3.value, mfc3.value);
+            ismrValidMR3 = true;
+            ismrInvalid3 = false;
+        } else {
+            checkMR3();
+            console.log('Entered Else');
+        }
+        if (convertmr1.value < mfc1.value) {
+            console.log('I am less than MF1', convertmr1.value);
+
+            ismrValidMR1 = true;
+            ismrInvalid1 = false;
+        } else {
+            checkMR1();
+            console.log('entered else');
+        }
+        if (convertmr2.value < mfc2.value) {
+            console.log('I am less than MF2');
+            ismrValidMR2 = true;
+            ismrInvalid2 = false;
+        } else {
+            checkMR2();
+        }
+    }
+    saveTileData();
 }
+
+// I think we need another next tick system here or clear the memory
+
 const matches1 = ref('');
 const matches2 = ref('');
 const matches3 = ref('');
 
 function detectSuperscripts(str1, str2, str3) {
     // Define the regular expression to match superscript characters
+    console.log('Entered detectSuperscripts section');
     const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
 
     // Find matches for superscripts
@@ -1025,7 +987,6 @@ function detectSuperscripts(str1, str2, str3) {
 function checkMR1() {
     const superscriptRegex = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
     if (matches1.value.length === 0) {
-        // const mfcheck1 = zoneone.mf1.slice(0, 1);
         const mfcheck1 = zoneone.mf1.replace(superscriptRegex, '');
         console.log(zoneone.mf1.replace(superscriptRegex, ''));
         const mfc1 = useToNumber(mfcheck1);
@@ -1100,11 +1061,12 @@ function checkMR3() {
         }
     }
 }
-
+// Reset the roof list store.
+// function clearSelected() {
+//     store.$reset();
+//     console.log(store, reset);
+// }
 const saveTileData = async () => {
-    // const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-    // if (sinpadStore.$state.inputdata[0].length !== 0) {
-    console.log(dims.slope, pdfStore.getHeight.value[0]);
     tileData2.slope = dims.slope;
     tileData2.height = dims.height;
     tileData2.area = dims.area;
@@ -1117,9 +1079,10 @@ const saveTileData = async () => {
     tileData2.zonetwo.lambda2 = zonetwo.lambda2;
     tileData2.zonetwo.mg2 = zonetwo.mg2;
     tileData2.zonetwo.mr2 = zonetwo.mr2;
-
+    tileData2.paddySelection = selectedOption.value;
     tileData2.applicant = tilenoas.manufacturer;
     tileData2.description = tilenoas.description;
+    // tileData2.material = tilenoas.material;
 
     tileData2.Decktype = dt.value;
     tileData2.prescriptiveSelection = selectedUnderlayment.value;
@@ -1132,9 +1095,9 @@ const saveTileData = async () => {
     tileData2.zoneone.mf1 = zoneone.mf1;
     tileData2.zonetwo.mf2 = zonetwo.mf2;
     tileData2.zonethree.mf3 = zonethree.mf3;
-    addSystemvalues(tileData2);
+    addSavedvalues(tileData2);
     // addtileData(tileData2);
-    console.log(tileInputvalues);
+    console.log(tileData2);
 
     // }
 };
@@ -1251,6 +1214,7 @@ function udlDescPressure() {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E2;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E2;
         udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E2;
+        console.log(Anchor_Base.Anchor_Base_Sheet_E2);
     }
     if (selectedsystemE.value === 'E3') {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E3;
@@ -1376,9 +1340,10 @@ function saDescPressure() {
     }
 }
 
+//  processMFValue,
 watch(
     checkInputSystem,
-    MF,
+
     validateRoofSlope,
     saveTileData,
     query,
@@ -1411,95 +1376,75 @@ watch(
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
 
-        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="height" style="color: #122620">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" :disabled="isDisabled" @input="setRoofInputs" @change="validateHeight" />
-            <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
-        </div>
         <div></div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label style="color: #122620" for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
+        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+            <label for="height" style="color: #122620">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
+            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" :disabled="isDisabled" @input="setRoofInputs" @change="validateHeight" />
+            <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
+        </div>
+        <div></div>
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label style="color: #122620" for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="md:w-1/2 flex flex-col w-96 mb-4 mt-6 gap-3 space-y-2">
+
+        <div class="w-56 flex flex-col gap-2" style="margin-left: 50px">
+            <label style="color: red">Select Exposure</label>
+            <div class="flex items-center space-x-2">
+                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
+                    <!-- variant="filled"  -->
+                    <RadioButton inputId="option3" name="option" value="c" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 5px" />
+                    <label style="color: #122620; margin-left: 10px" for="option3">C</label>
+                </div>
+                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
+                    <!-- variant="filled" -->
+                    <RadioButton inputId="option4" name="option" value="d" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 20px" />
+
+                    <label style="color: #122620; margin-left: 20px" for="option4">D</label>
+                </div>
+            </div>
+        </div>
+        <Divider />
+
+        <div class="md:w-1/2 flex flex-col w-72 mb-4 mt-6 gap-3 space-y-2" style="margin-left: 20px">
             <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="pickUnderlayment" />
         </div>
+        <!-- <Button label="Reset" severity="danger" @click="clearSelected" size="small"></Button> -->
         <DripEdAdTile />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
-            <!-- <Buttons label="Double Click" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons> -->
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
         </div>
 
-        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 100px">
-            <label style="color: red">Select Exposure</label>
-            <div class="flex items-center space-x-2">
-                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
-                    <!-- <RadioButton inputId="option4" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" /> -->
-                    <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 10px" />
-                    <label style="color: #122620; margin-left: 10px" for="option3">C</label>
-                </div>
-                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
-                    <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 20px" />
-
-                    <label style="color: #122620; margin-left: 20px" for="option4">D</label>
-                </div>
-            </div>
-            <Divider />
+        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 50px">
             <label style="color: red">Select a Paddy Category</label>
             <div class="flex items-center">
                 <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <RadioButton inputId="option1" name="options" value="single" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
+                    <RadioButton inputId="option1" name="options" value="single" variant="filled" v-model="selectedOption" @update="selectPaddy" />
                     <label style="color: #122620" for="option1">Single</label>
                 </div>
                 <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <RadioButton style="margin-left: 5px" inputId="option2" name="options" value="double" variant="filled" :invalid="selectedOption === null" v-model="selectedOption" @update="selectPaddy" />
+                    <RadioButton inputId="option2" style="margin-left: 5px" name="options" value="double" variant="filled" v-model="selectedOption" @update="selectPaddy" />
                     <label style="color: #122620" for="option2">Double</label>
                 </div>
             </div>
         </div>
-
+        <Divider />
         <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
-            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <div class="autocomplete">
-                    <div class="w-128 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
-                        <!--  @click="grabInput"   -->
-                        <FloatLabel>
-                            <InputText
-                                id="tilenoa"
-                                v-tooltip.bottom="'Press Tab after value'"
-                                v-model="query"
-                                inputId="ac"
-                                @focus="showSuggestions = true"
-                                @blur="hideSuggestions"
-                                @input="onInput"
-                                @update="selectedExposure"
-                                @keydown.tab.exact.stop="checkInput"
-                            />
-                            <Buttons label="Double Click" severity="danger" variant="outlined" v-model="query" @click="checkInput" style="margin-left: 5px"></Buttons>
-                            <!-- <Buttons label="Reset" severity="danger" variant="outlined" @click="reset" style="margin-left: 5px"></Buttons> -->
+            <!-- @change="grabInput"  -->
+            <tileNoaNumber v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" @keydown.tab.exact.stop="grabInput" @change="grabInput" />
+            <!-- <i class="pi pi-refresh" severity="info" style="font-size: 2rem; margin-left: 220px; margin-bottom: 50px" raised @click="clearData"></i>&nbsp; -->
 
-                            <label for="ac">Tile NOA: 00000000</label>
-
-                            <!--   -->
-                        </FloatLabel>
-                    </div>
-                    <!-- Suggestions list -->
-                    <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-                        <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
-                            {{ suggestion }}
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <!--
+            <Button @click="clearData">Clear Page</Button> pi-refresh  <i class="pi pi-refresh" severity="help" style="font-size: 2rem"></i>-->
         </div>
     </div>
 
@@ -1519,7 +1464,6 @@ watch(
                 </div>
                 <div class="w-56 flex flex-col gap-1">
                     <label style="color: red">Select System E *</label>
-                    <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
                 </div>
                 <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -1554,7 +1498,6 @@ watch(
 
                 <div class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: red">Select System F *</label>
-                    <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
                 </div>
 
@@ -1575,24 +1518,26 @@ watch(
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
-            <div v-show="isTileSelectionValid" class="min-w-[550px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div v-show="isMultiTileValid" class="min-w-[550px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Type</label>
 
-                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
+                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkInput" @change="updateTile" />
             </div>
-        </div>
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div class="min-w-[770px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <!-- <div v-show="isMultiTileValid" class="min-w-[770px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="description">Tile Description</label>
+                <InputText id="description" v-model="tilenoas.description" />
+            </div> -->
+            <div v-show="!isMultiTileValid" class="min-w-[770px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
             <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <!--  @click="checkMaterial" -->
                 <label style="color: #122620" for="material">Tile Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
-            </div>
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @change="updateMF" />
 
-            <div v-show="showMaterialValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <!-- @click="updateMF" -->
+            </div>
+            <div v-show="!isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>

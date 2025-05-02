@@ -1,7 +1,4 @@
 <script setup>
-// import DripEdgeMaterial from '@/components/DripEdgeChildren/DripEgdeMaterial.vue';
-// import usedripAxios from '@/composables/use-dripAxios';
-
 import useShingleDrip from '@/composables/DripEdge/use-ShingleDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
 
@@ -12,15 +9,13 @@ import { storeToRefs } from 'pinia';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
-// const { type, holdSize, hold } = usedripAxios();
-// const selectDripEdge = ref('');
-// const selectDripEdgeSize = ref('');
+
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 const typesSh = ref();
 
-const { typeSizeshingle, stype, holdSizeshingle } = useShingleDrip();
+const { stype, holdSizeshingle } = useShingleDrip();
 // Reactive value bound to the select dropdown
 
 // Ref for the <select> element
@@ -30,16 +25,13 @@ const selectSizeRef = ref(null);
 const emit = defineEmits(['update-valuesize']);
 
 const dripShingleStore = usedripedgeshingleStore();
-const { dripinputshin, selectDripEdges, selectDripEdgeSizes, dripShinMaterial } = storeToRefs(dripShingleStore);
+const { selectDripEdges, selectDripEdgeSizes } = storeToRefs(dripShingleStore);
 const { resetState } = dripShingleStore;
 
 let isRoofShingleValid = ref(false);
 
 const typeSizes = ref();
 const typeSizeSh = ref();
-
-// const storeMaterial = ref('');
-// const storeSize = ref('');
 
 const callState = tryOnMounted(() => {
     console.log(roofType.value);
@@ -147,13 +139,10 @@ invoke(async () => {
 </script>
 
 <template>
-    <!-- flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800 card w-96 grid gap-4 grid-cols-1-->
     <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
         <Button label="Reset" severity="danger" @click="resetState"></Button>
         <label style="color: #122620">Drip Edge Material</label>
-        <!--  ref="selectRef"    selectDripMaterial,  @change="emitValue" @update-value="selectDripMaterial"    " -->
         <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @click="checkValue" />
-        <!-- @change="emitValuesize" @update-valuesize="storeDripEdgeSize" ref="selectSizeRef"-->
 
         <label style="color: #122620">Drip Edge Size</label>
         <Select ref="selectSizeRef" v-model="selectDripEdgeSize" :options="typeSizes" @click="getdripSize" @change="emitValuesize" @update-valuesize="storeDripEdgeSize" placeholder="make selection" />

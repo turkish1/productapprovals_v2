@@ -29,13 +29,6 @@ export default function useInputs() {
 
         shingleNoaNumber.noa = data;
 
-        // for (let i = 0;)
-        // const response = await execute({ params: { noa: num.value } }).then((response) => {
-        //     noaNum.value = data.value;
-
-        //     return noaNum.value;
-        // });
-
         noaStore.addShingle(shingleNoaNumber);
 
         console.log(shingleNoaNumber, 'System added');

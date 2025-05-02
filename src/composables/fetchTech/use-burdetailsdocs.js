@@ -1,7 +1,7 @@
 // import { useburDetailStore } from '@/stores/burDetaildocs';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useAxios } from '@vueuse/integrations/useAxios';
-import { reactive, ref, toRefs, computed } from 'vue';
+import { ref } from 'vue';
 
 export default function useBurDetails() {
     const des_key = ref('');
@@ -9,7 +9,6 @@ export default function useBurDetails() {
     const permitStore = usePermitappStore();
 
     const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-    // const processnumber = ref(processNumber.value);
 
     const results = ref('');
 
@@ -18,7 +17,6 @@ export default function useBurDetails() {
     function calldetailsdoc(objkey) {
         des_key.value = objkey;
 
-        console.log(des_key.value);
         fetchData();
     }
 

@@ -12,9 +12,6 @@ export default function useInputPoly() {
     const polyStores = usePolynoaStore();
     const errors = ref('');
 
-    // let url = 'https://45ocd2dvi7.execute-api.us-east-1.amazonaws.com/shinglenoa/shinglenoa';
-    // const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
-
     const polyNoaNumber = reactive({
         noa: []
     });
@@ -32,12 +29,6 @@ export default function useInputPoly() {
         polyNoaNumber.noa = data;
 
         console.log(polyNoaNumber.noa);
-        // for (let i = 0;)
-        // const response = await execute({ params: { noa: num.value } }).then((response) => {
-        //     noaNum.value = data.value;
-
-        //     return noaNum.value;
-        // });
 
         polyStores.addData(polyNoaNumber);
 

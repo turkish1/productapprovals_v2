@@ -24,7 +24,7 @@ export default function useADTileDrip() {
             ttype.value.push(hold.value[i]);
         }
         typeSize.value.push(holdSizes.value.size1, holdSizes.value.size2, holdSizes.value.size3, holdSizes.value.size4);
-        console.log(holdSizes.value, typeSize.value);
+
         dripadTileStore.addDripTile(holdSizes);
         dripadTileStore.addDripTile(typeSize);
         return hold.value;

@@ -21,18 +21,8 @@ export default function useFNumber() {
     const { data } = useFetch(url).get().json();
 
     const fetchData = async () => {
-        // try {
-
         sysFNumber.noa = data;
-
-        // for (let i = 0;)
-        // const response = await execute({ params: { noa: num.value } }).then((response) => {
-
-        // });
-
         systemFStore.addSystem(sysFNumber);
-
-        console.log('System added');
     };
 
     return { sysFNumber, fetchData, callFunction, errors, results, ...toRefs(sysFNumber), systemFStore };

@@ -42,7 +42,7 @@ export default function useMech() {
     });
     function takeMechInput(inputMech) {
         input.value = inputMech;
-        console.log(input.value);
+
         num.value = Number(input.value);
         fetchData();
     }
@@ -50,7 +50,7 @@ export default function useMech() {
         try {
             const response = await execute({ params: { NOA: num.value } }).then((response) => {
                 noaNum.value = data.value;
-                console.log(data.value);
+
                 return noaNum.value;
             });
             console.log(response.length);
@@ -78,8 +78,6 @@ export default function useMech() {
                 mechanicalData.fastenerValues = noaNum.value[0].fastenerValues;
 
                 mechStore.addNoa(mechanicalData);
-
-                console.log(mechanicalData, 'System added');
             }
         } catch (error) {
             console.log('Error, fectching data', error);

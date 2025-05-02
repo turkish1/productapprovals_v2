@@ -3,11 +3,9 @@ import { useGlobalState } from '@/stores/accountsStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref, toRefs } from 'vue';
 export default function usecreateAccount() {
-    // const effort = ref([]);
     const noaNum = ref([]);
     const responseMessage = ref('');
     let results = ref([]);
-    // const acctStore = useacctStore();
 
     const { accountUsers, getUser, addUser } = useGlobalState();
     let formData = reactive({

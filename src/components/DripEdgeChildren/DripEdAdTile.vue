@@ -29,7 +29,6 @@ let isRoofTileADValid = ref(false);
 const typeSizes = ref();
 
 const callState = tryOnMounted(() => {
-    console.log(roofType.value);
     if (roofType.value.length === 0) {
         return '';
     }
@@ -61,26 +60,21 @@ const emitValuesize = () => {
 // };
 // Example: Accessing the select element via the ref and for the default use
 onMounted(() => {
-    console.log('Select element:', selectSizeRef.value);
     checkValue();
 });
 
 function checkRoof() {
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Adhesive Set Tile') {
-            console.log(roofType.value[i].item);
-
             tile();
         }
     }
 }
 function checkValue() {
     types.value = type.value;
-    console.log(types.value);
 }
 
 function getdripSize() {
-    console.log(selectDripEdge.value);
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
@@ -105,22 +99,17 @@ function getdripSize() {
 }
 
 function tile() {
-    console.log(selectDripEdge.value);
-
     dripTileData.DripEdgeMaterial = selectDripEdge.value;
-    console.log(dripTileData.DripEdgeMaterial);
 
     storeDripEdgeSize();
 }
 
 const storeDripEdgeSize = (value) => {
-    console.log(dripTileData.DripEdgeSize);
     if (isRoofTileADValid.value === true) {
         dripTileData.DripEdgeSize = selectDripEdgeSize.value;
         console.log(dripTileData.DripEdgeSize);
         tileStore.insertDripAtIndex(4, dripTileData.DripEdgeMaterial);
         tileStore.insertDripAtIndex(6, dripTileData.DripEdgeSize);
-        console.log(tileStore);
     }
 };
 
@@ -132,13 +121,9 @@ invoke(async () => {
 </script>
 
 <template>
-    <!-- flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800 card w-96 grid gap-4 grid-cols-1-->
     <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
-        <Button label="Reset" severity="danger" @click="resetState"></Button>
         <label style="color: #122620">Drip Edge Material</label>
-        <!--  ref="selectRef"    selectDripMaterial,  @change="emitValue" @update-value="selectDripMaterial"    " -->
         <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @click="checkValue" />
-        <!-- @change="emitValuesize" @update-valuesize="storeDripEdgeSize" ref="selectSizeRef"-->
 
         <label style="color: #122620">Drip Edge Size</label>
         <Select ref="selectSizeRef" v-model="selectDripEdgeSize" :options="typeSizes" @click="getdripSize" @change="emitValuesize" @update-valuesize="storeDripEdgeSize" placeholder="make selection" />
