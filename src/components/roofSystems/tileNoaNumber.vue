@@ -6,25 +6,15 @@
           1) We trigger 'grabInput()' on Enter, Tab, or when user leaves the input,
              ensuring 'query' is used properly.
         -->
-                <InputText
-                    id="tilenoa"
-                    v-tooltip.bottom="'Press Tab after value'"
-                    v-model="query"
-                    inputId="ac"
-                    @focus="showSuggestions = true"
-                    @blur="hideSuggestions"
-                    @input="onInput"
-                    @click="grabInput"
-                    @change="grabInput"
-                    @update="checkPaddCategory"
-                />
-                <!--     @keydown.tab.exact.stop="grabInput" -->
+                <InputText id="tilenoa" v-tooltip.bottom="'Press Tab after value'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" @update="checkPaddCategory" />
+                <!--     @keydown.tab.exact.stop="grabInput"  @click="grabInput"
+                    @change="grabInput"      @keydown.tab.exact.stop="grabInput"-->
                 <label for="ac">Tile NOA: 00000000</label>
             </FloatLabel>
         </div>
         <!-- <Button @click="updateMessage">update</Button> -->
         <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)" @update="checkPaddCategory">
+            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
                 {{ suggestion }}
             </li>
         </ul>
@@ -49,8 +39,11 @@ import { storeToRefs } from 'pinia';
 // ----------------------------
 // 1) Extract the needed composable methods and store references
 // ----------------------------
+
+// this returns the data for the individual noas
 const { getTilenoas } = usetileInputsingle();
 const { getTilenoa } = usetileInputdouble();
+
 const { callFunction, singleStore } = useSingle();
 const { callFunctions, doubleStore } = useDouble();
 
@@ -80,50 +73,50 @@ const firstItem = ref(null);
 const secondItem = ref(null);
 // Our "tileValues" that we eventually commit to another store:
 
-const myData = computed(() => paddyStore.inputdata);
+const singlePaddydata = computed(() => paddyStore.inputdata);
 const doublePaddydata = computed(() => useDoublepaddy.inputdatas);
 // ----------------------------
 // 3) onMounted: fetch or prepare data
 // ----------------------------
 onMounted(() => {
     // Call the store action to populate singleStore.$state
-    callFunction();
     callFunctions();
+    callFunction();
 });
-const copiedRef = ref({ ...myData.value });
+const copiedRef = ref({ ...singlePaddydata.value });
 const doubleRef = ref({ ...doublePaddydata.value });
-function checkPaddCategory() {
+
+async function checkPaddCategory() {
     paddyCategory.value = paddyCat.$state.paddycatInput[0].paddyValues;
+    // console.log(paddyCategory.value, doublePaddydata.value, doubleRef.value);
+    if (paddyCategory.value === 'double') {
+        suggestionTempDouble.value = doubleStore.$state;
 
-    if (paddyCategory.value == 'single') {
-        console.log(paddyCategory.value);
+        suggestions.value = suggestionTempDouble.value;
+        isPaddyvaluesingle.value = false;
+        console.log('Entered double paddy value', secondItem.value);
+    } else {
         suggestionTempSingle.value = singleStore.$state;
-
         suggestions.value = suggestionTempSingle.value;
         isPaddyvaluesingle.value = true;
-        console.log(suggestions.value);
-    } else {
-        console.log(paddyCategory.value);
-        suggestionTempDouble.value = doubleStore.$state;
-        suggestions.value = suggestionTempDouble.value;
-        // console.log(suggestions.value);
     }
 
     return suggestions.value;
 }
 
-const filteredSuggestions = computed(() => {
-    if (!query.value) return [];
-    console.log(isPaddyvaluesingle.value);
-    // paddyCategory.value == 'single'
-    const paddyInputSelected = isPaddyvaluesingle.value == true ? suggestions.value.pdInput?.[0] : suggestions.value.pdInputs?.[0];
-    const noaArray = isPaddyvaluesingle.value == true ? (paddyInputSelected?.pdNumber?.noa ?? []) : (paddyInputSelected?.pdNumbers?.noa ?? []);
-
-    return noaArray.filter((item) => item.toString().includes(query.value));
-});
-
 watch(checkPaddCategory, () => {});
 
+const filteredSuggestions = computed(() => {
+    if (!query.value) return [];
+    console.log(isPaddyvaluesingle.value, paddyCategory.value);
+    // paddyCategory.value == 'single'  :
+    // isPaddyvaluesingle.value == false ? suggestions.value.pdInputs?.[0] suggestions.value.pdInput?.[0];
+    const paddyInputSelected = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0] : suggestions.value.pdInput?.[0];
+    const noaArray = paddyCategory.value === 'double' ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
+    // isPaddyvaluesingle.value == false ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
+    console.log(noaArray);
+    return noaArray.filter((item) => item.toString().includes(query.value));
+});
 // ----------------------------
 // 5) "grabInput" is called once the user finalizes input
 // ----------------------------
@@ -139,15 +132,16 @@ async function grabInput() {
     try {
         // 1) Attempt to fetch data for the given NOA
 
-        if (isPaddyvaluesingle.value == true) {
-            console.log('Entered single paddy value');
+        // isPaddyvaluesingle.value == true
+        if (paddyCategory.value === 'single') {
+            console.log('Entered single paddy value', firstItem.value);
             getTilenoas(query.value);
             await paddyInputSelection(firstItem.value);
             updateMessage();
             // isPaddyvaluesingle.value = false;
         } else {
             isPaddyvaluesingle.value = false;
-            console.log('Entered double paddy value');
+            console.log('Entered double paddy value', secondItem.value);
             getTilenoa(query.value);
             await doublepaddyInputSelection(secondItem.value);
             updateDoublepaddy();
@@ -176,7 +170,7 @@ const data = ref([]);
 watch(
     () => paddyStore.inputdata,
     (newValue) => {
-        myData.value = newValue;
+        singlePaddydata.value = newValue;
 
         // ...any other side effect logic
     }
@@ -186,7 +180,6 @@ watch(
     () => useDoublepaddy.inputdatas,
     (doubleValue) => {
         doublePaddydata.value = doubleValue;
-        console.log(doublePaddydata.value);
     }
 );
 
@@ -234,15 +227,16 @@ async function doublepaddyInputSelection(itemd) {
         console.error('Error in paddyInputSelection:', err);
     }
 }
-const message = ref();
+const single = ref();
 const double = ref();
+
 const updateMessage = () => {
-    message.value = myData.value;
+    single.value = singlePaddydata.value;
     nextTick(() => {
         // Code here will execute after the DOM is updated
-        console.log('DOM is updated, message is now:', message.value);
+        console.log('DOM is updated, message is now:', single.value);
     });
-    isPaddyvaluesingle.value = false;
+    // isPaddyvaluesingle.value = false;
 };
 
 const updateDoublepaddy = () => {

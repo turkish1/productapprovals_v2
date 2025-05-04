@@ -152,13 +152,15 @@ function copyToClipboard(text) {
 // Called when the Prime One select changes.
 function prescriptiveOne(event) {
     selectedBurItems.p1 = event.value;
+    // addpdfData(selectedBurItems.p1);
 }
 
 // Called when the Prime Three select changes.
 function prescriptiveThree(event) {
+    console.log(event.value);
     selectedBurItems.p3 = event.value;
     // Call the store method to add the PDF data. (Assuming addpdfData is a function)
-    addpdfData.value(selectedBurItems);
+    burpdfStore.addpdfData(selectedBurItems);
 }
 
 //

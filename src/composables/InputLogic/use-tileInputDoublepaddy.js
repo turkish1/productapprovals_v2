@@ -54,11 +54,12 @@ export default function usetileInputdouble() {
         try {
             const response = await execute({ params: { NOA: num.value } }).then((response) => {
                 noaNum.value = data.value;
-
+                console.log(noaNum.value);
                 return noaNum.value;
             });
-            console.log(response.length);
-            if ((response.length > 0 && noaNum.value[0].Table2.content) || noaNum.value[0].Table3.content) {
+            console.log(noaNum.value[0].Table2.content);
+            // noaNum.value[0].Table2.content) || noaNum.value[0].Table3.content
+            if (response.length > 0 && noaNum.value[0].Table2.content === 'multiple') {
                 // alert('No data found!');
                 // (data.value.length > 0 && noaNum.value[0].Table2.content) || noaNum.value[0].Table3.content;
                 console.log(noaNum.value);

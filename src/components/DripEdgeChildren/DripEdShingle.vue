@@ -140,7 +140,7 @@ invoke(async () => {
 
 <template>
     <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
-        <Button label="Reset" severity="danger" @click="resetState"></Button>
+        <!-- <Button label="Reset" severity="danger" @click="resetState"></Button> -->
         <label style="color: #122620">Drip Edge Material</label>
         <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @click="checkValue" />
 

@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1>Generate PDF with Columns and Underlined Text</h1>
-        <button @click="generatePDF">Download PDF</button>
+        <!-- <h1>Generate PDF with Columns and Underlined Text</h1>
+        <button @click="generatePDF">Download PDF</button> -->
     </div>
 </template>
 
@@ -320,7 +320,7 @@ const generatePDF = () => {
         const noa = ref(Inputvalue.value.noa);
         const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
         const material = ref(savedTileinput[0]?.savedValues?.material);
-        const description = ref(Inputvalue.value.description);
+        const description = ref(savedTileinput[0]?.savedValues?.description);
         const valueTextWidthTileCategory = doc.getTextWidth(applicantText);
         const valueTextWidthTile = doc.getTextWidth(`${applicant.value}`);
         const tileApplicantStartXValue = LeftStart;
@@ -350,23 +350,37 @@ const generatePDF = () => {
         const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
         doc.text(`${material.value}`, materialValue, current_y);
         doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
+        current_y = current_y + 5;
         const descriptionWidth = doc.getTextWidth(`${description.value}`);
         currentX.value = materialValue + descriptionWidth;
         // add an update boolean so to choose between leftStart or currenX.value
-        if (currentX.value > max_width) current_y = current_y + 10;
+        if (currentX.value > max_width) current_y = current_y + 5;
         console.log(currentX.value, max_width);
-        current_y = current_y + 10;
+        current_y = current_y + 5;
         const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
         const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        console.log(valueTextWidth4, valueTextWidthDesc);
+
         const descStartXValue = LeftStart;
         doc.text(descriptionText, descStartXValue, current_y);
+
         // this is the text we want to underline
-        const descriptionValue = descStartXValue + valueTextWidthDesc;
-        doc.text(`${description.value}`, descriptionValue, current_y);
-        doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-        currentX.value = descriptionValue + valueTextWidth4;
-        console.log(etileStore);
-        current_y = current_y + 10;
+        if (valueTextWidth4 > 220) {
+            current_y = current_y + 4;
+            const descriptionValue = LeftStart;
+
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            currentX.value = descriptionValue + valueTextWidth4;
+            current_y = current_y + 8;
+        } else {
+            const descriptionValue = descStartXValue + valueTextWidthDesc;
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            currentX.value = descriptionValue + valueTextWidth4;
+            current_y = current_y + 5;
+        }
+        current_y = current_y + 5;
         // console.log(polypropolyneStore.$state.polyinput.length);
         if (etileStore.$state.tilesysEinput.length === 0) {
             const udlNoa = 'n/a';
@@ -377,14 +391,14 @@ const generatePDF = () => {
             const valueTextWidth_1 = doc.getTextWidth(udlNoa);
             const udlNoaStartXValue = LeftStart;
             doc.text(polynoaText, udlNoaStartXValue, current_y);
-            const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
+            const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA + 2;
             doc.text(udlNoa, udlNoaValue, current_y);
             doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
             currentX.value = udlNoaValue + valueTextWidth_1;
             console.log(currentX.value);
             const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
             const valueTextWidth_ = doc.getTextWidth(udlApplicant);
-            const udlApplicantStartXValue = currentX.value + 0;
+            const udlApplicantStartXValue = currentX.value + 2;
             doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
             const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
             doc.text(udlApplicant, udlApplicantValue, current_y);
@@ -615,32 +629,22 @@ const generatePDF = () => {
         // console.log('\u03BB'); // outputs λ
         // const lambdaSymbol = ref('\u03BB');
 
+        const lambdaSymbol = new Image();
+        lambdaSymbol.src = '/demo/images/lambda.png';
+        // doc.addImage(lambdaSymbol, 'png', 50, 216, 5, 5);
+        // doc.addImage(lambdaSymbol, 'png', 50, 221, 5, 5);
+        // doc.addImage(lambdaSymbol, 'png', 50, 226, 5, 5);
+        console.log(currentX.value, current_y);
         const tableData = [
-            ['Zone 1:', `${zoneone.value}`, 'xλ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
-            ['Zone 2:', `${zonetwo.value}`, 'xλ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
-            ['Zone 3:', `${zonethree.value}`, 'xλ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+            ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'x', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'x', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
-        // const colWidths = [
-        //     22, // "Zone 1:" label cell
-        //     14, // numeric field (e.g., "82", "108", "142")
-        //     15, // "x λ"
-        //     18, // numeric field (e.g., "0.23")
-        //     19, // label (e.g., "- Mg:")
-        //     21, // numeric field (e.g., "2.473")
-        //     23, // label (e.g., "= Mr1:")
-        //     18, // numeric field (e.g., "16.39")
-        //     23, // label (e.g., "NOA Mf:")
-        //     21 // numeric field (e.g., "31.3°")
-        // ];
-        // Top-left corner where we start drawing the table
+
         let startX = LeftStart - 1;
         let startYY = current_y;
-        // doc.setFillColor(15, 20, 30); // some dark color
-        // doc.rect(0, 0, doc.internal.pageSize.getWidth(), 100, 'F');
-        // White text color for the "Zone X" labels placed over dark background:
-        // doc.setTextColor(0, 0, 0);
-        // Render the table manually
+
         tableData.forEach((row) => {
             let x = startX; // Starting x-coordinate for each row
             row.forEach((cell) => {
@@ -648,10 +652,16 @@ const generatePDF = () => {
                 //     // Draw rectangle around numerical value
                 //     doc.rect(x - 2, startYY - 2, 20, 12); // Adjust the rectangle size and position
                 // }
+
+                console.log(x, startYY);
                 doc.text(String(cell), x, startYY);
                 x += 18; // Space between columns
             });
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
             startYY += 5; // Move to next row
+            console.log(x, startYY);
         });
         const fName = 'TileAdhesive.pdf';
         const pdfBlob = doc.output('blob');

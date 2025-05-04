@@ -42,8 +42,9 @@ const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
 
 const { multiAdinput } = storeToRefs(multipleStore);
-const { addSystemvalues, tileInputvalues, reset } = usevalueStore();
-const { addSavedvalues } = useSavedStore();
+const { addSystemvalues, tileInputvalues } = usevalueStore();
+const resetStore = useSavedStore();
+const { addSavedvalues, reset } = useSavedStore();
 const { Edatamounted, etileStore } = useUDL();
 
 const { tileData } = usetileInputdouble();
@@ -84,8 +85,9 @@ let isUDLValid = ref(false);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isTileValid = ref(false);
+let isTileData = ref(false);
 let isMultiTileValid = ref(false);
-
+let isPaddyCategoryValid = ref(false);
 let ismrValidMR1 = ref(false);
 let ismrValidMR2 = ref(false);
 let ismrValidMR3 = ref(false);
@@ -94,6 +96,30 @@ let ismrInvalid2 = ref(false);
 let ismrInvalid3 = ref(false);
 let isDataValid = ref(true);
 let isvalueValid = ref(false);
+
+const tileSel = reactive({
+    keys: '',
+    values: ''
+});
+const tilenoas = reactive({
+    manufacturer: '',
+    material: [],
+    description: '',
+    resistance: [],
+    Table2: [],
+    Table3: [],
+    select_tile: [],
+    tile_map: [],
+    table2_map: [],
+    slope: 0,
+    height: 0,
+    dripEdgeMaterial: [],
+    dripEdgeSize: [],
+    deckType: '',
+    expiration_date: '',
+    prescriptiveSelection: '',
+    perimeter: ''
+});
 
 const visible = ref(false);
 const selectedExposures = ref('');
@@ -106,21 +132,22 @@ const dimensions = computed(() => {
     setRoofInputs();
 });
 
-const SelectionKey = ref([]);
-const SelectionValue = ref([]);
-
 //  a check if single is change to double, and tile input boxes have data clear it.
 const selectPaddy = computed(() => {
-    if (selectedOption.value === 'single') {
-        isPaddySingle.value = true;
-
-        addPaddyCatval(selectedOption);
-
-        console.log(isPaddySingle.value);
-    } else {
-        console.log(selectedOption.value);
+    if (selectedOption.value == 'double') {
         isPaddySingle.value = false;
+
         addPaddyCatval(selectedOption);
+        isMultiTileValid = false;
+        isTileValid = true;
+        console.log(isPaddySingle.value);
+        clearData();
+    } else {
+        isPaddySingle.value = true;
+        addPaddyCatval(selectedOption);
+        isMultiTileValid = false;
+        isTileValid = true;
+        clearData();
     }
 });
 
@@ -195,80 +222,65 @@ function selectedExposure() {
 function pickUnderlayment(event) {
     save.value = selectedUnderlayment.value.key;
     if (save.value === 1) {
-        isTileValid.value = true;
+        isPaddyCategoryValid.value = true;
+        isTileValid = false;
+        isTileData.value = false;
+
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = false;
     } else if (save.value === 2) {
         isTileValid.value = true;
+        isTileData.value = true;
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = true;
     } else if (save.value === 3) {
         isTileValid.value = true;
         isUDLValid.value = true;
+        isTileData.value = true;
         isUDLNOAValid.value = true;
         isSAValid.value = false;
     } else if (save.value === 0) {
+        isTileData.value = false;
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = false;
         isTileValid.value = false;
     }
 }
-const tileSel = reactive({
-    keys: '',
-    values: ''
-});
-const tilenoas = reactive({
-    manufacturer: '',
-    material: [],
-    description: '',
-    resistance: [],
-    Table2: [],
-    Table3: [],
-    select_tile: [],
-    tile_map: [],
-    table2_map: [],
-    slope: 0,
-    height: 0,
-    dripEdgeMaterial: [],
-    dripEdgeSize: [],
-    deckType: '',
-    expiration_date: '',
-    prescriptiveSelection: '',
-    perimeter: ''
-});
 
-const singlePaddyData = ref(inputdata);
-const doublePaddyData = ref(inputdatas);
+const paddySelectedSingle = ref(inputdata);
+const paddySelectedDouble = ref(inputdatas);
 let datamounted_f = ref(ftileStore.$state.tilefinput);
 // let Edatamounted = ref(etileStore.$state.tilesysEinput);
 
 watchEffect(() => {
-    dtMounted.value = singlePaddyData.value;
-    dtMounteds.value = doublePaddyData.value;
+    dtMounted.value = paddySelectedSingle.value;
+    dtMounteds.value = paddySelectedDouble.value;
 });
-// const dataComp =  computed(() =>   async  (dtMounted.value = singlePaddyData.value));
+// const dataComp =  computed(() =>   async  (dtMounted.value = paddySelectedSingle.value));
 let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 
 let datatilenoaDoublePaddy = ref('');
 
 let datatilenoas = ref('');
+let datatilenoa = ref('');
 
 //
 async function grabInput() {
-    if (selectedOption.value === 'double') {
+    if (selectedOption.value == 'double') {
         console.log(selectedOption.value, 'Entered double');
         datatilenoaDoublePaddy.value = query.value;
-
-        isPaddySingle.value = false;
-
+        console.log(datatilenoaDoublePaddy.value);
+        // isPaddyusers.value = false;
+        // isTileValid = true;
         updateDoubletick();
-    } else if (selectedOption.value === 'single') {
+    } else if (selectedOption.value == 'single') {
         console.log(selectedOption.value, 'Entered single');
-
-        isPaddySingle.value = true;
+        datatilenoas.value = query.value;
+        // console.log(datatilenoa.value);
+        // isTileValid = true;
         updateTick();
     } else {
         console.log('all was skipped');
@@ -278,19 +290,30 @@ const manufacturerData = ref('');
 const manufacturerDoubleData = ref('');
 
 const updateTick = () => {
-    dtMounted.value = singlePaddyData.value?.[0];
+    // isPaddySingle.value = true;
+    dtMounted.value = paddySelectedSingle.value?.[0];
     manufacturerData.value = dtMounted.value?.singlepaddyData ?? [];
-
+    console.log(dtMounted.value, manufacturerData.value);
     nextTick(() => {
         if (manufacturerData.value.content === 'multiple') {
             isMultiTileValid.value = true;
+            isTileValid = true;
+
+            isTileData.value = true;
             tilenoas.manufacturer = manufacturerData.value.applicant;
             tilenoas.select_tile = manufacturerData.value.select_tile;
         } else {
             // This is for the rest of the NOAs
+
+            console.log(manufacturerData.value);
+            isTileData.value = true;
+            isTileValid = true;
+            isMultiTileValid = false;
             tilenoas.manufacturer = manufacturerData.value.applicant;
             tilenoas.description = manufacturerData.value.description;
+            console.log(tilenoas.description);
             tilenoas.material = manufacturerData.value.material;
+
             // checkZones();
         }
         addSystemvalues(tilenoas);
@@ -299,20 +322,29 @@ const updateTick = () => {
 };
 
 const updateDoubletick = () => {
-    dtMounteds.value = doublePaddyData.value?.[0];
+    dtMounteds.value = paddySelectedDouble.value?.[0];
+    console.log(dtMounteds.value);
     manufacturerDoubleData.value = dtMounteds.value?.doublepaddyData ?? [];
     console.log(manufacturerDoubleData.value);
     nextTick(() => {
         // manufacturerDoubleData.value.content === 'multiple'
         console.log(manufacturerDoubleData.value.content);
         if (manufacturerDoubleData.value.content === 'multiple') {
-            isMultiTileValid.value = true;
+            isMultiTileValid = true;
+            isTileValid = true;
+
+            isTileData.value = true;
             tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
             tilenoas.select_tile = manufacturerDoubleData.value.select_tile;
         } else {
+            isTileData.value = true;
+            isTileValid = true;
             tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
             tilenoas.description = manufacturerDoubleData.value.description;
+            console.log(tilenoas.description);
             tilenoas.material = manufacturerDoubleData.value.material;
+
+            isMultiTileValid = false;
         }
         addSystemvalues(tilenoas);
         checkZones();
@@ -322,34 +354,40 @@ const updateDoubletick = () => {
 // This could clear the data: Now
 function clearData() {
     // paddyStore.clearAllData();
-    isTileValid.value = false;
-    isUDLValid.value = false;
-    isUDLNOAValid.value = false;
-    isSAValid.value = false;
+    // isTileValid.value = false;
+    // isUDLValid.value = false;
+    // isTileData.value = false;
+    // isUDLNOAValid.value = false;
+    // isSAValid.value = false;
     tilenoas.manufacturer = '';
     tilenoas.description = '';
     tilenoas.material = [];
     tilenoas.select_tile = [];
+    resetStore.$reset();
+    // reset()
+    // saveTileData.reset()
+    // {
+    //         this.savedTileinput = [];
+    //     }
+    // zoneone.lambda1 = '';
+    // zonetwo.lambda2 = '';
+    // zonethree.lambda3 = '';
 
-    zoneone.lambda1 = '';
-    zonetwo.lambda2 = '';
-    zonethree.lambda3 = '';
+    // zoneone.zone = '';
+    // zonetwo.zone = '';
+    // zonethree.zone = '';
 
-    zoneone.zone = '';
-    zonetwo.zone = '';
-    zonethree.zone = '';
+    // zoneone.mg1 = '';
+    // zonetwo.mg2 = '';
+    // zonethree.mg3 = '';
 
-    zoneone.mg1 = '';
-    zonetwo.mg2 = '';
-    zonethree.mg3 = '';
+    // zoneone.mr1 = '';
+    // zonetwo.mr2 = '';
+    // zonethree.mr3 = '';
 
-    zoneone.mr1 = '';
-    zonetwo.mr2 = '';
-    zonethree.mr3 = '';
-
-    zoneone.mf1 = '';
-    zonetwo.mf2 = '';
-    zonethree.mf3 = '';
+    // zoneone.mf1 = '';
+    // zonetwo.mf2 = '';
+    // zonethree.mf3 = '';
 }
 const tileValue = reactive({
     k: '',
@@ -387,8 +425,9 @@ function updateTile(event) {
         if (event.value === key) {
             console.log(key);
             tilenoas.description = key;
+
             tileSel.values = value[0];
-            console.log(tileSel.values);
+            console.log(tilenoas.description);
         }
     });
     zones.value.forEach((item) => {
@@ -557,7 +596,7 @@ const whatChanged = computed(() => {
     checkMR3();
     sysEcheckInput();
     setRoofInputs();
-    selectPaddy();
+    // selectPaddy();
     grabInput();
     addCheckmarks();
     validateHeight();
@@ -578,7 +617,7 @@ const slopeOptions = {
     seven: 7
 };
 
-watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, underlaymentType, () => {});
+watchEffect(isTileValid, isTileData, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, underlaymentType, () => {});
 
 function checkData() {
     if (tileData.Table3.two === 'N/A') {
@@ -816,7 +855,7 @@ function checkInput() {
         showMaterialValid.value = true;
         isMultiTileValid = false;
         isTileValid = true;
-
+        isTileData = true;
         // checkTile();
     }
 }
@@ -1082,6 +1121,7 @@ const saveTileData = async () => {
     tileData2.paddySelection = selectedOption.value;
     tileData2.applicant = tilenoas.manufacturer;
     tileData2.description = tilenoas.description;
+    console.log(tileData2.description);
     // tileData2.material = tilenoas.material;
 
     tileData2.Decktype = dt.value;
@@ -1424,7 +1464,7 @@ watch(
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
         </div>
 
-        <div v-show="isTileValid" class="w-56 flex flex-col gap-2" style="margin-left: 50px">
+        <div v-show="isPaddyCategoryValid" class="w-56 flex flex-col gap-2" style="margin-left: 50px">
             <label style="color: red">Select a Paddy Category</label>
             <div class="flex items-center">
                 <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -1452,6 +1492,33 @@ watch(
     <Divider />
 
     <div class="md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <div v-show="isTileData" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+            <div class="min-w-[450px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="manufacturer">Tile Applicant</label>
+                <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
+            </div>
+
+            <div v-show="isMultiTileValid" class="min-w-[550px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="material">Tile Type</label>
+
+                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkInput" @change="updateTile" />
+            </div>
+
+            <div v-show="!isMultiTileValid" class="min-w-[770px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="description">Tile Description</label>
+                <InputText id="description" v-model="tilenoas.description" />
+            </div>
+            <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="material">Tile Material</label>
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @change="updateMF" />
+
+                <!-- @click="updateMF" -->
+            </div>
+            <div v-show="!isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="material">Tile Material</label>
+                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
+            </div>
+        </div>
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -1509,37 +1576,6 @@ watch(
             <div v-show="isSAValid" class="max-w-screen-lg flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="sadescription">S/A Description</label>
                 <InputText id="capsheetdescription" v-model="saTiles.description" />
-            </div>
-        </div>
-
-        <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
-            <div class="min-w-[450px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="manufacturer">Tile Applicant</label>
-                <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
-            </div>
-
-            <div v-show="isMultiTileValid" class="min-w-[550px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="material">Tile Type</label>
-
-                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkInput" @change="updateTile" />
-            </div>
-            <!-- <div v-show="isMultiTileValid" class="min-w-[770px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="description">Tile Description</label>
-                <InputText id="description" v-model="tilenoas.description" />
-            </div> -->
-            <div v-show="!isMultiTileValid" class="min-w-[770px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="description">Tile Description</label>
-                <InputText id="description" v-model="tilenoas.description" />
-            </div>
-            <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="material">Tile Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @change="updateMF" />
-
-                <!-- @click="updateMF" -->
-            </div>
-            <div v-show="!isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="material">Tile Material</label>
-                <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
         </div>
 

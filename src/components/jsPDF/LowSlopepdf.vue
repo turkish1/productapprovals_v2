@@ -191,7 +191,7 @@ const generatePDF = () => {
 
         doc.setFontSize(10);
         const factor = 2;
-        const initialYValue = 100;
+        const initialYValue = current_y;
         const param_y = initialYValue;
         const tArea = 'Roof Area: ';
         const tDeck = 'Decktype: ';
@@ -214,45 +214,48 @@ const generatePDF = () => {
         const tAreaTextWidth = doc.getTextWidth(tArea);
         const AreaTextWidth = doc.getTextWidth(`${area.value}`);
         const areaStartXValue = currentX.value;
-        doc.text(tArea, areaStartXValue, param_y);
+        doc.text(tArea, areaStartXValue, current_y);
         const areaValue = tAreaTextWidth + areaStartXValue;
-        doc.text(`${area.value}`, areaValue, param_y);
+        doc.text(`${area.value}`, areaValue, current_y);
 
-        doc.line(areaValue, param_y, areaValue + AreaTextWidth, param_y);
+        doc.line(areaValue, current_y + 2, areaValue + AreaTextWidth, current_y + 2);
         currentX.value = areaValue + AreaTextWidth;
 
         const tHeightTextWidth = doc.getTextWidth(tHeight);
         const HeightTextWidth = doc.getTextWidth(`${height.value}`);
         const heightStartXValue = currentX.value + 2;
 
-        doc.text(tHeight, heightStartXValue, param_y);
+        doc.text(tHeight, heightStartXValue, current_y);
         const heightValue = tHeightTextWidth + heightStartXValue;
 
-        doc.text(`${height.value}`, heightValue, param_y);
-        doc.line(heightValue, param_y, heightValue + HeightTextWidth, param_y); // Get text width
+        doc.text(`${height.value}`, heightValue, current_y);
+
+        doc.line(heightValue, current_y + 2, heightValue + HeightTextWidth, current_y + 2); // Get text width
         currentX.value = heightValue + HeightTextWidth;
 
         const tSlopeTextWidth = doc.getTextWidth(tSlope);
         const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
         const slopeStartXValue = currentX.value + 2;
 
-        doc.text(tSlope, slopeStartXValue, param_y);
+        doc.text(tSlope, slopeStartXValue, current_y);
         const slopeValue = tSlopeTextWidth + slopeStartXValue;
 
-        doc.text(`${slope.value}`, slopeValue, param_y);
-        doc.line(slopeValue, param_y, slopeValue + SlopeTextWidth, param_y); // Get text width
+        doc.text(`${slope.value}`, slopeValue, current_y);
+
+        doc.line(slopeValue, current_y + 2, slopeValue + SlopeTextWidth, current_y + 2); // Get text width
         currentX.value = slopeValue + SlopeTextWidth;
 
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
         const permStartXValue = currentX.value + 2;
 
-        doc.text(tPerimeter, permStartXValue, param_y);
+        doc.text(tPerimeter, permStartXValue, current_y);
         const perimeterValue = tPermTextWidth + permStartXValue;
-        doc.text(`${perimeter.value}`, perimeterValue, param_y);
-        doc.line(perimeterValue, param_y, perimeterValue + PermTextWidth, param_y);
-        console.log(param_y, current_y);
-        current_y = param_y + 10;
+        doc.text(`${perimeter.value}`, perimeterValue, current_y);
+
+        doc.line(perimeterValue, current_y + 2, perimeterValue + PermTextWidth, current_y + 2);
+        console.log(current_y, current_y);
+        current_y = current_y + 10;
 
         currentX.value = perimeterValue + PermTextWidth;
 
@@ -263,7 +266,7 @@ const generatePDF = () => {
         const decktypeStartValue = tDeckTextWidth + deckStartXValue;
         doc.text(`${deckType.value}`, decktypeStartValue, current_y);
 
-        doc.line(decktypeStartValue, current_y, decktypeStartValue + DeckTextWidth, current_y); // Get text width
+        doc.line(decktypeStartValue, current_y + 2, decktypeStartValue + DeckTextWidth, current_y + 2); // Get text width
         current_y = current_y + 10;
 
         currentX.value = LeftStart;
@@ -283,7 +286,7 @@ const generatePDF = () => {
         const dripMaterialStartValue = dripMaterialTextWidth + dMaterialStartXValue;
         doc.text(`${dripedgeMaterials.value}`, dripMaterialStartValue, current_y);
 
-        doc.line(dripMaterialStartValue, current_y, dripMaterialStartValue + materialTextWidth, current_y);
+        doc.line(dripMaterialStartValue, current_y + 2, dripMaterialStartValue + materialTextWidth, current_y + 2);
 
         current_y = current_y + 10;
 
@@ -294,7 +297,7 @@ const generatePDF = () => {
         const dripSizeStartValue = dripEdgeSizeTextWidth + dSizeStartXValue;
         doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
 
-        doc.line(dripSizeStartValue, current_y, dripSizeStartValue + dripEdgeTextWidth, current_y);
+        doc.line(dripSizeStartValue, current_y + 2, dripSizeStartValue + dripEdgeTextWidth, current_y + 2);
         current_y = current_y + 10;
 
         const tburMaterialTextWidth = doc.getTextWidth(burMaterialText);
@@ -304,7 +307,7 @@ const generatePDF = () => {
         const materialValue = tburMaterialTextWidth + 12;
         doc.text(`${material.value}`, materialValue, current_y);
 
-        doc.line(materialValue, current_y, materialValue + MaterialTextWidth, current_y);
+        doc.line(materialValue, current_y + 2, materialValue + MaterialTextWidth, current_y + 2);
         currentX.value = materialValue + MaterialTextWidth;
         // if (currentX.value > max_width) current_y = current_y + 10;
         current_y = current_y + 10;
@@ -323,7 +326,7 @@ const generatePDF = () => {
 
         doc.text(`${system.value}`, systemValue, current_y);
 
-        doc.line(systemValue, current_y, systemValue + SystemTextWidth, current_y);
+        doc.line(systemValue, current_y + 2, systemValue + SystemTextWidth, current_y + 2);
         current_y = current_y + 10;
 
         doc.setFontSize(10);
@@ -331,12 +334,12 @@ const generatePDF = () => {
         const PrimeoneTextWidth = doc.getTextWidth(`${primeone.value}`);
         const primeoneStartXValue = LeftStart;
         doc.text(primeOneText, primeoneStartXValue, current_y);
-        current_y = current_y + 7;
+        current_y = current_y + 10;
 
         const primeoneValue = LeftStart;
 
         doc.text(`${primeone.value}`, primeoneValue, current_y);
-        doc.line(primeoneValue, current_y, primeoneValue + PrimeoneTextWidth + 70, current_y);
+        doc.line(primeoneValue, current_y + 2, primeoneValue + PrimeoneTextWidth + 70, current_y + 2);
         current_y = current_y + 10;
 
         currentX.value = LeftStart;
@@ -351,7 +354,8 @@ const generatePDF = () => {
         currentX.value = LeftStart;
         const primethreeValue = currentX.value;
         doc.text(`${primethree.value}`, primethreeValue, current_y);
-        doc.line(primethreeValue, current_y, primethreeValue + PrimethreeTextWidth + 70, current_y);
+
+        doc.line(primethreeValue, current_y + 2, primethreeValue + PrimethreeTextWidth + 70, current_y + 2);
         current_y = current_y + 10;
 
         // Save the PDF
@@ -369,7 +373,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

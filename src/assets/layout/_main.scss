@@ -1,7 +1,8 @@
 .layout-main-container {
     // display: cover;
     // background-color: #eae7e2;
-    // background-image: url('/src/assets/img/radar_Fotor.png');
+
+    // background-image: url('/src/assets/img/blurredhome.jpeg');
     background: var(--shared-background);
     // background-position: left;
     background-repeat: no-repeat;
@@ -21,7 +22,10 @@
 .layout-main {
     flex: 1 1 auto;
     padding-bottom: 0.5rem;
+    background-image: url('/src/assets/img/blurredhome.jpeg');
+
     //     background-image: url('/src/assets/img/radar_Fotor.png');
+
     //     background-position: left;
     //     background-repeat: no-repeat;
     //     background-size: cover;

@@ -427,15 +427,14 @@ watch(
             <Message v-if="errorshingleMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorshingleMessage }}</Message>
         </div>
 
+        <div class="w-64 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600 mt-3 mb-8" style="margin-left: 20px">
+            <label style="color: #122620" for="area">Area</label>
+            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
+        </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
-        </div>
-
-        <div class="w-64 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600 mt-3 mb-8" style="margin-left: 20px">
-            <label style="color: #122620" for="area">Area</label>
-            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
@@ -454,7 +453,6 @@ watch(
                 <AutoComplete @keydown.tab.exact.stop="checkInput" />
             </div>
         </div>
-        <!-- <Button plain text class="min-w-1 min-h-0" @click="clearSelected"> <span style="font-size: 1.3rem; color: black; margin-left: 100px; margin-top: 90px" class="pi pi-refresh"></span></Button> -->
 
         <div v-show="isSelectVisible2" class="md:w-1/3 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px">
             <label style="color: red">Select Underlayment (S/A) *</label>

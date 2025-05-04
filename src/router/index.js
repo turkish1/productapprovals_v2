@@ -12,18 +12,29 @@ const router = createRouter({
             props: (route) => ({ page: parseInt(route.query.page) || 1 }),
             children: [
                 {
+                    // path: '/',
+                    // name: 'landing',
+                    // component: () => import('@/views/pages/auth/OAuthGoogle.vue')
+
                     path: '/',
                     name: 'login',
                     component: () => import('@/views/pages/auth/Login.vue')
+                    // component: () => import('@/views/pages/auth/Login.vue')
+                    // component: () => import('@/views/pages/InitialPage.vue')
                     // path: '/',
                     // name: 'firstpage',
-                    // component: () => import('@/views/pages/Firstpage.vue')
+                    // component: () => import('@/views/pages/InitialPage.vue')
                 },
-                {
-                    path: '/firstpage',
-                    name: 'firstpage',
-                    component: () => import('@/views/pages/Firstpage.vue')
-                },
+                // {
+                //     path: '/product',
+                //     name: 'product',
+                //     component: () => import('@/views/pages/InitialPage.vue')
+                // },
+                // {
+                //     path: '/login',
+                //     name: 'login',
+                //     component: () => import('@/views/pages/auth/Login.vue')
+                // },
                 {
                     path: '/noc',
                     name: 'noc',
@@ -108,7 +119,7 @@ const router = createRouter({
                 {
                     path: '/scroll',
                     name: 'scroll',
-                    component: () => import('@/views/pages/vIntersection.vue')
+                    component: () => import('@/views/pages/Scroll.vue')
                 },
                 {
                     path: '/mechanicaltile',
@@ -156,7 +167,7 @@ const router = createRouter({
                 {
                     path: '/pages/empty',
                     name: 'empty',
-                    component: () => import('@/views/pages/Empty.vue')
+                    component: () => import('@/views/pages/Scroll.vue')
                 },
                 {
                     path: '/map',

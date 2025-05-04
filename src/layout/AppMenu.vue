@@ -13,7 +13,7 @@ const model = ref([
         items: [
             { label: 'Dashboard', icon: 'pi pi-fw pi-id-card', to: '/dashboard' },
             { label: 'Login', icon: 'pi pi-fw pi-id-card', to: '/logins' },
-            // { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
+
             { label: 'Registration Form', icon: 'pi pi-fw pi-id-card', to: '/registration' },
             { label: 'Dock', icon: 'pi pi-fw pi-id-card', to: '/dock' },
             { label: 'General Page', icon: 'pi pi-fw pi-id-card', to: '/generalpage' },
@@ -25,11 +25,6 @@ const model = ref([
             { label: 'Lowslope', icon: 'pi pi-fw pi-check-square', to: '/lowslope' },
             { label: 'UserLanding', icon: 'pi pi-fw pi-check-square', to: '/userlanding' },
             { label: 'DoralApp', icon: 'pi pi-fw pi-check-square', to: '/doralapp' }
-            // { label: 'Panel', icon: 'pi pi-fw pi-tablet', to: '/uikit/panel' },
-            // { label: 'Overlay', icon: 'pi pi-fw pi-clone', to: '/uikit/overlay' },
-            // { label: 'Menu', icon: 'pi pi-fw pi-bars', to: '/uikit/menu' },
-            // { label: 'File', icon: 'pi pi-fw pi-file', to: '/uikit/file' },
-            // { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/uikit/timeline' },
         ]
     },
     {

@@ -85,9 +85,7 @@ watch(Shingles, LowSlope, Tile, Mechanical, () => {});
 </script>
 
 <template>
-    <!-- lg:w-full min-h-[10px] card flex flex-row gap-18 background-color: #eae7e2 -->
     <div class="flex justify-center md:w-3/4 px-2" style="margin-left: 200px; margin-top: 50px">
-        <!-- <div class="card flex justify-center"> -->
         <Stepper value="1" linear class="basis-[400rem]">
             <StepList>
                 <Step value="1">Shingles</Step>

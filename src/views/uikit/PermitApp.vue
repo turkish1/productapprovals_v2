@@ -92,16 +92,6 @@ export default {
             isDialog.value = true;
         });
 
-        // const defaultPermitType = async () => {
-        //     const licenseType = accountUsers._value[0].license;
-        //     console.log(accountUsers._value[0]);
-        //     const slicedString = computed(() => licenseType.value.slice(0, 3));
-        //     console.log(slicedString);
-        //     if (licenseType.value.length !== 0 && slicedString === 'ccc') {
-        //         selectedApplication.value = cccValid.value === true ? type.value[0] : '';
-        //     }
-        // };
-
         const load = async () => {
             try {
                 loading.value = true;
@@ -249,7 +239,7 @@ export default {
                                 <InputText id="dba" v-model="dba" type="text" placeholder="name" />
                                 <!-- <Message severity="error">Contractor Name Required</Message> -->
                             </div>
-                            <div class="flex flex-col w-full md:w-64 mt-3 space-y-2 grow basis-0 gap-4" style="margin-left: 55px">
+                            <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4" style="margin-left: 55px">
                                 <label for="contractor" style="color: #122620">Contractor Name</label>
                                 <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
                                 <!-- <Message severity="error">Contractor Name Required</Message> -->

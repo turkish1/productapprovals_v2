@@ -2,6 +2,7 @@
 html {
     height: 100%;
     font-size: 14px;
+
 }
 
 body {
@@ -9,8 +10,8 @@ body {
     // color: whitesmoke;
     margin: 0; /* Remove default margins */
     // height: 100vh;
-    background-image: url('/src/assets/img/blurredhome.jpeg');
-
+    // background-image: url('/src/assets/img/blurredhome.jpeg');
+    background: var(--shared-background);
     // background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
@@ -29,6 +30,8 @@ a {
 
 .layout-wrapper {
     min-height: 100vh;
+    // background-image: url('/src/assets/img/blurredhome.jpeg');
+    background: var(--shared-background);
     // background-image: url('/src/assets/img/radar_Fotor.png');
     // background-position: left;
     background-repeat: no-repeat;

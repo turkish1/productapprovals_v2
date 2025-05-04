@@ -68,6 +68,8 @@ const Step3AdhesiveTile = defineAsyncComponent(() => import('@/components/Tile.v
 const Step4MechanicalTile = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
 const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
+const Step7Permit = defineAsyncComponent(() => import('@/views/pages/auth/Login.vue'));
+
 // const Step3ADTilePDF = defineAsyncComponent(() => import('@/components/jsPDF/TileAdhesive.vue'));
 // const Step4TMechilePDF = defineAsyncComponent(() => import('@/components/jsPDF/TileMechanical.vue'));
 // Array of step definitions (we'll fill label and component conditionally)
@@ -77,7 +79,8 @@ const steps = ref([
     { label: '', component: null }, // Adhesive Tile
     { label: '', component: null }, // Mechanical Tile
     { label: '', component: null }, // Summary
-    { label: '', component: null } // Payment
+    { label: '', component: null }, // Payment
+    { label: '', component: null } // Start again
 ]);
 
 // Predefine actual components to map them easily
@@ -89,7 +92,8 @@ const availableComponents = [
     Step4MechanicalTile,
     // Step4TMechilePDF,
     Step5Summary,
-    Step6Payment
+    Step6Payment,
+    Step7Permit
 ];
 
 // const availableComponentsPDF = [Step3ADTilePDF, Step4TMechilePDF];

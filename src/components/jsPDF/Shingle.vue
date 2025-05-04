@@ -318,23 +318,33 @@ const generatePDF = () => {
         doc.text(`${material.value}`, materialValue, current_y);
         doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
         currentX.value = materialValue + valueTextWidthMaterial;
-        if (currentX.value > max_width) current_y = current_y + 10;
+        current_y = current_y + 10;
 
         console.log(currentX.value, max_width);
-        const Newline = ref(false);
+
         const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
         const valueTextWidthDesc = doc.getTextWidth(descriptionText);
         currentX.value = materialValue + valueTextWidthMaterial + valueTextWidth4 + valueTextWidthDesc + 25;
-        if (currentX.value > max_width) current_y = current_y + 10;
-        // Newline.value = true;
-        console.log(currentX.value, max_width);
+        console.log(valueTextWidth4, valueTextWidthDesc);
         const descStartXValue = LeftStart;
         doc.text(descriptionText, descStartXValue, current_y);
-        // this is the text we want to underline
-        const descriptionValue = descStartXValue + valueTextWidthDesc;
-        doc.text(`${description.value}`, descriptionValue, current_y);
-        doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-        currentX.value = descriptionValue + valueTextWidth4;
+
+        if (valueTextWidth4 > 170) {
+            current_y = current_y + 4;
+            const descStartXValue = LeftStart;
+            const descriptionValue = descStartXValue;
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            current_y = current_y + 8;
+        } else {
+            // const descStartXValue = LeftStart + valueTextWidthDesc;
+            // doc.text(descriptionText, descStartXValue, current_y);
+            // this is the text we want to underline
+            const descriptionValue = descStartXValue + valueTextWidthDesc;
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            currentX.value = descriptionValue + valueTextWidth4;
+        }
 
         current_y = current_y + 10;
         console.log(polypropolyneStore.$state.polyinput.length);
@@ -586,7 +596,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

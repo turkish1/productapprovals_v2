@@ -2,11 +2,15 @@
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-import { ref } from 'vue';
-
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
+import { ref } from 'vue';
+
+import { useGeneralpdfStore } from '@/stores/generalpageStore';
+
+const generalpageStore = useGeneralpdfStore();
 
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
@@ -37,7 +41,10 @@ tryOnMounted(() => {
 function clearSelected() {
     store.$reset();
 }
-
+const checked = ref(false);
+const dataGeneral = {
+    roofCheck: ''
+};
 // When the user changes the selection, add the item based on the entered area.
 function addItemAndClear() {
     // Get the selected item name (if any)
@@ -63,7 +70,8 @@ function addItemAndClear() {
         const dim5 = area.value;
         store.addSystemMetal(item, dim5);
     }
-
+    dataGeneral.roofCheck = checked;
+    generalpageStore.addgeneralpdfData(dataGeneral);
     clear();
 }
 
@@ -96,6 +104,17 @@ function clear() {
                     <InputText type="text" v-model="area" />
                     <label>Select System</label>
                     <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" @change="addItemAndClear" />
+                </div>
+
+                <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-6">
+                    <div class="flex items-center mt-4 space-y-6">
+                        <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
+                        <label for="newroof" class="ml-2" style="color: #122620">New Roof </label>
+                    </div>
+                    <div class="flex items-center mt-4 space-y-6">
+                        <Checkbox v-model="checked" :invalid="!checked" inputId="reroof" name="checked" value="reroof" />
+                        <label for="reroof" class="ml-2" style="color: #122620">Re-Roof </label>
+                    </div>
                 </div>
             </form>
         </div>
