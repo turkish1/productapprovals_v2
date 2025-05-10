@@ -30,7 +30,9 @@ export default function useExposured() {
     });
     const { addDimzoned, addDimsloped, addDimheightd } = useExposureD();
     loading.value = true;
-    let url = 'https://xbp1eqyije.execute-api.us-east-1.amazonaws.com/exposureD/exposureD';
+    let url = 'https://56loihllfj5w27ywslgbxlhp3a0uppfh.lambda-url.us-east-1.on.aws/';
+    // 'https://30bfqyzoif.execute-api.us-east-1.amazonaws.com/dexposure';
+    // 'https://xbp1eqyije.execute-api.us-east-1.amazonaws.com/exposureD/exposureD';
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     let zoned = reactive({});
@@ -78,7 +80,7 @@ export default function useExposured() {
                 console.log('table3 executed');
                 console.log(result);
 
-                zoneDatas.value = result.data.value.WindExposureD2023_db.slp_six_twelve;
+                zoneDatas.value = result.data.value[0].slp_six_twelve;
 
                 slopeSelection(slope.value, height.value, zoneDatas.value);
                 addDimsloped(slope.value);
@@ -87,7 +89,7 @@ export default function useExposured() {
             if (type.value === 'table2') {
                 console.log('table2 executed');
 
-                zoneDatas.value = result.data.value.WindExposureD2023_db.slp_four_six;
+                zoneDatas.value = result.data.value[0].slp_four_six;
 
                 slopeSelection(slope.value, height.value, zoneDatas.value);
                 addDimsloped(slope.value);
@@ -96,7 +98,7 @@ export default function useExposured() {
             if (type.value === 'table1') {
                 console.log('table1 executed');
 
-                zoneDatas.value = result.data.value.WindExposureD2023_db.slp_two_four;
+                zoneDatas.value = result.data.value[0].slp_two_four;
 
                 slopeSelection(slope.value, height.value, zoneDatas.value);
                 addDimsloped(slope.value);
@@ -126,7 +128,7 @@ export default function useExposured() {
         const thirtyfive = Number(heightOptions.thirtyfive);
         const forty = Number(heightOptions.forty);
         if (newHgt.value < fifteen) {
-            zoned = z1.lessfifteen;
+            zoned = z1.lessfifteen[0];
 
             console.log('if 15 statement was executed');
             // lessthanfifteen(zoned);
@@ -142,7 +144,7 @@ export default function useExposured() {
             addDimzoned(tbd);
         } else if (newHgt.value >= fifteen && newHgt.value < twenty) {
             // fifteen <= newHgt.value ||
-            zoned = z1.fifteen;
+            zoned = z1.fifteen[0];
             console.log('if statement for 15 to 20 was executed');
             // fifteenormore(zoned);
             Object.entries(zoned).map((obj) => {
@@ -158,7 +160,7 @@ export default function useExposured() {
         } else if (newHgt.value < twentyfive && newHgt.value >= twenty) {
             // || newHgt.value < twentyfive
 
-            zoned = z1.twenty;
+            zoned = z1.twenty[0];
             console.log('if 22 statement was executed');
             Object.entries(zoned).map((obj) => {
                 const key = obj[0];
@@ -170,7 +172,7 @@ export default function useExposured() {
 
             addDimzoned(tbd);
         } else if (newHgt.value < thirty && newHgt.value >= twentyfive) {
-            zoned = z1.twentyfive;
+            zoned = z1.twentyfive[0];
             console.log('if 25 statement was executed');
             Object.entries(zoned).map((obj) => {
                 console.log('Object statement was executed');
@@ -183,7 +185,7 @@ export default function useExposured() {
 
             addDimzoned(tbd);
         } else if (newHgt.value < thirtyfive && newHgt.value >= thirty) {
-            zoned = z1.thirty;
+            zoned = z1.thirty[0];
             console.log('if statement 32 was executed');
             Object.entries(zoned).map((obj) => {
                 console.log('Object statement was executed');
@@ -195,7 +197,7 @@ export default function useExposured() {
             tbd = tables.zoned.thirty;
             addDimzoned(tbd);
         } else if (newHgt.value < forty && newHgt.value >= thirtyfive) {
-            zoned = z1.thirtyfive;
+            zoned = z1.thirtyfive[0];
 
             Object.entries(zoned).map((obj) => {
                 console.log('Object statement was executed');

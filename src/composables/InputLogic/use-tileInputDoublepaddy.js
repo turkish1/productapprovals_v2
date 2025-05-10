@@ -14,8 +14,9 @@ export default function usetileInputdouble() {
     const error = ref('');
 
     const useDoublepaddy = useDoublePaddyStore();
-    // const { tilenoa, getNoa, addNoa } = useGlobalStates();
-    let url = 'https://jtk1qa20ul.execute-api.us-east-1.amazonaws.com/doublepd/doublepd';
+
+    let url = 'https://ewa5ibqdkpzvdvtynh2z7agljm0epptp.lambda-url.us-east-1.on.aws/';
+    // 'https://w1m4ztg36h.execute-api.us-east-1.amazonaws.com/doublePaddydev';
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     const tileData = reactive({
@@ -52,12 +53,13 @@ export default function usetileInputdouble() {
 
     const fetchData = async () => {
         try {
-            const response = await execute({ params: { NOA: num.value } }).then((response) => {
-                noaNum.value = data.value;
+            const response = await execute({ params: { NOA: num.value } }).then((data) => {
+                console.log(data.data.value[0]);
+                noaNum.value = data.data.value;
                 console.log(noaNum.value);
                 return noaNum.value;
             });
-            console.log(noaNum.value[0].Table2.content);
+            // console.log(noaNum.value[0].Table2.content);
             // noaNum.value[0].Table2.content) || noaNum.value[0].Table3.content
             if (response.length > 0 && noaNum.value[0].Table2.content === 'multiple') {
                 // alert('No data found!');

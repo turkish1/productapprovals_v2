@@ -28,7 +28,8 @@ const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
 
 // Load Stripe.js and initialize Elements
 onMounted(async () => {
-    stripe.value = await loadStripe(publishableKey);
+    // 'pk_live_51PDPFeE9FsYF7D6YdhOvGMnNjz75LcgmLPoyJGa4o5tDx0FDy7DlGf0wlgy3x4BsYf1lH0hY7NAsBWR6j1OguTtM00YO5rHeXc'
+    stripe.value = await loadStripe('pk_live_51PDPFeE9FsYF7D6YdhOvGMnNjz75LcgmLPoyJGa4o5tDx0FDy7DlGf0wlgy3x4BsYf1lH0hY7NAsBWR6j1OguTtM00YO5rHeXc');
     elements.value = stripe.value.elements();
 
     // Create and mount the Card Element

@@ -16,7 +16,9 @@ export default function useDouble() {
         fetchData();
     }
     const url = computed(() => {
-        return 'https://ri9i5jkcs5.execute-api.us-east-1.amazonaws.com/doublePaddyNumber/doublePaddyNumber';
+        return 'https://kqhhddc2c4.execute-api.us-east-1.amazonaws.com/doublePaddyNOAstaging';
+        // 'https://uuls1vdjtd.execute-api.us-east-1.amazonaws.com/doublePaddyNOA';
+        // 'https://ri9i5jkcs5.execute-api.us-east-1.amazonaws.com/doublePaddyNumber/doublePaddyNumber';
     });
     const { data, error: fetchError } = useFetch(url).get().json();
 

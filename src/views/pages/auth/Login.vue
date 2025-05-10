@@ -71,7 +71,7 @@ function checkAuth() {
                 accountUser.email = item[i].email;
                 accountUser.name = item[i].name;
                 accountUser.dba = item[i].dba;
-                accountUser.phone = item[i].cphone;
+                accountUser.cphone = item[i].cphone;
                 accountUser.expiration_date = item[i].expiration_date;
                 accountUser.projects = item[i].projects;
                 accountUser.secondary_status = item[i].secondary_status;

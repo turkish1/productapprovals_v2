@@ -59,11 +59,11 @@ import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { default as StripeCheckout, default as StripeElementCard } from '@vue-stripe/vue-stripe';
 import { tryOnMounted, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, reactive, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
+// import { default as StripeCheckout, default as StripeElementCard } from '../../../node_modules/vue-use-stripe';
 
 const permitStore = usePermitappStore();
 

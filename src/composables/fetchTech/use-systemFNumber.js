@@ -16,7 +16,10 @@ export default function useFNumber() {
         fetchData();
     }
     const url = computed(() => {
-        return 'https://9i7w1lhq0f.execute-api.us-east-1.amazonaws.com/systemf/systemf';
+        return 'https://6927591kvh.execute-api.us-east-1.amazonaws.com/systemFnumstaging';
+        // 'https://sq4a0wyu4a.execute-api.us-east-1.amazonaws.com/systemFNOAsdev';
+
+        // 'https://9i7w1lhq0f.execute-api.us-east-1.amazonaws.com/systemf/systemf';
     });
     const { data } = useFetch(url).get().json();
 

@@ -16,7 +16,9 @@ export default function useENumber() {
         fetchData();
     }
     const url = computed(() => {
-        return 'https://zo1uxebufh.execute-api.us-east-1.amazonaws.com/systeme/systeme';
+        return 'https://5qygih823j.execute-api.us-east-1.amazonaws.com/systemEnumStaging';
+        // 'https://0g5mpw7fbb.execute-api.us-east-1.amazonaws.com/systemENOAsdev';
+        // 'https://zo1uxebufh.execute-api.us-east-1.amazonaws.com/systeme/systeme';
     });
     const { data } = useFetch(url).get().json();
 

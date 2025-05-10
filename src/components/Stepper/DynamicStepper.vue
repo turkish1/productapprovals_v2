@@ -67,7 +67,9 @@ const Step2LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.v
 const Step3AdhesiveTile = defineAsyncComponent(() => import('@/components/Tile.vue'));
 const Step4MechanicalTile = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
-const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
+// const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
+const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/NewStripe.vue'));
+
 const Step7Permit = defineAsyncComponent(() => import('@/views/pages/auth/Login.vue'));
 
 // const Step3ADTilePDF = defineAsyncComponent(() => import('@/components/jsPDF/TileAdhesive.vue'));
@@ -167,6 +169,8 @@ function nextStep() {
         if (currentStepIndex.value < filteredSteps.value.length - 1) {
             currentStepIndex.value++;
         }
+        // else if last filteredSteps.value.length - 1 is equal show a
+        //  button to go back to selection roofing page
         isLoading.value = false;
     }, 200);
 }
@@ -188,6 +192,9 @@ function goToStep(index) {
 // Disable states
 const isFirstStep = computed(() => currentStepIndex.value === 0);
 const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value.length - 1);
+// const isReturnRoofing = computed(()=>)
+
+console.log(isFirstStep.value, isLastStep.value, filteredSteps.value.length);
 </script>
 
 <style scoped>

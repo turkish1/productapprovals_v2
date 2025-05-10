@@ -8,9 +8,13 @@ import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { computed, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
+// import { getAddress } from '@/composables/fetchTech/use-getaddress';
 import { invoke } from '@vueuse/core';
 import AOS from 'aos';
-const a = ref(1);
+
+// const { datas, loading, getaddress } = getAddress();
+
+// const a = ref(1);
 
 export default {
     setup() {
@@ -73,7 +77,6 @@ export default {
                 dba.value = accountUsers._value[0].dba;
                 // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
             }
-            // defaultPermitType();
         });
 
         const selectedApplication = computed(() => {
@@ -87,7 +90,10 @@ export default {
         const permitapp = ref(null);
         const checkMB = ref('');
         const checkV = ref('');
-
+        const datas = ref(null);
+        const data = ref('');
+        const error = ref(null);
+        // const loading = ref(false);
         onMounted(() => {
             isDialog.value = true;
         });
@@ -101,28 +107,38 @@ export default {
                 // // const ftAddress = ref('3350 SW 23 ST')
                 // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
                 const addr = ref(formData.address);
+                // getaddress(addr.value);
+                console.log(addr.value);
+                const base1URL = 'https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?' + `address=${encodeURIComponent(addr.value)}&to=200`;
+                // 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress';
+
                 // const city = 'FT. FORT LAUDERDALE'
-                const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
+                // const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
                 // const baseBrowardURL = 'https://web.bcpa.net/BcpaClient/search.aspx/getParcelInformation'
-                const url = `${baseURL}&myAddress=${encodeURIComponent(addr.value)}&to=200`;
+                const url = base1URL;
+                fetchData(url);
+                // `${baseURL}&address=${encodeURIComponent(addr.value)}&to=200`;
                 //  const url_ft = `${baseBrowardURL}&myCity${encodeURIComponent(city)}&myAddress=${encodeURIComponent(ftAddress.value)}&to=200`;
-                const response = await fetch(url);
-                // const resFtLauder await fetch(url_ft);
+                // const base1URL = 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress'
+                // 3. Make the Fetch API request with CORS enabled
+                // const response = (await fetch(url)).json().then(addresses);
 
-                const data = await response.json();
-                console.log(data);
-
-                formData.muni = data.MinimumPropertyInfos[0].Municipality;
                 formData.license = accountUsers._value[0].license;
                 formData.contractor = accountUsers._value[0].name;
-                formData.folio = data.MinimumPropertyInfos[0].Strap;
-                console.log(lastNum.value);
-                let strLength = String(lastNum.value);
-                // console.log(lastNum.value.length, lastNum.value, strLength);
-                let newNumber = strLength.substring(2, 13);
+                // formData.muni = data.MinimumPropertyInfos[0].Municipality;
+                // formData.license = accountUsers._value[0].license;
+                // formData.contractor = accountUsers._value[0].name;
+                // formData.folio = data.MinimumPropertyInfos[0].Strap;
+                console.log(resNum.value);
+                // let strLength = String(lastNum.value.body);
+                let strLength = String(resNum.value);
+                console.log(strLength);
+                //  This removes quotes and backlash from the sting
+                let newNumber = strLength.substring(6, 19);
                 // formData.permit = selectedApplication.value;
-
+                console.log(newNumber);
                 const number = useToNumber(newNumber);
+                console.log(typeof number, number.value);
                 let addNumber = number.value + 1;
                 let createStr = String(addNumber);
                 formData.processNumber = prefix.value.concat(createStr);
@@ -141,7 +157,28 @@ export default {
                 alert(error);
             }
         };
+        const fetchData = async (url) => {
+            loading.value = true;
+            error.value = null;
 
+            try {
+                const response = await fetch(url);
+                console.log(url);
+                // if (!response.ok) {
+                //     throw new Error(`HTTP error! Status: ${response.status}`);
+                // }
+                datas.value = await response.json();
+                data.value = datas.value.MinimumPropertyInfos[0];
+                console.log(data.value);
+                formData.muni = data.value.Municipality;
+                console.log(data.value.Strap);
+                formData.folio = data.value.Strap;
+            } catch (err) {
+                error.value = err.message;
+            } finally {
+                loading.value = false;
+            }
+        };
         const onSubmit = async () => {
             procReceive(formData);
         };
@@ -167,7 +204,7 @@ export default {
 
         return {
             isDialog,
-
+            fetchData,
             onSubmit,
             accountUsers,
             getUser,

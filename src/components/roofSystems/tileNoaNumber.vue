@@ -88,34 +88,42 @@ const doubleRef = ref({ ...doublePaddydata.value });
 
 async function checkPaddCategory() {
     paddyCategory.value = paddyCat.$state.paddycatInput[0].paddyValues;
-    // console.log(paddyCategory.value, doublePaddydata.value, doubleRef.value);
+
     if (paddyCategory.value === 'double') {
         suggestionTempDouble.value = doubleStore.$state;
-
+        console.log(suggestionTempDouble.value);
         suggestions.value = suggestionTempDouble.value;
         isPaddyvaluesingle.value = false;
         console.log('Entered double paddy value', secondItem.value);
     } else {
         suggestionTempSingle.value = singleStore.$state;
+
         suggestions.value = suggestionTempSingle.value;
         isPaddyvaluesingle.value = true;
     }
 
     return suggestions.value;
 }
-
+const noaArray = ref([]);
 watch(checkPaddCategory, () => {});
 
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
-    console.log(isPaddyvaluesingle.value, paddyCategory.value);
+
     // paddyCategory.value == 'single'  :
-    // isPaddyvaluesingle.value == false ? suggestions.value.pdInputs?.[0] suggestions.value.pdInput?.[0];
-    const paddyInputSelected = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0] : suggestions.value.pdInput?.[0];
-    const noaArray = paddyCategory.value === 'double' ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
+    // isPaddyvaluesingle.value == false ? suggestions.value.pdInputs?.[0] suggestions.value.pdInput?.[0]; .pdInput[0].pdNumber.noa.value.body
+    // const paddyInputSelected = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0] : suggestions.value.pdInput?.[0];
+
+    // const noaArray = paddyCategory.value === 'double' ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa.value.body ?? []);
     // isPaddyvaluesingle.value == false ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
-    console.log(noaArray);
-    return noaArray.filter((item) => item.toString().includes(query.value));
+    noaArray.value = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0].pdNumbers.noa.body : suggestions.value.pdInput?.[0].pdNumber.noa.body;
+    const stringified1 = JSON.stringify(noaArray.value).split('[').join();
+
+    const stringified2 = JSON.stringify(stringified1).split(']').join();
+    const newArray = computed(() => stringified2.split(',').map((s) => s.trim()));
+    console.log(newArray.value);
+
+    return newArray.value.filter((item) => item.toString().includes(query.value));
 });
 // ----------------------------
 // 5) "grabInput" is called once the user finalizes input

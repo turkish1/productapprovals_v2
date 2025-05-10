@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "productapprovals_v2",
+			"path": "../../.."
+		}
+	],
+	"settings": {
+		"mos.port": ""
+	}
+}
