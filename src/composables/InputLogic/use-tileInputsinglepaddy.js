@@ -59,7 +59,8 @@ export default function useTileInputSingle() {
             // .get()
             // .json();
             console.log(response);
-            if ((data.value.length > 0 && data.value[0].Table2.content) || data.value[0].Table3.content) {
+            // && data.value[0].Table2.content) || data.value[0].Table3.content
+            if (data.value.length > 0 && data.value[0].Table2.content) {
                 console.log('Entered due to Table2 and Table3 content multiple');
                 // using the data.value[0] to make use of the async await.
                 const multiTile = await data.value[0];

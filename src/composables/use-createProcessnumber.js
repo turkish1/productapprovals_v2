@@ -17,18 +17,21 @@ export default function usecreateProcess() {
         console.log(form);
         procData = form;
         console.log(procData);
-        // if (processNumber === 'meNaN') break; else{}
-        execute({ data: form });
-        responseMessage.value = 'Form submitted successfully!';
-        procStore.addData(procData);
-        // store the values
+        if (processNumber === 'meNaN') {
+            return [];
+        } else {
+            execute({ data: form });
+            responseMessage.value = 'Form submitted successfully!';
+            procStore.addData(procData);
+            // store the values
 
-        // then clear the page
+            // then clear the page
 
-        console.log(procData, 'System added');
+            console.log(procData, 'System added');
 
-        // return results;
-        // });
+            // return results;
+            // });
+        }
     }
 
     // 18061905
