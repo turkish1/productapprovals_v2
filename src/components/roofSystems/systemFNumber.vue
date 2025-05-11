@@ -69,17 +69,17 @@ const systemFNOA = ref([]);
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
     console.log(suggestions.value.sysFInput?.[0].sysFNumber.noa.body);
-    systemFNOA.value = suggestions.value.sysFInput?.[0].sysFNumber.noa.body;
-    const stringyfied1 = JSON.stringify(systemFNOA.value).split('[').join();
-    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
-    // .filter((item) => console.log(item));
-    console.log(stringyfied2);
-    const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
-    console.log(newArray.value);
+    // systemFNOA.value = suggestions.value.sysFInput?.[0].sysFNumber.noa.body;
+    // const stringyfied1 = JSON.stringify(systemFNOA.value).split('[').join();
+    // const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+    // // .filter((item) => console.log(item));
+    // console.log(stringyfied2);
+    // const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+    // console.log(newArray.value);
 
-    return newArray.value.filter((item) => item.toString().includes(query.value));
+    // return newArray.value.filter((item) => item.toString().includes(query.value));
 
-    // return suggestions.value.sysFInput[0].sysFNumber.noa.filter((item) => item.toString().includes(query.value));
+    return suggestions.value.sysFInput[0].sysFNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 
 function grabInputSA() {
