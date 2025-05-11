@@ -130,7 +130,6 @@ export default function useExposured() {
         if (newHgt.value < fifteen) {
             zoned = z1.lessfifteen[0];
 
-            console.log('if 15 statement was executed');
             // lessthanfifteen(zoned);
             Object.entries(zoned).map((obj) => {
                 console.log('Object statement was executed');
@@ -140,15 +139,13 @@ export default function useExposured() {
                 tables.zoned.lessfifteen.push(val);
             });
             tbd = tables.zoned.lessfifteen;
-            console.log(tbd);
             addDimzoned(tbd);
         } else if (newHgt.value >= fifteen && newHgt.value < twenty) {
             // fifteen <= newHgt.value ||
             zoned = z1.fifteen[0];
-            console.log('if statement for 15 to 20 was executed');
+
             // fifteenormore(zoned);
             Object.entries(zoned).map((obj) => {
-                console.log('Object statement was executed');
                 const key = obj[0];
                 const val = obj[1];
 
@@ -173,9 +170,8 @@ export default function useExposured() {
             addDimzoned(tbd);
         } else if (newHgt.value < thirty && newHgt.value >= twentyfive) {
             zoned = z1.twentyfive[0];
-            console.log('if 25 statement was executed');
+
             Object.entries(zoned).map((obj) => {
-                console.log('Object statement was executed');
                 const key = obj[0];
                 const val = obj[1];
 
@@ -186,7 +182,7 @@ export default function useExposured() {
             addDimzoned(tbd);
         } else if (newHgt.value < thirtyfive && newHgt.value >= thirty) {
             zoned = z1.thirty[0];
-            console.log('if statement 32 was executed');
+
             Object.entries(zoned).map((obj) => {
                 console.log('Object statement was executed');
                 const key = obj[0];
@@ -200,7 +196,6 @@ export default function useExposured() {
             zoned = z1.thirtyfive[0];
 
             Object.entries(zoned).map((obj) => {
-                console.log('Object statement was executed');
                 const key = obj[0];
                 const val = obj[1];
 

@@ -17,7 +17,7 @@ export default function usecreateProcess() {
         console.log(form);
         procData = form;
         console.log(procData);
-        if (processNumber === 'meNaN') {
+        if (procData.processNumber === 'meNaN') {
             return [];
         } else {
             execute({ data: form });

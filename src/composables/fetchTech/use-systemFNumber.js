@@ -15,11 +15,12 @@ export default function useFNumber() {
     function callFunction() {
         fetchData();
     }
-    const url = computed(() => {
-        return 'https://6927591kvh.execute-api.us-east-1.amazonaws.com/systemFnumstaging';
-        // 'https://sq4a0wyu4a.execute-api.us-east-1.amazonaws.com/systemFNOAsdev';
 
-        // 'https://9i7w1lhq0f.execute-api.us-east-1.amazonaws.com/systemf/systemf';
+    // systemfNumber pulls noas
+    const url = computed(() => {
+        return 'https://okyj0au1z5.execute-api.us-east-1.amazonaws.com/systemFNOAstaging';
+        // 'https://sq4a0wyu4a.execute-api.us-east-1.amazonaws.com/systemFNOAsdev';
+        // 'https://okyj0au1z5.execute-api.us-east-1.amazonaws.com/systemFNOAstaging'
     });
     const { data } = useFetch(url).get().json();
 

@@ -230,18 +230,24 @@ function pickUnderlayment(event) {
         isUDLNOAValid.value = false;
         isSAValid.value = false;
     } else if (save.value === 2) {
-        isTileValid.value = true;
+        isPaddyCategoryValid.value = true;
+
+        isTileValid = true;
         isTileData.value = true;
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = true;
     } else if (save.value === 3) {
-        isTileValid.value = true;
+        isPaddyCategoryValid.value = true;
+
+        isTileValid = true;
         isUDLValid.value = true;
         isTileData.value = true;
         isUDLNOAValid.value = true;
         isSAValid.value = false;
     } else if (save.value === 0) {
+        isPaddyCategoryValid.value = false;
+
         isTileData.value = false;
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
@@ -579,9 +585,10 @@ const udlTile = reactive({
 watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
 
 function sysEcheckInput() {
-    console.log(Edatamounted.value);
+    console.log(Edatamounted.value[0]);
     if (Edatamounted.value.length !== null) {
         Edatamounted.value.forEach((item, index) => {
+            console.log(item);
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;

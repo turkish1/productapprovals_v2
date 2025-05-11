@@ -117,10 +117,10 @@ const filteredSuggestions = computed(() => {
     // const noaArray = paddyCategory.value === 'double' ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa.value.body ?? []);
     // isPaddyvaluesingle.value == false ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
     noaArray.value = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0].pdNumbers.noa.body : suggestions.value.pdInput?.[0].pdNumber.noa.body;
-    const stringified1 = JSON.stringify(noaArray.value).split('[').join();
+    const stringyfied1 = JSON.stringify(noaArray.value).split('[').join();
 
-    const stringified2 = JSON.stringify(stringified1).split(']').join();
-    const newArray = computed(() => stringified2.split(',').map((s) => s.trim()));
+    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+    const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
     console.log(newArray.value);
 
     return newArray.value.filter((item) => item.toString().includes(query.value));

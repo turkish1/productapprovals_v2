@@ -12,8 +12,7 @@ export default function useTileSystemF() {
 
     const error = ref('');
 
-    let url = 'https://jmw33q400d.execute-api.us-east-1.amazonaws.com/systemFstaging';
-    // ('https://t0bxt7ukv8.execute-api.us-east-1.amazonaws.com/systemfdev');
+    let url = 'https://43vqeorx5nvviet4vwvdewfcwe0tqdtt.lambda-url.us-east-1.on.aws/';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 

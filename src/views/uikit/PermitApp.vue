@@ -134,7 +134,7 @@ export default {
                 let strLength = String(resNum.value);
                 console.log(strLength);
                 //  This removes quotes and backlash from the sting
-                let newNumber = strLength.substring(6, 19);
+                let newNumber = strLength.substring(3, 19);
                 // formData.permit = selectedApplication.value;
                 console.log(newNumber);
                 const number = useToNumber(newNumber);

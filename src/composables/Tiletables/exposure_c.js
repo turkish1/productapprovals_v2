@@ -103,8 +103,6 @@ export default function useExposurec() {
                 addDimheight(height.value);
             }
             if (type.value === 'table1') {
-                console.log(result.data.value[0].slp_two_four);
-
                 zoneData.value = result.data.value[0].slp_two_four;
 
                 slopeSelection(slope.value, height.value, zoneData.value);
@@ -127,7 +125,7 @@ export default function useExposurec() {
     // I need to work on the less than greater than conditions
     function processData(z) {
         const z1 = z;
-        console.log(z1, z);
+
         const fifteen = Number(heightOptions.fifteen);
         const twenty = Number(heightOptions.twenty);
         const twentyfive = Number(heightOptions.twentyfive);
@@ -141,10 +139,10 @@ export default function useExposurec() {
             // lessthanfifteen(zones);
             Object.entries(zones).map((obj) => {
                 // console.log('Object statement was executed');
-                console.log(obj);
+
                 const key = obj[0];
                 const val = obj[1];
-                console.log(val);
+
                 tables.zones.lessfifteen.push(val);
             });
             tb = tables.zones.lessfifteen;

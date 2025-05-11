@@ -82,11 +82,26 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = systemEStore.$state;
+    console.log(suggestions.value);
 });
+
+const systemENOA = ref([]);
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
+    console.log(suggestions.value.sysEInput?.[0].sysENumber.noa.body);
+    // paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0].pdNumbers.noa.body
     if (!query.value) return [];
-    return suggestions.value.sysEInput[0].sysENumber.noa.filter((item) => item.toString().includes(query.value));
+    systemENOA.value = suggestions.value.sysEInput?.[0].sysENumber.noa.body;
+    const stringyfied1 = JSON.stringify(systemENOA.value).split('[').join();
+    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+    // .filter((item) => console.log(item));
+    console.log(stringyfied2);
+    const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+    console.log(newArray.value);
+
+    return newArray.value.filter((item) => item.toString().includes(query.value));
+    // return suggestions.value.sysEInput?.[0].sysENumber.noa.filter((item) => console.log(item))
+    // filter((item) => item.toString().includes(query.value));
 });
 
 function grabInputUDL() {

@@ -16,7 +16,7 @@ export default function usetileInputdouble() {
     const useDoublepaddy = useDoublePaddyStore();
 
     let url = 'https://ewa5ibqdkpzvdvtynh2z7agljm0epptp.lambda-url.us-east-1.on.aws/';
-    // 'https://w1m4ztg36h.execute-api.us-east-1.amazonaws.com/doublePaddydev';
+
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     const tileData = reactive({

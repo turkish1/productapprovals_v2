@@ -12,9 +12,7 @@ export default function useTileSystemE() {
 
     const error = ref('');
 
-    let url = 'https://7vrixjb0wh.execute-api.us-east-1.amazonaws.com/systemEstaging';
-    // 'https://38tie3alaf.execute-api.us-east-1.amazonaws.com/systemedev';
-    // 'https://q7pzfsbv8f.execute-api.us-east-1.amazonaws.com/systeme/systeme';
+    let url = 'https://wt43wiuu3mqdnixsgetrcjriqi0bzqdk.lambda-url.us-east-1.on.aws/';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -64,7 +62,7 @@ export default function useTileSystemE() {
         const result = execute({ params: { NOA: num.value } }).then((result) => {
             noaNum.value = data.value;
 
-            console.log(noaNum.value[0]);
+            console.log(data);
             systemDataE.noa = noaNum.value[0].NOA;
             systemDataE.manufacturer = noaNum.value[0].Manufacturer;
             systemDataE.material = noaNum.value[0].Material;
@@ -102,7 +100,7 @@ export default function useTileSystemE() {
 
             systemDataE.TileCap_Sheet_Description = noaNum.value[0].TileCap_Sheet_Description;
             store.addData(systemDataE);
-            // area.value = '';
+            // // area.value = '';
             // type.value = '';
             console.log('System added');
             //     }
