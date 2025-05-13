@@ -57,6 +57,7 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = noaStore.$state.noashingle;
+    console.log(suggestions.value);
 });
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {

@@ -110,7 +110,7 @@ watch(checkPaddCategory, () => {});
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
-    
+
     noaArray.value = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0].pdNumbers.noa.body : suggestions.value.pdInput?.[0].pdNumber.noa.body;
     const stringyfied1 = JSON.stringify(noaArray.value).split('[').join();
 
