@@ -22,7 +22,7 @@ const generalpageStore = useGeneralpdfStore();
 const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
 const masterPermit = ref(permitStore.$state.permitapp[0]?.formdt?.permit || '');
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProcess || '');
 const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
 // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
 

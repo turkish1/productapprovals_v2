@@ -1,6 +1,4 @@
-
 import { usedownloadStore } from '@/stores/downloadpdfStore';
-
 
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
@@ -19,8 +17,8 @@ export default function useDownloadpdf(dnumber) {
 
     const zip_download_url = ref();
     const error = ref('');
-
-    let url = 'https://zkqshx16h7.execute-api.us-east-1.amazonaws.com/downloadPdfdev';
+    let url = 'https://iovfrep3fext25yjg3o4i45aha0txkav.lambda-url.us-east-1.on.aws/';
+    // let url = 'https://zkqshx16h7.execute-api.us-east-1.amazonaws.com/downloadPdfdev';
     // 'https://9sg5obrcp0.execute-api.us-east-1.amazonaws.com/downloadpdf/downloadpdf';
     // 'https://he9sk9cu5f.execute-api.us-east-1.amazonaws.com/downloadPdfStaging'
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });

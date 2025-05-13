@@ -39,6 +39,7 @@ export default {
         const prefix = ref('me');
         const store = usePermitappStore();
         const muniProcess = ref('');
+        const muniProcessdata = ref('');
         const formData = reactive({
             address: '',
             muni: '',
@@ -49,6 +50,7 @@ export default {
             processNumber: '',
             // phone: '',
             // email: '',
+            muniProcess: '',
             date: new Date()
         });
         const cccValid = ref(true);
@@ -106,8 +108,12 @@ export default {
                 }, 3000);
                 // // const ftAddress = ref('3350 SW 23 ST')
                 // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
+                muniProcessdata.value = muniProcess.value;
+
+                console.log(muniProcess.value, muniProcessdata.value);
                 const addr = ref(formData.address);
                 // getaddress(addr.value);
+
                 console.log(addr.value);
                 const base1URL = 'https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?' + `address=${encodeURIComponent(addr.value)}&to=200`;
                 // 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress';
@@ -122,7 +128,7 @@ export default {
                 // const base1URL = 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress'
                 // 3. Make the Fetch API request with CORS enabled
                 // const response = (await fetch(url)).json().then(addresses);
-
+                console.log(muniProcess.value);
                 formData.license = accountUsers._value[0].license;
                 formData.contractor = accountUsers._value[0].name;
 
@@ -140,6 +146,7 @@ export default {
                 let createStr = String(addNumber);
                 formData.processNumber = prefix.value.concat(createStr);
 
+                // console.log(formData.muniProcess);
                 procReceive(formData);
                 // if checkMB.value === 13 after number conversion disable shingle roof.
 
@@ -166,7 +173,7 @@ export default {
                 formData.muni = data.value.Municipality;
                 console.log(data.value.Strap);
                 formData.folio = data.value.Strap;
-                console.log(formData.folio);
+
                 checkV.value = formData.folio;
                 checkMB.value = checkV.value.substring(1, 2);
                 console.log(checkMB.value);
@@ -188,11 +195,12 @@ export default {
         function addItemAndClear(formdt, permType) {
             formdt = formData;
             permType = selectedApplication.value;
-
+            console.log(formdt);
             if (formdt.length === 0) {
                 return;
             }
-            store.addSystem(formdt, permType, checkMB.value, muniProcess.value);
+            // muniProcess.value
+            store.addSystem(formdt, permType, checkMB.value, muniProcess.value, muniProcessdata.value);
 
             console.log(store);
             // area.value = '';
@@ -265,7 +273,7 @@ export default {
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
                                 <label for="processMuni" style="color: #122620">Municipality Process Number</label>
-                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" />
+                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" @change="load" />
                             </div>
 
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">
