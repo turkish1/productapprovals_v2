@@ -8,7 +8,7 @@ export default function useBurDetails() {
 
     const permitStore = usePermitappStore();
 
-    const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+    const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProcess || '');
 
     const results = ref('');
 
@@ -20,7 +20,7 @@ export default function useBurDetails() {
         fetchData();
     }
 
-    const url = 'https://gmckvkc7vyhj3a5qj7uosghkwm0jmipz.lambda-url.us-east-1.on.aws/'
+    const url = 'https://gmckvkc7vyhj3a5qj7uosghkwm0jmipz.lambda-url.us-east-1.on.aws/';
     // 'https://0b5oj9drpk.execute-api.us-east-1.amazonaws.com/burdetails/burdetails';
     // const url = computed(() => {
     //     return 'https://0b5oj9drpk.execute-api.us-east-1.amazonaws.com/burdetails/burdetails?';

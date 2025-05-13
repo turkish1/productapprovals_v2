@@ -47,6 +47,7 @@ export default {
             contractor: '',
             permit: '',
             processNumber: '',
+            muniProcess: '',
             // phone: '',
             // email: '',
             date: new Date()
@@ -265,7 +266,7 @@ export default {
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
                                 <label for="processMuni" style="color: #122620">Municipality Process Number</label>
-                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" />
+                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" @change="load" />
                             </div>
 
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">

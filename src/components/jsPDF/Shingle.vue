@@ -28,7 +28,7 @@ const shingleStore = useShingleStore();
 const polypropolyneStore = usePolyStore();
 const store = useRoofListStore();
 const dripShingleStore = usedripedgeshingleStore();
-const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProcess || '');
 
 // const systemAreaImport =  ref(roofStore.$state.roofList[0].dim1);
 const roofType = ref(store.$state.roofList);

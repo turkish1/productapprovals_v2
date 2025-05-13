@@ -26,7 +26,7 @@ const roofType = ref(roofStore.$state.roofList);
 const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
-const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.muniNum || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProcess || '');
 
 // const usedripStore = usedripedgeStore();
 const dripmechTileStore = usedripMStore();

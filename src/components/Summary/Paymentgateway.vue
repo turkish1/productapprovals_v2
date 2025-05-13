@@ -58,7 +58,7 @@ const permitStore = usePermitappStore();
 // const processNumber = ref('me20240001022');
 
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-const muniProcessNumber = ref(permitStore.$state.permitapp[0].muniNum || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0].formdt?.muniProcess || '');
 
 // State for the form and payment
 const token = ref(null);
