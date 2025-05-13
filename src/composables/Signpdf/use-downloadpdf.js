@@ -18,7 +18,8 @@ export default function useDownloadpdf(dnumber) {
     const zip_download_url = ref();
     const error = ref('');
 
-    let url = 'https://he9sk9cu5f.execute-api.us-east-1.amazonaws.com/downloadPdfStaging';
+    let url = 'https://iovfrep3fext25yjg3o4i45aha0txkav.lambda-url.us-east-1.on.aws/';
+    // 'https://ixwlxgs83k.execute-api.us-east-1.amazonaws.com/downloadPdfStaging';
     // 'https://zkqshx16h7.execute-api.us-east-1.amazonaws.com/downloadPdfdev';
     // 'https://9sg5obrcp0.execute-api.us-east-1.amazonaws.com/downloadpdf/downloadpdf';
 

@@ -142,7 +142,7 @@ watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label style="color: #122620" for="area">Area </label>
+            <label style="color: #122620" for="area">Area of Roof</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
