@@ -57,14 +57,16 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = noaStore.$state.noashingle;
+    console.log(suggestions.value);
 });
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
     shingleData.value = suggestions.value[0]?.shingleNoaNumber?.noa;
-    console.log(shingleData.value);
-    shingleIterate.value = shingleData.value.body ?? [];
+    console.log(shingleData.value.body);
+    shingleIterate.value = shingleData.value.body;
+    console.log('line 69', shingleIterate.value);
     const stringyfied1 = JSON.stringify(shingleIterate.value).split('[').join();
 
     const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();

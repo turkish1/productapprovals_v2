@@ -16,12 +16,9 @@ export default function useSingle() {
     }
 
     const url = computed(() => {
-        return 'https://u839u4s4pi.execute-api.us-east-1.amazonaws.com/singlePaddynoastaging';
-        // 'https://ojx7zyxpj4.execute-api.us-east-1.amazonaws.com/singlePaddynoasdev';
+        // return 'https://u839u4s4pi.execute-api.us-east-1.amazonaws.com/singlePaddynoastaging';
+        return 'https://ojx7zyxpj4.execute-api.us-east-1.amazonaws.com/singlePaddynoasdev';
         // 'https://u839u4s4pi.execute-api.us-east-1.amazonaws.com/singlePaddynoastaging';
-        // 'https://ojx7zyxpj4.execute-api.us-east-1.amazonaws.com/singlePaddynoasdev';
-        // https://u839u4s4pi.execute-api.us-east-1.amazonaws.com/singlePaddynoastaging
-        // 'https://i6qdxr9dsg.execute-api.us-east-1.amazonaws.com/singlepdNumber/singlepdNumber';
     });
 
     // Destructure error so we can handle any fetch errors
