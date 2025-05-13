@@ -68,11 +68,27 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = saStore.$state;
+    console.log(suggestions.value);
 });
+
+const saData = ref([]);
+const saIterate = ref([]);
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
-    return suggestions.value.noasa[0].saNoaNumber.noa.filter((item) => item.toString().includes(query.value));
+
+    saData.value = suggestions.value.noasa[0]?.saNoaNumber?.noa;
+    console.log(suggestions.value.noasa[0]?.saNoaNumber?.noa);
+    saIterate.value = saData.value.body ?? [];
+    // .body ?? [];
+    const stringyfied1 = JSON.stringify(saIterate.value).split('[').join();
+
+    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+    const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+    console.log(newArray.value);
+
+    return newArray.value.filter((item) => item.toString().includes(query.value));
+    // return suggestions.value.noasa[0].saNoaNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 let systemdatamt = ref(systemStore.$state.systeminput);
 

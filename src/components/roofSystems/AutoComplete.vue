@@ -49,6 +49,10 @@ const shingles = reactive({
 const suggestions = ref([]);
 // State to control suggestions visibility
 const showSuggestions = ref(false);
+
+const shingleData = ref([]);
+const shingleIterate = ref([]);
+
 onMounted(() => {
     callFunction();
 
@@ -57,7 +61,19 @@ onMounted(() => {
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
-    return suggestions.value[0].shingleNoaNumber.noa.filter((item) => item.toString().includes(query.value));
+
+    shingleData.value = suggestions.value[0]?.shingleNoaNumber?.noa;
+    console.log(shingleData.value);
+    shingleIterate.value = shingleData.value.body ?? [];
+    const stringyfied1 = JSON.stringify(shingleIterate.value).split('[').join();
+
+    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+    const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+    console.log(newArray.value);
+
+    return newArray.value.filter((item) => item.toString().includes(query.value));
+
+    // return suggestions.value[0].shingleNoaNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);

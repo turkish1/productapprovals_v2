@@ -1,7 +1,7 @@
-// import DataService from '@/services/DataService';
+
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 
-// import { usePermitappStore } from '@/stores/permitapp';
+
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 
@@ -20,8 +20,9 @@ export default function useDownloadpdf(dnumber) {
     const zip_download_url = ref();
     const error = ref('');
 
-    let url = 'https://9sg5obrcp0.execute-api.us-east-1.amazonaws.com/downloadpdf/downloadpdf';
-
+    let url = 'https://zkqshx16h7.execute-api.us-east-1.amazonaws.com/downloadPdfdev';
+    // 'https://9sg5obrcp0.execute-api.us-east-1.amazonaws.com/downloadpdf/downloadpdf';
+    // 'https://he9sk9cu5f.execute-api.us-east-1.amazonaws.com/downloadPdfStaging'
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
     const store = usedownloadStore();
     function getNumber() {

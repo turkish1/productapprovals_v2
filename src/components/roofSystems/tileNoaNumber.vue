@@ -110,12 +110,7 @@ watch(checkPaddCategory, () => {});
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
-    // paddyCategory.value == 'single'  :
-    // isPaddyvaluesingle.value == false ? suggestions.value.pdInputs?.[0] suggestions.value.pdInput?.[0]; .pdInput[0].pdNumber.noa.value.body
-    // const paddyInputSelected = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0] : suggestions.value.pdInput?.[0];
-
-    // const noaArray = paddyCategory.value === 'double' ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa.value.body ?? []);
-    // isPaddyvaluesingle.value == false ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
+    
     noaArray.value = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0].pdNumbers.noa.body : suggestions.value.pdInput?.[0].pdNumber.noa.body;
     const stringyfied1 = JSON.stringify(noaArray.value).split('[').join();
 

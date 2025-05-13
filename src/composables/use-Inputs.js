@@ -11,7 +11,7 @@ export default function useInputs() {
     const num = ref();
     const error = ref('');
 
-    let url = 'https://45ocd2dvi7.execute-api.us-east-1.amazonaws.com/shinglenoa/shinglenoa';
+    let url = 'https://dpgwx6bm5l6jt6jeqawiuv3dz40golxg.lambda-url.us-east-1.on.aws/';
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
     const shingleData = reactive({
         noa: '',

@@ -14,7 +14,7 @@ export default function useSbs() {
 
     const error = ref('');
 
-    let url = 'https://3z97hfdsmb.execute-api.us-east-1.amazonaws.com/sbsapi/sbsapi';
+    let url = 'https://p24rurxvuyt5spbou3rcljgheq0ftxgq.lambda-url.us-east-1.on.aws/';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 

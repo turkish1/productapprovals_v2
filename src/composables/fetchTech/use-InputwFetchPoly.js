@@ -19,7 +19,8 @@ export default function useInputPoly() {
         fetchData();
     }
     const url = computed(() => {
-        return 'https://s0fcmqq38a.execute-api.us-east-1.amazonaws.com/polynoaNumber/polynoaNumber';
+        return 'https://yofitfbwwe.execute-api.us-east-1.amazonaws.com/polyNoaNumber';
+        //    'https://ldng7g45s1.execute-api.us-east-1.amazonaws.com/polynoaNumberStaging'
     });
     const { data } = useFetch(url).get().json();
 

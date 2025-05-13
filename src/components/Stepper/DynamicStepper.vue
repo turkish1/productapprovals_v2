@@ -67,8 +67,8 @@ const Step2LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.v
 const Step3AdhesiveTile = defineAsyncComponent(() => import('@/components/Tile.vue'));
 const Step4MechanicalTile = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
-// const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
-const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/NewStripe.vue'));
+const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
+// const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/NewStripe.vue'));
 
 const Step7Permit = defineAsyncComponent(() => import('@/views/pages/auth/Login.vue'));
 

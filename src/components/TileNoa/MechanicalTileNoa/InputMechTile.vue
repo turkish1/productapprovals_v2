@@ -115,7 +115,9 @@ const dimensions = computed(() => {
 
 onMounted(() => {
     callNumber();
-    mechanical.value = mechanicalStore.$state.tileMechInput[0].tileMechNumber;
+    mechanical.value = mechanicalStore.$state;
+    console.log(mechanical.value);
+    // .tileMechInput[0]?.tileMechNumber?.noa
 });
 
 onMounted(() => {
@@ -130,6 +132,7 @@ let datamechnoas = ref(mechanicalData);
 function grabInput() {
     console.log(query.value);
     console.log(datamechnoas);
+    console.log(mechanicalData);
     datamechnoas.value = query.value;
 
     if (datamechnoas.value !== null) {
@@ -138,11 +141,24 @@ function grabInput() {
         takeMechInput(datamechnoas.value);
     }
 }
+const newArray = ref([]);
+const iterateItem = ref([]);
+
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
-    // if (!query.value) return [];
+    if (!query.value) return [];
+    // paddyInputSelected?.pdNumbers?.noa ?? []
+    console.log(mechanical.value.tileMechInput[0]?.tileMechNumber.noa);
+    newArray.value = mechanical.value.tileMechInput[0]?.tileMechNumber?.noa;
+    console.log(newArray.value);
+    iterateItem.value = newArray.value.body ?? [];
+    console.log(iterateItem.value);
+    const stringyfied1 = JSON.stringify(iterateItem.value).split('[').join();
 
-    return (suggestions.value = mechanical.value.noa.filter((item) => item.toString().includes(query.value)));
+    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+    const splitItem = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+
+    return splitItem.value.filter((item) => item.toString().includes(query.value));
 });
 const saTiles = reactive({
     manufacturer: '',
@@ -674,7 +690,7 @@ let isTileSelectionValid = ref(false);
 let showMaterialValid = ref(false);
 function checkInput() {
     if (datamountedMech.value.length !== null) {
-        console.log(datamountedMech.value[0]);
+        console.log(datamountedMech.value);
         tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
         tilenoas.description = datamountedMech.value[0].description;
         tilenoas.material = datamountedMech.value[0].material;

@@ -29,6 +29,7 @@ const mbVal = ref(2);
 const convertMB = useToNumber(MB.value[0].miamibeach);
 
 tryOnMounted(() => {
+    console.log(MB.value);
     if (convertMB.value === mbVal.value) {
         console.log('Entry');
         isMiamiBeachValid.value = true;

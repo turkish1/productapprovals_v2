@@ -135,7 +135,7 @@ invoke(async () => {
 <template>
     <!-- flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800 card w-96 grid gap-4 grid-cols-1-->
     <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
-        <Button label="Reset" severity="danger" @click="resetState"></Button>
+        <!-- <Button label="Reset" severity="danger" @click="resetState"></Button> -->
         <label style="color: #122620">Drip Edge Material</label>
         <!--  ref="selectRef"    selectDripMaterial,  @change="emitValue" @update-value="selectDripMaterial"    " -->
         <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @click="checkValue" />

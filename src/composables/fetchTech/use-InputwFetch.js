@@ -20,7 +20,9 @@ export default function useInputs() {
         fetchData();
     }
     const url = computed(() => {
-        return 'https://i88176qin0.execute-api.us-east-1.amazonaws.com/getshinglenoa/getshinglenoa';
+        // shibleNoaNumber
+        return 'https://p81006fgcd.execute-api.us-east-1.amazonaws.com/shingleNoaNumber';
+        // https://p6dx88bicl.execute-api.us-east-1.amazonaws.com/shinglenoaNumberStaging
     });
     const { data } = useFetch(url).get().json();
 

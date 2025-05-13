@@ -57,11 +57,26 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = polyStores.$state;
+    console.log(suggestions.value);
 });
 // Computed property to filter suggestions based on user input
+
+const polyData = ref([]);
+const polyIterate = ref([]);
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
-    return suggestions.value.noapoly[0].polyNoaNumber.noa.filter((item) => item.toString().includes(query.value));
+
+    polyData.value = suggestions.value?.noapoly[0]?.polyNoaNumber?.noa;
+    console.log(polyData.value);
+    polyIterate.value = polyData.value.body ?? [];
+    const stringyfied1 = JSON.stringify(polyIterate.value).split('[').join();
+
+    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+    const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+    console.log(newArray.value);
+
+    return newArray.value.filter((item) => item.toString().includes(query.value));
+    // return suggestions.value.noapoly[0].polyNoaNumber.noa.filter((item) => item.toString().includes(query.value));
     // .polyNoaNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 let polydatamt = ref(polyinput._object.polyinput);

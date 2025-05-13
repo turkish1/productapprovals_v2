@@ -31,8 +31,7 @@ export default function useExposured() {
     const { addDimzoned, addDimsloped, addDimheightd } = useExposureD();
     loading.value = true;
     let url = 'https://56loihllfj5w27ywslgbxlhp3a0uppfh.lambda-url.us-east-1.on.aws/';
-    // 'https://30bfqyzoif.execute-api.us-east-1.amazonaws.com/dexposure';
-    // 'https://xbp1eqyije.execute-api.us-east-1.amazonaws.com/exposureD/exposureD';
+
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     let zoned = reactive({});

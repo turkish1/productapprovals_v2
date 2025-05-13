@@ -26,7 +26,6 @@ const props = defineProps({
     }
 });
 const burpdfStore = useBurpdfStore();
-// const { burpdfinput, addpdfData } = storeToRefs(burpdfStore);
 
 const dims = reactive({
     area: '',
@@ -77,7 +76,7 @@ onMounted(() => {
 
 const { errorburMessage, validateburSlope } = useburSlopeValidation({
     min: 0.128,
-    max: 1.48,
+    max: 1.5,
     required: true
 });
 

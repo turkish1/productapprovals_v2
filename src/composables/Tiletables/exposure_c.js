@@ -41,8 +41,7 @@ export default function useExposurec() {
     const { addDimzones, addDimslope, addDimheight } = useGlobalState();
     loading.value = true;
     let url = 'https://omdu2tnzbwrm6v4ybp6nfr3gyi0tnoqk.lambda-url.us-east-1.on.aws/';
-    // let url = 'https://xykds2nkwi.execute-api.us-east-1.amazonaws.com/cexposure';
-    // 'https://23ftwm0pyk.execute-api.us-east-1.amazonaws.com/exposureC/exposureC';
+
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     let zones = reactive({});

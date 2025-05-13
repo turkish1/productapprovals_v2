@@ -20,7 +20,8 @@ export default function useBurDetails() {
         fetchData();
     }
 
-    const url = 'https://0b5oj9drpk.execute-api.us-east-1.amazonaws.com/burdetails/burdetails';
+    const url = 'https://gmckvkc7vyhj3a5qj7uosghkwm0jmipz.lambda-url.us-east-1.on.aws/'
+    // 'https://0b5oj9drpk.execute-api.us-east-1.amazonaws.com/burdetails/burdetails';
     // const url = computed(() => {
     //     return 'https://0b5oj9drpk.execute-api.us-east-1.amazonaws.com/burdetails/burdetails?';
     // });

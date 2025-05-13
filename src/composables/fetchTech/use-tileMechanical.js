@@ -12,7 +12,7 @@ export default function useMech() {
     const num = ref();
     const error = ref('');
 
-    let url = 'https://8c6racnaj6.execute-api.us-east-1.amazonaws.com/mechanicalTile/mechanicalTile';
+    let url = 'https://2dz45lw4aeav6valksiiquuwqq0ejsio.lambda-url.us-east-1.on.aws/';
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
     const mechanicalData = reactive({
         noa: '',

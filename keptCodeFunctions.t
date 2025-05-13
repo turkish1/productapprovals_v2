@@ -1,4 +1,13 @@
 
+
+// paddyCategory.value == 'single'  :
+    // isPaddyvaluesingle.value == false ? suggestions.value.pdInputs?.[0] suggestions.value.pdInput?.[0]; .pdInput[0].pdNumber.noa.value.body
+    // const paddyInputSelected = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0] : suggestions.value.pdInput?.[0];
+
+    // const noaArray = paddyCategory.value === 'double' ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa.value.body ?? []);
+    // isPaddyvaluesingle.value == false ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
+
+
  for (const [key, value] of Object.entries(selfadhered.maps)) {
                 console.log(`${key}: ${value}`);
             }

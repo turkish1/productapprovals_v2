@@ -12,7 +12,7 @@ export default function usePoly() {
     const num = ref();
     const error = ref('');
 
-    let url = 'https://o2cmgq2w4l.execute-api.us-east-1.amazonaws.com/shinglepoly/shinglepoly';
+    let url = 'https://kkeraukmso6bxvbc6hksamdmaa0tadyb.lambda-url.us-east-1.on.aws/';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 

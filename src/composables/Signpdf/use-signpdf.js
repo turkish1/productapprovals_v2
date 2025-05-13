@@ -19,7 +19,8 @@ export default function useSignpdf(proc) {
     const procNum = ref();
     const error = ref('');
 
-    let url = 'https://681byz7j80.execute-api.us-east-1.amazonaws.com/sendmenumber/sendmenumber';
+    let url = 'https://4cgf7owinctxji4vx56hnisxh40iskps.lambda-url.us-east-1.on.aws/';
+    // 'https://681byz7j80.execute-api.us-east-1.amazonaws.com/sendmenumber/sendmenumber';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 

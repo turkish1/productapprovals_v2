@@ -125,10 +125,7 @@ export default {
 
                 formData.license = accountUsers._value[0].license;
                 formData.contractor = accountUsers._value[0].name;
-                // formData.muni = data.MinimumPropertyInfos[0].Municipality;
-                // formData.license = accountUsers._value[0].license;
-                // formData.contractor = accountUsers._value[0].name;
-                // formData.folio = data.MinimumPropertyInfos[0].Strap;
+
                 console.log(resNum.value);
                 // let strLength = String(lastNum.value.body);
                 let strLength = String(resNum.value);
@@ -142,10 +139,6 @@ export default {
                 let addNumber = number.value + 1;
                 let createStr = String(addNumber);
                 formData.processNumber = prefix.value.concat(createStr);
-                console.log(formData.processNumber);
-                checkV.value = formData.folio;
-                checkMB.value = checkV.value.substring(1, 2);
-                console.log(checkMB.value);
 
                 procReceive(formData);
                 // if checkMB.value === 13 after number conversion disable shingle roof.
@@ -173,6 +166,10 @@ export default {
                 formData.muni = data.value.Municipality;
                 console.log(data.value.Strap);
                 formData.folio = data.value.Strap;
+                console.log(formData.folio);
+                checkV.value = formData.folio;
+                checkMB.value = checkV.value.substring(1, 2);
+                console.log(checkMB.value);
             } catch (err) {
                 error.value = err.message;
             } finally {

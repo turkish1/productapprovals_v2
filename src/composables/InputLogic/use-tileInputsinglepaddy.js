@@ -46,7 +46,6 @@ export default function useTileInputSingle() {
         fetchData();
     }
     const url = 'https://bndobvdmx2hlyfu7pbizohgova0aefyp.lambda-url.us-east-1.on.aws';
-    // 'https://ww4xqvm0t7.execute-api.us-east-1.amazonaws.com/singlePaddyDev';
 
     const { execute, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -104,57 +103,6 @@ export default function useTileInputSingle() {
         }
         return results;
     };
-
-    // const fetchData = async () => {
-    // try {
-    // await execute({ params: { NOA: num.value } });
-    // console.log(data);
-
-    // if ((data.value.length > 0 && data.value[0].Table2.content) || data.value[0].Table3.content) {
-    //     console.log('Entered due to Table2 and Table3 content multiple');
-    //     const multiTile = await data.value[0];
-    //     console.log(multiTile);
-    //     tileDatas.noa = await multiTile.NOA;
-    //     tileDatas.content = await multiTile.content;
-    //     tileDatas.applicant = await multiTile.applicant;
-    //     tileDatas.material = await multiTile.AdhesiveMaterial;
-    //     tileDatas.selection = await multiTile.AdhesiveMaterials;
-    //     tileDatas.description = await multiTile.description;
-    //     tileDatas.select_tile = await multiTile.Select_Tile;
-    //     tileDatas.Table3_obj_map = await multiTile.Tile_Map;
-    //     tileDatas.Table2_obj_map = await multiTile.Table2_Map;
-    //     tileDatas.resistance = await multiTile.Resistance;
-    //     tileDatas.paddy_cat = await multiTile.paddy_category;
-    //     console.log('Tile data fetched:', tileDatas);
-    //     paddyStore.addtileData(tileDatas);
-    // } else if (data.value.length > 0) {
-    //     const fetched = await data.value[0];
-    //     tileDatas.noa = await fetched.NOA;
-    //     tileDatas.applicant = await fetched.applicant;
-    //     tileDatas.material = await fetched.AdhesiveMaterial;
-    //     tileDatas.selection = await fetched.AdhesiveMaterials;
-    //     tileDatas.description = await fetched.description;
-    //     tileDatas.Table2 = await fetched.Table2;
-    //     tileDatas.Table3 = await fetched.Table3;
-    //     tileDatas.select_tile = await fetched.Select_Tile;
-    //     // Tile.Map is for table three conversion change this later
-    //     tileDatas.tile_map = await fetched.Tile_Map;
-    //     tileDatas.table2_map = await fetched.Table2_Map;
-    //     tileDatas.resistance = await fetched.Resistance;
-    //     // tileDatas.paddy_cat = await fetched.paddy_category[0];
-
-    //     console.log('Tile data fetched:', tileDatas);
-    //     paddyStore.addtileData(tileDatas);
-    //     // paddyStore.setSinglePaddyData({ tileDatas });
-    // } else {
-    //     console.warn('No data found!');
-    // }
-    // } catch (err) {
-    //     console.error('Error fetching tile data:', err);
-    //     error.value = err;
-    // }
-    //     return results;
-    // };
 
     return { getTilenoas, responseMessage, fetchData, noaNum, results, tileDatas, paddyStore };
 }
