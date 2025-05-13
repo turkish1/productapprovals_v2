@@ -22,7 +22,7 @@ export default function useInputs() {
     const url = computed(() => {
         // shibleNoaNumber
         // return 'https://p81006fgcd.execute-api.us-east-1.amazonaws.com/shingleNoaNumber';
-        return  'https://p6dx88bicl.execute-api.us-east-1.amazonaws.com/shinglenoaNumberStaging'
+        return 'https://p6dx88bicl.execute-api.us-east-1.amazonaws.com/shinglenoaNumberStaging';
     });
     const { data } = useFetch(url).get().json();
 
