@@ -16,8 +16,8 @@ export default function useMechNumber() {
         fetchData();
     }
     const url = computed(() => {
-        // return 'https://h3gd9z0q32.execute-api.us-east-1.amazonaws.com/mechanicaltileNumberstaging';
-        return 'https://bkv6dsn8v0.execute-api.us-east-1.amazonaws.com/mechanicaltileNumberdev';
+        return 'https://h3gd9z0q32.execute-api.us-east-1.amazonaws.com/mechanicaltileNumberstaging';
+        // return 'https://bkv6dsn8v0.execute-api.us-east-1.amazonaws.com/mechanicaltileNumberdev';
     });
     const { data } = useFetch(url).get().json();
 

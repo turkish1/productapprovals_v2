@@ -13,8 +13,8 @@ export function useburSlopeValidation({ min = null, max = null, required = false
             return false;
         }
 
-        if (max !== null && num >= min && max <= num) {
-            errorburMessage.value = `Number must be less than 1.48 because Boris is a pain in the ASS!!!!`;
+        if (max !== null && num >= min && max < num) {
+            errorburMessage.value = `Number must be less than 1.50 because Boris is a pain in the ASS!!!!`;
             console.log('max', num);
             return false;
         }

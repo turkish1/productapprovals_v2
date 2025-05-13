@@ -47,23 +47,8 @@ export default function usemuliTile() {
         multiTiles.table2_map = dt.value[0].table2_map;
         multiTiles.tile_map = dt.value[0].tile_map;
 
-        // multiTiles.noa = getmechStore.value[0].noa;
-        // multiTiles.manufacturer = getmechStore.value[0].applicant;
-        // multiTiles.material = getmechStore.value[0].material;
-        // multiTiles.description = getmechStore.value[0].description;
-        // multiTiles.select_tile = getmechStore.value[0].Select_Tile;
-        // multiTiles.tile_map = getmechStore.value[0].Tile_Map;
-        // // multiTiles.table2_map = getmechStore.value[0].Table2_Map;
 
-        // multiTiles.Table2 = getmechStore.value[0].Table2;
-        // multiTiles.Table3 = getmechStore.value[0].Table3;
-        // multiTiles.resistance = getmechStore.value[0].Resistance;
-        // multiTiles.expiration_date = getmechStore.value[0].expiration_date;
-        // multiTiles.two_ten_d_RS_Nails = getmechStore.value[0].two_ten_d_RS_Nails;
-        // multiTiles.one_number_eight_screw = getmechStore.value[0].one_number_eight_screw;
-        // multiTiles.two_number_eight_screw = getmechStore.value[0].two_number_eight_screw;
-        // multiTiles.savedfastener= getmechStore.value[0].mechanicaltilefastener;
-        // multiTiles.fastenerValues = getmechStore.value[0].fastenerValues;
+  
         console.log(multiTiles);
         multiStore.addData(multiTiles);
     }

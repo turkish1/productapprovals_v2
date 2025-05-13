@@ -21,9 +21,8 @@ export default function useInputSA() {
         fetchData();
     }
     const url = computed(() => {
-        return 'https://popv3o1ks8.execute-api.us-east-1.amazonaws.com/sanoaNumberdev';
-        //    https://xzgfruh7de.execute-api.us-east-1.amazonaws.com/sanoaNumberstaging
-        // 'https://y44vai1808.execute-api.us-east-1.amazonaws.com/saNoaNumber/sanoaNumber';
+        // return 'https://popv3o1ks8.execute-api.us-east-1.amazonaws.com/sanoaNumberdev';
+        return 'https://xzgfruh7de.execute-api.us-east-1.amazonaws.com/sanoaNumberstaging';
     });
     const { data } = useFetch(url).get().json();
 
