@@ -631,9 +631,7 @@ const generatePDF = () => {
 
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
-        // doc.addImage(lambdaSymbol, 'png', 50, 216, 5, 5);
-        // doc.addImage(lambdaSymbol, 'png', 50, 221, 5, 5);
-        // doc.addImage(lambdaSymbol, 'png', 50, 226, 5, 5);
+
         console.log(currentX.value, current_y);
         const tableData = [
             ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],

@@ -711,12 +711,8 @@ const generatePDF = () => {
         // doc.addFont('GreekSymbol.ttf', 'GreekSymbol', 'normal');
         // doc.setFont('times', 'normal');
 
-        // Using doc.text()
-        // console.log('\u03BB'); // outputs λ
-        // const lambdaSymbol = ref('\u03BB');
-
-        // const lambImage = doc.addImage(lambdaImage, 'JPEG', 50, 30);
-        // console.log(lambImage.value);
+        const lambdaSymbol = new Image();
+        lambdaSymbol.src = '/demo/images/lambda.png';
         //
         const tableData = [
             // Zone 1
@@ -741,6 +737,9 @@ const generatePDF = () => {
                 doc.text(String(cell), x, startYY);
                 x += 18; // Space between columns
             });
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
             startYY += 5; // Move to next row
         });
         current_y = current_y + 20;
@@ -762,7 +761,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

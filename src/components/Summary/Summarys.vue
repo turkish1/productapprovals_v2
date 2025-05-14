@@ -8,22 +8,19 @@
             </template>
             <template #content="slotProps">
                 <Card class="mt-4">
-                    <template #title>
-                        {{ slotProps.item.status }}
-                    </template>
+                    <template #title> {{ 'Contrator' }} : {{ slotProps.item.name }} </template>
                     <template #subtitle>
                         {{ slotProps.item.date }}
                     </template>
-                    <template #content>
-                        <!-- <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-sm" /> -->
-                        <p>The roof systems you selected</p>
+                    <template #content> {{ 'License' }} : {{ slotProps.item.license }} </template>
+                    <template #contents>
+                        <p>{{ slotProps.item.status }}</p>
                         <Button label="Read more" text></Button>
                     </template>
                 </Card>
             </template>
         </Timeline>
     </div>
-    <!-- <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 400px; margin-left: 850px" /> -->
 
     <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
         <!-- <div class="flex mb-4" style="background-color: #eae7e2">
@@ -74,10 +71,11 @@ let isRoofTileMechanicalValid = ref(false);
 let isRoofShingleValid = ref(false);
 let isRoofLowslopeValid = ref(false);
 const dba = ref('');
-const name = ref('');
-const license = ref('');
-const status = ref('');
+
 const permitStore = usePermitappStore();
+const name = ref(permitStore.$state.permitapp[0]?.formdt?.contractor || '');
+const license = ref(permitStore.$state.permitapp[0]?.formdt?.license || '');
+const date = ref(permitStore.$state.permitapp[0]?.formdt?.date || '');
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
@@ -101,7 +99,7 @@ const callPdfSign = tryOnMounted(() => {
     setTimeout(() => {
         // isloading.value = true;
         isSigned.value = true;
-    }, 2000);
+    }, 1000);
 
     console.log(muniProcessNumber.value);
 });
@@ -141,9 +139,9 @@ onMounted(() => {
 watchOnce(displayUserInfo, callState, callPdfSign, () => {});
 
 const events = ref([
-    { status: 'RoofSystems', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: '/src/assets/img/roofing_tile.jpg' },
-    { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
-    { status: displayInfo.item, date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
+    { name: name.value, date: date.value, icon: 'pi pi-cog', color: '#9C27B0' },
+    { license: license.value, date: date.value, icon: 'pi pi-cog', color: '#673AB7' },
+    { status: displayInfo.item, date: date.value, icon: 'pi pi-cog', color: '#673AB7' }
 ]);
 
 invoke(async () => {

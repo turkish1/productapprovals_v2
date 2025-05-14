@@ -15,8 +15,8 @@
         <div v-if="!isLoading" class="step-content">
             <component :is="activeComponent" />
         </div>
-        <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
-
+        <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
+        <!-- <Progressbar style="margin-top: 300px; margin-left: 50px" /> -->
         <!-- Navigation Buttons -->
         <div class="stepper-controls">
             <button @click="prevStep" :disabled="isFirstStep">Back</button>
@@ -31,8 +31,6 @@ import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
-import { VueSpinnerBall } from 'vue3-spinners';
-
 // Composables / Stores
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
@@ -172,7 +170,7 @@ function nextStep() {
         // else if last filteredSteps.value.length - 1 is equal show a
         //  button to go back to selection roofing page
         isLoading.value = false;
-    }, 200);
+    }, 100);
 }
 
 function prevStep() {
@@ -182,11 +180,12 @@ function prevStep() {
             currentStepIndex.value--;
         }
         isLoading.value = false;
-    }, 200);
+    }, 100);
 }
 
 function goToStep(index) {
     currentStepIndex.value = index;
+    console.log(currentStepIndex.value);
 }
 
 // Disable states
