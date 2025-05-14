@@ -7,8 +7,6 @@ export function getAddress() {
     const loading = ref(false);
     const addrValue = ref('');
 
-    // const url = 'https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?' + `address=${encodeURIComponent(addr.value)}&to=200`;
-
     function getaddress(addr) {
         addrValue.value = addr;
         console.log(addr, addrValue.value);

@@ -38,7 +38,6 @@ const store = useShingleStore();
 const usesystemfStore = useSystemf();
 const { inputshingle } = storeToRefs(store);
 const { systeminput } = storeToRefs(usesystemfStore);
-// const evaluating = ref(false);
 const { polyinput } = storeToRefs(polyStore);
 
 const shingles = reactive({
@@ -86,7 +85,6 @@ let datamounted = ref(inputshingle._object.inputshingle);
 
 let polydatamt = ref(polyinput._object.polyinput);
 let systemdatamt = ref(usesystemfStore.store.$state.systeminput);
-// let roofArea = ref(roofList._object.roofList);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
 let isShingleValid = ref(false);
