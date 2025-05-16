@@ -3,8 +3,7 @@ import usecreateAccount from '@/composables/Authentication/use-createAccount';
 import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
 import { tryOnUnmounted } from '@vueuse/core';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref, toRefs } from 'vue';
@@ -163,7 +162,7 @@ export default {
             });
         };
 
-        // Save the generated PDF using the File System Access API.
+        // // Save the generated PDF using the File System Access API.
         const savePdfBlobSilently = async (blob) => {
             try {
                 const fileHandle = await window.showSaveFilePicker({
@@ -213,8 +212,10 @@ export default {
 };
 </script>
 <template>
-    <form class="container md:w-1/3" @submit.prevent="onSubmit" style="margin-left: 650px">
-        <div class="flex flex-col w-64 space-y-2 gap-4" style="margin-left: 50px">
+    <form class="container md:w-2/3" @submit.prevent="onSubmit" style="margin-left: 350px; margin-top: 50px">
+        <!-- grid h-56 grid-cols-3 content-start gap-4 flex flex-col w-64 space-y-2 gap-4... -->
+        <div class="h-[10rem]"></div>
+        <div class="grid h-56 grid-cols-3 content-start gap-4" style="margin-left: 50px; margin-top: 50px; margin-right: 40px">
             <div class="font-semibold text-xl">Contractor Information</div>
             <div class="flex flex-col gap-4">
                 <label for="lic1" style="color: #122620">State of Florida License No.</label>
@@ -270,44 +271,49 @@ export default {
                         </ul>
                     </template>
                 </Password>
-
-                <div class="font-semibold text-xl">Contact Info</div>
-                <div class="flex flex-wrap gap-4">
-                    <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="addr" style="color: #122620">Business Address</label>
-                        <InputText id="addr" type="text" v-model="formDatas.address" placeholder="address" />
-                    </div>
-                    <div class="flex flex-col grow basis-1 gap-3">
-                        <label for="state" style="color: #122620">City</label>
-                        <!-- <Select id="state" v-model="dropdownItemct" :options="dropdownItemCt" optionLabel="name" placeholder="Select One" class="w-full"></Select> -->
-                        <InputText id="city" type="text" v-model="formDatas.city" placeholder="city" />
-                    </div>
-                    <div class="flex flex-wrap gap-2 w-full">
-                        <label for="state" style="color: #122620">State</label>
-                        <Select id="state" v-model="dropdownItemst" :options="dropdownItemSt" optionLabel="name" placeholder="Select One" class="w-full"></Select>
-                    </div>
-
-                    <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="bphone" style="color: #122620">Business Phone</label>
-                        <InputMask v-model="formDatas.bphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.bphone === ''" />
-                        <!-- <InputMask id="bphone" v-model="formDatas.phone" mask="000-000-0000" placeholder="000-000-0000" /> -->
-                    </div>
-                    <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="cphone" style="color: #122620">Cell Phone Number</label>
-                        <InputMask v-model="formDatas.cphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.cphone === ''" />
-                    </div>
-                    <div class="flex flex-col grow basis-0 gap-3">
-                        <label for="email1" style="color: #122620">Email</label>
-                        <InputText id="email1" v-model="formDatas.email" type="text" placeholder="email" :invalid="formDatas.email === ''" />
-                    </div>
-                </div>
-                <div class="md:w-1/4 flex justify-center flex-wrap gap-4">
-                    <Button label="Submit" severity="contrast" raised @click="onSubmit" :disabled="disabled" />
-                    <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
-                </div>
             </div>
         </div>
-        <div class="md:w-2/3 flex flex-col gap-2">
+        <div class="h-[10rem]"></div>
+        <!-- <div class="font-semibold text-xl" style="margin-left: 50px">Contact Info</div> -->
+        <div class="grid h-56 grid-cols-3 content-around gap-8 ..." style="margin-left: 250px; margin-right: 40px">
+            <!-- class="flex flex-col grow basis-0 gap-3" -->
+            <div class="flex flex-col gap-4">
+                <label for="addr" style="color: #122620">Business Address</label>
+                <InputText id="addr" type="text" v-model="formDatas.address" placeholder="address" />
+            </div>
+            <!-- class="flex flex-col grow basis-1 gap-3" -->
+            <div class="flex flex-col gap-4">
+                <label for="state" style="color: #122620">City</label>
+                <!-- <Select id="state" v-model="dropdownItemct" :options="dropdownItemCt" optionLabel="name" placeholder="Select One" class="w-full"></Select> -->
+                <InputText id="city" type="text" v-model="formDatas.city" placeholder="city" />
+            </div>
+            <!-- class="flex flex-wrap gap-2 w-full" -->
+            <div class="flex flex-col gap-4">
+                <label for="state" style="color: #122620">State</label>
+                <Select id="state" v-model="dropdownItemst" :options="dropdownItemSt" optionLabel="name" placeholder="Select One" class="w-full"></Select>
+            </div>
+            <!-- class="flex flex-col grow basis-0 gap-3" -->
+            <div class="flex flex-col gap-4">
+                <label for="bphone" style="color: #122620">Business Phone</label>
+                <InputMask v-model="formDatas.bphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.bphone === ''" />
+                <!-- <InputMask id="bphone" v-model="formDatas.phone" mask="000-000-0000" placeholder="000-000-0000" /> -->
+            </div>
+            <div class="flex flex-col gap-4">
+                <label for="cphone" style="color: #122620">Cell Phone Number</label>
+                <InputMask v-model="formDatas.cphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.cphone === ''" />
+            </div>
+            <div class="flex flex-col gap-4">
+                <label for="email1" style="color: #122620">Gmail account</label>
+                <InputText id="email1" v-model="formDatas.email" type="text" placeholder="email" :invalid="formDatas.email === ''" />
+            </div>
+        </div>
+
+        <div class="md:w-1/4 flex justify-center flex-wrap gap-4" style="margin-left: 50px">
+            <Button label="Submit" severity="contrast" raised @click="onSubmit" :disabled="disabled" />
+            <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
+        </div>
+
+        <div class="md:w-2/3 flex flex-col gap-2" style="margin-top: 120px">
             <label for="addr" style="color: #122620">Upload Insurance Information</label>
             <Toast />
             <file-saver class="w-2/3"></file-saver>

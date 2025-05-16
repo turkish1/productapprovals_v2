@@ -17,7 +17,9 @@ export default function useRegAxios() {
         name: '',
         license_status: '',
         expiration_date: '',
-        address: ''
+        address: '',
+        phone: '',
+        email: ''
     });
 
     const cccstore = usecccStore();

@@ -39,6 +39,7 @@ export default {
         const prefix = ref('me');
         const store = usePermitappStore();
         const muniProcess = ref('');
+        const muniProcessdata = ref('');
         const formData = reactive({
             address: '',
             muni: '',
@@ -47,9 +48,9 @@ export default {
             contractor: '',
             permit: '',
             processNumber: '',
+            phone: '',
+            email: '',
             muniProcess: '',
-            // phone: '',
-            // email: '',
             date: new Date()
         });
         const cccValid = ref(true);
@@ -104,11 +105,14 @@ export default {
                 loading.value = true;
                 setTimeout(() => {
                     loading.value = false;
-                }, 3000);
-                // // const ftAddress = ref('3350 SW 23 ST')
-                // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
+                }, 1000);
+
+                muniProcessdata.value = muniProcess.value;
+
+                console.log(muniProcess.value, muniProcessdata.value);
                 const addr = ref(formData.address);
                 // getaddress(addr.value);
+
                 console.log(addr.value);
                 const base1URL = 'https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?' + `address=${encodeURIComponent(addr.value)}&to=200`;
                 // 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress';
@@ -123,24 +127,24 @@ export default {
                 // const base1URL = 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress'
                 // 3. Make the Fetch API request with CORS enabled
                 // const response = (await fetch(url)).json().then(addresses);
-
+                console.log(muniProcess.value);
                 formData.license = accountUsers._value[0].license;
                 formData.contractor = accountUsers._value[0].name;
 
-                console.log(resNum.value);
                 // let strLength = String(lastNum.value.body);
                 let strLength = String(resNum.value);
-                console.log(strLength);
+
                 //  This removes quotes and backlash from the sting
                 let newNumber = strLength.substring(3, 19);
                 // formData.permit = selectedApplication.value;
-                console.log(newNumber);
+
                 const number = useToNumber(newNumber);
-                console.log(typeof number, number.value);
+
                 let addNumber = number.value + 1;
                 let createStr = String(addNumber);
                 formData.processNumber = prefix.value.concat(createStr);
 
+                // console.log(formData.muniProcess);
                 procReceive(formData);
                 // if checkMB.value === 13 after number conversion disable shingle roof.
 
@@ -157,7 +161,7 @@ export default {
 
             try {
                 const response = await fetch(url);
-                console.log(url);
+
                 // if (!response.ok) {
                 //     throw new Error(`HTTP error! Status: ${response.status}`);
                 // }
@@ -167,7 +171,7 @@ export default {
                 formData.muni = data.value.Municipality;
                 console.log(data.value.Strap);
                 formData.folio = data.value.Strap;
-                console.log(formData.folio);
+
                 checkV.value = formData.folio;
                 checkMB.value = checkV.value.substring(1, 2);
                 console.log(checkMB.value);
@@ -189,15 +193,14 @@ export default {
         function addItemAndClear(formdt, permType) {
             formdt = formData;
             permType = selectedApplication.value;
-
+            console.log(formdt);
             if (formdt.length === 0) {
                 return;
             }
-            store.addSystem(formdt, permType, checkMB.value, muniProcess.value);
+
+            store.addSystem(formdt, permType, checkMB.value, muniProcess.value, muniProcessdata.value);
 
             console.log(store);
-            // area.value = '';
-            // type.value = '';
         }
 
         return {
@@ -253,6 +256,11 @@ export default {
                     <!-- grid grid-cols-2 gap-4    flex mt-3 space-y-2 flex-col gap-2-->
                     <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
                         <form class="md:w-3/4 grid grid-cols-2 gap-6" @submit="onSubmit">
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
+                                <label for="processMuni" style="color: #122620">Municipality Process Number</label>
+                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" @change="load" />
+                            </div>
+
                             <div class="flex flex-col mt-3 w-full w-64 space-y-2 grow basis-0 gap-4">
                                 <label for="addr" style="color: #122620">Property Address</label>
                                 <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
@@ -263,10 +271,6 @@ export default {
 
                                 <!-- pi-search-plus -->
                                 <!-- <Message severity="error">Property Address Required</Message> -->
-                            </div>
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
-                                <label for="processMuni" style="color: #122620">Municipality Process Number</label>
-                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" @change="load" />
                             </div>
 
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">

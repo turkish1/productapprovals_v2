@@ -1,49 +1,51 @@
-import { onMounted, ref } from 'vue';
-
-let gisLoaded = false; // shared across every component
-let promptActive = false;
+import { useAxios } from '@vueuse/integrations/useAxios';
+import { onMounted, reactive, ref } from 'vue';
 
 export function useGoogleAuth() {
-    const users = ref(null);
-    const loading = ref(true);
-    const error = ref(null);
-
-    // Called by Google when sign‑in succeeds
-    function handleResponse(response) {
-        try {
-            // response.credential is a JWT ID token
-            const base64Url = response.credential.split('.')[1];
-            const json = decodeURIComponent(
-                atob(base64Url)
-                    .split('')
-                    .map((c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
-                    .join('')
-            );
-            users.value = JSON.parse(json);
-        } catch (e) {
-            error.value = e;
-        } finally {
-            loading.value = false;
-        }
-    }
+    const accessToken = ref(null); // Gmail calls
+    const idPayload = ref(null); // basic profile
+    let tokenClient = null;
+    const localData = ref([]);
+    let Data = reactive({});
 
     onMounted(() => {
-        /* global google */
-        google.accounts.id.initialize({
-            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID, // or process.env.VUE_APP_GOOGLE_CLIENT_ID
-            callback: handleResponse
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID, // ⬅️ your ID
+            scope: ['openid', 'email', 'profile', 'https://www.googleapis.com/auth/gmail.readonly'].join(' '),
+            callback: (resp) => {
+                if (resp.error) return console.error(resp);
+                accessToken.value = resp.access_token;
+
+                // Optional: decode the ID token for name / picture
+                const idToken = resp.id_token;
+                if (idToken) idPayload.value = JSON.parse(atob(idToken.split('.')[1]));
+            }
         });
-
-        google.accounts.id.renderButton(document.getElementById('googleSignInDiv'), { theme: 'outline', size: 'large' });
-
-        // Auto‑prompt the One‑Tap dialog (optional)
-        google.accounts.id.prompt();
     });
 
-    function signOut() {
-        google.accounts.id.disableAutoSelect();
-        users.value = null;
-    }
+    const signIn = () => tokenClient.requestAccessToken({ prompt: 'consent' }, submit());
 
-    return { users, loading, error, signOut };
+    const signOut = () => {
+        if (!accessToken.value) return;
+        google.accounts.oauth2.revoke(accessToken.value, () => {
+            accessToken.value = null;
+            idPayload.value = null;
+        });
+    };
+    async function submit() {
+        let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/getaccounts';
+
+        const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
+
+        let results = ref([]);
+        results.value = execute().then((result) => {
+            Data = data.value;
+            console.log(Data);
+            for (const [key, value] of Object.entries(Data)) {
+                localData.value.push(value);
+            }
+            console.log(localData.value);
+        });
+    }
+    return { accessToken, idPayload, signIn, signOut, localData };
 }
