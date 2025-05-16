@@ -103,11 +103,7 @@ const router = createRouter({
                     name: 'form',
                     component: () => import('@/views/pages/auth/Signature-Form.vue')
                 },
-                {
-                    path: '/scroll',
-                    name: 'scroll',
-                    component: () => import('@/views/pages/Scroll.vue')
-                },
+
                 {
                     path: '/mechanicaltile',
                     name: 'mechanical',
