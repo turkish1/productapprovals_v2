@@ -20,6 +20,7 @@ import AnimateOnScroll from 'primevue/animateonscroll';
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 const app = createApp(App);
+
 app.use(useGeolocation);
 app.use('animateonscroll', AnimateOnScroll);
 app.use('tooltip', Tooltip);

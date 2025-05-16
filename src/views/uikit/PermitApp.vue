@@ -48,8 +48,8 @@ export default {
             contractor: '',
             permit: '',
             processNumber: '',
-            // phone: '',
-            // email: '',
+            phone: '',
+            email: '',
             muniProcess: '',
             date: new Date()
         });
@@ -105,7 +105,7 @@ export default {
                 loading.value = true;
                 setTimeout(() => {
                     loading.value = false;
-                }, 3000);
+                }, 2000);
                 // // const ftAddress = ref('3350 SW 23 ST')
                 // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
                 muniProcessdata.value = muniProcess.value;
@@ -260,6 +260,11 @@ export default {
                     <!-- grid grid-cols-2 gap-4    flex mt-3 space-y-2 flex-col gap-2-->
                     <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
                         <form class="md:w-3/4 grid grid-cols-2 gap-6" @submit="onSubmit">
+                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
+                                <label for="processMuni" style="color: #122620">Municipality Process Number</label>
+                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" @change="load" />
+                            </div>
+
                             <div class="flex flex-col mt-3 w-full w-64 space-y-2 grow basis-0 gap-4">
                                 <label for="addr" style="color: #122620">Property Address</label>
                                 <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
@@ -270,10 +275,6 @@ export default {
 
                                 <!-- pi-search-plus -->
                                 <!-- <Message severity="error">Property Address Required</Message> -->
-                            </div>
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
-                                <label for="processMuni" style="color: #122620">Municipality Process Number</label>
-                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" @change="load" />
                             </div>
 
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">
