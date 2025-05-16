@@ -147,11 +147,7 @@ const router = createRouter({
                     name: 'timeline',
                     component: () => import('@/views/uikit/TimelineDoc.vue')
                 },
-                {
-                    path: '/pages/empty',
-                    name: 'empty',
-                    component: () => import('@/views/pages/Scroll.vue')
-                },
+
                 {
                     path: '/map',
                     name: 'map',
