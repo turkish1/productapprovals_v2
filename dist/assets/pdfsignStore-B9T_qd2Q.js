@@ -1,0 +1,1 @@
+import{as as r,j as n,Y as l}from"./index-DdTncIqs.js";const p=r(()=>{const s=n({status:"",message:"",isFinished:"",isLoading:""}),i=l(()=>s);function c(o,t,a,e){console.log(o,t,a,e),s.status=o,s.message=t,s.isFinished=a,s.isLoading=e}return{resp:s,confirmResponse:i,addResponse:c}});export{p as u};

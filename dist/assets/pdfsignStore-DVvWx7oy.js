@@ -1,1 +1,0 @@
-import{aD as r,j as n,a9 as l}from"./index-fvJRnA3k.js";const p=r(()=>{const s=n({status:"",message:"",isFinished:"",isLoading:""}),i=l(()=>s);function c(o,a,t,e){console.log(o,a,t,e),s.status=o,s.message=a,s.isFinished=t,s.isLoading=e}return{resp:s,confirmResponse:i,addResponse:c}});export{p as u};
