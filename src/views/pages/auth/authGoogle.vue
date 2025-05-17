@@ -24,7 +24,7 @@ let accountUser = reactive({
 });
 const { addUser } = useGlobalState();
 const checkAuth = () => {
-    // function checkAuth() {
+    
     console.log(localData.value);
     localData.value.forEach((item, index) => {
         for (let i = 0; i < item.length; i++) {
