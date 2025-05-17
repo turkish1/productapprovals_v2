@@ -84,7 +84,7 @@ watchEffect(() => {
                 <div class="container w-full py-15 px-8 sm:px-2">
                     <!-- <Button label="Click to Register" severity="secondary" raised style="margin-left: 10px; margin-bottom: 20px" @click="register" /> -->
                     <div>
-                        <Button @click="signIn" @change="checkAuth" severity="constrast" raised>Sign in with Google</Button>
+                        <Button @click="signIn" @change="checkAuth" severity="constrast" raised @update="navigateNext">Sign in with Google</Button>
                         <Button v-if="accessToken" @click="signOut">Sign out</Button>
                     </div>
                 </div>
