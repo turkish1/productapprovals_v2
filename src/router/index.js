@@ -19,7 +19,6 @@ const router = createRouter({
 
                 {
                     path: '/login',
-
                     name: 'login',
                     component: () => import('@/views/pages/auth/AuthGoogle.vue')
                 },
@@ -100,15 +99,16 @@ const router = createRouter({
                     component: () => import('@/components/Summary/Summarys.vue')
                 },
                 {
+                    path: '/paymentgateway',
+                    name: 'payment',
+                    component: () => import('@/components/Summary/StripePaymentApi.vue')
+                },
+                {
                     path: '/form',
                     name: 'form',
                     component: () => import('@/views/pages/auth/Signature-Form.vue')
                 },
-                {
-                    path: '/scroll',
-                    name: 'scroll',
-                    component: () => import('@/views/pages/Scroll.vue')
-                },
+
                 {
                     path: '/mechanicaltile',
                     name: 'mechanical',
@@ -152,11 +152,7 @@ const router = createRouter({
                     name: 'timeline',
                     component: () => import('@/views/uikit/TimelineDoc.vue')
                 },
-                {
-                    path: '/pages/empty',
-                    name: 'empty',
-                    component: () => import('@/views/pages/Scroll.vue')
-                },
+
                 {
                     path: '/map',
                     name: 'map',
@@ -169,11 +165,7 @@ const router = createRouter({
                 }
             ]
         },
-        // {
-        //     path: '/landing',
-        //     name: 'landing',
-        //     component: () => import('@/views/pages/Landing.vue')
-        // },
+
         {
             path: '/paymentprocessed',
             name: 'paymentprocessed',
