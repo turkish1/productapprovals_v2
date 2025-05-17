@@ -1,0 +1,1 @@
+import{as as r,i as c,Y as u}from"./index-CikC1r1a.js";const l=r(()=>{const s=c([]),e=u(()=>s.value);function a(t){s.value.push(t)}class o{constructor(){this.accountUsers=[]}}return{reset:o,accountUsers:s,getUser:e,addUser:a}});export{l as u};
