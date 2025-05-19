@@ -81,7 +81,7 @@ const roofType = ref(store.$state.roofList);
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 const generalStore = useGeneralpdfStore();
 const generalType = ref(generalStore.$state.generalpdfinput);
-const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProcess || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
 // const { getNumbers } = useSignpdf();
 const { getNumbers } = useSignpdf(muniProcessNumber.value);

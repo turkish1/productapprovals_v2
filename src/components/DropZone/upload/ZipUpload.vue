@@ -19,7 +19,8 @@ const files = ref([]);
 const dir = ref('');
 // const permitStore = usePermitappStore();
 const objName = ref('me20240000924');
-// const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+const processNumber = ref(permitStore.$state.permitapp[0].formdt.processNumber);
+const muniProcessNumber = ref(permitStore.$state.permitapp[0].formdt?.muniProc || '');
 // const objName = processNumber.value.length !== 0 ? processNumber.value : 'filess';
 // const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${dir.value}`;
 

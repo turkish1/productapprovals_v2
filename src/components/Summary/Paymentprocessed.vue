@@ -39,7 +39,7 @@ const permitStore = usePermitappStore();
 const { accountUsers } = useGlobalState();
 const transactionId = ref('TX123456789');
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-
+const muniProcessNumber = ref(permitStore.$state.permitapp[0].formdt?.muniProc || '');
 // State for the form and payment
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
@@ -82,7 +82,7 @@ const dataStatus = ref(false);
 // console.log(procNumber.value);
 
 // Download composable
-const { getNumber } = useDownloadpdf(processNumber.value);
+const { getNumber } = useDownloadpdf(muniProcessNumber.value);
 const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
 
@@ -105,7 +105,7 @@ const handleTime = tryOnMounted(() => {
     setTimeout(() => {
         timedOut.value = true;
     }, 1000);
-    console.log(processNumber.value);
+    console.log(muniProcessNumber.value);
     console.log(pdfstore.downloadinput[0]?.downloadData?.message);
 });
 
@@ -151,7 +151,7 @@ const downloadFile = async () => {
     isdataValid.value = true;
 
     const fileUrl = dlData;
-    const fileName = 'processnumber.zip';
+    const fileName = 'muniProcessNumber.zip';
 
     // Create an anchor & trigger download
     const link = document.createElement('a');
