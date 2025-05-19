@@ -38,7 +38,9 @@ import { ref } from 'vue';
 
 const permitStore = usePermitappStore();
 
-const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
+
 // const imageFolder = ref('Imagefiles');
 const images = ref([]); // Stores the image URLs
 const dragging = ref(false); // Tracks if the user is dragging something over the drop zone
@@ -93,7 +95,7 @@ const uploadfiles = async () => {
 
         // }
         // Build the object key using the file's name (or any naming logic you like)
-        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileItem.name}`;
+        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileItem.name}`;
 
         // If the File is already a PDF, you can just pass it directly in the body
         // and set the Content-Type header appropriately.

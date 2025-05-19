@@ -38,7 +38,7 @@ import { ref } from 'vue';
 // const dir = ref('');
 const permitStore = usePermitappStore();
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-const muniProcessNumber = ref(permitStore.$state.permitapp[0].formdt?.muniProc || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 // Reactive reference for dropped files
 const files = ref([]);
 const $primevue = usePrimeVue();
