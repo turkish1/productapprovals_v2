@@ -98,11 +98,7 @@ const router = createRouter({
                     name: 'summary',
                     component: () => import('@/components/Summary/Summarys.vue')
                 },
-                {
-                    path: '/paymentgateway',
-                    name: 'payment',
-                    component: () => import('@/components/Summary/StripePaymentApi.vue')
-                },
+
                 {
                     path: '/form',
                     name: 'form',
@@ -184,11 +180,7 @@ const router = createRouter({
             component: () => import('@/views/pages/NotFound.vue')
         },
 
-        // {
-        //     path: '/auth/login',
-        //     name: 'login',
-        //     component: () => import('@/views/pages/auth/Login.vue')
-        // },
+      
         {
             path: '/auth/access',
             name: 'accessDenied',

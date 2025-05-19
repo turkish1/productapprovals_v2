@@ -8,7 +8,7 @@
 
             <div class="payment-widget">
                 <h2 style="color: black">Credit Card Payment</h2>
-                <BuyButton />
+                <BuyButton @click="handleSubmit"/>
 
                     <!-- <div class="form-group">
                         <label for="cardholder-name">Cardholder Name</label>
@@ -74,7 +74,7 @@ const submitted = ref(false);
 const amount = 49.99;
 const checkoutRef = ref(null);
 
- 
+
 // const successURL = ref('/paymentprocessed');
 // const cancelURL = ref('/pages/notfound');
 // We want to create the zip file but not download id until we click submit
@@ -124,6 +124,7 @@ const handleTime = tryOnMounted(() => {
 
 // Submitting the payment form
 const handleSubmit = (event) => {
+    console.log(event)
     // $refs.checkoutRef.redirectToCheckout();
     // Quick validation
     if (!form.value.cardholderName || !form.value.cardNumber || !form.value.expiryDate || !form.value.cvv) {
@@ -134,32 +135,32 @@ const handleSubmit = (event) => {
     submitted.value = true;
     isloading.value = true;
 
-    setTimeout(() => {
-        // reset
-        form.value.cardholderName = '';
-        form.value.cardNumber = '';
-        form.value.expiryDate = '';
-        form.value.cvv = '';
+    // setTimeout(() => {
+    //     // reset
+    //     form.value.cardholderName = '';
+    //     form.value.cardNumber = '';
+    //     form.value.expiryDate = '';
+    //     form.value.cvv = '';
 
-        submitted.value = false;
-        isloading.value = false;
-    }, 2000);
+    //     submitted.value = false;
+    //     isloading.value = false;
+    // }, 2000);
 
     downloadFile();
 };
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 console.log(stripePromise);
-async function checkout() {
-    const stripe = await stripePromise;
-    console.log(stripe);
-    stripe.redirectToCheckout({
-        lineItems: [{ price: '10.00', quantity: 1 }],
-        mode: 'payment', // or 'subscription'
-        successUrl: window.location.origin + '/success',
-        cancelUrl: window.location.origin + '/canceled'
-    });
-    console.log(stripe);
-}
+// async function checkout() {
+//     const stripe = await stripePromise;
+//     console.log(stripe);
+//     stripe.redirectToCheckout({
+//         lineItems: [{ price: '10.00', quantity: 1 }],
+//         mode: 'payment', // or 'subscription'
+//         successUrl: window.location.origin + '/success',
+//         cancelUrl: window.location.origin + '/canceled'
+//     });
+//     console.log(stripe);
+// }
 watchOnce(handleTime, () => {});
 // Download file if available in store
 const downloadFile = async () => {

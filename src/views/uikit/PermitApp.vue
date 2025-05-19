@@ -2,10 +2,11 @@
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
+
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useToNumber } from '@vueuse/core';
-import { computed, onMounted, reactive, ref, toRefs } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { invoke } from '@vueuse/core';
@@ -61,19 +62,19 @@ export default {
             });
         });
         onMounted(() => {
-            if (accountUsers.value[0].name === '') {
-                // return router.push('/');
-            } else {
-                isDialog.value = true;
+            // if (accountUsers.value[0]. === '') {
+            //     // return router.push('/');
+            // } else {
+            isDialog.value = true;
+            console.log(accountUsers.value[0]);
+            name.value = accountUsers.value[0].name;
+            email.value = accountUsers.value[0].email;
+            // phone.value = accountUsers.value[0].bphone;
+            licenseStatus.value = accountUsers.value[0].secondary_status;
 
-                name.value = accountUsers.value[0].name;
-                email.value = accountUsers.value[0].email;
-
-                licenseStatus.value = accountUsers.value[0].secondary_status;
-
-                dba.value = accountUsers.value[0].dba;
-                // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
-            }
+            dba.value = accountUsers.value[0].dba;
+            // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
+            // }
         });
 
         const selectedApplication = computed(() => {
@@ -93,15 +94,15 @@ export default {
         // const loading = ref(false);
         onMounted(() => {
             isDialog.value = true;
-            phone.value = accountUsers.value[0].bphone;
         });
+        const phCheck = ref('');
 
         const load = async () => {
             try {
                 loading.value = true;
                 setTimeout(() => {
                     loading.value = false;
-                }, 2000);
+                }, 1000);
                 // // const ftAddress = ref('3350 SW 23 ST')
                 // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
                 muniProcessdata.value = muniProcess.value;
@@ -144,7 +145,9 @@ export default {
                 let addNumber = number.value + 1;
                 let createStr = String(addNumber);
                 formData.processNumber = prefix.value.concat(createStr);
-
+                if (accountUsers.value[0].bphone || accountUsers.value[0].cphone) {
+                    updateTick();
+                }
                 // console.log(formData.muniProcess);
                 procReceive(formData);
                 // if checkMB.value === 13 after number conversion disable shingle roof.
@@ -155,6 +158,18 @@ export default {
             } catch (error) {
                 alert(error);
             }
+        };
+
+        const updateTick = () => {
+            // isPaddySingle.value = true;
+            phCheck.value = accountUsers.value?.[0].bphone;
+            console.log(phCheck.value);
+
+            nextTick(() => {
+                if (accountUsers.value[0].bphone || accountUsers.value[0].cphone) {
+                    phone.value = phCheck.value;
+                }
+            });
         };
         const fetchData = async (url) => {
             loading.value = true;
@@ -256,7 +271,6 @@ export default {
                         <InputText id="license" v-model="licenseStatus" type="text" placeholder="status" />
                         <!-- <Message severity="error">Contractor Name Required</Message> -->
                     </div>
-                    <!-- grid grid-cols-2 gap-4    flex mt-3 space-y-2 flex-col gap-2-->
                     <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
                         <form class="md:w-3/4 grid grid-cols-2 gap-6" @submit="onSubmit">
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
@@ -289,7 +303,8 @@ export default {
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="phone" style="color: #122620">Cell Phone Number</label>
-                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
+                                <InputMask v-model="phone" mask="(999) 999-9999" />
+                                <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">

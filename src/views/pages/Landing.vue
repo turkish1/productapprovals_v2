@@ -2,14 +2,14 @@
     <div class="card flex flex-col items-center overflow-hidden">
         <div class="flex flex-col items-center gap-2">
             <span class="text-xl font-medium">Scroll Down</span>
-            <span class="animate-bounce h-8 w-8 bg-primary text-primary-contrast rounded-full inline-flex items-center justify-center">
+            <span class="animate-bounce h-8 w-8 bg-secondary text-secondary-contrast rounded-full inline-flex items-center justify-center">
                 <i class="pi pi-arrow-down" />
             </span>
         </div>
         <div class="h-[30rem]"></div>
         <div class="flex flex-wrap justify-center gap-8">
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-left" data-aos-duration="1000">
-                <div class="rounded-full bg-primary text-primary-contrast w-12 h-12 flex items-center justify-center">
+                <div class="rounded-full bg-secondary text-secondary-contrast w-12 h-12 flex items-center justify-center">
                     <i class="pi pi-user !text-2xl"></i>
                 </div>
                 <span class="text-2xl font-bold">Roofing</span>
@@ -17,16 +17,16 @@
             </div>
 
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-up" data-aos-duration="1000">
-                <div class="rounded-full bg-primary text-primary-contrast w-12 h-12 flex items-center justify-center">
-                    <i class="pi pi-users !text-2xl"></i>
+                <div class="rounded-full bg-secondary text-secondary-contrast w-12 h-12 flex items-center justify-center">
+                    <i class="pi pi-spin pi-cog !text-2xl"></i>
                 </div>
                 <span class="text-2xl font-bold">Windows and Doors </span>
                 <span class="text-muted-color text-center">Soon to come </span>
             </div>
 
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-right" data-aos-duration="1000">
-                <div class="rounded-full bg-primary text-primary-contrast w-12 h-12 flex items-center justify-center">
-                    <i class="pi pi-building !text-2xl"></i>
+                <div class="rounded-full bg-secondary text-secondary-contrast w-12 h-12 flex items-center justify-center">
+                    <i class="pi pi-align-justify !text-2xl"></i>
                 </div>
                 <span class="text-2xl font-bold">Private Providers</span>
                 <span class="text-muted-color text-center">Soon to come</span>
@@ -90,8 +90,11 @@
                 <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
                     <i class="pi pi-arrows-v !text-2xl"></i>
                 </div>
-                <span class="text-2xl font-bold"> <Button label="Login Page" severity="secondary" variant="text" :loading="loading" @click="load" /></span>
                 <span class="text-center">Click to Login</span>
+                <span class="text-2xl font-bold">
+                    <Button icon="pi pi-user" severity="info" variant="text" rounded aria-label="Login Page" :size="size" :loading="loading" @click="load" />
+                    <!-- <Button label="Login Page" severity="secondary" variant="text" :loading="loading" @click="load" />-->
+                </span>
             </div>
         </div>
     </div>
