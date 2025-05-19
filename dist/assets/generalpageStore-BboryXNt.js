@@ -1,1 +1,0 @@
-import{z as a}from"./index-CikC1r1a.js";const p=a("generalpdfinput",{state:()=>({generalpdfinput:[],id:0}),actions:{addgeneralpdfData(e){this.generalpdfinput.push({generalpdfData:e,completed:!1})}},getters:{generalpdfData:e=>e.generalpdfData}});export{p as u};
