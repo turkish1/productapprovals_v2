@@ -4,17 +4,12 @@ import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { tryOnMounted, useToNumber } from '@vueuse/core';
+import { useToNumber } from '@vueuse/core';
 import { computed, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
-// import { getAddress } from '@/composables/fetchTech/use-getaddress';
 import { invoke } from '@vueuse/core';
 import AOS from 'aos';
-
-// const { datas, loading, getaddress } = getAddress();
-
-// const a = ref(1);
 
 export default {
     setup() {
@@ -26,7 +21,6 @@ export default {
 
         const { procData, procReceive } = usecreateProcessnumber();
         const { accountUsers, getUser, addUser } = useGlobalState();
-        console.log(accountUsers._value[0]);
 
         // const selectedApplication = ref();
 
@@ -48,13 +42,13 @@ export default {
             contractor: '',
             permit: '',
             processNumber: '',
-            phone: '',
-            email: '',
-            muniProcess: '',
+            phNumber: '',
+            emails: '',
+            muniProc: '',
             date: new Date()
         });
         const cccValid = ref(true);
-        const contractor = ref('');
+        const name = ref('');
         const email = ref('');
         const phone = ref('');
         const licenseStatus = ref('');
@@ -66,17 +60,18 @@ export default {
                 once: true // Whether animation happens only once
             });
         });
-        tryOnMounted(() => {
-            if (accountUsers._value[0].name === '') {
-                return router.push('/');
+        onMounted(() => {
+            if (accountUsers.value[0].name === '') {
+                // return router.push('/');
             } else {
                 isDialog.value = true;
-                contractor.value = accountUsers._value[0].name;
-                email.value = accountUsers._value[0].email;
-                phone.value = accountUsers._value[0].phone;
-                licenseStatus.value = accountUsers._value[0].secondary_status;
 
-                dba.value = accountUsers._value[0].dba;
+                name.value = accountUsers.value[0].name;
+                email.value = accountUsers.value[0].email;
+
+                licenseStatus.value = accountUsers.value[0].secondary_status;
+
+                dba.value = accountUsers.value[0].dba;
                 // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
             }
         });
@@ -88,7 +83,7 @@ export default {
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
         // fix the phone error with if statement and validation
-        phone.value = accountUsers._value[0].phone;
+
         const permitapp = ref(null);
         const checkMB = ref('');
         const checkV = ref('');
@@ -98,6 +93,7 @@ export default {
         // const loading = ref(false);
         onMounted(() => {
             isDialog.value = true;
+            phone.value = accountUsers.value[0].bphone;
         });
 
         const load = async () => {
@@ -115,9 +111,10 @@ export default {
                 // getaddress(addr.value);
 
                 console.log(addr.value);
-                const base1URL = 'https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?' + `address=${encodeURIComponent(addr.value)}&to=200`;
+                const base1URL = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr.value}`;
+                // + `address=${encodeURIComponent(addr.value)}&to=200`;
                 // 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress';
-
+                console.log(base1URL);
                 // const city = 'FT. FORT LAUDERDALE'
                 // const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
                 // const baseBrowardURL = 'https://web.bcpa.net/BcpaClient/search.aspx/getParcelInformation'
@@ -129,9 +126,11 @@ export default {
                 // 3. Make the Fetch API request with CORS enabled
                 // const response = (await fetch(url)).json().then(addresses);
                 console.log(muniProcess.value);
-                formData.license = accountUsers._value[0].license;
-                formData.contractor = accountUsers._value[0].name;
-
+                formData.license = accountUsers.value[0].license;
+                formData.contractor = accountUsers.value[0].name;
+                formData.emails = accountUsers.value[0].email;
+                formData.muniProc = muniProcess.value;
+                formData.phNumber = accountUsers.value[0].bphone;
                 console.log(resNum.value);
                 // let strLength = String(lastNum.value.body);
                 let strLength = String(resNum.value);
@@ -217,7 +216,7 @@ export default {
             dba,
             invoke,
             phone,
-            contractor,
+            name,
             licenseStatus,
             muniProcess,
             addUser,
@@ -254,7 +253,7 @@ export default {
                     </div>
                     <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3" style="max-width: 200px; margin-left: 30px">
                         <label for="license" style="color: #122620">License Status</label>
-                        <InputText id="license" v-model="licenseStatus" type="text" placeholder="name" />
+                        <InputText id="license" v-model="licenseStatus" type="text" placeholder="status" />
                         <!-- <Message severity="error">Contractor Name Required</Message> -->
                     </div>
                     <!-- grid grid-cols-2 gap-4    flex mt-3 space-y-2 flex-col gap-2-->
@@ -279,12 +278,12 @@ export default {
 
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">
                                 <label for="dba" style="color: #122620">DBA </label>
-                                <InputText id="dba" v-model="dba" type="text" placeholder="name" />
+                                <InputText id="dba" v-model="dba" type="text" placeholder="dba" />
                                 <!-- <Message severity="error">Contractor Name Required</Message> -->
                             </div>
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4" style="margin-left: 55px">
-                                <label for="contractor" style="color: #122620">Contractor Name</label>
-                                <InputText id="contractor" v-model="contractor" type="text" placeholder="name" />
+                                <label for="name" style="color: #122620">Contractor Name</label>
+                                <InputText id="name" v-model="name" type="text" placeholder="name" />
                                 <!-- <Message severity="error">Contractor Name Required</Message> -->
                             </div>
 

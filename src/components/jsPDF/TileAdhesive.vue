@@ -114,7 +114,7 @@ const generatePDF = () => {
         const perimeter = ref(savedTileinput[0]?.savedValues?.perimeter || '');
         const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
         const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
-        const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProcess || '');
+        const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
         const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 
         const uploadUrl = ref('');

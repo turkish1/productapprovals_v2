@@ -29,7 +29,7 @@ const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 const dripStore = usedripedgeStore();
 const { dripedgeStore, dripinput } = storeToRefs(dripStore);
-const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProcess || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
 const dba = ref(getUser.value[0]?.dba || '');
 const burType = ref(burpdfStore.$state.burpdfinput);

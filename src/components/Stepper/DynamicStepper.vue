@@ -68,8 +68,8 @@ const Step3AdhesiveTile = defineAsyncComponent(() => import('@/components/Tile.v
 const Step4MechanicalTile = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
 // This is the test system that is not connect
-// const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
-const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/StripePaymentApi.vue'));
+const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
+// const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/StripePaymentApi.vue'));
 
 const Step7Permit = defineAsyncComponent(() => import('@/views/pages/auth/Login.vue'));
 
