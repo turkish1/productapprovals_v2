@@ -25,7 +25,8 @@ let accountUser = reactive({
     name: '',
     projects: [],
     secondary_status: '',
-    license: ''
+    license: '',
+    phone: ''
 });
 
 const { getUser } = useGlobalState();
@@ -35,9 +36,9 @@ const checkAuth = () => {
     localData.value.forEach((item, index) => {
         for (let i = 0; i < item.length; i++) {
             if (accessToken.value) {
-                // console.log(item[i].email);
+                console.log(item[i].bphone);
                 acctCompare.value.push(item[i]);
-
+                accountUser.phone = item[i].bphone;
                 callNavigate();
             }
         }
@@ -71,9 +72,9 @@ watchEffect(() => {
                 <div class="container w-full py-15 px-8 sm:px-2">
                     <!-- <Button label="Click to Register" severity="secondary" raised style="margin-left: 10px; margin-bottom: 20px" @click="register" /> -->
                     <div>
-                        <Button @click="signIn" @change="checkAuth" severity="constrast" raised @input="email">Sign in with Google</Button>
+                        <Button class="p-button hover:bg-blue text-black" @click="signIn" @change="checkAuth" severity="Info" raised @input="email">Sign in with Google</Button>
                         <Button v-if="accessToken" @click="signOut">Sign out</Button>
-                        <button id="googleBtn"></button>
+                        <!-- <button id="googleBtn"></button> -->
                     </div>
                 </div>
 
@@ -117,5 +118,11 @@ watchEffect(() => {
     transform: scale(1.1);
     margin-right: 1rem;
 }
+
+.p-button {
+    color: black;
+    background: transparent;
+    border: transparent;
+}
 </style>
- 
+<!-- @/composables/Authentication/useGoogleAuth.js -->
