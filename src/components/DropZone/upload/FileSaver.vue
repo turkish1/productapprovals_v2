@@ -38,7 +38,7 @@ import { ref } from 'vue';
 // const dir = ref('');
 const permitStore = usePermitappStore();
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 // Reactive reference for dropped files
 const files = ref([]);
 const $primevue = usePrimeVue();
@@ -99,7 +99,7 @@ const uploadfiles = async () => {
         console.log('Uploading file:', fileItem);
 
         // Build the object key using the file's name (or any naming logic you like)
-        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileItem.name}`;
+        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileItem.name}`;
 
         // If the File is already a PDF, you can just pass it directly in the body
         // and set the Content-Type header appropriately.

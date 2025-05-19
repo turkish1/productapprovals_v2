@@ -5,13 +5,12 @@
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
             <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="downloadFile" />
             <!-- <Stripes /> -->
-            <!-- <stripe-checkout ref="checkoutRef" mode="payment" :pk="publishableKey" :line-items="lineItems" :success-url="successURL" :cancel-url="cancelURL" @loading="(v) => (loading = v)" /> -->
 
             <div class="payment-widget">
                 <h2 style="color: black">Credit Card Payment</h2>
+                <BuyButton />
 
-                <form @submit.prevent="handleSubmit">
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="cardholder-name">Cardholder Name</label>
                         <input type="text" id="cardholder-name" v-model="form.cardholderName" placeholder="Boris Gomez" required />
                     </div>
@@ -33,7 +32,7 @@
                     </div>
 
                     <button type="submit">Pay</button>
-                </form>
+                </form> -->
 
                 <div v-if="submitted" class="confirmation">
                     <p>Thank you, {{ form.cardholderName }}! Your payment of ${{ amount }} was processed.</p>
@@ -48,21 +47,21 @@ import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
-// import { default as StripeCheckout, default as StripeElementCard } from '@vue-stripe/vue-stripe';
+ import BuyButton from '@/components/Summary/BuyButton.vue';
+import { loadStripe } from '@stripe/stripe-js';
 import { tryOnMounted, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
 const permitStore = usePermitappStore();
 
-// const processNumber = ref('me20240001022');
 
-const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-const muniProcessNumber = ref(permitStore.$state.permitapp[0].formdt?.muniProcess || '');
+console.log(permitStore.$state);
+// const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
 // State for the form and payment
-const token = ref(null);
-const elementRef = ref(null);
+
 
 // State for toggles
 const isdataValid = ref(false);
@@ -75,7 +74,7 @@ const submitted = ref(false);
 const amount = 49.99;
 const checkoutRef = ref(null);
 
-// const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+ 
 // const successURL = ref('/paymentprocessed');
 // const cancelURL = ref('/pages/notfound');
 // We want to create the zip file but not download id until we click submit
@@ -148,11 +147,22 @@ const handleSubmit = (event) => {
 
     downloadFile();
 };
-
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+console.log(stripePromise);
+async function checkout() {
+    const stripe = await stripePromise;
+    console.log(stripe);
+    stripe.redirectToCheckout({
+        lineItems: [{ price: '10.00', quantity: 1 }],
+        mode: 'payment', // or 'subscription'
+        successUrl: window.location.origin + '/success',
+        cancelUrl: window.location.origin + '/canceled'
+    });
+    console.log(stripe);
+}
 watchOnce(handleTime, () => {});
 // Download file if available in store
 const downloadFile = async () => {
-    console.log(pdfstore.downloadinput[0]?.downloadData?.download_url);
     const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
     console.log(arr);
     if (!arr || arr.length === 0) {
@@ -191,7 +201,7 @@ const downloadFile = async () => {
     /* the attachment addresses shiftting of the image */
     background-attachment: fixed;
     background-position: center;
-    width: 100%;
+    width: 110%;
     /* height: 150%; */
 }
 .payment-widget {
