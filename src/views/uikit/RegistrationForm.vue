@@ -86,7 +86,7 @@ export default {
             licenseStatus();
         }
 
-        const isFormValid = computed(() => formDatas.license_status.trim() !== '' && formDatas.license_status.trim() !== 'I' && formDatas.email.trim() !== '');
+        const isFormValid = computed(() => formDatas.bphone.trim() !== '' && formDatas.cphone.trim() !== '' && formDatas.license_status.trim() !== 'I' && formDatas.email.trim() !== '');
 
         // Set the textual status based on the license secondary status.
         function licenseStatus() {

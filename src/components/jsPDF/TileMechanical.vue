@@ -366,70 +366,70 @@ const generatePDF = () => {
         doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
 
         doc.line(dripSizeStartValue, current_y + factor, dripSizeStartValue + dripEdgeTextWidth, current_y + factor);
-        current_y = current_y + 10;
-        doc.setFontSize(10);
-        const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
-        const valueTextWidthApp = doc.getTextWidth(applicantText);
-        const applicantStartXValue = LeftStart;
-        doc.text(applicantText, applicantStartXValue, current_y);
-        const applicantValue = applicantStartXValue + valueTextWidthApp;
-        doc.text(`${applicant.value}`, applicantValue, current_y);
-        doc.line(applicantValue, current_y + factor, applicantValue + valueTextWidth0, current_y + factor);
-
-        currentX.value = applicantValue + valueTextWidth0;
-
-        const noaValueTextWidth = doc.getTextWidth(noaText);
-        const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        const noaStartXValue = currentX.value + noaValueTextWidth;
-        doc.text(noaText, currentX.value + 2, current_y);
-        doc.text(`${noa.value}`, noaStartXValue + 2, current_y);
-        doc.line(noaStartXValue, current_y + factor, noaStartXValue + valueTextWidth3, current_y + factor);
-        currentX.value = noaStartXValue + valueTextWidth3;
-
-        // if (currentX.value < max_width)
-
-        // currentX provides the update of the x coordinate
-        const fourthYCoordinate = current_y;
-
-        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
-        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        const materialStartXValue = currentX.value + 5;
-        doc.text(materialText, materialStartXValue, fourthYCoordinate);
-        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-        currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
-
-        console.log(currentX.value, topRightx);
-        if (currentX.value > topRightx) current_y = current_y + 10;
-        doc.text(`${material.value}`, materialValue, fourthYCoordinate);
-        doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
-
         // current_y = current_y + 10;
-        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-        const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
-        currentX.value = materialValue + valueTextWidthDesc;
-        current_y = current_y + 10;
-        const descStartXValue = LeftStart;
-        doc.text(descriptionText, descStartXValue, current_y);
-        console.log(currentX.value);
-        // if (currentX.value > max_width) current_y = current_y + 10;
-        // this is the text we want to underline
-        const descriptionValue = descStartXValue + valueTextWidthDesc;
-        doc.text(`${description.value}`, descriptionValue, current_y);
-        doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidthDescription, current_y + factor);
-        currentX.value = descriptionValue + valueTextWidthDescription;
+        // doc.setFontSize(10);
+        // const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
+        // const valueTextWidthApp = doc.getTextWidth(applicantText);
+        // const applicantStartXValue = LeftStart;
+        // doc.text(applicantText, applicantStartXValue, current_y);
+        // const applicantValue = applicantStartXValue + valueTextWidthApp;
+        // doc.text(`${applicant.value}`, applicantValue, current_y);
+        // doc.line(applicantValue, current_y + factor, applicantValue + valueTextWidth0, current_y + factor);
 
-        const valueTextWidthFastener = doc.getTextWidth(fastenerText);
-        const valueWidthFastener = doc.getTextWidth(`${tileFastener.value}`);
-        currentX.value = currentX.value + 5;
-        // if (currentX.value > max_width) current_y = current_y + 10;
-        // this is the text we want to underline
-        const FastenerStartXValue = currentX.value;
-        doc.text(fastenerText, FastenerStartXValue, current_y);
-        console.log(currentX.value);
-        const fastenerValue = FastenerStartXValue + valueTextWidthFastener;
-        doc.text(`${tileFastener.value}`, fastenerValue, current_y);
-        doc.line(fastenerValue, current_y + factor, fastenerValue + valueWidthFastener, current_y + factor);
-        currentX.value = fastenerValue + valueWidthFastener;
+        // currentX.value = applicantValue + valueTextWidth0;
+
+        // const noaValueTextWidth = doc.getTextWidth(noaText);
+        // const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
+        // const noaStartXValue = currentX.value + noaValueTextWidth;
+        // doc.text(noaText, currentX.value + 2, current_y);
+        // doc.text(`${noa.value}`, noaStartXValue + 2, current_y);
+        // doc.line(noaStartXValue, current_y + factor, noaStartXValue + valueTextWidth3, current_y + factor);
+        // currentX.value = noaStartXValue + valueTextWidth3;
+
+        // // if (currentX.value < max_width)
+
+        // // currentX provides the update of the x coordinate
+        // const fourthYCoordinate = current_y;
+
+        // const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
+        // const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        // const materialStartXValue = currentX.value + 5;
+        // doc.text(materialText, materialStartXValue, fourthYCoordinate);
+        // const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
+        // currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
+
+        // console.log(currentX.value, topRightx);
+        // if (currentX.value > topRightx) current_y = current_y + 10;
+        // doc.text(`${material.value}`, materialValue, fourthYCoordinate);
+        // doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
+
+        // // current_y = current_y + 10;
+        // const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        // const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
+        // currentX.value = materialValue + valueTextWidthDesc;
+        // current_y = current_y + 10;
+        // const descStartXValue = LeftStart;
+        // doc.text(descriptionText, descStartXValue, current_y);
+        // console.log(currentX.value);
+        // // if (currentX.value > max_width) current_y = current_y + 10;
+        // // this is the text we want to underline
+        // const descriptionValue = descStartXValue + valueTextWidthDesc;
+        // doc.text(`${description.value}`, descriptionValue, current_y);
+        // doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidthDescription, current_y + factor);
+        // currentX.value = descriptionValue + valueTextWidthDescription;
+
+        // const valueTextWidthFastener = doc.getTextWidth(fastenerText);
+        // const valueWidthFastener = doc.getTextWidth(`${tileFastener.value}`);
+        // currentX.value = currentX.value + 5;
+        // // if (currentX.value > max_width) current_y = current_y + 10;
+        // // this is the text we want to underline
+        // const FastenerStartXValue = currentX.value;
+        // doc.text(fastenerText, FastenerStartXValue, current_y);
+        // console.log(currentX.value);
+        // const fastenerValue = FastenerStartXValue + valueTextWidthFastener;
+        // doc.text(`${tileFastener.value}`, fastenerValue, current_y);
+        // doc.line(fastenerValue, current_y + factor, fastenerValue + valueWidthFastener, current_y + factor);
+        // currentX.value = fastenerValue + valueWidthFastener;
         current_y = current_y + 10;
 
         // if (etileStore.$state.tilesysEinput.length === 0) {
@@ -705,11 +705,70 @@ const generatePDF = () => {
             console.log(currentX.value);
         }
         current_y = current_y + 10;
-        // Data for each row
-        // const myFontBase64 = 'AAEAAA...';
-        // doc.addFileToVFS('./GreekSymbol.ttf', myFontBase64);
-        // doc.addFont('GreekSymbol.ttf', 'GreekSymbol', 'normal');
-        // doc.setFont('times', 'normal');
+
+        doc.setFontSize(10);
+        const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
+        const valueTextWidthApp = doc.getTextWidth(applicantText);
+        const applicantStartXValue = LeftStart;
+        doc.text(applicantText, applicantStartXValue, current_y);
+        const applicantValue = applicantStartXValue + valueTextWidthApp;
+        doc.text(`${applicant.value}`, applicantValue, current_y);
+        doc.line(applicantValue, current_y + factor, applicantValue + valueTextWidth0, current_y + factor);
+
+        currentX.value = applicantValue + valueTextWidth0;
+
+        const noaValueTextWidth = doc.getTextWidth(noaText);
+        const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
+        const noaStartXValue = currentX.value + noaValueTextWidth;
+        doc.text(noaText, currentX.value + 2, current_y);
+        doc.text(`${noa.value}`, noaStartXValue + 2, current_y);
+        doc.line(noaStartXValue, current_y + factor, noaStartXValue + valueTextWidth3, current_y + factor);
+        currentX.value = noaStartXValue + valueTextWidth3;
+
+        // if (currentX.value < max_width)
+
+        // currentX provides the update of the x coordinate
+        const fourthYCoordinate = current_y;
+
+        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
+        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        const materialStartXValue = currentX.value + 5;
+        doc.text(materialText, materialStartXValue, fourthYCoordinate);
+        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
+        currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
+
+        console.log(currentX.value, topRightx);
+        if (currentX.value > topRightx) current_y = current_y + 10;
+        doc.text(`${material.value}`, materialValue, fourthYCoordinate);
+        doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
+
+        // current_y = current_y + 10;
+        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
+        currentX.value = materialValue + valueTextWidthDesc;
+        current_y = current_y + 10;
+        const descStartXValue = LeftStart;
+        doc.text(descriptionText, descStartXValue, current_y);
+        console.log(currentX.value);
+        // if (currentX.value > max_width) current_y = current_y + 10;
+        // this is the text we want to underline
+        const descriptionValue = descStartXValue + valueTextWidthDesc;
+        doc.text(`${description.value}`, descriptionValue, current_y);
+        doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidthDescription, current_y + factor);
+        currentX.value = descriptionValue + valueTextWidthDescription;
+
+        const valueTextWidthFastener = doc.getTextWidth(fastenerText);
+        const valueWidthFastener = doc.getTextWidth(`${tileFastener.value}`);
+        currentX.value = currentX.value + 5;
+        // if (currentX.value > max_width) current_y = current_y + 10;
+        // this is the text we want to underline
+        const FastenerStartXValue = currentX.value;
+        doc.text(fastenerText, FastenerStartXValue, current_y);
+        console.log(currentX.value);
+        const fastenerValue = FastenerStartXValue + valueTextWidthFastener;
+        doc.text(`${tileFastener.value}`, fastenerValue, current_y);
+        doc.line(fastenerValue, current_y + factor, fastenerValue + valueWidthFastener, current_y + factor);
+        currentX.value = fastenerValue + valueWidthFastener;
 
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
