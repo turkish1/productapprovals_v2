@@ -6,7 +6,7 @@ import { tryOnUnmounted } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, reactive, ref, toRefs } from 'vue';
+import { computed, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -18,7 +18,7 @@ export default {
 
         const router = useRouter();
         const disabled = ref(false);
-
+        const isGmailValid = ref(false);
         // Define form data. Note: removed duplicate "password" and added "city".
         const formDatas = reactive({
             license: '',
@@ -26,7 +26,7 @@ export default {
             name: '',
             username: '',
             password: '',
-            secondary_status: '',
+            license_status: '',
             expiration_date: '',
             address: '',
             city: '',
@@ -40,13 +40,11 @@ export default {
         });
 
         // Get the contractors from the registration Axios composable.
-        const { contractors } = useRegAxios();
+        const { cccAccounts, retrieveAccount, foundContrator } = useRegAxios();
         const dataLic = ref('');
 
         onMounted(() => {
             // Assuming contractors is a ref, assign its value to events.
-            events.value = contractors.value;
-            console.log('Contractors:', events.value);
         });
 
         const license_stat = ref('');
@@ -54,11 +52,12 @@ export default {
 
         // onSubmit calls your account creation function, resets fields, then navigates.
         const onSubmit = async () => {
+            if (!isFormValid.value) return; // safety net
             takp(formDatas);
             // Reset fields
             formDatas.license = '';
             formDatas.name = '';
-            formDatas.secondary_status = '';
+            formDatas.license_status = '';
             formDatas.dba = '';
             formDatas.username = '';
             formDatas.password = '';
@@ -70,35 +69,33 @@ export default {
             formDatas.carrier = '';
             navigateNext();
         };
+        function retriveContractor() {
+            retrieveAccount(formDatas.license);
 
-        // Check the license entered against the contractor list.
-        function checkLicense() {
-            // Convert the entered license to uppercase.
-            dataLic.value = formDatas.license.toUpperCase();
-            if (Array.isArray(events.value)) {
-                events.value.forEach((item) => {
-                    if (dataLic.value === item.alt_license) {
-                        formDatas.dba = item.DBA;
-                        formDatas.name = item.name;
-                        formDatas.expiration_date = item.expiration_date;
-                        formDatas.address = item.address1;
-                        formDatas.city = item.city;
-                        license_stat.value = item.secondary_status;
-                        console.log('DBA:', item.DBA, 'formDatas.dba:', formDatas.dba);
-                    }
-                });
-            }
+            events.value = cccAccounts;
+            console.log('Contractors:', events.value);
+            formDatas.dba = events.value.dba;
+            formDatas.name = events.value.name;
+            formDatas.expiration_date = events.value.expiration_date;
+            formDatas.address = events.value.address;
+            formDatas.city = events.value.city;
+            formDatas.expiration_date = events.value.expiration_date;
+            formDatas.license_status = events.value.license_status;
+            license_stat.value = events.value.license_status;
+            console.log(formDatas, license_stat.value);
             licenseStatus();
         }
+
+        const isFormValid = computed(() => formDatas.license_status.trim() !== '' && formDatas.license_status.trim() !== 'I' && formDatas.email.trim() !== '');
 
         // Set the textual status based on the license secondary status.
         function licenseStatus() {
             if (license_stat.value === '') {
-                formDatas.secondary_status = '';
+                formDatas.license_status = '';
             } else if (license_stat.value === 'A') {
-                formDatas.secondary_status = 'Active';
+                formDatas.license_status = 'Active';
             } else if (license_stat.value === 'I') {
-                formDatas.secondary_status = 'Inactive';
+                formDatas.license_status = 'Inactive';
             }
         }
 
@@ -196,12 +193,13 @@ export default {
             navigateNext,
             authStore,
             message,
-            checkLicense,
+            isFormValid,
             trade,
             trades,
             onSubmit,
             onUpload,
             upload,
+            retriveContractor,
             dropdownItemCt,
             dropdownItemSt,
             dropdownItemct: dropdownItemctSelected,
@@ -219,8 +217,8 @@ export default {
             <div class="font-semibold text-xl">Contractor Information</div>
             <div class="flex flex-col gap-4">
                 <label for="lic1" style="color: #122620">State of Florida License No.</label>
-
-                <InputText type="text" v-model="formDatas.license" placeholder="CRC000000" :invalid="formDatas.license === ''" @input="checkLicense" />
+                <!-- :invalid="formDatas.license === ''" -->
+                <InputText v-tooltip="'Enter your license and hit tab'" type="text" v-model="formDatas.license" placeholder="CRC000000" @change="checkLicense" :invalid="formDatas.license === ''" @keydown.tab="retriveContractor" />
             </div>
             <div class="flex flex-wrap gap-2">
                 <label for="trade" style="color: #122620">Trade</label>
@@ -237,7 +235,7 @@ export default {
 
             <div class="flex flex-col gap-2">
                 <label for="secondary_status" style="color: #122620">License Status</label>
-                <InputText id="secondary_status" type="text" v-model="formDatas.secondary_status" placeholder=" " :invalid="formDatas.secondary_status === ''" />
+                <InputText id="secondary_status" type="text" v-model="formDatas.license_status" placeholder=" " :invalid="formDatas.license_status === ''" />
             </div>
             <div class="flex flex-col gap-2">
                 <label for="license" style="color: #122620">License Expiration Date</label>
@@ -245,11 +243,11 @@ export default {
             </div>
             <div class="flex flex-col gap-2">
                 <label for="license" style="color: #122620">Insurance Policy Number</label>
-                <InputText id="license" type="text" v-model="formDatas.insurance" placeholder=" " :invalid="formDatas.expiration_date === ''" />
+                <InputText id="license" type="text" v-model="formDatas.insurance" placeholder=" " :invalid="formDatas.insurance === ''" />
             </div>
             <div class="flex flex-col gap-2">
                 <label for="license" style="color: #122620">Insurance Carrier</label>
-                <InputText id="license" type="text" v-model="formDatas.carrier" placeholder=" " :invalid="formDatas.expiration_date === ''" />
+                <InputText id="license" type="text" v-model="formDatas.carrier" placeholder=" " :invalid="formDatas.carrier === ''" />
             </div>
             <div class="flex flex-col gap-2">
                 <label for="username" style="color: #122620">User Name</label>
@@ -257,7 +255,7 @@ export default {
             </div>
             <div class="flex flex-col gap-2">
                 <label for="fname" style="color: #122620">Password</label>
-                <Password v-model="formDatas.password">
+                <Password v-model="formDatas.password" :invalid="formDatas.pasword === ''">
                     <template #header>
                         <div class="font-semibold text-xm mb-4">Pick a password</div>
                     </template>
@@ -275,7 +273,7 @@ export default {
         </div>
         <div class="h-[10rem]"></div>
         <!-- <div class="font-semibold text-xl" style="margin-left: 50px">Contact Info</div> -->
-        <div class="grid h-56 grid-cols-3 content-around gap-8 ..." style="margin-left: 250px; margin-right: 40px">
+        <div class="grid h-64 grid-cols-3 content-around gap-12 ..." style="margin-left: 250px; margin-right: 40px">
             <!-- class="flex flex-col grow basis-0 gap-3" -->
             <div class="flex flex-col gap-4">
                 <label for="addr" style="color: #122620">Business Address</label>
@@ -304,12 +302,12 @@ export default {
             </div>
             <div class="flex flex-col gap-4">
                 <label for="email1" style="color: #122620">Gmail account</label>
-                <InputText id="email1" v-model="formDatas.email" type="text" placeholder="email" :invalid="formDatas.email === ''" />
+                <InputText v-tooltip="'Enter your gmail account in order to submit'" id="email1" v-model="formDatas.email" type="text" placeholder="email" :invalid="formDatas.email === ''" />
             </div>
         </div>
 
         <div class="md:w-1/4 flex justify-center flex-wrap gap-4" style="margin-left: 50px">
-            <Button label="Submit" severity="contrast" raised @click="onSubmit" :disabled="disabled" />
+            <Button label="Submit" severity="contrast" raised @click="onSubmit" :disabled="!isFormValid" />
             <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
         </div>
 
@@ -325,16 +323,6 @@ export default {
 </template>
 <style scoped>
 .container {
-    /* padding-bottom: 30px;
-    padding-top: 12px;
-    border: none;
-    background-size: cover;
-    border-radius: 12px;
-    box-shadow: 4px 4px 16px rgb(22, 183, 183);
-    position: center;
-    min-height: 1000px;
-    min-width: 400px;
-    top: 10vh; */
     padding-bottom: 10px;
     /* padding-top: 12px; */
     border: none;

@@ -15,29 +15,46 @@ export default function useRegAxios() {
         license: '',
         dba: '',
         name: '',
+        city: '',
         license_status: '',
         expiration_date: '',
-        address: '',
-        phone: '',
-        email: ''
+        address: ''
     });
-
-    const cccstore = usecccStore();
-
-    const result = execute().then((result) => {
+    const result = execute().then((res) => {
         contractors.value = data.value;
-
-        cccAccounts = contractors.value;
 
         // area.value = '';
         // type.value = '';
 
         return results;
     });
-    // function retrieveAccount(cccNum) {
-    //     cccNum;
-    //     cccInput.value = cccNum;
+    function retrieveAccount(cccNum) {
+        console.log(cccNum);
+        cccInput.value = cccNum;
+        fndContract(cccInput.value);
+    }
 
-    // }
-    return { error, responseMessage, contractors, licenseNumbers, cccAccounts };
+    const cValue = ref('');
+    const foundContractor = ref([]);
+    function fndContract(val) {
+        console.log(val);
+        cValue.value = val;
+        for (let i = 0; i < contractors.value.length - 1; i++) {
+            if (cValue.value === contractors.value[i].alt_license) {
+                foundContractor.value.push(contractors.value[i]);
+            }
+        }
+        (cccAccounts.license = foundContractor.value[0].alt_license),
+            (cccAccounts.dba = foundContractor.value[0].DBA),
+            (cccAccounts.name = foundContractor.value[0].name),
+            (cccAccounts.license_status = foundContractor.value[0].secondary_status),
+            (cccAccounts.city = foundContractor.value[0].city),
+            (cccAccounts.expiration_date = foundContractor.value[0].expiration_date),
+            (cccAccounts.effective_date = foundContractor.value[0].effective_date),
+            (cccAccounts.address = foundContractor.value[0].address1);
+    }
+
+    const cccstore = usecccStore();
+
+    return { error, retrieveAccount, responseMessage, results, fndContract, contractors, licenseNumbers, cccAccounts };
 }
