@@ -57,7 +57,6 @@ export function useGoogleAuth() {
             for (const [key, value] of Object.entries(Data)) {
                 localData.value.push(value);
             }
-            console.log(localData.value);
         });
     }
     // { credential }
@@ -78,9 +77,8 @@ export function useGoogleAuth() {
 
     async function checkEmail(userEmail) {
         const uEmail = await userEmail.value;
-        console.log(uEmail, userEmail.value);
+
         for (let i = 0; i <= localData.value[0].length; i++) {
-            console.log(localData.value[0][i].email, userEmail.value);
             if (localData.value[0][i].email === uEmail) {
                 acctUser.email = await localData.value[0][i].email;
                 acctUser.name = await localData.value[0][i].name;
@@ -94,7 +92,7 @@ export function useGoogleAuth() {
                 acctUser.secondary_status = localData.value[0][i].secondary_status;
                 acctUser.email = localData.value[0][i].email;
                 acctUser.license = localData.value[0][i].license;
-                console.log(acctUser);
+
                 addUser(acctUser);
             }
         }
