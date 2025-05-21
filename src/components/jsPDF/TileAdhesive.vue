@@ -316,7 +316,7 @@ const generatePDF = () => {
         doc.text(`${prescriptive.value}`, prescriptiveValue, current_y);
         doc.line(prescriptiveValue, current_y + factor, prescriptiveValue + persValueTextWidth, current_y + factor);
         current_y = current_y + 10;
-        console.log(tileInputvalues);
+
         // const noa = ref(Inputvalue.value.noa);
         // const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
         // const material = ref(savedTileinput[0]?.savedValues?.material);
@@ -617,8 +617,8 @@ const generatePDF = () => {
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             if (currentX.value >= max_width) current_y = current_y + 10;
             console.log(currentX.value);
-            current_y = current_y + 10;
         }
+        current_y = current_y + 10;
         const noa = ref(Inputvalue.value.noa);
         const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
         const material = ref(savedTileinput[0]?.savedValues?.material);

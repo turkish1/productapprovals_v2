@@ -30,12 +30,23 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
+// import { useStepperSessions } from '@/composables/ManageSessions/useStepperSessions'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
+
+// const {
+//   sessions,
+//   active,
+//   addStep,
+//   next,
+//   prev,
+//   markComplete
+// } = useStepperSessions()
 // Composables / Stores
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
 const { roofList } = storeToRefs(store);
-
+const sessions = ref([]); // [{ session_id, label, completed }]
+const active = ref(0);
 // Reactive State
 const isLoading = ref(false);
 
@@ -70,9 +81,6 @@ const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Pay
 
 const Step7Permit = defineAsyncComponent(() => import('@/views/pages/auth/Login.vue'));
 
-// const Step3ADTilePDF = defineAsyncComponent(() => import('@/components/jsPDF/TileAdhesive.vue'));
-// const Step4TMechilePDF = defineAsyncComponent(() => import('@/components/jsPDF/TileMechanical.vue'));
-// Array of step definitions (we'll fill label and component conditionally)
 const steps = ref([
     { label: '', component: null }, // Shingles
     { label: '', component: null }, // Low Slope
@@ -87,10 +95,8 @@ const steps = ref([
 const availableComponents = [
     Step1Shingle, // Shingles
     Step2LowSlope, // Low Slope
-    Step3AdhesiveTile,
-    // Step3ADTilePDF,// Adhesive Tile
-    Step4MechanicalTile,
-    // Step4TMechilePDF,
+    Step3AdhesiveTile, // Adhesive Tile
+    Step4MechanicalTile, // Step4TMechilePDF,
     Step5Summary,
     Step6Payment,
     Step7Permit
@@ -99,6 +105,21 @@ const availableComponents = [
 // const availableComponentsPDF = [Step3ADTilePDF, Step4TMechilePDF];
 const stepLabels = ['Shingles', 'Low Slope', 'Adhesive Tile', 'Mechanical Tile', 'Summary', 'Payment Page'];
 
+function newSessionId() {
+    return crypto.randomUUID(); // widely supported; drop‑in for uuid libs
+}
+
+/* ---------- optional persistence ---------- */
+if (typeof window !== 'undefined') {
+    const key = 'stepper-sessions';
+
+    // restore on reload
+    const cached = sessionStorage.getItem(key);
+    if (cached) sessions.value = JSON.parse(cached);
+
+    // save every change
+    watch(sessions, (v) => sessionStorage.setItem(key, JSON.stringify(v)), { deep: true });
+}
 // Check if we have a valid Miami Beach scenario
 tryOnMounted(() => {
     if (convertMB.value && convertMB.value === mbVal.value) {
@@ -109,6 +130,9 @@ tryOnMounted(() => {
     }
 });
 
+function markComplete(index = active.value) {
+    sessions.value[index].completed = true;
+}
 // Gather booleans from roofList
 function checkState() {
     // Evaluate each roof item & set booleans
@@ -141,6 +165,11 @@ function checkState() {
             steps.value[i].component = availableComponents[i];
             console.log(i, val);
             console.log(steps.value[i].component);
+            sessions.value.push({
+                session_id: newSessionId(),
+                label: label || `Step ${sessions.value.length + 1}`,
+                completed: false
+            });
         } else {
             steps.value[i].label = '';
             steps.value[i].component = null;

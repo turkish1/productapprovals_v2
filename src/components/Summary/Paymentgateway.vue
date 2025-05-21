@@ -53,6 +53,11 @@ import { tryOnMounted, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
+// const stripe = require('stripe')(STRIPE_SECRET_KEY)
+
+// const event = await stripe.event.retrive('')
+// console.log(event)
+
 const permitStore = usePermitappStore();
 
 console.log(permitStore.$state);
