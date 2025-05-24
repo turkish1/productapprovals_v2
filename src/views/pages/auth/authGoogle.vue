@@ -67,17 +67,15 @@ watchEffect(() => {
 <template>
     <div class="relative w-full h-screen overflow-hidden">
         <div class="relative z-10 flex items-center justify-center h-full bg-black/50">
-            <!-- <div id="content" class="flex items-center justify-center min-h-screen min-w-full overflow-hidden"> -->
             <div style="border-radius: 20px; padding: 0.5rem">
                 <div class="container w-full py-15 px-8 sm:px-2">
-                    <!-- <Button label="Click to Register" severity="secondary" raised style="margin-left: 10px; margin-bottom: 20px" @click="register" /> -->
                     <div>
-                        <Button class="p-button hover:bg-blue text-black" @click="signIn" @change="checkAuth" severity="Info" raised @input="email">Sign in with Google</Button>
+                        <Button id="googleSignin" class="p-button hover:bg-grey text-black" @click="signIn" @change="checkAuth" severity="Contrast" raised @input="email">Sign in with Google</Button>
                         <Button v-if="accessToken" @click="signOut">Sign out</Button>
                         <!-- <button id="googleBtn"></button> -->
                     </div>
                 </div>
-
+                <!-- remove the idPayload later -->
                 <pre v-if="idPayload">{{ idPayload }}</pre>
             </div>
         </div>
@@ -125,4 +123,3 @@ watchEffect(() => {
     border: transparent;
 }
 </style>
-<!-- @/composables/Authentication/useGoogleAuth.js -->

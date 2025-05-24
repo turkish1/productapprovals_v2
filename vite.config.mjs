@@ -29,6 +29,9 @@ export default defineConfig({
         //     open: true // Open the report after the build
         // })
     ],
+    compilerOptions: {
+        isCustomElement: (tag) => tag === 'stripe-buy-button'
+    },
     // build: {
     //     rollupOptions: {
     //         output: {

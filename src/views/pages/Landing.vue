@@ -70,11 +70,11 @@
                 <span class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
             </div>
         </div>
-        <div class="h-[30rem]"></div>
+        <div class="h-[20rem]"></div>
         <div class="flex flex-wrap justify-center gap-8">
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="flip-right" data-aos-duration="1000">
                 <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
-                    <i class="pi pi-wifi !text-2xl"></i>
+                    <i class="pi pi-question-circle !text-2xl"></i>
                 </div>
                 <span class="text-2xl font-bold">Support </span>
                 <span class="text-center">Click here for support </span>
@@ -88,12 +88,11 @@
             </div>
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="flip-left" data-aos-duration="1000">
                 <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
-                    <i class="pi pi-arrows-v !text-2xl"></i>
+                    <i class="pi pi-sign-in !text-2xl"></i>
                 </div>
                 <span class="text-center">Click to Login</span>
                 <span class="text-2xl font-bold">
-                    <Button icon="pi pi-user" severity="info" variant="text" rounded aria-label="Login Page" :size="size" :loading="loading" @click="load" />
-                    <!-- <Button label="Login Page" severity="secondary" variant="text" :loading="loading" @click="load" />-->
+                    <Button id="signin" icon="pi pi-user" severity="contrast" variant="text" rounded aria-label="Login Page" :size="size" :loading="loading" @click="load" />
                 </span>
             </div>
         </div>
@@ -104,7 +103,7 @@
 import AOS from 'aos';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-// import { login } from '@/views/pages/auth/Login.vue'
+
 const router = useRouter();
 defineProps({
     heading: { type: String, required: true },

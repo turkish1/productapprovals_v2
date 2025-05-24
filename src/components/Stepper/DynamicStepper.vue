@@ -2,9 +2,9 @@
     <div class="card">
         <div class="stepper">
             <!-- Iterate over filtered steps to build the stepper UI -->
-            <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }" @click="goToStep(index)">
+            <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }">
                 <div class="step">
-                    <span>{{ step.label }}</span>
+                    <span>{{ step.label }} </span>
                 </div>
                 <!-- Separator line (not after the last step) -->
                 <div v-if="index < filteredSteps.length - 1" class="line"></div>
@@ -16,11 +16,10 @@
             <component :is="activeComponent" />
         </div>
         <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
-        <!-- <Progressbar style="margin-top: 300px; margin-left: 50px" /> -->
-        <!-- Navigation Buttons -->
+
         <div class="stepper-controls">
-            <button @click="prevStep" :disabled="isFirstStep">Back</button>
-            <button @click="nextStep" :disabled="isLastStep">Next</button>
+            <button @click="prevStep" :disabled="isFirstStep" severity="contrast">Back</button>
+            <button @click="nextStep" :disabled="isLastStep" severity="contrast">Next</button>
         </div>
     </div>
 </template>
@@ -30,17 +29,8 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-// import { useStepperSessions } from '@/composables/ManageSessions/useStepperSessions'
 import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
 
-// const {
-//   sessions,
-//   active,
-//   addStep,
-//   next,
-//   prev,
-//   markComplete
-// } = useStepperSessions()
 // Composables / Stores
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
@@ -61,7 +51,7 @@ const isValidTilePDF = ref(false);
 const isValidMechanicalPDF = ref(false);
 const isValidSummary = ref(true);
 const isValidPayment = ref(true);
-
+const isValidDownload = ref(true);
 // Permitapp / miami beach logic
 const MB = ref(permitStore.$state.permitapp);
 const mbVal = ref(2);
@@ -76,10 +66,11 @@ const Step2LowSlope = defineAsyncComponent(() => import('@/components/LowSlope.v
 const Step3AdhesiveTile = defineAsyncComponent(() => import('@/components/Tile.vue'));
 const Step4MechanicalTile = defineAsyncComponent(() => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue'));
 const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Summarys.vue'));
+
 const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
 // const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/NewStripe.vue'));
 
-const Step7Permit = defineAsyncComponent(() => import('@/views/pages/auth/Login.vue'));
+const Step7Download = defineAsyncComponent(() => import('@/components/Summary/Payment.vue'));
 
 const steps = ref([
     { label: '', component: null }, // Shingles
@@ -99,11 +90,11 @@ const availableComponents = [
     Step4MechanicalTile, // Step4TMechilePDF,
     Step5Summary,
     Step6Payment,
-    Step7Permit
+    Step7Download
 ];
 
 // const availableComponentsPDF = [Step3ADTilePDF, Step4TMechilePDF];
-const stepLabels = ['Shingles', 'Low Slope', 'Adhesive Tile', 'Mechanical Tile', 'Summary', 'Payment Page'];
+const stepLabels = ['Shingles', 'Low Slope', 'Adhesive Tile', 'Mechanical Tile', 'Summary', 'PaymentPage', 'Download'];
 
 function newSessionId() {
     return crypto.randomUUID(); // widely supported; drop‑in for uuid libs
@@ -132,7 +123,10 @@ tryOnMounted(() => {
 
 function markComplete(index = active.value) {
     sessions.value[index].completed = true;
+    console.log(active.value);
 }
+
+const numberLabels = ref([]);
 // Gather booleans from roofList
 function checkState() {
     // Evaluate each roof item & set booleans
@@ -157,24 +151,21 @@ function checkState() {
 
     // Map booleans to our steps array in one pass
     // The order of these booleans must match the steps definition
-    const bools = [isValidShingle.value, isValidBur.value, isValidTile.value, isValidMechanical.value, isValidSummary.value, isValidPayment.value];
+    const bools = [isValidShingle.value, isValidBur.value, isValidTile.value, isValidMechanical.value, isValidSummary.value, isValidPayment.value, isValidDownload.value];
 
     bools.forEach((val, i) => {
         if (val) {
             steps.value[i].label = stepLabels[i];
             steps.value[i].component = availableComponents[i];
             console.log(i, val);
-            console.log(steps.value[i].component);
-            sessions.value.push({
-                session_id: newSessionId(),
-                label: label || `Step ${sessions.value.length + 1}`,
-                completed: false
-            });
+
+            numberLabels.value.push(stepLabels[i]);
         } else {
             steps.value[i].label = '';
             steps.value[i].component = null;
         }
     });
+    console.log(numberLabels.value.length);
 }
 
 // Init checks on mount
@@ -192,14 +183,18 @@ const activeComponent = computed(() => filteredSteps.value[currentStepIndex.valu
 // Navigation
 function nextStep() {
     isLoading.value = true;
+
     setTimeout(() => {
         if (currentStepIndex.value < filteredSteps.value.length - 1) {
             currentStepIndex.value++;
+            console.log(isLastStep.value);
         }
         // else if last filteredSteps.value.length - 1 is equal show a
         //  button to go back to selection roofing page
         isLoading.value = false;
     }, 100);
+    // console.log(filteredSteps.value.length);
+    goToStep(currentStepIndex.value);
 }
 
 function prevStep() {
@@ -214,9 +209,19 @@ function prevStep() {
 
 function goToStep(index) {
     currentStepIndex.value = index;
-    console.log(currentStepIndex.value);
-}
 
+    sessions.value.push({
+        session_id: newSessionId(),
+        completed: false
+    });
+}
+onMounted(async () => {
+    const sessionId = new URLSearchParams(location.search).get('session_id');
+    if (!sessionId) return; // guard
+    console.log(sessionId);
+    // (A) quick client‑side confirmation message
+    // fetch(`/api/checkout-session/${sessionId}`) → your backend uses secret key
+});
 // Disable states
 const isFirstStep = computed(() => currentStepIndex.value === 0);
 const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value.length - 1);

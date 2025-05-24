@@ -20,7 +20,7 @@ const router = createRouter({
                 {
                     path: '/login',
                     name: 'login',
-                    component: () => import('@/views/pages/auth/authGoogle.vue')
+                    component: () => import('@/views/pages/auth/AuthGoogle.vue')
                 },
                 {
                     path: '/noc',
@@ -58,7 +58,7 @@ const router = createRouter({
                     component: () => import('@/components/Summary/DoralPermitApp.vue')
                 },
                 {
-                    path: '/payment',
+                    path: '/paymentprocess',
                     name: 'payment',
                     component: () => import('@/components/Summary/Paymentgateway.vue')
                 },
@@ -98,6 +98,7 @@ const router = createRouter({
                     name: 'summary',
                     component: () => import('@/components/Summary/Summarys.vue')
                 },
+
                 {
                     path: '/form',
                     name: 'form',
@@ -162,11 +163,15 @@ const router = createRouter({
         },
 
         {
-            path: '/paymentprocessed',
-            name: 'paymentprocessed',
-            component: () => import('@/components/Summary/Paymentprocessed.vue')
+            path: '/payment',
+            name: 'payment',
+            component: () => import('@/components/Summary/Payment.vue')
         },
-
+        {
+            path: '/download',
+            name: 'download',
+            component: () => import('@/components/Summary/DownloadLink.vue')
+        },
         {
             path: '/firstpage',
             name: 'firstpage',
@@ -194,6 +199,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.name === 'Low Slope') {
+        console.log('You are on the Low Slope Page');
     } else {
         console.log('Not on low slope');
     }

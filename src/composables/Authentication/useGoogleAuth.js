@@ -57,6 +57,7 @@ export function useGoogleAuth() {
             for (const [key, value] of Object.entries(Data)) {
                 localData.value.push(value);
             }
+            console.log(localData.value);
         });
     }
     // { credential }
@@ -77,22 +78,22 @@ export function useGoogleAuth() {
 
     async function checkEmail(userEmail) {
         const uEmail = await userEmail.value;
-
+        console.log(uEmail);
         for (let i = 0; i <= localData.value[0].length; i++) {
-            if (localData.value[0][i].email === uEmail) {
+            if ((await localData.value[0][i]?.email) === uEmail) {
                 acctUser.email = await localData.value[0][i].email;
                 acctUser.name = await localData.value[0][i].name;
 
-                acctUser.dba = localData.value[0][i].dba;
-                acctUser.cphone = localData.value[0][i].cphone;
-                acctUser.bphone = localData.value[0][i].bphone;
-                acctUser.phone = localData.value[0][i].bphone;
-                acctUser.expiration_date = localData.value[0][i].expiration_date;
-                acctUser.projects = localData.value[0][i].projects;
-                acctUser.secondary_status = localData.value[0][i].secondary_status;
-                acctUser.email = localData.value[0][i].email;
-                acctUser.license = localData.value[0][i].license;
+                acctUser.dba = await localData.value[0][i].dba;
+                acctUser.cphone = await localData.value[0][i].cphone;
+                acctUser.bphone = await localData.value[0][i].bphone;
+                acctUser.phone = await localData.value[0][i].bphone;
+                acctUser.expiration_date = await localData.value[0][i].expiration_date;
+                acctUser.projects = await localData.value[0][i].projects;
+                acctUser.secondary_status = await localData.value[0][i].secondary_status;
 
+                acctUser.license = await localData.value[0][i].license;
+                console.log(acctUser);
                 addUser(acctUser);
             }
         }
