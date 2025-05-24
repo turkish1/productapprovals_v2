@@ -1427,59 +1427,59 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
         </div>
 
         <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
-            <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
-                <table width="100%" align="left">
-                    <tbody>
-                        <tr>
-                            <td valign="middle">
-                                <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
-                                    <tbody>
-                                        <tr>
-                                            <td style="color: #122620">Zone 1:</td>
-                                            <td style="color: #122620"><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
-                                            <i class="pi pi-check" v-show="ismrValidMR1" style="color: green; font-size: 1.5rem" @change="updateMF"></i
-                                            >&nbsp;
-                                            <i class="pi pi-times" v-show="ismrInvalid1" style="color: red; font-size: 1.5rem" @change="checkMR1"></i
-                                            >&nbsp;
-                                        </tr>
+            <!-- <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px"> -->
+            <table width="100%" align="left">
+                <tbody>
+                    <tr>
+                        <td valign="middle">
+                            <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
+                                <tbody>
+                                    <tr>
+                                        <td style="color: #122620">Zone 1:</td>
+                                        <td style="color: #122620"><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
+                                        <i class="pi pi-check" v-show="ismrValidMR1" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                        >&nbsp;
+                                        <i class="pi pi-times" v-show="ismrInvalid1" style="color: red; font-size: 1.5rem" @change="checkMR1"></i
+                                        >&nbsp;
+                                    </tr>
 
-                                        <tr>
-                                            <td style="color: #122620">Zone 2:</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
-                                            <i class="pi pi-check" v-show="ismrValidMR2" style="color: green; font-size: 1.5rem" @change="updateMF"></i
-                                            >&nbsp;
-                                            <i class="pi pi-times" v-show="ismrInvalid2" style="color: red; font-size: 1.5rem" @change="checkMR2"></i
-                                            >&nbsp;
-                                        </tr>
+                                    <tr>
+                                        <td style="color: #122620">Zone 2:</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
+                                        <i class="pi pi-check" v-show="ismrValidMR2" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                        >&nbsp;
+                                        <i class="pi pi-times" v-show="ismrInvalid2" style="color: red; font-size: 1.5rem" @change="checkMR2"></i
+                                        >&nbsp;
+                                    </tr>
 
-                                        <tr>
-                                            <td style="color: #122620">Zone 3:</td>
-                                            <td style="color: #122620"><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
-                                            <td style="color: #122620"><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
-                                            <i class="pi pi-check" v-show="ismrValidMR3" style="color: green; font-size: 1.5rem" @change="updateMF"></i
-                                            >&nbsp;
-                                            <i class="pi pi-times" v-show="ismrInvalid3" style="color: red; font-size: 1.5rem" @change="checkMR3"></i
-                                            >&nbsp;
-                                        </tr>
-                                        <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                                    <tr>
+                                        <td style="color: #122620">Zone 3:</td>
+                                        <td style="color: #122620"><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                        <td style="color: #122620"><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
+                                        <i class="pi pi-check" v-show="ismrValidMR3" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                        >&nbsp;
+                                        <i class="pi pi-times" v-show="ismrInvalid3" style="color: red; font-size: 1.5rem" @change="checkMR3"></i
+                                        >&nbsp;
+                                    </tr>
+                                    <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- </div> -->
         </div>
     </div>
 </template>

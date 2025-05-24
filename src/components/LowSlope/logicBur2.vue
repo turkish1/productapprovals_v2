@@ -140,6 +140,7 @@ function updateselectSystem(event) {
     // Copy to clipboard and call details function
     copyToClipboard(firstPart);
     calldetailsdoc(firstPart);
+    handleDownload();
 }
 
 // Copies the given text to the clipboard (or simply sets it to our reactive var)

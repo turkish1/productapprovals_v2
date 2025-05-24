@@ -14,10 +14,10 @@ test.describe('test initial pages', () => {
 
     test('Signin', async ({ page }) => {
         // Click the get started link
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        // await page.getByPlaceholder('username').fill('jj');
 
-        await page.getByPlaceholder('username').fill('jj');
-
-        await page.getByPlaceholder('password').fill('jj');
+        // await page.getByPlaceholder('password').fill('jj');
         // new code
         const navigationPromise = page.waitForNavigation();
         // # is for id
@@ -27,8 +27,11 @@ test.describe('test initial pages', () => {
         await navigationPromise;
         const dialogBox = page.locator('.p-radiobutton');
         await dialogBox.click();
-        expect(page.url()).toBe('http://localhost:5173/permitapp');
+        expect(page.url()).toBe('http://localhost:5173/login');
+        const gsigninButton = page.locator('#googleSignin');
 
+        await gsigninButton.click();
+        const dialogBox1 = page.locator('.p-radiobutton');
         // console.log('Navigation successful');
         // await page.getByPlaceholder('address').fill('7400 sw 98 street');
         // const searchButton = page.locator('#search');

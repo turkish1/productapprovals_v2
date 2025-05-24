@@ -58,7 +58,7 @@ const router = createRouter({
                     component: () => import('@/components/Summary/DoralPermitApp.vue')
                 },
                 {
-                    path: '/payment',
+                    path: '/paymentprocess',
                     name: 'payment',
                     component: () => import('@/components/Summary/Paymentgateway.vue')
                 },
@@ -163,11 +163,15 @@ const router = createRouter({
         },
 
         {
-            path: '/paymentprocessed',
-            name: 'paymentprocessed',
-            component: () => import('@/components/Summary/Paymentprocessed.vue')
+            path: '/payment',
+            name: 'payment',
+            component: () => import('@/components/Summary/Payment.vue')
         },
-
+        {
+            path: '/download',
+            name: 'download',
+            component: () => import('@/components/Summary/DownloadLink.vue')
+        },
         {
             path: '/firstpage',
             name: 'firstpage',
@@ -180,7 +184,6 @@ const router = createRouter({
             component: () => import('@/views/pages/NotFound.vue')
         },
 
-      
         {
             path: '/auth/access',
             name: 'accessDenied',

@@ -1,5 +1,4 @@
 <script setup>
-// import { invoke, until } from '@vueuse/shared';
 import AgreementsDialogMechTile from '@/components/Agreements/AgreementsDialogMechTile.vue';
 import InputTile from '@/components/TileNoa/MechanicalTileNoa/InputMechTile.vue';
 import { useRoofListStore } from '@/stores/roofList';
@@ -44,7 +43,8 @@ onMounted(() => {
 </script>
 <template>
     <agreements-dialog-mech-tile v-if="isDialog === true"></agreements-dialog-mech-tile>
-    <div id="tile" class="card w-full space-y-1" style="margin-left: 20px">
+
+    <div id="tile" style="margin-left: 20px">
         <input-tile :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-tile>
     </div>
 </template>

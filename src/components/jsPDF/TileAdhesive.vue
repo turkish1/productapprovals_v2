@@ -316,72 +316,6 @@ const generatePDF = () => {
         doc.text(`${prescriptive.value}`, prescriptiveValue, current_y);
         doc.line(prescriptiveValue, current_y + factor, prescriptiveValue + persValueTextWidth, current_y + factor);
         current_y = current_y + 10;
-        console.log(tileInputvalues);
-        const noa = ref(Inputvalue.value.noa);
-        const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
-        const material = ref(savedTileinput[0]?.savedValues?.material);
-        const description = ref(savedTileinput[0]?.savedValues?.description);
-        const valueTextWidthTileCategory = doc.getTextWidth(applicantText);
-        const valueTextWidthTile = doc.getTextWidth(`${applicant.value}`);
-        const tileApplicantStartXValue = LeftStart;
-        doc.text(applicantText, tileApplicantStartXValue, current_y);
-        const tileApplicantValue = tileApplicantStartXValue + valueTextWidthTileCategory;
-        doc.text(`${applicant.value}`, tileApplicantValue, current_y);
-        doc.line(tileApplicantValue, current_y + factor, tileApplicantValue + valueTextWidthTile, current_y + factor);
-        currentX.value = tileApplicantValue + valueTextWidthTile;
-        const valueTextWidthNoa = doc.getTextWidth(noaText);
-        const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        const tileStartXValue = currentX.value + 3;
-        doc.text(noaText, tileStartXValue, current_y);
-        const noaValue = valueTextWidthNoa + tileStartXValue;
-        doc.text(`${noa.value}`, noaValue, current_y);
-        doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
-        current_y = current_y + 10;
-        const nextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        if (currentX.value > max_width) current_y = current_y + 10;
-
-        currentX.value = noaValue + nextWidthMaterial;
-
-        // currentX provides the update of the x coordinate
-        const materialStartXValue = LeftStart;
-        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
-        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        doc.text(materialText, materialStartXValue, current_y);
-        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-        doc.text(`${material.value}`, materialValue, current_y);
-        doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
-        current_y = current_y + 5;
-        const descriptionWidth = doc.getTextWidth(`${description.value}`);
-        currentX.value = materialValue + descriptionWidth;
-        // add an update boolean so to choose between leftStart or currenX.value
-        if (currentX.value > max_width) current_y = current_y + 5;
-        console.log(currentX.value, max_width);
-        current_y = current_y + 5;
-        const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
-        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-        console.log(valueTextWidth4, valueTextWidthDesc);
-
-        const descStartXValue = LeftStart;
-        doc.text(descriptionText, descStartXValue, current_y);
-
-        // this is the text we want to underline
-        if (valueTextWidth4 > 220) {
-            current_y = current_y + 4;
-            const descriptionValue = LeftStart;
-
-            doc.text(`${description.value}`, descriptionValue, current_y);
-            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-            currentX.value = descriptionValue + valueTextWidth4;
-            current_y = current_y + 8;
-        } else {
-            const descriptionValue = descStartXValue + valueTextWidthDesc;
-            doc.text(`${description.value}`, descriptionValue, current_y);
-            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-            currentX.value = descriptionValue + valueTextWidth4;
-            current_y = current_y + 5;
-        }
-        current_y = current_y + 5;
-        // console.log(polypropolyneStore.$state.polyinput.length);
         if (etileStore.$state.tilesysEinput.length === 0) {
             const udlNoa = 'n/a';
             const udlApplicant = 'n/a';
@@ -617,11 +551,71 @@ const generatePDF = () => {
             currentX.value = sbsdescriptionValue + valueTextWidthDesc;
             if (currentX.value >= max_width) current_y = current_y + 10;
             console.log(currentX.value);
-            current_y = current_y + 10;
         }
-        //     // Save the PDF
-        //     // doc.save('AdhesiveTile.pdf');
-        //     // Table configuration
+        current_y = current_y + 10;
+        const noa = ref(Inputvalue.value.noa);
+        const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
+        const material = ref(savedTileinput[0]?.savedValues?.material);
+        const description = ref(savedTileinput[0]?.savedValues?.description);
+        const valueTextWidthTileCategory = doc.getTextWidth(applicantText);
+        const valueTextWidthTile = doc.getTextWidth(`${applicant.value}`);
+        const tileApplicantStartXValue = LeftStart;
+        doc.text(applicantText, tileApplicantStartXValue, current_y);
+        const tileApplicantValue = tileApplicantStartXValue + valueTextWidthTileCategory;
+        doc.text(`${applicant.value}`, tileApplicantValue, current_y);
+        doc.line(tileApplicantValue, current_y + factor, tileApplicantValue + valueTextWidthTile, current_y + factor);
+        currentX.value = tileApplicantValue + valueTextWidthTile;
+        const valueTextWidthNoa = doc.getTextWidth(noaText);
+        const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
+        const tileStartXValue = currentX.value + 3;
+        doc.text(noaText, tileStartXValue, current_y);
+        const noaValue = valueTextWidthNoa + tileStartXValue;
+        doc.text(`${noa.value}`, noaValue, current_y);
+        doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
+        current_y = current_y + 10;
+        const nextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        if (currentX.value > max_width) current_y = current_y + 10;
+
+        currentX.value = noaValue + nextWidthMaterial;
+
+        // currentX provides the update of the x coordinate
+        const materialStartXValue = LeftStart;
+        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
+        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        doc.text(materialText, materialStartXValue, current_y);
+        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
+        doc.text(`${material.value}`, materialValue, current_y);
+        doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
+        current_y = current_y + 5;
+        const descriptionWidth = doc.getTextWidth(`${description.value}`);
+        currentX.value = materialValue + descriptionWidth;
+        // add an update boolean so to choose between leftStart or currenX.value
+        if (currentX.value > max_width) current_y = current_y + 5;
+        console.log(currentX.value, max_width);
+        current_y = current_y + 5;
+        const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
+        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        console.log(valueTextWidth4, valueTextWidthDesc);
+
+        const descStartXValue = LeftStart;
+        doc.text(descriptionText, descStartXValue, current_y);
+
+        // this is the text we want to underline
+        if (valueTextWidth4 > 220) {
+            current_y = current_y + 4;
+            const descriptionValue = LeftStart;
+
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            currentX.value = descriptionValue + valueTextWidth4;
+            current_y = current_y + 8;
+        } else {
+            const descriptionValue = descStartXValue + valueTextWidthDesc;
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            currentX.value = descriptionValue + valueTextWidth4;
+            current_y = current_y + 5;
+        }
         current_y = current_y + 10;
         // Data for each row
         doc.setFont('times', 'normal');
@@ -631,9 +625,7 @@ const generatePDF = () => {
 
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
-        // doc.addImage(lambdaSymbol, 'png', 50, 216, 5, 5);
-        // doc.addImage(lambdaSymbol, 'png', 50, 221, 5, 5);
-        // doc.addImage(lambdaSymbol, 'png', 50, 226, 5, 5);
+
         console.log(currentX.value, current_y);
         const tableData = [
             ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],

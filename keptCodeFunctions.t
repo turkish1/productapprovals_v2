@@ -109,3 +109,140 @@
             // doc.line(startX, startY - 5, startX + colWidth * rows.length, startY - 5);
             // // Bottom boundary line
             // doc.line(startX, startY + rowHeight - 5, startX + colWidth * rows.length, startY + rowHeight - 5);
+    // const sessionId = sessStore.$state.sessioninput[0]?.sessionData;
+    // console.log(sessionId);
+    // navigateNext();
+    // if (!sessionId) return; // landed here directly
+
+    // optional: show a loading spinner while you verify
+    // const stripe = await loadStripe(process.env.VITE_STRIPE_PUBLISHABLE_KEY);
+    // console.log(stripe);
+    // const paymentIntent = await stripe
+
+    // console.log(paymentIntent.value);
+    // http://127.0.0.1:5173/dynamicstepper/?session_id={CHECKOUT_SESSION_ID}"
+    // 🔒 call your backend → /api/verify?session_id=...
+    // const res = await fetch(`/v1/checkout/sessions/:id=${sessionId}`);
+    // console.log(res);
+    // const { status, amount_total } = await res.json();
+    // console.log(stripe, paid, sessionId);
+// Submitting the payment form
+// const handleSubmit = async (event) => {
+//     console.log(event);
+//     // $refs.checkoutRef.redirectToCheckout();
+//     // Quick validation
+
+//     console.log(sessStore.$state);
+//     submitted.value = true;
+//     isloading.value = true;
+//     const url = new URL(window.location.href);
+//     console.log(url);
+//     const sessionId = url.searchParams.get('session_id');
+//     if (!sessionId) return; // landed here directly
+
+//     // optional: show a loading spinner while you verify
+//     const stripe = await loadStripe(process.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+//     // 🔒 call your backend → /api/verify?session_id=...
+//     const res = await fetch(`/api/verify?session_id=${sessionId}`);
+//     const { status, amount_total } = await res.json();
+//     console.log(stripe, paid, sessionId);
+//     if (status === 'paid') {
+//         // render your custom thank‑you
+//     } else {
+//         // handle expired / unpaid etc.
+//     }
+// };
+// Submitting the payment form
+// const handleSubmit = async (event) => {
+//     console.log(event);
+//     // $refs.checkoutRef.redirectToCheckout();
+//     // Quick validation
+
+//     console.log(sessStore.$state);
+//     submitted.value = true;
+//     isloading.value = true;
+//     const url = new URL(window.location.href);
+//     console.log(url);
+//     const sessionId = url.searchParams.get('session_id');
+//     if (!sessionId) return; // landed here directly
+
+//     // optional: show a loading spinner while you verify
+//     const stripe = await loadStripe(process.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+//     // 🔒 call your backend → /api/verify?session_id=...
+//     const res = await fetch(`/api/verify?session_id=${sessionId}`);
+//     const { status, amount_total } = await res.json();
+//     console.log(stripe, paid, sessionId);
+//     if (status === 'paid') {
+//         // render your custom thank‑you
+//     } else {
+//         // handle expired / unpaid etc.
+//     }
+// };
+
+
+
+     // const noa = ref(Inputvalue.value.noa);
+        // const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
+        // const material = ref(savedTileinput[0]?.savedValues?.material);
+        // const description = ref(savedTileinput[0]?.savedValues?.description);
+        // const valueTextWidthTileCategory = doc.getTextWidth(applicantText);
+        // const valueTextWidthTile = doc.getTextWidth(`${applicant.value}`);
+        // const tileApplicantStartXValue = LeftStart;
+        // doc.text(applicantText, tileApplicantStartXValue, current_y);
+        // const tileApplicantValue = tileApplicantStartXValue + valueTextWidthTileCategory;
+        // doc.text(`${applicant.value}`, tileApplicantValue, current_y);
+        // doc.line(tileApplicantValue, current_y + factor, tileApplicantValue + valueTextWidthTile, current_y + factor);
+        // currentX.value = tileApplicantValue + valueTextWidthTile;
+        // const valueTextWidthNoa = doc.getTextWidth(noaText);
+        // const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
+        // const tileStartXValue = currentX.value + 3;
+        // doc.text(noaText, tileStartXValue, current_y);
+        // const noaValue = valueTextWidthNoa + tileStartXValue;
+        // doc.text(`${noa.value}`, noaValue, current_y);
+        // doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
+        // current_y = current_y + 10;
+        // const nextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        // if (currentX.value > max_width) current_y = current_y + 10;
+
+        // currentX.value = noaValue + nextWidthMaterial;
+
+        // // currentX provides the update of the x coordinate
+        // const materialStartXValue = LeftStart;
+        // const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
+        // const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        // doc.text(materialText, materialStartXValue, current_y);
+        // const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
+        // doc.text(`${material.value}`, materialValue, current_y);
+        // doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
+        // current_y = current_y + 5;
+        // const descriptionWidth = doc.getTextWidth(`${description.value}`);
+        // currentX.value = materialValue + descriptionWidth;
+        // // add an update boolean so to choose between leftStart or currenX.value
+        // if (currentX.value > max_width) current_y = current_y + 5;
+        // console.log(currentX.value, max_width);
+        // current_y = current_y + 5;
+        // const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
+        // const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        // console.log(valueTextWidth4, valueTextWidthDesc);
+
+        // const descStartXValue = LeftStart;
+        // doc.text(descriptionText, descStartXValue, current_y);
+
+        // // this is the text we want to underline
+        // if (valueTextWidth4 > 220) {
+        //     current_y = current_y + 4;
+        //     const descriptionValue = LeftStart;
+
+        //     doc.text(`${description.value}`, descriptionValue, current_y);
+        //     doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+        //     currentX.value = descriptionValue + valueTextWidth4;
+        //     current_y = current_y + 8;
+        // } else {
+        //     const descriptionValue = descStartXValue + valueTextWidthDesc;
+        //     doc.text(`${description.value}`, descriptionValue, current_y);
+        //     doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+        //     currentX.value = descriptionValue + valueTextWidth4;
+        //     current_y = current_y + 5;
+        // }

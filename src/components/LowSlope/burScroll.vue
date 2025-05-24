@@ -4,7 +4,6 @@
 
         <div v-if="loading" class="loading-indicator">Loading more content...</div>
     </div>
-    <!-- </div> -->
 </template>
 
 <script setup>

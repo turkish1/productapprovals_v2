@@ -6,6 +6,7 @@ import { reactive, ref } from 'vue';
 export default function useDownloadpdf(dnumber) {
     const inp = ref();
     const sendProcessnumber = ref('');
+    const sendProc = ref('');
     const sentInputs = ref(dnumber);
     const result = reactive({
         status: '',
@@ -18,34 +19,40 @@ export default function useDownloadpdf(dnumber) {
     const zip_download_url = ref();
     const error = ref('');
     let url = 'https://iovfrep3fext25yjg3o4i45aha0txkav.lambda-url.us-east-1.on.aws/';
-    // let url = 'https://zkqshx16h7.execute-api.us-east-1.amazonaws.com/downloadPdfdev';
-    // 'https://9sg5obrcp0.execute-api.us-east-1.amazonaws.com/downloadpdf/downloadpdf';
-    // 'https://he9sk9cu5f.execute-api.us-east-1.amazonaws.com/downloadPdfStaging'
+
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
     const store = usedownloadStore();
     function getNumber() {
         sendProcessnumber.value = sentInputs.value + '/';
+        console.log(sendProcessnumber.value);
+        // procNum.value = Number(inp.value);
+        if (sendProcessnumber.value === 'undefined/') {
+            return '';
+        } else {
+            fetchData();
+        }
+    }
+    async function secondFetch(processNumber) {
+        console.log(processNumber);
+        sendProc.value = processNumber.processNumber + '/';
+        console.log(sendProc.value);
+        console.log(processNumber.processNumber);
 
         // procNum.value = Number(inp.value);
-        fetchData();
+        await fetchDataDownload();
     }
-
     const fetchData = async () => {
         try {
-            const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((response) => {
-                console.log(response);
-                zip_download_url.value = data.value.download_url;
+            const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((res) => {
+                result.status = res.response.value.status;
+                result.download_url = res.data.value.download_url;
 
-                result.status = response.response.value.status;
-                result.download_url = response.data.value.download_url;
-                result.message = response.data.value.message;
-                result.isFinished = response.isFinished;
-                result.isLoading = response.isLoading;
+                result.message = res.data.value.message;
+                result.isFinished = res.isFinished;
+                result.isLoading = res.isLoading;
 
-                console.log(response.data.value.download_url);
-                console.log(response.data.value.message);
-                console.log(result, response);
-                return response;
+                // store.addDownload(zip_download_url.value);
+                return res;
             });
             store.addDownload(result);
 
@@ -55,6 +62,25 @@ export default function useDownloadpdf(dnumber) {
             // alert('An error occurred while fetching data.');
         }
     };
+    const fetchDataDownload = async () => {
+        try {
+            const response = await execute({ params: { processnumber: sendProc.value } }).then((res) => {
+                result.status = res.response.value.status;
+                result.download_url = res.data.value.download_url;
 
-    return { error, result, sentInputs, getNumber, zip_download_url, store, fetchData };
+                result.message = res.data.value.message;
+                result.isFinished = res.isFinished;
+                result.isLoading = res.isLoading;
+
+                return res;
+            });
+            store.addDownload(result);
+
+            return result;
+        } catch (error) {
+            console.log('Error, fectching data', error);
+            // alert('An error occurred while fetching data.');
+        }
+    };
+    return { error, result, secondFetch, fetchDataDownload, sentInputs, getNumber, zip_download_url, store, fetchData };
 }

@@ -78,9 +78,9 @@ export function useGoogleAuth() {
 
     async function checkEmail(userEmail) {
         const uEmail = await userEmail.value;
-
+        console.log(uEmail);
         for (let i = 0; i <= localData.value[0].length; i++) {
-            if ((await localData.value[0][i].email) === uEmail) {
+            if ((await localData.value[0][i]?.email) === uEmail) {
                 acctUser.email = await localData.value[0][i].email;
                 acctUser.name = await localData.value[0][i].name;
 
@@ -91,7 +91,7 @@ export function useGoogleAuth() {
                 acctUser.expiration_date = await localData.value[0][i].expiration_date;
                 acctUser.projects = await localData.value[0][i].projects;
                 acctUser.secondary_status = await localData.value[0][i].secondary_status;
-                acctUser.email = await localData.value[0][i].email;
+
                 acctUser.license = await localData.value[0][i].license;
                 console.log(acctUser);
                 addUser(acctUser);

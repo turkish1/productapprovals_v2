@@ -46,6 +46,7 @@ export default {
             phNumber: '',
             emails: '',
             muniProc: '',
+
             date: new Date()
         });
         const cccValid = ref(true);
@@ -61,21 +62,6 @@ export default {
                 once: true // Whether animation happens only once
             });
         });
-        onMounted(() => {
-            // if (accountUsers.value[0]. === '') {
-            //     // return router.push('/');
-            // } else {
-            isDialog.value = true;
-            console.log(accountUsers.value[0]);
-            name.value = accountUsers.value[0].name;
-            email.value = accountUsers.value[0].email;
-            // phone.value = accountUsers.value[0].bphone;
-            licenseStatus.value = accountUsers.value[0].secondary_status;
-
-            dba.value = accountUsers.value[0].dba;
-            // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
-            // }
-        });
 
         const selectedApplication = computed(() => {
             return cccValid.value === true ? type.value[0] : '';
@@ -85,7 +71,6 @@ export default {
         const { lastNum, resNum } = useLast();
         // fix the phone error with if statement and validation
 
-        const permitapp = ref(null);
         const checkMB = ref('');
         const checkV = ref('');
         const datas = ref(null);
@@ -96,7 +81,21 @@ export default {
             isDialog.value = true;
         });
         const phCheck = ref('');
+        onMounted(() => {
+            // if (accountUsers.value[0]. === '') {
+            //     // return router.push('/');
+            // } else {
+            isDialog.value = true;
 
+            name.value = accountUsers.value[0]?.name;
+            email.value = accountUsers.value[0]?.email;
+            // phone.value = accountUsers.value[0].bphone;
+            licenseStatus.value = accountUsers.value[0]?.secondary_status;
+
+            dba.value = accountUsers.value[0]?.dba;
+            // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
+            // }
+        });
         const load = async () => {
             try {
                 loading.value = true;
@@ -178,19 +177,18 @@ export default {
             try {
                 const response = await fetch(url);
                 console.log(url);
-                // if (!response.ok) {
-                //     throw new Error(`HTTP error! Status: ${response.status}`);
-                // }
+
                 datas.value = await response.json();
                 data.value = datas.value.MinimumPropertyInfos[0];
-                console.log(data.value);
+
                 formData.muni = data.value.Municipality;
-                console.log(data.value.Strap);
+
                 formData.folio = data.value.Strap;
+                // accountUsers.value[0]?.projects.push(data.value.Owner1);
+                // accountUsers.value[0]?.projects.push(data.value.SiteAddress);
 
                 checkV.value = formData.folio;
                 checkMB.value = checkV.value.substring(1, 2);
-                console.log(checkMB.value);
             } catch (err) {
                 error.value = err.message;
             } finally {
@@ -217,8 +215,6 @@ export default {
             store.addSystem(formdt, permType, checkMB.value, muniProcess.value, muniProcessdata.value);
 
             console.log(store);
-            // area.value = '';
-            // type.value = '';
         }
 
         return {
@@ -302,13 +298,13 @@ export default {
                             </div>
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                <label for="phone" style="color: #122620">Cell Phone Number</label>
+                                <label id="phone" style="color: #122620">Cell Phone Number</label>
                                 <InputMask v-model="phone" mask="(999) 999-9999" />
                                 <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                <label for="Email" style="color: #122620">Email</label>
+                                <label id="Email" style="color: #122620">Email</label>
                                 <InputText v-model="email" :invalid="email === null" :error="emailError" />
                                 <Message v-if="invalid" severity="error">Email is required</Message>
                                 <!-- @click="navigateNext" -->

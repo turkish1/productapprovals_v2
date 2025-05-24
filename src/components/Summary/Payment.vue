@@ -3,33 +3,38 @@
         <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
 
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
+            <!-- <Stripes /> -->
+            <!-- -->
             <div class="payment-widget">
-                <h2 style="color: black">Credit Card Payment</h2>
-
-                <BuyButton @click="handleTime" />
+                <h2 style="color: black">Download Link</h2>
+                <Button v-show="isUrldownloadValid" @click="startDownload" severity="contrast">Click to download</Button>
+                <!-- <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="startDownload" /> -->
+                <Toast></Toast>
+                <ProgressBar :value="value1" severity="contrast" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import BuyButton from '@/components/Summary/BuyButton.vue';
 import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
 import { countStore } from '@/stores/countStore';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { sessionStore } from '@/stores/sessionStore';
-import { tryOnMounted, watchOnce } from '@vueuse/core';
+import { invoke, tryOnMounted, until, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { VueSpinnerBall } from 'vue3-spinners';
+
 const permitStore = usePermitappStore();
 const sessStore = sessionStore();
 const cntStore = countStore();
 const count = ref(0);
 
-// const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
 // State for the form and payment
@@ -40,54 +45,102 @@ const isloading = ref(false);
 const isUrldownloadValid = ref(false);
 const status = ref(false);
 const timedOut = ref(false);
+const submitted = ref(false);
 
-// Example fixed payment amount
+const checkoutRef = ref(null);
 
-// console.log(procNumber.value);
-
-// Download composable
-const { getNumber, result } = useDownloadpdf(muniProcessNumber.value);
+const { getNumber, result, secondFetch } = useDownloadpdf();
 const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
-
+const router = useRouter();
 // Global state
 const { resp } = useGlobalState();
+onMounted(() => {
+    startProgress();
+});
+
+onBeforeUnmount(() => {
+    endProgress();
+});
+
+const toast = useToast();
+const value1 = ref(0);
+const interval = ref();
+const startProgress = () => {
+    interval.value = setInterval(() => {
+        let newValue = value1.value + Math.floor(Math.random() * 10) + 1;
+        if (newValue >= 100) {
+            newValue = 100;
+            toast.add({ severity: 'contrast', summary: 'Success', detail: 'Process Completed', life: 1000 });
+        }
+        value1.value = newValue;
+    }, 1000);
+};
+const endProgress = () => {
+    clearInterval(interval.value);
+    interval.value = null;
+};
 
 // On mount
 onMounted(() => {
     count.value = 1;
-
+    cntStore.addCount(count);
+    console.log(cntStore);
     // Example: call your logic if the response is valid
     if (resp.value?.status?.status === 200) {
         status.value = true;
         console.log(resp.value.status.status);
     }
 });
+const sessionData = ref('');
+onMounted(async () => {
+    const sessionId = new URLSearchParams(location.search).get('session_id');
+    sessionData.value = sessionId;
+    if (!sessionId) {
+        console.log(sessionId);
+        return; // guard
+    } else {
+        console.log(sessionData.value);
+    }
+});
+
+const store = useLocalStorage('my-storage', {
+    processNumber: muniProcessNumber.value
+});
 
 // Example function that triggers a store/composable call
 const handleTime = tryOnMounted(() => {
     getNumber();
-    cntStore.addCount(muniProcessNumber.value);
-    console.log(cntStore);
     setTimeout(() => {
         timedOut.value = true;
-    }, 1000);
-    console.log(muniProcessNumber.value);
+    }, 500);
     isUrldownloadValid.value = true;
-    downloadFile();
 });
+
 watchOnce(handleTime, () => {});
 
+function startDownload() {
+    secondFetch(store.value);
+    downloadFile();
+}
+
+const setOffdownload = tryOnMounted(() => {
+    setTimeout(() => {
+        timedOut.value = true;
+    }, 500);
+    secondFetch(store.value);
+    console.log(store.value);
+    downloadFile();
+});
 const downloadFile = async () => {
     const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
     console.log(arr);
     if (!arr || arr.length === 0) {
         return;
     }
-    console.log(arr);
 
     const dlData = pdfstore.downloadinput[0]?.downloadData?.download_url;
-    // arr[0]?.downloadData?.download_url;
+
     if (!dlData) return;
 
     isdataValid.value = true;
@@ -105,6 +158,21 @@ const downloadFile = async () => {
     // Show or hide button as needed
     isUrldownloadValid.value = true;
     // OR isUrldownloadValid.value = true;
+    navigateNext();
+};
+
+watchOnce(setOffdownload, () => {});
+invoke(async () => {
+    await until(setOffdownload).toBe(true);
+});
+
+const navigateNext = () => {
+    console.log('Entered Navigate');
+    setTimeout(() => {
+        timedOut.value = true;
+    }, 1000);
+
+    router.push('/download');
 };
 </script>
 
@@ -185,4 +253,10 @@ button:hover {
 #card-error {
     color: red;
 }
+
+/* .confirmation {
+    margin-top: 20px;
+    text-align: center;
+    color: green;
+} */
 </style>
