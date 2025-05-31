@@ -36,7 +36,6 @@ const checkAuth = () => {
     localData.value.forEach((item, index) => {
         for (let i = 0; i < item.length; i++) {
             if (accessToken.value) {
-                console.log(item[i].bphone);
                 acctCompare.value.push(item[i]);
                 accountUser.phone = item[i].bphone;
                 callNavigate();
@@ -123,3 +122,4 @@ watchEffect(() => {
     border: transparent;
 }
 </style>
+<!-- @/composables/Authentication/useGoogleAuth.js -->

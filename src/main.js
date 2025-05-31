@@ -17,9 +17,10 @@ import router from './router';
 
 import AnimateOnScroll from 'primevue/animateonscroll';
 
+const app = createApp(App);
+
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
-const app = createApp(App);
 app.use(useGeolocation);
 app.use('animateonscroll', AnimateOnScroll);
 app.use('tooltip', Tooltip);

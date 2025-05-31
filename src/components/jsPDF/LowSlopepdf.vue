@@ -35,6 +35,28 @@ const dba = ref(getUser.value[0]?.dba || '');
 const burType = ref(burpdfStore.$state.burpdfinput);
 let isBurValid = ref(false);
 
+// const brightenImage = (img, brightnessFactor = 1.2) => {
+//     const canvas = document.createElement('canvas');
+//     const ctx = canvas.getContext('2d');
+
+//     canvas.width = img.width;
+//     canvas.height = img.height;
+//     ctx.drawImage(img, 0, 0);
+
+//     const imageData = ctx.getImageData(0, 0, img.width, img.height);
+//     const data = imageData.data;
+
+//     for (let i = 0; i < data.length; i += 4) {
+//         data[i] = Math.min(data[i] * brightnessFactor, 255); // R
+//         data[i + 1] = Math.min(data[i + 1] * brightnessFactor, 255); // G
+//         data[i + 2] = Math.min(data[i + 2] * brightnessFactor, 255); // B
+//         // data[i + 3] is alpha
+//     }
+
+//     ctx.putImageData(imageData, 0, 0);
+//     return canvas.toDataURL('image/jpeg', 1.0); // you can use 'image/png' too
+// };
+
 const uploadUrl = ref('');
 function testBurType() {
     if (burType.value.length !== 1) {
@@ -86,8 +108,10 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
+        // logoImage.crossOrigin = 'Anonymous';
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
+        // const brightImgData = brightenImage(logoImage);
 
         const max_width = 179;
         const thirdYCoordinate = 725;
@@ -108,7 +132,7 @@ const generatePDF = () => {
 
         // Set background image for the entire PDF
         doc.addImage(image, 'JPEG', 0, 0, 210, 297); // full A4 size (210mm x 297mm)
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         // doc.setTextColor(190, 190, 190);
         doc.setTextColor('green');
         var currentDate = new Date();
@@ -134,14 +158,14 @@ const generatePDF = () => {
                 25,
                 { maxWidth: '170' }
             ); // Position at (x, y)
-            doc.line(10, 45, 195, 45); // Draw a line below the header
+            doc.line(10, 50, 195, 50); // Draw a line below the header
         };
         doc.setTextColor('black');
         // Add a circle to simulate a radio button
-        doc.circle(185, 40, 2, 'FD'); // Circle as radio button (x, y, radius)
+        doc.circle(185, 45, 2, 'FD'); // Circle as radio button (x, y, radius)
 
         // Add the "I agree" text next to the circle
-        doc.text('I agree', 165, 41);
+        doc.text('I agree', 165, 45);
         // Add header to the first page
         addHeader();
 
@@ -149,7 +173,7 @@ const generatePDF = () => {
         doc.setFontSize(12);
 
         // Add a title
-        doc.setFontSize(10);
+        // doc.setFontSize(12);
 
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
@@ -163,12 +187,12 @@ const generatePDF = () => {
         // Set starting position
         let startXCategory = 10; // X position for category column
         let startXValue = 60; // X position for value column
-        let startY = 50; // Y position
+        let startY = 72; // Y position
 
         // Set starting position second data
 
         // Set font size
-        doc.setFontSize(10);
+        doc.setFontSize(12);
 
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -189,7 +213,7 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
-        doc.setFontSize(10);
+        doc.setFontSize(12);
         const factor = 2;
         const initialYValue = current_y;
         const param_y = initialYValue;
@@ -208,7 +232,7 @@ const generatePDF = () => {
         const system = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.burSystem || '');
         const primeone = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.p1 || '');
         const primethree = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.p3 || '');
-
+        console.log(primeone);
         currentX.value = LeftStart;
 
         const tAreaTextWidth = doc.getTextWidth(tArea);
@@ -223,7 +247,7 @@ const generatePDF = () => {
 
         const tHeightTextWidth = doc.getTextWidth(tHeight);
         const HeightTextWidth = doc.getTextWidth(`${height.value}`);
-        const heightStartXValue = currentX.value + 2;
+        const heightStartXValue = currentX.value + 18;
 
         doc.text(tHeight, heightStartXValue, current_y);
         const heightValue = tHeightTextWidth + heightStartXValue;
@@ -235,7 +259,7 @@ const generatePDF = () => {
 
         const tSlopeTextWidth = doc.getTextWidth(tSlope);
         const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
-        const slopeStartXValue = currentX.value + 2;
+        const slopeStartXValue = currentX.value + 18;
 
         doc.text(tSlope, slopeStartXValue, current_y);
         const slopeValue = tSlopeTextWidth + slopeStartXValue;
@@ -247,7 +271,7 @@ const generatePDF = () => {
 
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
-        const permStartXValue = currentX.value + 2;
+        const permStartXValue = currentX.value + 18;
 
         doc.text(tPerimeter, permStartXValue, current_y);
         const perimeterValue = tPermTextWidth + permStartXValue;
@@ -314,31 +338,35 @@ const generatePDF = () => {
 
         currentX.value = LeftStart;
 
-        doc.setFontSize(9);
-        const tburSystemTextWidth = doc.getTextWidth(primeOneText);
+        doc.setFontSize(12);
+        const tburSystemTextWidth = doc.getTextWidth(burSystemText);
         const SystemTextWidth = doc.getTextWidth(`${system.value}`);
         const systemStartXValue = currentX.value;
+
         doc.text(burSystemText, systemStartXValue, current_y);
         current_y = current_y + 10;
+        doc.setFontSize(8.5);
+        currentX.value = LeftStart - 3;
+        doc.text(`${system.value}`, currentX.value, current_y);
+        doc.setFontSize(12);
+        doc.line(SystemTextWidth, current_y + 2, SystemTextWidth, current_y + 2);
+        // const systemValue = SystemTextWidth + 5;
 
-        currentX.value = LeftStart;
-        const systemValue = currentX.value;
+        // doc.line(systemValue, current_y + 2, systemValue, current_y + 2);
 
-        doc.text(`${system.value}`, systemValue, current_y);
-
-        doc.line(systemValue, current_y + 2, systemValue + SystemTextWidth, current_y + 2);
         current_y = current_y + 10;
-
         doc.setFontSize(10);
         const tprimeoneTextWidth = doc.getTextWidth(primeOneText);
+
         const PrimeoneTextWidth = doc.getTextWidth(`${primeone.value}`);
         const primeoneStartXValue = LeftStart;
+
         doc.text(primeOneText, primeoneStartXValue, current_y);
         current_y = current_y + 10;
 
         const primeoneValue = LeftStart;
-
-        doc.text(`${primeone.value}`, primeoneValue, current_y);
+        doc.setFontSize(10);
+        doc.text(primeone.value, primeoneValue, current_y);
         doc.line(primeoneValue, current_y + 2, primeoneValue + PrimeoneTextWidth + 70, current_y + 2);
         current_y = current_y + 10;
 
@@ -353,7 +381,8 @@ const generatePDF = () => {
 
         currentX.value = LeftStart;
         const primethreeValue = currentX.value;
-        doc.text(`${primethree.value}`, primethreeValue, current_y);
+
+        doc.text(primethree.value, primethreeValue, current_y);
 
         doc.line(primethreeValue, current_y + 2, primethreeValue + PrimethreeTextWidth + 70, current_y + 2);
         current_y = current_y + 10;

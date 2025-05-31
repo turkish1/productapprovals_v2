@@ -32,15 +32,7 @@ export default function useDownloadpdf(dnumber) {
             fetchData();
         }
     }
-    async function secondFetch(processNumber) {
-        console.log(processNumber);
-        sendProc.value = processNumber.processNumber + '/';
-        console.log(sendProc.value);
-        console.log(processNumber.processNumber);
 
-        // procNum.value = Number(inp.value);
-        await fetchDataDownload();
-    }
     const fetchData = async () => {
         try {
             const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((res) => {
@@ -62,6 +54,16 @@ export default function useDownloadpdf(dnumber) {
             // alert('An error occurred while fetching data.');
         }
     };
+
+    async function secondFetch(processNumber) {
+        console.log(processNumber);
+        sendProc.value = processNumber.processNumber + '/';
+        console.log(sendProc.value);
+        console.log(processNumber.processNumber);
+
+        // procNum.value = Number(inp.value);
+        await fetchDataDownload();
+    }
     const fetchDataDownload = async () => {
         try {
             const response = await execute({ params: { processnumber: sendProc.value } }).then((res) => {

@@ -173,7 +173,7 @@ const generatePDF = () => {
         // Add content below the header
         doc.setFontSize(12);
         // Add a title
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
         const data = [
@@ -225,7 +225,7 @@ const generatePDF = () => {
         console.log(current_y, param_y);
         const tHeightTextWidth = doc.getTextWidth(tHeight);
         const HeightTextWidth = doc.getTextWidth(`${height.value}`);
-        const heightStartXValue = currentX.value + 2;
+        const heightStartXValue = currentX.value + 10;
         doc.text(tHeight, heightStartXValue, param_y);
         const heightValue = tHeightTextWidth + heightStartXValue;
         doc.text(`${height.value}`, heightValue, param_y);
@@ -233,7 +233,7 @@ const generatePDF = () => {
         currentX.value = heightValue + HeightTextWidth;
         const tSlopeTextWidth = doc.getTextWidth(tSlope);
         const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
-        const slopeStartXValue = currentX.value + 2;
+        const slopeStartXValue = currentX.value + 10;
         doc.text(tSlope, slopeStartXValue, param_y);
         const slopeValue = tSlopeTextWidth + slopeStartXValue;
         doc.text(`${slope.value}`, slopeValue, param_y);
@@ -241,7 +241,7 @@ const generatePDF = () => {
         currentX.value = slopeValue + SlopeTextWidth;
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
-        const permStartXValue = currentX.value + 2;
+        const permStartXValue = currentX.value + 10;
         doc.text(tPerimeter, permStartXValue, param_y);
         const perimeterValue = tPermTextWidth + permStartXValue;
         doc.text(`${perimeter.value}`, perimeterValue, param_y);
@@ -316,72 +316,6 @@ const generatePDF = () => {
         doc.text(`${prescriptive.value}`, prescriptiveValue, current_y);
         doc.line(prescriptiveValue, current_y + factor, prescriptiveValue + persValueTextWidth, current_y + factor);
         current_y = current_y + 10;
-
-        // const noa = ref(Inputvalue.value.noa);
-        // const applicant = ref(savedTileinput[0]?.savedValues?.applicant);
-        // const material = ref(savedTileinput[0]?.savedValues?.material);
-        // const description = ref(savedTileinput[0]?.savedValues?.description);
-        // const valueTextWidthTileCategory = doc.getTextWidth(applicantText);
-        // const valueTextWidthTile = doc.getTextWidth(`${applicant.value}`);
-        // const tileApplicantStartXValue = LeftStart;
-        // doc.text(applicantText, tileApplicantStartXValue, current_y);
-        // const tileApplicantValue = tileApplicantStartXValue + valueTextWidthTileCategory;
-        // doc.text(`${applicant.value}`, tileApplicantValue, current_y);
-        // doc.line(tileApplicantValue, current_y + factor, tileApplicantValue + valueTextWidthTile, current_y + factor);
-        // currentX.value = tileApplicantValue + valueTextWidthTile;
-        // const valueTextWidthNoa = doc.getTextWidth(noaText);
-        // const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        // const tileStartXValue = currentX.value + 3;
-        // doc.text(noaText, tileStartXValue, current_y);
-        // const noaValue = valueTextWidthNoa + tileStartXValue;
-        // doc.text(`${noa.value}`, noaValue, current_y);
-        // doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
-        // current_y = current_y + 10;
-        // const nextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        // if (currentX.value > max_width) current_y = current_y + 10;
-
-        // currentX.value = noaValue + nextWidthMaterial;
-
-        // // currentX provides the update of the x coordinate
-        // const materialStartXValue = LeftStart;
-        // const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
-        // const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        // doc.text(materialText, materialStartXValue, current_y);
-        // const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-        // doc.text(`${material.value}`, materialValue, current_y);
-        // doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
-        // current_y = current_y + 5;
-        // const descriptionWidth = doc.getTextWidth(`${description.value}`);
-        // currentX.value = materialValue + descriptionWidth;
-        // // add an update boolean so to choose between leftStart or currenX.value
-        // if (currentX.value > max_width) current_y = current_y + 5;
-        // console.log(currentX.value, max_width);
-        // current_y = current_y + 5;
-        // const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
-        // const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-        // console.log(valueTextWidth4, valueTextWidthDesc);
-
-        // const descStartXValue = LeftStart;
-        // doc.text(descriptionText, descStartXValue, current_y);
-
-        // // this is the text we want to underline
-        // if (valueTextWidth4 > 220) {
-        //     current_y = current_y + 4;
-        //     const descriptionValue = LeftStart;
-
-        //     doc.text(`${description.value}`, descriptionValue, current_y);
-        //     doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-        //     currentX.value = descriptionValue + valueTextWidth4;
-        //     current_y = current_y + 8;
-        // } else {
-        //     const descriptionValue = descStartXValue + valueTextWidthDesc;
-        //     doc.text(`${description.value}`, descriptionValue, current_y);
-        //     doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-        //     currentX.value = descriptionValue + valueTextWidth4;
-        //     current_y = current_y + 5;
-        // }
-        current_y = current_y + 5;
-        // console.log(polypropolyneStore.$state.polyinput.length);
         if (etileStore.$state.tilesysEinput.length === 0) {
             const udlNoa = 'n/a';
             const udlApplicant = 'n/a';
@@ -538,11 +472,12 @@ const generatePDF = () => {
             console.log(currentX.value);
             const valueTextWidthSystem = doc.getTextWidth(sbsSystemFText);
             const saSystemFStartXValue = currentX.value + 3;
+            const valueTextSystemFWidth = doc.getTextWidth(saSystemF);
             doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
             const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
             doc.text(saSystemF, sbsSystemFValue, current_y);
-            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextWidthSystem, current_y + factor);
-            currentX.value = sbsSystemFValue + valueTextWidthSystem;
+            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextSystemFWidth, current_y + factor);
+            currentX.value = sbsSystemFValue + valueTextSystemFWidth;
             console.log(currentX.value);
             current_y = current_y + 10;
             const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
@@ -684,10 +619,8 @@ const generatePDF = () => {
         }
         current_y = current_y + 10;
         // Data for each row
-        doc.setFont('times', 'normal');
-        // Using doc.text()
-        // console.log('\u03BB'); // outputs λ
-        // const lambdaSymbol = ref('\u03BB');
+
+        doc.setFontSize(12);
 
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
