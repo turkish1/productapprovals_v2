@@ -1,5 +1,5 @@
 <template>
-    <Button severity=" " variant=" " @click="$emit('click')">
+    <Button class="p-button" size="large" @click="$emit('click')">
         {{ label }}
     </Button>
 </template>
@@ -13,3 +13,10 @@ defineProps({
     severity: String
 });
 </script>
+<style scoped>
+.p-button {
+    background-color: black;
+    font-style: normal;
+    size: 20px;
+}
+</style>

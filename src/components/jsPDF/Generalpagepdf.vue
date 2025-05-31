@@ -134,17 +134,17 @@ const generatePDF = () => {
         // doc.text(wrappedText, 10, 60);
         // Function to add header
         const addHeader = () => {
-            doc.setFontSize(10);
+            doc.setFontSize(12);
             doc.setTextColor(0);
             doc.text('2023 HVHZ  mEPermit General Information Page', 70, 20, { maxWidth: '170' }); // Position at (x, y)
             doc.line(10, 41, 195, 41); // Draw a line below the header
         };
         doc.setTextColor(0);
         // Add a circle to simulate a radio button
-        doc.circle(185, 38, 2, 'FD'); // Circle as radio button (x, y, radius)
+        // doc.circle(185, 38, 2, 'FD'); // Circle as radio button (x, y, radius)
 
         // Add the "I agree" text next to the circle
-        doc.text('I agree', 165, 39);
+        // doc.text('I agree', 165, 39);
         // Add header to the first page
         addHeader();
 
@@ -152,7 +152,6 @@ const generatePDF = () => {
         doc.setFontSize(12);
 
         // Add a title
-        doc.setFontSize(10);
 
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
@@ -172,7 +171,7 @@ const generatePDF = () => {
         // Set starting position second data
 
         // Set font size
-        doc.setFontSize(10);
+        doc.setFontSize(12);
 
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -193,14 +192,15 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
         doc.setTextColor('black');
-        doc.setFontSize(10);
+        doc.setFontSize(12);
         const factor = 2;
         const initialYValue = 100;
         const param_y = initialYValue;
         const isReroof = ref(false);
         const isNewRoof = ref(false);
-        console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0]);
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0] === 'reroof') {
+        // .$state.generalpdfinput[1]?.generalpdfData?.roofCheck[0]
+        console.log(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.roofCheck[0]);
+        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.roofCheck[0] === 'reroof') {
             isReroof.value = true;
             console.log(isReroof.value);
         } else {
@@ -231,15 +231,15 @@ const generatePDF = () => {
         const tSlope = 'Low Slope: ';
         const tSteep = 'Steep Slope: ';
         // permitStore.$state.permitapp[0]?.formdt?.muni || '';
-        const total = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.totalData || '');
-        const slope = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.slopeData || '');
-        const steep = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.steepData || '');
-        console.log(generalpageStore.$state.generalpdfinput[0].generalpdfData);
+        const total = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData || '');
+        const slope = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.slopeData || '');
+        const steep = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.steepData || '');
+        console.log(generalpageStore.$state.generalpdfinput[1].generalpdfData);
         currentX.value = LeftStart + 25;
 
         const SlopesTextWidth = doc.getTextWidth(tSlope);
         const slopeValueTextWidth = doc.getTextWidth(`${slope.value}`);
-        const slopevalueStartXValue = currentX.value + 2;
+        const slopevalueStartXValue = currentX.value + 5;
 
         doc.text(tSlope, slopevalueStartXValue, param_y);
         const slopesValue = SlopesTextWidth + slopevalueStartXValue;
@@ -250,7 +250,7 @@ const generatePDF = () => {
 
         const tSteepTextWidth = doc.getTextWidth(tSteep);
         const SteepTextWidth = doc.getTextWidth(`${steep.value}`);
-        const steepStartXValue = currentX.value + 2;
+        const steepStartXValue = currentX.value + 5;
 
         doc.text(tSteep, steepStartXValue, param_y);
         const steepValue = tSteepTextWidth + steepStartXValue;
@@ -263,69 +263,65 @@ const generatePDF = () => {
         console.log(currentX.value);
         const tTotalTextWidth = doc.getTextWidth(tTotal);
         const TotalTextWidth = doc.getTextWidth(`${total.value}`);
-        const totalStartXValue = currentX.value + 2;
+        const totalStartXValue = currentX.value + 5;
         doc.text(tTotal, totalStartXValue, param_y);
         const totalValue = tTotalTextWidth + totalStartXValue;
         doc.text(`${total.value}`, totalValue, param_y);
 
         doc.line(totalValue, param_y, totalValue + TotalTextWidth, param_y);
         currentX.value = totalValue + TotalTextWidth;
-        console.log(generalpageStore.$state.generalpdfinput[0]);
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeChk === true) {
+        console.log(generalpageStore.$state.generalpdfinput[1]);
+        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.slopeChk === true) {
             slopeChk.value = true;
             console.log('Slope Checked');
         }
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.adtileChk === true) {
+        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.adtileChk === true) {
             adtileChk.value = true;
         }
 
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.metalChk === true) {
+        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.metalChk === true) {
             metalChk.value = true;
         }
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.mtileChk === true) {
+        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.mtileChk === true) {
             mtileChk.value = true;
         }
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk === true) {
+        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.shingleChk === true) {
             shingleChk.value = true;
             console.log('Shingle Checked');
         }
-        currentX.value = LeftStart;
+        currentX.value = LeftStart - 4;
         console.log(currentX.value);
         // currentX.value = LeftStart + 20;
 
         doc.text('Low Slope: ', LeftStart, current_y);
         const alignCheckbox2 = current_y - 3;
-        const checkedBox2 = slopeChk.value === true ? doc.rect(currentX.value + 20, alignCheckbox2, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox2, 4, 4);
+        const checkedBox2 = slopeChk.value === true ? doc.rect(currentX.value + 27, alignCheckbox2, 4, 4, 'FD') : doc.rect(currentX.value + 27, alignCheckbox2, 4, 4);
         console.log(checkedBox0, checkedBox1, checkedBox2);
         // mtileChk
-        currentX.value = currentX.value + 10;
+        currentX.value = currentX.value + 4;
+        const checkBox2TextWidth = currentX.value + 32;
         console.log(currentX.value);
-        const checkBox3TextWidth = currentX.value + 18;
+        const checkBox3TextWidth = checkBox2TextWidth;
         console.log(currentX.value);
         doc.text('Adhesive Set Tile: ', checkBox3TextWidth, current_y);
-        const checkedBox3 = adtileChk.value === true ? doc.rect(checkBox3TextWidth + 30, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox3TextWidth + 30, alignCheckbox2, 4, 4);
+        const checkedBox3 = adtileChk.value === true ? doc.rect(checkBox3TextWidth + 36, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox3TextWidth + 36, alignCheckbox2, 4, 4);
         console.log(checkedBox0, checkedBox1, checkedBox3);
         console.log(currentX.value);
-        const checkBox4TextWidth = checkBox3TextWidth + 40;
+        const checkBox4TextWidth = checkBox3TextWidth + 43;
         console.log(currentX.value);
         doc.text('Metal Panel: ', checkBox4TextWidth, current_y);
         const checkBox4 = metalChk.value === true ? doc.rect(checkBox4TextWidth + 25, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox4TextWidth + 25, alignCheckbox2, 4, 4);
 
-        currentX.value = checkBox4TextWidth + 10;
-        const checkBox5TextWidth = currentX.value + 25;
+        const checkBox5TextWidth = checkBox4TextWidth + 35;
         console.log(currentX.value);
         doc.text('Shingle: ', checkBox5TextWidth, current_y);
-
-        const checkBox5 = shingleChk.value === true ? doc.rect(checkBox5TextWidth + 15, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox5TextWidth + 15, alignCheckbox2, 4, 4);
+        const checkBox5 = shingleChk.value === true ? doc.rect(checkBox5TextWidth + 17, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox5TextWidth + 17, alignCheckbox2, 4, 4);
         currentX.value = checkBox5TextWidth;
-
-        // const alignCheckbox6 = current_y - 3;
-        const checkBox6TextWidth = checkBox5TextWidth + 35;
+        const checkBox6TextWidth = checkBox5TextWidth + 28;
         console.log(currentX.value);
         doc.text('Mechanical Fastened Tile: ', checkBox6TextWidth, current_y);
-
-        const checkBox6 = mtileChk.value === true ? doc.rect(checkBox6TextWidth + 45, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox6TextWidth + 45, alignCheckbox2, 4, 4);
-        console.log(checkBox6, checkBox5, checkBox4);
+        const checkBox6 = mtileChk.value === true ? doc.rect(checkBox6TextWidth + 51, alignCheckbox2, 4, 4, 'FD') : doc.rect(checkBox6TextWidth + 51, alignCheckbox2, 4, 4);
+        console.log(checkBox6, checkBox5);
 
         current_y = current_y + 10;
         // Save the PDF

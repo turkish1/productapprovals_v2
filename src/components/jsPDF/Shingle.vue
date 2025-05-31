@@ -69,9 +69,26 @@ const generatePDF = () => {
             isPOLYValid = true;
             console.log(isPOLYValid);
         }
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4', // Smaller page size
+            compress: true
+        });
+        const max_width = 179;
+        const thirdYCoordinate = 725;
+        const page = doc.getPageInfo(1);
+        const topRightx = page.pageContext.mediaBox.topRightX;
+        const topRighty = page.pageContext.mediaBox.topRightY;
+        const currentX = ref(0);
+        const currentY = ref(0);
+        var LeftStart = 595.28 - 585.28;
+        var current_y = topRighty - thirdYCoordinate;
+        currentX.value = LeftStart;
+        currentY.value = current_y;
         // Initialize jsPDF instance
-        const address = ref(permitStore.$state.permitapp[0].formdt.address);
-        const municipality = ref(permitStore.$state.permitapp[0].formdt.muni);
+        const address = ref(permitStore.$state.permitapp[0]?.formdt?.address);
+        const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni);
         const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
         const dba = ref(getUser.value[0].dba);
         const height = ref(shingleStore.$state.inputshingle[0]?.shingleData?.height || '');
@@ -82,12 +99,12 @@ const generatePDF = () => {
         // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
 
-        const doc = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4', // Smaller page size
-            compress: true
-        });
+        // const doc = new jsPDF({
+        //     orientation: 'portrait',
+        //     unit: 'mm',
+        //     format: 'a4', // Smaller page size
+        //     compress: true
+        // });
 
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
@@ -121,16 +138,13 @@ const generatePDF = () => {
         doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
         const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
         doc.text(`${municipality.value}`, procWidth + 15, 280);
-        // doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
-        // const procWidth = doc.getTextWidth(`${processNumber.value}`);
-        // doc.text(`${municipality.value}`, procWidth + 15, 280);
 
         // Add a paragraph of text
 
         // doc.text(wrappedText, 10, 60);
         // Function to add header
         const addHeader = () => {
-            doc.setFontSize(12);
+            doc.setFontSize(10);
             doc.setTextColor(0);
             doc.text(
                 'The Shingle roof system and its components shall be installed in strict compliance  with the HVHZportions of Chapter 15 FBC, the HVHZ Roof Application Standards(RAS) 111 & 115, and the submitted MDC(NOA) Notice of Acceptance(s).The mePermit applicant agrees to comply with these installation requirements when obtaining this permit.',
@@ -162,7 +176,6 @@ const generatePDF = () => {
             { category: 'meProcess Number', value: `${processNumber.value}` }
         ];
 
-        // Set starting position
         let startXCategory = 10; // X position for category column
         let startXValue = 60; // X position for value column
         let startY = 50; // Y position
@@ -170,7 +183,7 @@ const generatePDF = () => {
         // Set starting position second data
 
         // Set font size
-        doc.setFontSize(11);
+        doc.setFontSize(12);
 
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -191,35 +204,57 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
-        doc.setFontSize(11);
+        doc.setFontSize(12);
+        const tArea = 'Roof Area: ';
+        const tDeck = 'Decktype: ';
+        const tHeight = 'Mean Roof Height: ';
+        const tSlope = 'Roof Slope: ';
+
         const factor = 1;
-        const initialYValue = 95;
-        doc.text('Roof Area:', 10, initialYValue);
+        current_y = current_y + 5;
 
-        doc.text(`${area.value}`, 35, initialYValue);
+        const tAreaTextWidth = doc.getTextWidth(tArea);
+        const AreaTextWidth = doc.getTextWidth(`${area.value}`);
+        const areaStartXValue = currentX.value;
+        doc.text(tArea, areaStartXValue, current_y);
+        const areaValue = tAreaTextWidth + areaStartXValue;
+        doc.text(`${area.value}`, areaValue, current_y);
 
-        doc.line(35, initialYValue + factor, 45, initialYValue + factor);
-        doc.text('Mean Roof Height:', 50, initialYValue);
+        doc.line(areaValue, current_y + 2, areaValue + AreaTextWidth, current_y + 2);
+        currentX.value = areaValue + AreaTextWidth;
 
-        const valueTextWidth1 = doc.getTextWidth('Mean Roof Height:');
-        doc.text(`${height.value}`, initialYValue, initialYValue);
-        doc.line(90, initialYValue + factor, 70 + valueTextWidth1, initialYValue + factor); // Get text width
+        const tHeightTextWidth = doc.getTextWidth(tHeight);
+        const HeightTextWidth = doc.getTextWidth(`${height.value}`);
+        const heightStartXValue = currentX.value + 10;
+        doc.text(tHeight, heightStartXValue, current_y);
+        const heightValue = tHeightTextWidth + heightStartXValue;
+        doc.text(`${height.value}`, heightValue, current_y);
+        doc.line(heightValue, current_y + 2, heightValue + HeightTextWidth, current_y + 2); // Get text width
+        currentX.value = heightValue + HeightTextWidth;
 
-        doc.text('Roof Slope:', 80 + valueTextWidth1, initialYValue);
-        const slopeStartXValue = 105 + valueTextWidth1;
-        doc.text(`${slope.value}`, slopeStartXValue, initialYValue);
-        const valueTextWidth2 = doc.getTextWidth(`${slope.value}`) * 2;
-        doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
+        const tSlopeTextWidth = doc.getTextWidth(tSlope);
+        const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
+        const slopeStartXValue = currentX.value + 10;
 
-        const secondYCoordinate = 108;
-        doc.text('Decktype:', 10, secondYCoordinate);
-        const decktypeStartXValue = 30 + valueTextWidth2;
-        doc.text(`${deckType.value}`, decktypeStartXValue, secondYCoordinate);
-        const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`) * 2;
-        doc.line(decktypeStartXValue, secondYCoordinate + factor, decktypeStartXValue + valueTextWidth5, secondYCoordinate + factor); // Get text width
+        doc.text(tSlope, slopeStartXValue, current_y);
+        const slopeValue = tSlopeTextWidth + slopeStartXValue;
 
-        // doc.text('Prescriptive ASTM # 30 with type IV hot asphalt applied # 90 Tile Capsheet:', 10, 70);
-        // doc.text('Fastened Underlayment (UDL) with Self Adhered (S/A) Tile Capsheet:', 10, 80);
+        doc.text(`${slope.value}`, slopeValue, current_y);
+
+        doc.line(slopeValue, current_y + 2, slopeValue + SlopeTextWidth, current_y + 2); // Get text width
+        currentX.value = slopeValue + SlopeTextWidth;
+        current_y = current_y + 10;
+
+        const tDeckTextWidth = doc.getTextWidth(tDeck);
+        const DeckTextWidth = doc.getTextWidth(`${deckType.value}`);
+        const deckStartXValue = LeftStart;
+        doc.text(tDeck, deckStartXValue, current_y);
+        const decktypeStartValue = tDeckTextWidth + deckStartXValue;
+        doc.text(`${deckType.value}`, decktypeStartValue, current_y);
+
+        doc.line(decktypeStartValue, current_y + 2, decktypeStartValue + DeckTextWidth, current_y + 2); // Get text width
+        current_y = current_y + 10;
+
         const noaText = 'Shingle NOA Number: ';
         const applicantText = 'Shingle Applicant: ';
         const materialText = 'Shingle Material: ';
@@ -230,19 +265,7 @@ const generatePDF = () => {
         const polymaterialText = 'Fastened UDL Material: ';
         const polydescriptionText = 'UDL Description: ';
         const Perscriptive = 'Perscriptive: ';
-        const max_width = 179;
-        const thirdYCoordinate = 725;
-        const page = doc.getPageInfo(1);
-        console.log(page);
-        const topRightx = page.pageContext.mediaBox.topRightX;
-        const topRighty = page.pageContext.mediaBox.topRightY;
 
-        const currentX = ref(0);
-        const currentY = ref(0);
-        var LeftStart = 595.28 - 585.28;
-        var current_y = topRighty - thirdYCoordinate;
-        currentX.value = LeftStart;
-        currentY.value = current_y;
         console.log(shingleStore.$state.inputshingle[0]);
         const noa = ref(shingleStore.$state.inputshingle[0]?.shingleData?.noa || '');
         const applicant = ref(shingleStore.$state.inputshingle[0]?.shingleData?.applicant) || '';
@@ -492,11 +515,12 @@ const generatePDF = () => {
 
             const valueTextWidthSystem = doc.getTextWidth(sbsSystemFText);
             const saSystemFStartXValue = currentX.value + 3;
+            const valueTextSystemFWidth = doc.getTextWidth(saSystemF);
             doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
             const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
             doc.text(saSystemF, sbsSystemFValue, current_y);
-            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextWidthSystem, current_y + factor);
-            currentX.value = sbsSystemFValue + valueTextWidthSystem;
+            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextSystemFWidth, current_y + factor);
+            currentX.value = sbsSystemFValue + valueTextSystemFWidth;
             console.log(currentX.value);
             current_y = current_y + 10;
 

@@ -173,7 +173,7 @@ const generatePDF = () => {
         // Add content below the header
         doc.setFontSize(12);
         // Add a title
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
         const data = [
@@ -225,7 +225,7 @@ const generatePDF = () => {
         console.log(current_y, param_y);
         const tHeightTextWidth = doc.getTextWidth(tHeight);
         const HeightTextWidth = doc.getTextWidth(`${height.value}`);
-        const heightStartXValue = currentX.value + 2;
+        const heightStartXValue = currentX.value + 10;
         doc.text(tHeight, heightStartXValue, param_y);
         const heightValue = tHeightTextWidth + heightStartXValue;
         doc.text(`${height.value}`, heightValue, param_y);
@@ -233,7 +233,7 @@ const generatePDF = () => {
         currentX.value = heightValue + HeightTextWidth;
         const tSlopeTextWidth = doc.getTextWidth(tSlope);
         const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
-        const slopeStartXValue = currentX.value + 2;
+        const slopeStartXValue = currentX.value + 10;
         doc.text(tSlope, slopeStartXValue, param_y);
         const slopeValue = tSlopeTextWidth + slopeStartXValue;
         doc.text(`${slope.value}`, slopeValue, param_y);
@@ -241,7 +241,7 @@ const generatePDF = () => {
         currentX.value = slopeValue + SlopeTextWidth;
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
-        const permStartXValue = currentX.value + 2;
+        const permStartXValue = currentX.value + 10;
         doc.text(tPerimeter, permStartXValue, param_y);
         const perimeterValue = tPermTextWidth + permStartXValue;
         doc.text(`${perimeter.value}`, perimeterValue, param_y);
@@ -472,11 +472,12 @@ const generatePDF = () => {
             console.log(currentX.value);
             const valueTextWidthSystem = doc.getTextWidth(sbsSystemFText);
             const saSystemFStartXValue = currentX.value + 3;
+            const valueTextSystemFWidth = doc.getTextWidth(saSystemF);
             doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
             const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
             doc.text(saSystemF, sbsSystemFValue, current_y);
-            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextWidthSystem, current_y + factor);
-            currentX.value = sbsSystemFValue + valueTextWidthSystem;
+            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextSystemFWidth, current_y + factor);
+            currentX.value = sbsSystemFValue + valueTextSystemFWidth;
             console.log(currentX.value);
             current_y = current_y + 10;
             const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
@@ -618,10 +619,8 @@ const generatePDF = () => {
         }
         current_y = current_y + 10;
         // Data for each row
-        doc.setFont('times', 'normal');
-        // Using doc.text()
-        // console.log('\u03BB'); // outputs λ
-        // const lambdaSymbol = ref('\u03BB');
+
+        doc.setFontSize(12);
 
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';

@@ -1253,21 +1253,21 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
         </div>
 
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label for="height">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" :disabled="isDisabled" @change="validateHeight" />
-            <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
-        </div>
-        <div></div>
-        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label style="color: #122620" for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
+        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+            <label for="height">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
+            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" :disabled="isDisabled" @change="validateHeight" />
+            <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
+        </div>
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
-        <div class="card md:w-1/2 flex flex-col w-96 mb-4 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 1px">
+        <div></div>
+        <div class="md:w-1/2 flex flex-col w-96 mb-4 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 5px">
             <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
@@ -1327,7 +1327,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
     <Divider />
     <Divider />
 
-    <div class="card md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <div class="md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px">
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">

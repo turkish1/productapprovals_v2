@@ -17,6 +17,8 @@
     "@pqina/vue-pintura": "^9.0.1",
     "@primevue/forms": "^4.2.5",
     "@primevue/themes": "^4.0.0",
+    "@sentry/tracing": "^7.120.3",
+    "@sentry/vue": "^9.22.0",
     "@stripe/stripe-js": "^5.10.0",
     "@studiometa/vue-mapbox-gl": "^2.5.0",
     "@tiptap/pm": "^2.6.6",

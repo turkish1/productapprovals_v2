@@ -87,6 +87,8 @@ const generatePDF = () => {
         const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
         const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
         const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+        const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
+
         const muniNum = ref(permitStore.$state.permitapp[0]?.muniNum || '');
         console.log(dripmechTileStore.$state, muniNum.value);
         const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[5]?.dripMTileMaterial || '');
@@ -191,7 +193,7 @@ const generatePDF = () => {
         addHeader();
 
         // Add content below the header
-        doc.setFontSize(11);
+        doc.setFontSize(12);
 
         // Add a title
 
@@ -201,7 +203,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` }
+            { category: 'meProcess Number', value: `${muniProcessNumber.value}` }
             // { category: 'Folio', value: `${folio.value}` }
         ];
 
@@ -213,7 +215,7 @@ const generatePDF = () => {
         // Set starting position second data
 
         // Set font size
-        doc.setFontSize(11);
+        doc.setFontSize(12);
 
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -234,7 +236,7 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
-        doc.setFontSize(11);
+        doc.setFontSize(12);
         const factor = 1;
         const initialYValue = 90;
         const max_width = 179;
@@ -265,7 +267,8 @@ const generatePDF = () => {
 
         const valueTextWidth1 = doc.getTextWidth('Mean Roof Height:');
         const heightValueText = doc.getTextWidth(`${height.value}`);
-        doc.text('Mean Roof Height:', currentX.value, initialYValue);
+        const heightStartXValue = currentX.value + 10;
+        doc.text('Mean Roof Height:', heightStartXValue, initialYValue);
         const roofHeightWidthValue = currentX.value + valueTextWidth1 + 1;
         doc.text(`${height.value}`, roofHeightWidthValue, initialYValue);
         doc.line(roofHeightWidthValue, initialYValue + factor, roofHeightWidthValue + heightValueText, initialYValue + factor); // Get text width
@@ -274,7 +277,8 @@ const generatePDF = () => {
 
         const slopeTextWidth1 = doc.getTextWidth('Roof Slope: ');
         const valueTextWidth2 = doc.getTextWidth(`${slope.value}`);
-        doc.text('Roof Slope:', currentX.value, initialYValue);
+        const slopeStartX = currentX.value + 10;
+        doc.text('Roof Slope:', slopeStartX, initialYValue);
         // Get the currentX value and add the text width
         const slopeStartXValue = currentX.value + slopeTextWidth1;
 
@@ -283,7 +287,7 @@ const generatePDF = () => {
         doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
         currentX.value = currentX.value + slopeTextWidth1 + valueTextWidth2;
         console.log(current_y);
-        doc.setFontSize(10);
+        doc.setFontSize(12);
         currentX.value = currentX.value + 5;
         console.log(currentX.value);
         const secondYCoordinate = initialYValue;
@@ -302,7 +306,7 @@ const generatePDF = () => {
         const perimeterYCoordinate = secondYCoordinate;
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
-        const permStartXValue = currentX.value + 5;
+        const permStartXValue = currentX.value + 10;
         doc.text(tPerimeter, permStartXValue, perimeterYCoordinate);
         const perimeterValue = tPermTextWidth + permStartXValue + 2;
 
@@ -334,7 +338,7 @@ const generatePDF = () => {
         const applicant = ref(mechStore.tilemech.value[0].manufacturer);
         const material = multiContent === true ? ref(mechStore.tilemech.value[0]?.tiletype) : ref(mechStore.tilemech.value[0]?.material);
         const description = multiContent === true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
-        const tileFastener = multiContent !== true ? ref(mechStore.tilemech.value[0]?.savedfastener) : '';
+        // const tileFastener = multiContent !== true ? ref(mechStore.tilemech.value[0]?.savedfastener || '')  ;
         console.log(current_y);
         const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
         const prescriptiveTextWidth = doc.getTextWidth(`${prescriptive.value}`);
@@ -399,7 +403,7 @@ const generatePDF = () => {
         currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
 
         console.log(currentX.value, topRightx);
-        if (currentX.value > topRightx) current_y = current_y + 10;
+        current_y = current_y + 10;
         doc.text(`${material.value}`, materialValue, fourthYCoordinate);
         doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
 
@@ -606,11 +610,12 @@ const generatePDF = () => {
             const valueTextWidthsbsApplicant = doc.getTextWidth(sbsapplicantText);
             const valueTextWidthApp = doc.getTextWidth(saApplicant);
             const saApplicantStartXValue = currentX.value + 3;
+            const valueTextSystemFWidth = doc.getTextWidth(saSystemF);
             doc.text(sbsapplicantText, saApplicantStartXValue, current_y);
             const sbsapplicantValue = saApplicantStartXValue + valueTextWidthsbsApplicant;
             doc.text(saApplicant, sbsapplicantValue, current_y);
-            doc.line(sbsapplicantValue, current_y + factor, sbsapplicantValue + valueTextWidthApp, current_y + factor);
-            currentX.value = sbsapplicantValue + valueTextWidthApp;
+            doc.line(sbsapplicantValue, current_y + factor, sbsapplicantValue + valueTextSystemFWidth, current_y + factor);
+            currentX.value = sbsapplicantValue + valueTextSystemFWidth;
             console.log(currentX.value);
 
             const valueTextWidthSystem = doc.getTextWidth(sbsSystemFText);
@@ -705,24 +710,14 @@ const generatePDF = () => {
             console.log(currentX.value);
         }
         current_y = current_y + 10;
-        // Data for each row
-        // const myFontBase64 = 'AAEAAA...';
-        // doc.addFileToVFS('./GreekSymbol.ttf', myFontBase64);
-        // doc.addFont('GreekSymbol.ttf', 'GreekSymbol', 'normal');
-        // doc.setFont('times', 'normal');
 
-        // Using doc.text()
-        // console.log('\u03BB'); // outputs λ
-        // const lambdaSymbol = ref('\u03BB');
-
-        // const lambImage = doc.addImage(lambdaImage, 'JPEG', 50, 30);
-        // console.log(lambImage.value);
-        //
+        const lambdaSymbol = new Image();
+        lambdaSymbol.src = '/demo/images/lambda.png';
         const tableData = [
             // Zone 1
-            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
-            ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
-            ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+            ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'x', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'x', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
         // doc.setFont('times', 'normal');
@@ -741,6 +736,10 @@ const generatePDF = () => {
                 doc.text(String(cell), x, startYY);
                 x += 18; // Space between columns
             });
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            startYY += 5; // Move to next row
             startYY += 5; // Move to next row
         });
         current_y = current_y + 20;
@@ -762,7 +761,7 @@ const generatePDF = () => {
 
             const fileName = file; // Keep original name or generate a new one
             console.log(fileName);
-            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${processNumber.value}/${fileName}`;
+            const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${fileName}`;
 
             try {
                 const response = await fetch(s3Url, {

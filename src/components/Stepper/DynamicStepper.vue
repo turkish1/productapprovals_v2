@@ -18,19 +18,19 @@
         <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
 
         <div class="stepper-controls">
-            <button @click="prevStep" :disabled="isFirstStep" severity="contrast">Back</button>
-            <button @click="nextStep" :disabled="isLastStep" severity="contrast">Next</button>
+            <button class="button" @click="prevStep" :disabled="isFirstStep">Back</button>
+            <button class="button" @click="nextStep" :disabled="isLastStep">Next</button>
         </div>
     </div>
 </template>
 
 <script setup>
+// import Button from '@/components/Features/Buttons.vue';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
-
 // Composables / Stores
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
@@ -234,7 +234,33 @@ console.log(isFirstStep.value, isLastStep.value, filteredSteps.value.length);
 .card {
     background-size: cover;
 }
+button {
+    appearance: auto;
 
+    font-size: 30px;
+
+    text-rendering: auto;
+    color: buttontext;
+    letter-spacing: normal;
+    word-spacing: normal;
+    line-height: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: center;
+    align-items: flex-start;
+    cursor: default;
+    box-sizing: border-box;
+    background-color: white;
+    margin: 0em;
+    padding-block: 1px;
+    padding-inline: 6px;
+    border-width: 2px;
+    border-style: outset;
+    border-color: buttonborder;
+    border-image: initial;
+}
 /* Stepper Layout */
 .stepper {
     display: flex;

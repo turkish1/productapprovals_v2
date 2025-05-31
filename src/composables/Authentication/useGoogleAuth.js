@@ -19,8 +19,6 @@ export function useGoogleAuth() {
         projects: [],
         secondary_status: '',
         license: '',
-        projects: [],
-
         phone: ''
     });
 

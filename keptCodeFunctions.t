@@ -246,3 +246,54 @@
         //     currentX.value = descriptionValue + valueTextWidth4;
         //     current_y = current_y + 5;
         // }
+
+
+// import * as Sentry from '@sentry/vue';
+// import { BrowserTracing } from '@sentry/tracing';
+// Sentry.init({
+//     app,
+//     dsn: process.env.VITE_SENTRY_DS,
+//     // Setting this option to true will send default PII data to Sentry.
+//     // For example, automatic IP address collection on events
+//     sendDefaultPii: true,
+//     integrations: [Sentry.browserTracingIntegration({ router }), Sentry.replayIntegration()],
+//     // Tracing
+//     tracesSampleRate: 1.0, // Capture 100% of the transactions
+//     // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+//     tracePropagationTargets: ['localhost', /^https:\/\/yourserver\.io\/api/],
+//     // Session Replay
+//     replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+//     replaysOnErrorSampleRate: 1.0 // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+// });
+
+https://app.studyraid.com/en/read/14996/518149/handling-line-breaks-and-text-positioning
+const longText = "A lengthy text string that needs automatic wrapping based on specified width.";
+const lines = doc.splitTextToSize(longText, 150);
+let yPosition = 70;
+
+lines.forEach(line => {
+  doc.text(line, 10, yPosition);
+  yPosition += 10; // Adjust line height
+});
+
+
+
+  // const systemSplit = doc.splitTextToSize(`${system.value}`, 108);
+        // const SystemTextWidth2 = doc.getTextWidth(systemSplit);
+        // console.log(SystemTextWidth2);
+        // doc.text(systemSplit, systemValue, current_y);
+        // systemSplit.forEach((line) => {
+        //     doc.text(line, systemValue, current_y);
+        //     current_y += 10; // Adjust line height
+        // });
+        // let count = 3;
+        // for (let i = 0; i < systemSplit.length; i++) {
+        //     if (count <= 3) {
+        //         doc.text(systemSplit[i], currentX.value, current_y);
+        //         current_y = current_y + 10;
+        //         currentX.value += 5;
+        //         count += 1;
+        //     }
+        // }
+        // doc.setFontSize(12);
+        // doc.text(systemSplit, systemValue, current_y);

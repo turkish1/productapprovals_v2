@@ -2,16 +2,16 @@
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
+import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
 
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useToNumber } from '@vueuse/core';
-import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
+import { computed, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { invoke } from '@vueuse/core';
-import AOS from 'aos';
-
+// import AOS from 'aos';
+// nextTick,
 export default {
     setup() {
         const loading = ref(false);
@@ -55,14 +55,48 @@ export default {
         const phone = ref('');
         const licenseStatus = ref('');
         const dba = ref('');
-        onMounted(() => {
-            AOS.init({
-                duration: 800, // Animation duration in ms
-                easing: 'ease-in-out', // Easing for animations
-                once: true // Whether animation happens only once
-            });
+        const googleAccount = ref([]);
+        // onMounted(() => {
+        // console.log(accountUsers.value[0]?.bphone);
+        // phone.value = accountUsers.value[0]?.bphone;
+        // name.value = accountUsers.value[0]?.name;
+        // email.value = accountUsers.value[0]?.email;
+        // licenseStatus.value = accountUsers.value[0]?.secondary_status;
+        // dba.value = accountUsers.value[0]?.dba;
+        // if (accountUsers.value[0]. === '') {
+        //     // return router.push('/');
+        // } else {
+        // updateTick();
+
+        // isDialog.value = true;
+        // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
+        // }
+        // });
+        tryOnMounted(() => {
+            isDialog.value = true;
+            setProperties();
         });
 
+        async function setProperties() {
+            googleAccount.value = await accountUsers.value[0];
+            console.log(accountUsers.value[0]);
+            phone.value = googleAccount.value.bphone;
+            name.value = googleAccount.value.name;
+            email.value = googleAccount.value.email;
+            licenseStatus.value = googleAccount.value.secondary_status;
+            dba.value = googleAccount.value.dba;
+        }
+        // onMounted(() => {
+        //     AOS.init({
+        //         duration: 800, // Animation duration in ms
+        //         easing: 'ease-in-out', // Easing for animations
+        //         once: true // Whether animation happens only once
+        //     });
+        // });
+        watchOnce(setProperties, () => {});
+        invoke(async () => {
+            await until(setProperties).toBe(true);
+        });
         const selectedApplication = computed(() => {
             return cccValid.value === true ? type.value[0] : '';
         });
@@ -77,25 +111,11 @@ export default {
         const data = ref('');
         const error = ref(null);
         // const loading = ref(false);
-        onMounted(() => {
-            isDialog.value = true;
-        });
+        // onMounted(() => {
+        //     isDialog.value = true;
+        // });
         const phCheck = ref('');
-        onMounted(() => {
-            // if (accountUsers.value[0]. === '') {
-            //     // return router.push('/');
-            // } else {
-            isDialog.value = true;
 
-            name.value = accountUsers.value[0]?.name;
-            email.value = accountUsers.value[0]?.email;
-            // phone.value = accountUsers.value[0].bphone;
-            licenseStatus.value = accountUsers.value[0]?.secondary_status;
-
-            dba.value = accountUsers.value[0]?.dba;
-            // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
-            // }
-        });
         const load = async () => {
             try {
                 loading.value = true;
@@ -144,9 +164,9 @@ export default {
                 let addNumber = number.value + 1;
                 let createStr = String(addNumber);
                 formData.processNumber = prefix.value.concat(createStr);
-                if (accountUsers.value[0].bphone || accountUsers.value[0].cphone) {
-                    updateTick();
-                }
+                // if (accountUsers.value[0].bphone || accountUsers.value[0].cphone) {
+                //     updateTick();
+                // }
                 // console.log(formData.muniProcess);
                 procReceive(formData);
                 // if checkMB.value === 13 after number conversion disable shingle roof.
@@ -159,17 +179,21 @@ export default {
             }
         };
 
-        const updateTick = () => {
-            // isPaddySingle.value = true;
-            phCheck.value = accountUsers.value?.[0].bphone;
-            console.log(phCheck.value);
+        // const updateTick = () => {
+        // isPaddySingle.value = true;
+        // phCheck.value = accountUsers.value[0]?.bphone;
+        // console.log(phCheck.value);
 
-            nextTick(() => {
-                if (accountUsers.value[0].bphone || accountUsers.value[0].cphone) {
-                    phone.value = phCheck.value;
-                }
-            });
-        };
+        // nextTick(() => {
+        // if (accountUsers.value[0]?.bphone || accountUsers.value[0]?.cphone) {
+        // phone.value = accountUsers.value[0]?.bphone;
+        // name.value = accountUsers.value[0]?.name;
+        // email.value = accountUsers.value[0]?.email;
+        // licenseStatus.value = accountUsers.value[0]?.secondary_status;
+        // dba.value = accountUsers.value[0]?.dba;
+        // }
+        // });
+        // };
         const fetchData = async (url) => {
             loading.value = true;
             error.value = null;
@@ -299,7 +323,7 @@ export default {
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label id="phone" style="color: #122620">Cell Phone Number</label>
-                                <InputMask v-model="phone" mask="(999) 999-9999" />
+                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
                                 <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 
