@@ -1,1 +1,0 @@
-import{M as p}from"./index-Bm5gC8i2.js";const o=p("permitapp",{state:()=>({permitapp:[],id:0}),actions:{addSystem(t,e,i,m){this.permitapp.push({formdt:t,miamibeach:i,permType:e,muniNum:m,id:this.id++,completed:!1})}},getters:{form:t=>t.formdt,folio:t=>t.miamibeach,muniNum:t=>t.muniNum}});export{o as u};
