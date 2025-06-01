@@ -44,8 +44,4 @@ const captureSession = async (event) => {
 
 <template>
     <stripe-buy-button :buy-button-id="buyButtonId" :publishable-key="publishableKey" @update="captureSession">Pay</stripe-buy-button>
-
-    <!-- Vue passes props as HTML attributes, kebab‑case required -->
-    <!-- <stripe-buy-button :buy-button-id="buyButtonId" :publishable-key="publishableKey"> </stripe-buy-button> -->
-    <!-- <stripe-buy-button :buy-button-id="buyButtonId" :publishable-key="publishableKey"> </stripe-buy-button> -->
 </template>

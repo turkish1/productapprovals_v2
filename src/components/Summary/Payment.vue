@@ -7,7 +7,7 @@
             <!-- -->
             <div class="payment-widget">
                 <h2 style="color: black">Download Link</h2>
-                <Button v-show="isUrldownloadValid" @click="startDownload" severity="contrast">Click to download</Button>
+                <Button v-show="isUrldownloadValid" @click="startDownload" severity="contrast">Wait for download</Button>
                 <!-- <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="startDownload" /> -->
                 <Toast></Toast>
                 <ProgressBar :value="value1" severity="contrast" />
@@ -26,7 +26,7 @@ import { sessionStore } from '@/stores/sessionStore';
 import { invoke, tryOnMounted, until, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { VueSpinnerBall } from 'vue3-spinners';
 
@@ -55,31 +55,31 @@ const { downloadinput } = storeToRefs(pdfstore.$state);
 const router = useRouter();
 // Global state
 const { resp } = useGlobalState();
-onMounted(() => {
-    startProgress();
-});
+// onMounted(() => {
+//     startProgress();
+// });
 
-onBeforeUnmount(() => {
-    endProgress();
-});
+// onBeforeUnmount(() => {
+//     endProgress();
+// });
 
 const toast = useToast();
 const value1 = ref(0);
 const interval = ref();
-const startProgress = () => {
-    interval.value = setInterval(() => {
-        let newValue = value1.value + Math.floor(Math.random() * 10) + 1;
-        if (newValue >= 100) {
-            newValue = 100;
-            toast.add({ severity: 'contrast', summary: 'Success', detail: 'Process Completed', life: 1000 });
-        }
-        value1.value = newValue;
-    }, 1000);
-};
-const endProgress = () => {
-    clearInterval(interval.value);
-    interval.value = null;
-};
+// const startProgress = () => {
+//     interval.value = setInterval(() => {
+//         let newValue = value1.value + Math.floor(Math.random() * 10) + 1;
+//         if (newValue >= 100) {
+//             newValue = 100;
+//             toast.add({ severity: 'contrast', summary: 'Success', detail: 'Process Completed', life: 1000 });
+//         }
+//         value1.value = newValue;
+//     }, 1000);
+// };
+// const endProgress = () => {
+//     clearInterval(interval.value);
+//     interval.value = null;
+// };
 
 // On mount
 onMounted(() => {
@@ -127,7 +127,7 @@ function startDownload() {
 const setOffdownload = tryOnMounted(() => {
     setTimeout(() => {
         timedOut.value = true;
-    }, 500);
+    }, 200);
     secondFetch(store.value);
     console.log(store.value);
     downloadFile();
