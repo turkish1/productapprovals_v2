@@ -20,7 +20,7 @@ import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { sessionStore } from '@/stores/sessionStore';
-import { tryOnMounted, watchOnce } from '@vueuse/core';
+import { tryOnMounted, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
@@ -46,7 +46,7 @@ const timedOut = ref(false);
 // console.log(procNumber.value);
 
 // Download composable
-const { getNumber, result } = useDownloadpdf(muniProcessNumber.value);
+// const { getNumber, result } = useDownloadpdf(muniProcessNumber.value);
 const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
 
@@ -62,19 +62,31 @@ onMounted(() => {
         status.value = true;
         console.log(resp.value.status.status);
     }
+    // localStorage.clear();
+    // cntStore.$reset();
 });
+
+const store = useLocalStorage('my-storage', {
+    processNumber: muniProcessNumber.value
+});
+const { getNumber, secondFetch } = useDownloadpdf();
+// const { getNumber, secondFetch } = useDownloadpdf(store.value.processNumber);
 
 // Example function that triggers a store/composable call
 const handleTime = tryOnMounted(() => {
-    getNumber();
+    // getNumber();
+    secondFetch(store.value.processNumber);
     cntStore.addCount(muniProcessNumber.value);
-    console.log(cntStore);
+    console.log(cntStore.$state);
+    // cntStore.addCount(store.value.processNumber);
     setTimeout(() => {
         timedOut.value = true;
     }, 1000);
     console.log(muniProcessNumber.value);
+    // console.log(store.value.processNumber);
+
     isUrldownloadValid.value = true;
-    downloadFile();
+    // downloadFile();
 });
 watchOnce(handleTime, () => {});
 

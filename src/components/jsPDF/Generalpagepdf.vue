@@ -353,7 +353,7 @@ const generatePDF = () => {
                 if (response.ok) {
                     uploadUrl.value = s3Url;
 
-                    alert('File uploaded successfully!');
+                    alert('GeneralPage File uploaded successfully!');
                 } else {
                     alert(`Failed to upload file. Status: ${response.status}`);
                 }

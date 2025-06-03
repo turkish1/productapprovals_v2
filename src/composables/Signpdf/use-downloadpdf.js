@@ -29,7 +29,7 @@ export default function useDownloadpdf(dnumber) {
         if (sendProcessnumber.value === 'undefined/') {
             return '';
         } else {
-            fetchData();
+            // fetchData();
         }
     }
 
@@ -57,9 +57,7 @@ export default function useDownloadpdf(dnumber) {
 
     async function secondFetch(processNumber) {
         console.log(processNumber);
-        sendProc.value = processNumber.processNumber + '/';
-        console.log(sendProc.value);
-        console.log(processNumber.processNumber);
+        sendProc.value = processNumber + '/';
 
         // procNum.value = Number(inp.value);
         await fetchDataDownload();
@@ -74,7 +72,7 @@ export default function useDownloadpdf(dnumber) {
                 result.isFinished = res.isFinished;
                 result.isLoading = res.isLoading;
 
-                return res;
+                // return res;
             });
             store.addDownload(result);
 

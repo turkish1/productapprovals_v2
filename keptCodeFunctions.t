@@ -297,3 +297,26 @@ lines.forEach(line => {
         // }
         // doc.setFontSize(12);
         // doc.text(systemSplit, systemValue, current_y);
+
+
+// const startProgress = () => {
+//     interval.value = setInterval(() => {
+//         let newValue = value1.value + Math.floor(Math.random() * 10) + 1;
+//         if (newValue >= 100) {
+//             newValue = 100;
+//             toast.add({ severity: 'contrast', summary: 'Success', detail: 'Process Completed', life: 1000 });
+//         }
+//         value1.value = newValue;
+//     }, 1000);
+// };
+// const endProgress = () => {
+//     clearInterval(interval.value);
+//     interval.value = null;
+// };
+    // count.value = 1;
+    // cntStore.addCount(count);
+    // console.log(cntStore);
+    // Example: call your logic if the response is valid
+
+
+    <stripe-buy-button buy-button-id="buy_btn_1RVdS4E9FsYF7D6YupNeXupi" publishable-key="pk_test_51PDPFeE9FsYF7D6YfBrV7kYvnDYIAR5QQfaR8ba5TGnoQAbEQgSeY7DLwhOZafrl8ZXJOPsbZN9tYl5HMLlhkxB100cmCtoWo7" @update="captureSession">Pay</stripe-buy-button>

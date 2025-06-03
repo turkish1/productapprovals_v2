@@ -7,10 +7,8 @@
             <!-- -->
             <div class="payment-widget">
                 <h2 style="color: black">Download Link</h2>
-                <Button v-show="isUrldownloadValid" @click="startDownload" severity="contrast">Wait for the Progress bar</Button>
-                <!-- <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="startDownload" /> -->
+                <Button v-show="isUrldownloadValid" @click="startDownload" severity="contrast">Click Download Files</Button>
                 <Toast></Toast>
-                <ProgressBar :value="value1" severity="contrast" />
             </div>
         </div>
     </div>
@@ -22,7 +20,6 @@ import { countStore } from '@/stores/countStore';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { sessionStore } from '@/stores/sessionStore';
 
 import { invoke, tryOnMounted, until, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
@@ -32,9 +29,9 @@ import { useRouter } from 'vue-router';
 import { VueSpinnerBall } from 'vue3-spinners';
 
 const permitStore = usePermitappStore();
-const sessStore = sessionStore();
+// const sessStore = sessionStore();
 const cntStore = countStore();
-const count = ref(0);
+// const count = ref(0);
 
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
@@ -48,17 +45,15 @@ const status = ref(false);
 const timedOut = ref(false);
 const submitted = ref(false);
 
-const checkoutRef = ref(null);
-
-const { getNumber, result, secondFetch } = useDownloadpdf();
 const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
 const router = useRouter();
+
+const store = useLocalStorage('my-storage', {
+    processNumber: muniProcessNumber.value
+});
 // Global state
 const { resp } = useGlobalState();
-onMounted(() => {
-    // startProgress();
-});
 
 onBeforeUnmount(() => {
     // endProgress();
@@ -68,27 +63,8 @@ const toast = useToast();
 const value1 = ref(0);
 const interval = ref();
 
-// const startProgress = () => {
-//     interval.value = setInterval(() => {
-//         let newValue = value1.value + Math.floor(Math.random() * 10) + 1;
-//         if (newValue >= 100) {
-//             newValue = 100;
-//             toast.add({ severity: 'contrast', summary: 'Success', detail: 'Process Completed', life: 1000 });
-//         }
-//         value1.value = newValue;
-//     }, 1000);
-// };
-// const endProgress = () => {
-//     clearInterval(interval.value);
-//     interval.value = null;
-// };
-
 // On mount
 onMounted(() => {
-    // count.value = 1;
-    // cntStore.addCount(count);
-    // console.log(cntStore);
-    // Example: call your logic if the response is valid
     if (resp.value?.status?.status === 200) {
         status.value = true;
         console.log(resp.value.status.status);
@@ -106,13 +82,13 @@ onMounted(async () => {
     }
 });
 
-const store = useLocalStorage('my-storage', {
-    processNumber: muniProcessNumber.value
-});
+const { secondFetch } = useDownloadpdf();
 
 // Example function that triggers a store/composable call
 const handleTime = tryOnMounted(() => {
-    getNumber();
+    secondFetch(store.value.processNumber);
+    console.log(store.value);
+
     setTimeout(() => {
         timedOut.value = true;
     }, 500);
@@ -122,7 +98,6 @@ const handleTime = tryOnMounted(() => {
 watchOnce(handleTime, () => {});
 
 function startDownload() {
-    secondFetch(store.value);
     downloadFile();
 }
 
@@ -130,9 +105,9 @@ const setOffdownload = tryOnMounted(() => {
     setTimeout(() => {
         timedOut.value = true;
     }, 500);
-    secondFetch(store.value);
-    console.log(store.value);
-    downloadFile();
+    // secondFetch(store.value);
+
+    // downloadFile();
 });
 const downloadFile = async () => {
     const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
@@ -175,6 +150,7 @@ const navigateNext = () => {
     }, 1000);
 
     router.push('/download');
+    // localStorage.clear();
 };
 </script>
 
@@ -196,7 +172,7 @@ const navigateNext = () => {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    /* background: #eae7e2; */
+
     background: #eae7e2;
 }
 

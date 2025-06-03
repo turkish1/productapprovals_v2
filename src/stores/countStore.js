@@ -11,7 +11,10 @@ export const countStore = defineStore('countinput', {
     actions: {
         addCount(countData) {
             this.countinput.push({ countData, completed: false });
-        }
-    },
-    persist: true
+        },
+        reset() {
+            this.countinput = [];
+        },
+        persist: true
+    }
 });

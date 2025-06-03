@@ -2,11 +2,9 @@
 import useLast from '@/composables/lastNumber.js';
 import useProcess from '@/composables/process.js';
 import usecreateProcessnumber from '@/composables/use-createProcessnumber';
-import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
-
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { useToNumber } from '@vueuse/core';
+import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
 import { computed, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -56,43 +54,23 @@ export default {
         const licenseStatus = ref('');
         const dba = ref('');
         const googleAccount = ref([]);
-        // onMounted(() => {
-        // console.log(accountUsers.value[0]?.bphone);
-        // phone.value = accountUsers.value[0]?.bphone;
-        // name.value = accountUsers.value[0]?.name;
-        // email.value = accountUsers.value[0]?.email;
-        // licenseStatus.value = accountUsers.value[0]?.secondary_status;
-        // dba.value = accountUsers.value[0]?.dba;
-        // if (accountUsers.value[0]. === '') {
-        //     // return router.push('/');
-        // } else {
-        // updateTick();
 
-        // isDialog.value = true;
-        // === '' ? accountUsers._value[0].bphone : accountUsers._value[0].cphone;
-        // }
-        // });
         tryOnMounted(() => {
             isDialog.value = true;
             setProperties();
+            localStorage.clear();
         });
 
         async function setProperties() {
             googleAccount.value = await accountUsers.value[0];
-            console.log(accountUsers.value[0]);
-            phone.value = googleAccount.value.bphone;
-            name.value = googleAccount.value.name;
-            email.value = googleAccount.value.email;
-            licenseStatus.value = googleAccount.value.secondary_status;
-            dba.value = googleAccount.value.dba;
+            console.log(googleAccount.value?.bphone);
+            phone.value = googleAccount.value?.bphone;
+            name.value = googleAccount.value?.name;
+            email.value = googleAccount.value?.email;
+            licenseStatus.value = googleAccount.value?.secondary_status;
+            dba.value = googleAccount.value?.dba;
         }
-        // onMounted(() => {
-        //     AOS.init({
-        //         duration: 800, // Animation duration in ms
-        //         easing: 'ease-in-out', // Easing for animations
-        //         once: true // Whether animation happens only once
-        //     });
-        // });
+
         watchOnce(setProperties, () => {});
         invoke(async () => {
             await until(setProperties).toBe(true);
@@ -126,15 +104,15 @@ export default {
                 // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
                 muniProcessdata.value = muniProcess.value;
 
-                console.log(muniProcess.value, muniProcessdata.value);
+                // console.log(muniProcess.value, muniProcessdata.value);
                 const addr = ref(formData.address);
                 // getaddress(addr.value);
 
-                console.log(addr.value);
+                // console.log(addr.value);
                 const base1URL = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr.value}`;
                 // + `address=${encodeURIComponent(addr.value)}&to=200`;
                 // 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress';
-                console.log(base1URL);
+                // console.log(base1URL);
                 // const city = 'FT. FORT LAUDERDALE'
                 // const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
                 // const baseBrowardURL = 'https://web.bcpa.net/BcpaClient/search.aspx/getParcelInformation'
@@ -145,22 +123,22 @@ export default {
                 // const base1URL = 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress'
                 // 3. Make the Fetch API request with CORS enabled
                 // const response = (await fetch(url)).json().then(addresses);
-                console.log(muniProcess.value);
+                // console.log(muniProcess.value);
                 formData.license = accountUsers.value[0].license;
                 formData.contractor = accountUsers.value[0].name;
                 formData.emails = accountUsers.value[0].email;
                 formData.muniProc = muniProcess.value;
                 formData.phNumber = accountUsers.value[0].bphone;
-                console.log(resNum.value);
+                // console.log(resNum.value);
                 // let strLength = String(lastNum.value.body);
                 let strLength = String(resNum.value);
-                console.log(strLength);
+                // console.log(strLength);
                 //  This removes quotes and backlash from the sting
                 let newNumber = strLength.substring(3, 19);
                 // formData.permit = selectedApplication.value;
-                console.log(newNumber);
+                // console.log(newNumber);
                 const number = useToNumber(newNumber);
-                console.log(typeof number, number.value);
+                // console.log(typeof number, number.value);
                 let addNumber = number.value + 1;
                 let createStr = String(addNumber);
                 formData.processNumber = prefix.value.concat(createStr);
@@ -179,28 +157,13 @@ export default {
             }
         };
 
-        // const updateTick = () => {
-        // isPaddySingle.value = true;
-        // phCheck.value = accountUsers.value[0]?.bphone;
-        // console.log(phCheck.value);
-
-        // nextTick(() => {
-        // if (accountUsers.value[0]?.bphone || accountUsers.value[0]?.cphone) {
-        // phone.value = accountUsers.value[0]?.bphone;
-        // name.value = accountUsers.value[0]?.name;
-        // email.value = accountUsers.value[0]?.email;
-        // licenseStatus.value = accountUsers.value[0]?.secondary_status;
-        // dba.value = accountUsers.value[0]?.dba;
-        // }
-        // });
-        // };
         const fetchData = async (url) => {
             loading.value = true;
             error.value = null;
 
             try {
                 const response = await fetch(url);
-                console.log(url);
+                // console.log(url);
 
                 datas.value = await response.json();
                 data.value = datas.value.MinimumPropertyInfos[0];
@@ -213,6 +176,7 @@ export default {
 
                 checkV.value = formData.folio;
                 checkMB.value = checkV.value.substring(1, 2);
+                phone.value = googleAccount.value?.bphone;
             } catch (err) {
                 error.value = err.message;
             } finally {
@@ -238,7 +202,7 @@ export default {
             // muniProcess.value
             store.addSystem(formdt, permType, checkMB.value, muniProcess.value, muniProcessdata.value);
 
-            console.log(store);
+            // console.log(store);
         }
 
         return {
@@ -260,7 +224,7 @@ export default {
             selectedApplication,
             type,
             resNum,
-
+            localStorage,
             ...toRefs(formData),
             responseMessage,
             lastNum,
