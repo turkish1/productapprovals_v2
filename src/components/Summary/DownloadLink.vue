@@ -6,9 +6,9 @@
                 <h2 style="color: black">Download Link</h2>
                 <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="startDownload" />
             </div>
-        </div>
-        <div v-if="submitted" class="confirmation">
-            <p>Thank you, {{ Name }}! Your payment of ${{ 107.0 }} was processed.</p>
+            <div v-if="submitted" class="confirmation">
+                <p>Thank you, {{ Name }}! Your payment of ${{ 107.0 }} was processed.</p>
+            </div>
         </div>
     </div>
 </template>
@@ -89,11 +89,11 @@ const handleTime = tryOnMounted(() => {
 
 watchOnce(handleTime, () => {});
 
-// function startDownload() {
-//     // getNumber();
-//     secondFetch(store.value);
-//     downloadFile();
-// }
+function startDownload() {
+    // getNumber();
+    secondFetch(store.value.processNumber);
+    downloadFile();
+}
 
 const setOffdownload = tryOnMounted(() => {
     setTimeout(() => {
