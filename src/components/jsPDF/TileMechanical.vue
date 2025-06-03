@@ -26,7 +26,7 @@ const roofType = ref(roofStore.$state.roofList);
 const { mechStore } = useMech();
 const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
-const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
+// const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
 // const usedripStore = usedripedgeStore();
 const dripmechTileStore = usedripMStore();
@@ -72,6 +72,29 @@ const generatePDF = () => {
             isSAValidPresc = true;
             console.log(isSAValidPresc);
         }
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4', // Smaller page size
+            compress: true
+        });
+
+        const factor = 1;
+        const initialYValue = 90;
+        const max_width = 179;
+        const thirdYCoordinate = 725;
+        const page = doc.getPageInfo(1);
+        console.log(page);
+        const topRightx = page.pageContext.mediaBox.topRightX;
+        const topRighty = page.pageContext.mediaBox.topRightY;
+
+        const currentX = ref(0);
+        const currentY = ref(0);
+        var current_y = topRighty - thirdYCoordinate;
+
+        var LeftStart = 595.28 - 585.28;
+        currentX.value = LeftStart;
+        currentY.value = current_y;
         // Initialize jsPDF instance
         console.log(permitStore.$state.permitapp);
         console.log(mechStore.tilemech.value[0]);
@@ -87,8 +110,10 @@ const generatePDF = () => {
         const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
         const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
         const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-        const muniNum = ref(permitStore.$state.permitapp[0]?.muniNum || '');
-        console.log(dripmechTileStore.$state, muniNum.value);
+        const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
+
+        // const muniNum = ref(permitStore.$state.permitapp[0]?.muniNum || '');
+        // console.log(dripmechTileStore.$state, muniNum.value);
         const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[5]?.dripMTileMaterial || '');
         const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[7]?.dripMTileMaterial || '');
         console.log(mechStore.tilemech.value[0]);
@@ -112,12 +137,12 @@ const generatePDF = () => {
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
 
-        const doc = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4', // Smaller page size
-            compress: true
-        });
+        // const doc = new jsPDF({
+        //     orientation: 'portrait',
+        //     unit: 'mm',
+        //     format: 'a4', // Smaller page size
+        //     compress: true
+        // });
 
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
@@ -156,12 +181,6 @@ const generatePDF = () => {
         doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
         const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
         doc.text(`${municipality.value}`, procWidth + 15, 280);
-        // doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
-        // const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
-        // doc.text(`${municipality.value}`, procWidth + 15, 280);
-        // doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
-        // const procWidth = doc.getTextWidth(`${processNumber.value}`);
-        // doc.text(`${municipality.value}`, procWidth + 15, 280);
 
         // Add a paragraph of text
         // const paragraphText = "This PDF contains a watermark that says 'CONFIDENTIAL' across the center of the page. You can adjust the size, rotation, and opacity of the watermark.";
@@ -191,7 +210,7 @@ const generatePDF = () => {
         addHeader();
 
         // Add content below the header
-        doc.setFontSize(11);
+        doc.setFontSize(12);
 
         // Add a title
 
@@ -201,7 +220,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` }
+            { category: 'Process Number', value: `${muniProcessNumber.value}` }
             // { category: 'Folio', value: `${folio.value}` }
         ];
 
@@ -213,7 +232,7 @@ const generatePDF = () => {
         // Set starting position second data
 
         // Set font size
-        doc.setFontSize(11);
+        doc.setFontSize(12);
 
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -234,23 +253,8 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
-        doc.setFontSize(11);
-        const factor = 1;
-        const initialYValue = 90;
-        const max_width = 179;
-        const thirdYCoordinate = 725;
-        const page = doc.getPageInfo(1);
-        console.log(page);
-        const topRightx = page.pageContext.mediaBox.topRightX;
-        const topRighty = page.pageContext.mediaBox.topRightY;
+        doc.setFontSize(12);
 
-        const currentX = ref(0);
-        const currentY = ref(0);
-        var current_y = topRighty - thirdYCoordinate;
-
-        var LeftStart = 595.28 - 585.28;
-        currentX.value = LeftStart;
-        currentY.value = current_y;
         console.log(current_y);
         const tPerimeter = 'Roof Perimeter: ';
         const areaLabelWidth = doc.getTextWidth('Roof Area: ');
@@ -258,62 +262,59 @@ const generatePDF = () => {
         doc.text('Roof Area:', LeftStart, initialYValue);
         const systemAreaValueWidth = areaLabelWidth + 10;
         doc.text(`${area.value}`, systemAreaValueWidth, initialYValue);
-
         doc.line(systemAreaValueWidth, initialYValue + factor, systemAreaValueWidth + areaValueWidth, initialYValue + factor);
-        currentX.value = systemAreaValueWidth + 20;
+        currentX.value = areaLabelWidth + areaValueWidth;
         console.log(currentX.value);
 
         const valueTextWidth1 = doc.getTextWidth('Mean Roof Height:');
         const heightValueText = doc.getTextWidth(`${height.value}`);
-        doc.text('Mean Roof Height:', currentX.value, initialYValue);
-        const roofHeightWidthValue = currentX.value + valueTextWidth1 + 1;
+        const heightStartXValue = currentX.value + 15;
+        doc.text('Mean Roof Height:', heightStartXValue, initialYValue);
+        const roofHeightWidthValue = valueTextWidth1 + 45;
         doc.text(`${height.value}`, roofHeightWidthValue, initialYValue);
         doc.line(roofHeightWidthValue, initialYValue + factor, roofHeightWidthValue + heightValueText, initialYValue + factor); // Get text width
-        currentX.value = currentX.value + valueTextWidth1 + heightValueText + 5;
+        currentX.value = valueTextWidth1 + heightValueText;
         console.log(currentX.value);
 
         const slopeTextWidth1 = doc.getTextWidth('Roof Slope: ');
         const valueTextWidth2 = doc.getTextWidth(`${slope.value}`);
-        doc.text('Roof Slope:', currentX.value, initialYValue);
+        const slopeStartX = currentX.value + 50;
+        doc.text('Roof Slope:', slopeStartX, initialYValue);
         // Get the currentX value and add the text width
-        const slopeStartXValue = currentX.value + slopeTextWidth1;
-
+        const slopeStartXValue = slopeStartX + 25;
         doc.text(`${slope.value}`, slopeStartXValue, initialYValue);
 
         doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
-        currentX.value = currentX.value + slopeTextWidth1 + valueTextWidth2;
-        console.log(current_y);
-        doc.setFontSize(10);
-        currentX.value = currentX.value + 5;
-        console.log(currentX.value);
-        const secondYCoordinate = initialYValue;
-        // 100;
-        const valueTextWidthDeck = doc.getTextWidth('Deck Type');
-        const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`);
-        doc.text('Decktype:', currentX.value, secondYCoordinate);
-        const decktypeStartXValue = currentX.value + valueTextWidthDeck + 1;
+        currentX.value = currentX.value + slopeStartXValue;
+        // console.log(current_y);
+        // doc.setFontSize(12);
+        // currentX.value = currentX.value + 5;
 
-        doc.text(`${deckType.value}`, decktypeStartXValue, secondYCoordinate);
-        doc.line(decktypeStartXValue, secondYCoordinate + factor, decktypeStartXValue + valueTextWidth5, secondYCoordinate + factor); // Get text width
-        currentX.value = decktypeStartXValue + valueTextWidth5;
-
-        console.log(current_y);
-        // Fix this later
-        const perimeterYCoordinate = secondYCoordinate;
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
-        const permStartXValue = currentX.value + 5;
-        doc.text(tPerimeter, permStartXValue, perimeterYCoordinate);
+        const permStartXValue = currentX.value - 30;
+        doc.text(tPerimeter, permStartXValue, initialYValue);
         const perimeterValue = tPermTextWidth + permStartXValue + 2;
+        doc.text(`${perimeter.value}`, perimeterValue, initialYValue);
+        doc.line(perimeterValue, initialYValue + factor, perimeterValue + PermTextWidth, initialYValue + factor);
 
-        doc.text(`${perimeter.value}`, perimeterValue, perimeterYCoordinate);
-        doc.line(perimeterValue, perimeterYCoordinate + factor, perimeterValue + PermTextWidth, perimeterYCoordinate + factor);
+        current_y = initialYValue + 30;
+        const valueTextWidthDeck = doc.getTextWidth('Deck Type');
+        const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`);
+        currentX.value = currentX.value + valueTextWidthDeck - 30;
+        doc.text('Decktype:', currentX.value, current_y);
+        const decktypeStartXValue = currentX.value + 20;
+
+        doc.text(`${deckType.value}`, decktypeStartXValue, current_y);
+        doc.line(decktypeStartXValue, current_y + factor, decktypeStartXValue + valueTextWidth5, current_y + factor); // Get text width
+        currentX.value = decktypeStartXValue + valueTextWidth5;
 
         const noaText = 'Tile NOA Number: ';
         const applicantText = 'Tile Applicant: ';
         const materialText = 'Tile Material: ';
+        const TileTypeText = 'Tile Type: ';
         const descriptionText = 'Tile Description: ';
-        const fastenerText = multiContent !== true ? 'Select Mechanical Tile Fastener: ' : 'n/a';
+        const fastenerText = 'Select Mechanical Tile Fastener: ';
         const polynoaText = 'Fastened (UDL) NOA: ';
         const polyapplicantText = '(UDL) NOA Applicant: ';
         const polymaterialText = 'Fastened (UDL) Material: ';
@@ -330,11 +331,12 @@ const generatePDF = () => {
         console.log(mechStore.tilemech.value[0]);
 
         console.log(mechStore.tilemech.value[0]);
-        const noa = ref(mechStore.tilemech.value[0].noa);
-        const applicant = ref(mechStore.tilemech.value[0].manufacturer);
-        const material = multiContent === true ? ref(mechStore.tilemech.value[0]?.tiletype) : ref(mechStore.tilemech.value[0]?.material);
-        const description = multiContent === true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
-        const tileFastener = multiContent !== true ? ref(mechStore.tilemech.value[0]?.savedfastener) : '';
+        const noa = ref(mechStore.tilemech.value[0]?.noa);
+        const applicant = ref(mechStore.tilemech.value[0]?.manufacturer);
+        const material = ref(mechStore.tilemech.value[0]?.material);
+        const tileType = multiContent === true ? ref(mechStore.tilemech.value[0]?.tiletype) : ref(mechStore.tilemech.value[0]?.material);
+        const description = multiContent !== true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
+        const tileFastener = multiContent === true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
         console.log(current_y);
         const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
         const prescriptiveTextWidth = doc.getTextWidth(`${prescriptive.value}`);
@@ -366,221 +368,158 @@ const generatePDF = () => {
         doc.text(`${dripedgeSize.value}`, dripSizeStartValue, current_y);
 
         doc.line(dripSizeStartValue, current_y + factor, dripSizeStartValue + dripEdgeTextWidth, current_y + factor);
-        // current_y = current_y + 10;
-        // doc.setFontSize(10);
-        // const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
-        // const valueTextWidthApp = doc.getTextWidth(applicantText);
-        // const applicantStartXValue = LeftStart;
-        // doc.text(applicantText, applicantStartXValue, current_y);
-        // const applicantValue = applicantStartXValue + valueTextWidthApp;
-        // doc.text(`${applicant.value}`, applicantValue, current_y);
-        // doc.line(applicantValue, current_y + factor, applicantValue + valueTextWidth0, current_y + factor);
-
-        // currentX.value = applicantValue + valueTextWidth0;
-
-        // const noaValueTextWidth = doc.getTextWidth(noaText);
-        // const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        // const noaStartXValue = currentX.value + noaValueTextWidth;
-        // doc.text(noaText, currentX.value + 2, current_y);
-        // doc.text(`${noa.value}`, noaStartXValue + 2, current_y);
-        // doc.line(noaStartXValue, current_y + factor, noaStartXValue + valueTextWidth3, current_y + factor);
-        // currentX.value = noaStartXValue + valueTextWidth3;
-
-        // // if (currentX.value < max_width)
-
-        // // currentX provides the update of the x coordinate
-        // const fourthYCoordinate = current_y;
-
-        // const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
-        // const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        // const materialStartXValue = currentX.value + 5;
-        // doc.text(materialText, materialStartXValue, fourthYCoordinate);
-        // const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-        // currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
-
-        // console.log(currentX.value, topRightx);
-        // if (currentX.value > topRightx) current_y = current_y + 10;
-        // doc.text(`${material.value}`, materialValue, fourthYCoordinate);
-        // doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
-
-        // // current_y = current_y + 10;
-        // const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-        // const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
-        // currentX.value = materialValue + valueTextWidthDesc;
-        // current_y = current_y + 10;
-        // const descStartXValue = LeftStart;
-        // doc.text(descriptionText, descStartXValue, current_y);
-        // console.log(currentX.value);
-        // // if (currentX.value > max_width) current_y = current_y + 10;
-        // // this is the text we want to underline
-        // const descriptionValue = descStartXValue + valueTextWidthDesc;
-        // doc.text(`${description.value}`, descriptionValue, current_y);
-        // doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidthDescription, current_y + factor);
-        // currentX.value = descriptionValue + valueTextWidthDescription;
-
-        // const valueTextWidthFastener = doc.getTextWidth(fastenerText);
-        // const valueWidthFastener = doc.getTextWidth(`${tileFastener.value}`);
-        // currentX.value = currentX.value + 5;
-        // // if (currentX.value > max_width) current_y = current_y + 10;
-        // // this is the text we want to underline
-        // const FastenerStartXValue = currentX.value;
-        // doc.text(fastenerText, FastenerStartXValue, current_y);
-        // console.log(currentX.value);
-        // const fastenerValue = FastenerStartXValue + valueTextWidthFastener;
-        // doc.text(`${tileFastener.value}`, fastenerValue, current_y);
-        // doc.line(fastenerValue, current_y + factor, fastenerValue + valueWidthFastener, current_y + factor);
-        // currentX.value = fastenerValue + valueWidthFastener;
         current_y = current_y + 10;
+        doc.setFontSize(12);
 
-        // if (etileStore.$state.tilesysEinput.length === 0) {
-        //     const udlNoa = 'n/a';
-        //     const udlApplicant = 'n/a';
-        //     const udlMaterial = 'n/a';
-        //     const udlDescription = 'n/a';
+        if (etileStore.$state.tilesysEinput.length === 0) {
+            const udlNoa = 'n/a';
+            const udlApplicant = 'n/a';
+            const udlMaterial = 'n/a';
+            const udlDescription = 'n/a';
 
-        //     const valueTextWidthNOA = doc.getTextWidth(polynoaText);
-        //     const valueTextWidth_1 = doc.getTextWidth(udlNoa);
-        //     const udlNoaStartXValue = LeftStart;
-        //     doc.text(polynoaText, udlNoaStartXValue, current_y);
-        //     const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
-        //     doc.text(udlNoa, udlNoaValue, current_y);
-        //     doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
-        //     currentX.value = udlNoaValue + valueTextWidth_1;
+            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
+            const valueTextWidth_1 = doc.getTextWidth(udlNoa);
+            const udlNoaStartXValue = LeftStart;
+            doc.text(polynoaText, udlNoaStartXValue, current_y);
+            const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
+            doc.text(udlNoa, udlNoaValue, current_y);
+            doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
+            currentX.value = udlNoaValue + valueTextWidth_1;
 
-        //     console.log(currentX.value);
-        //     const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
-        //     const valueTextWidth_ = doc.getTextWidth(udlApplicant);
-        //     const udlApplicantStartXValue = currentX.value + 2;
-        //     doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
+            console.log(currentX.value);
+            const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
+            const valueTextWidth_ = doc.getTextWidth(udlApplicant);
+            const udlApplicantStartXValue = currentX.value + 2;
+            doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
 
-        //     const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
-        //     doc.text(udlApplicant, udlApplicantValue, current_y);
-        //     doc.line(udlApplicantValue, current_y + factor, udlApplicantValue + valueTextWidth_, current_y + factor);
-        //     currentX.value = udlApplicantValue + valueTextWidth_;
+            const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
+            doc.text(udlApplicant, udlApplicantValue, current_y);
+            doc.line(udlApplicantValue, current_y + factor, udlApplicantValue + valueTextWidth_, current_y + factor);
+            currentX.value = udlApplicantValue + valueTextWidth_;
 
-        //     console.log(currentX.value);
-        //     if (currentX.value > max_width) current_y = current_y + 10;
-        //     const udlmatStartXValue = currentX.value + 2;
-        //     const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
-        //     const valueTextWidth_2 = doc.getTextWidth(udlMaterial);
-        //     doc.text(polymaterialText, udlmatStartXValue, current_y);
-        //     const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
-        //     doc.text(udlMaterial, udlmaterialValue, current_y);
-        //     doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
-        //     currentX.value = udlmaterialValue + valueTextWidth_2;
-        //     console.log(currentX.value);
-        //     if (currentX.value > max_width) current_y = current_y + 10;
+            console.log(currentX.value);
+            if (currentX.value > max_width) current_y = current_y + 10;
+            const udlmatStartXValue = currentX.value + 2;
+            const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
+            const valueTextWidth_2 = doc.getTextWidth(udlMaterial);
+            doc.text(polymaterialText, udlmatStartXValue, current_y);
+            const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
+            doc.text(udlMaterial, udlmaterialValue, current_y);
+            doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
+            currentX.value = udlmaterialValue + valueTextWidth_2;
+            console.log(currentX.value);
+            if (currentX.value > max_width) current_y = current_y + 10;
 
-        //     // console.log(currentX.value);
-        //     current_y = current_y + 10;
-        //     const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
-        //     const valueTextWidth_3 = doc.getTextWidth(udlDescription);
-        //     const udldescStartXValue = LeftStart;
-        //     const checkDescription = udldescStartXValue + valueTextWidth_3;
-        //     console.log(checkDescription);
-        //     doc.text(udldescriptionText, udldescStartXValue, current_y);
-        //     if (checkDescription > max_width) print(checkDescription);
-        //     const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
-        //     // current_y = current_y + 10;
-        //     doc.text(udlDescription, udldescriptionValue, current_y);
-        //     doc.line(udldescriptionValue, current_y + factor, udldescriptionValue + valueTextWidth_3, current_y + factor);
-        //     currentX.value = udldescriptionValue + valueTextWidth_3;
+            // console.log(currentX.value);
+            current_y = current_y + 10;
+            const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
+            const valueTextWidth_3 = doc.getTextWidth(udlDescription);
+            const udldescStartXValue = LeftStart;
+            const checkDescription = udldescStartXValue + valueTextWidth_3;
+            console.log(checkDescription);
+            doc.text(udldescriptionText, udldescStartXValue, current_y);
+            if (checkDescription > max_width) print(checkDescription);
+            const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
+            // current_y = current_y + 10;
+            doc.text(udlDescription, udldescriptionValue, current_y);
+            doc.line(udldescriptionValue, current_y + factor, udldescriptionValue + valueTextWidth_3, current_y + factor);
+            currentX.value = udldescriptionValue + valueTextWidth_3;
 
-        //     current_y = current_y + 10;
-        // } else {
-        console.log(etileStore.$state.tilesysEinput);
+            current_y = current_y + 10;
+        } else {
+            console.log(etileStore.$state.tilesysEinput);
 
-        const udlNoa = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.noa || 'N/A');
-        const udlApplicant = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.manufacturer || 'N/A');
-        const udlMaterial = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.material || 'N/A');
-        const udlSystemE = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.systemSelected || 'N/A');
-        const designPressure = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.dP || 'N/A');
-        const anchorDescription = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.Anchor_Base || 'N/A');
-        const udlDescription = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.tileCap || 'N/A');
+            const udlNoa = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.noa || 'N/A');
+            const udlApplicant = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.manufacturer || 'N/A');
+            const udlMaterial = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.material || 'N/A');
+            const udlSystemE = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.systemSelected || 'N/A');
+            const designPressure = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.dP || 'N/A');
+            const anchorDescription = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.Anchor_Base || 'N/A');
+            const udlDescription = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.tileCap || 'N/A');
 
-        const valueTextWidthNOA = doc.getTextWidth(polynoaText);
-        const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
+            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
+            const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
 
-        const udlNoaStartXValue = LeftStart;
-        doc.text(polynoaText, udlNoaStartXValue, current_y);
-        const udlNoaValue = descStartXValue + valueTextWidthNOA;
-        doc.text(`${udlNoa.value}`, udlNoaValue, current_y);
-        doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
-        currentX.value = udlNoaValue + valueTextWidth_1;
+            const udlNoaStartXValue = LeftStart;
+            doc.text(polynoaText, udlNoaStartXValue, current_y);
+            const udlNoaValue = udlNoaStartXValue + valueTextWidthNOA;
+            doc.text(`${udlNoa.value}`, udlNoaValue, current_y);
+            doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
+            currentX.value = udlNoaValue + valueTextWidth_1;
 
-        const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
-        const valueTextWidth_ = doc.getTextWidth(`${udlApplicant.value}`);
-        const udlApplicantStartXValue = currentX.value + 2;
-        doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
-        const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
-        doc.text(`${udlApplicant.value}`, udlApplicantValue, current_y);
-        doc.line(udlApplicantValue, current_y + factor, udlApplicantValue + valueTextWidth_, current_y + factor);
-        const matWidth = doc.getTextWidth(`${udlMaterial.value}`);
-        currentX.value = udlApplicantValue + matWidth;
-        // if (`${udlApplicant.value}` !== 'N/A') current_y = current_y + 10;
-        //  `${udlApplicant.value}` !== 'N/A' ? currentX.value : LeftStart;
-        current_y = current_y + 10;
-        const udlmatStartXValue = LeftStart;
-        const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
-        const valueTextWidth_2 = doc.getTextWidth(`${udlMaterial.value}`);
-        doc.text(polymaterialText, udlmatStartXValue, current_y);
-        const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
-        doc.text(`${udlMaterial.value}`, udlmaterialValue, current_y);
-        doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
+            const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
+            const valueTextWidth_ = doc.getTextWidth(`${udlApplicant.value}`);
+            const udlApplicantStartXValue = currentX.value + 2;
+            doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
+            const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
+            doc.text(`${udlApplicant.value}`, udlApplicantValue, current_y);
+            doc.line(udlApplicantValue, current_y + factor, udlApplicantValue + valueTextWidth_, current_y + factor);
+            const matWidth = doc.getTextWidth(`${udlMaterial.value}`);
+            currentX.value = udlApplicantValue + matWidth;
+            // if (`${udlApplicant.value}` !== 'N/A') current_y = current_y + 10;
+            //  `${udlApplicant.value}` !== 'N/A' ? currentX.value : LeftStart;
+            current_y = current_y + 10;
+            const udlmatStartXValue = LeftStart;
+            const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
+            const valueTextWidth_2 = doc.getTextWidth(`${udlMaterial.value}`);
+            doc.text(polymaterialText, udlmatStartXValue, current_y);
+            const udlmaterialValue = udlmatStartXValue + valueTextWidthpolyMat;
+            doc.text(`${udlMaterial.value}`, udlmaterialValue, current_y);
+            doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
 
-        currentX.value = udlmaterialValue + valueTextWidth_2;
-        if (currentX.value > max_width) current_y = current_y + 10;
-        //     console.log(currentX.value);
+            currentX.value = udlmaterialValue + valueTextWidth_2;
+            if (currentX.value > max_width) current_y = current_y + 10;
+            //     console.log(currentX.value);
 
-        const systemEStartXValue = currentX.value + 5;
-        const valueTextWidthSystemE = doc.getTextWidth(systemEselectionText);
-        const valueTextWidthE = doc.getTextWidth(`${udlSystemE.value}`);
-        doc.text(systemEselectionText, systemEStartXValue, current_y);
-        const udlsystemEValue = systemEStartXValue + valueTextWidthSystemE;
-        doc.text(`${udlSystemE.value}`, udlsystemEValue, current_y);
-        doc.line(udlsystemEValue, current_y + factor, udlsystemEValue + valueTextWidthE, current_y + factor);
-        currentX.value = udlsystemEValue + valueTextWidthE;
-        if (currentX.value > max_width) current_y = current_y + 10;
+            const systemEStartXValue = currentX.value + 5;
+            const valueTextWidthSystemE = doc.getTextWidth(systemEselectionText);
+            const valueTextWidthE = doc.getTextWidth(`${udlSystemE.value}`);
+            doc.text(systemEselectionText, systemEStartXValue, current_y);
+            const udlsystemEValue = systemEStartXValue + valueTextWidthSystemE;
+            doc.text(`${udlSystemE.value}`, udlsystemEValue, current_y);
+            doc.line(udlsystemEValue, current_y + factor, udlsystemEValue + valueTextWidthE, current_y + factor);
+            currentX.value = udlsystemEValue + valueTextWidthE;
+            if (currentX.value > max_width) current_y = current_y + 10;
 
-        const valueTextWidthpolyDesignP = doc.getTextWidth(designPSFText);
-        const valueTextWidthDP = doc.getTextWidth(`${designPressure.value}`);
-        const udldesignStartXValue = currentX.value + 3;
-        doc.text(designPSFText, udldesignStartXValue, current_y);
-        const udldesignValue = udldesignStartXValue + valueTextWidthpolyDesignP;
+            const valueTextWidthpolyDesignP = doc.getTextWidth(designPSFText);
+            const valueTextWidthDP = doc.getTextWidth(`${designPressure.value}`);
+            const udldesignStartXValue = currentX.value + 3;
+            doc.text(designPSFText, udldesignStartXValue, current_y);
+            const udldesignValue = udldesignStartXValue + valueTextWidthpolyDesignP;
 
-        doc.text(`${designPressure.value}`, udldesignValue, current_y);
-        doc.line(udldesignValue, current_y + factor, udldesignValue + valueTextWidthDP, current_y + factor);
-        currentX.value = udldesignValue + valueTextWidthDP;
-        console.log(currentX.value);
-        current_y = current_y + 10;
+            doc.text(`${designPressure.value}`, udldesignValue, current_y);
+            doc.line(udldesignValue, current_y + factor, udldesignValue + valueTextWidthDP, current_y + factor);
+            currentX.value = udldesignValue + valueTextWidthDP;
+            console.log(currentX.value);
+            current_y = current_y + 10;
 
-        const valueTextWidthanchorDesc = doc.getTextWidth(anchordescriptionText);
-        const valueTextWidthAnchor = doc.getTextWidth(`${anchorDescription.value}`);
-        const udlanchorStartXValue = LeftStart;
-        doc.text(anchordescriptionText, udlanchorStartXValue, current_y);
-        current_y = current_y + 10;
-        const udlanchorValue = LeftStart;
+            const valueTextWidthanchorDesc = doc.getTextWidth(anchordescriptionText);
+            const valueTextWidthAnchor = doc.getTextWidth(`${anchorDescription.value}`);
+            const udlanchorStartXValue = LeftStart;
+            doc.text(anchordescriptionText, udlanchorStartXValue, current_y);
+            current_y = current_y + 10;
+            const udlanchorValue = LeftStart;
 
-        doc.text(`${anchorDescription.value}`, udlanchorValue, current_y);
-        doc.line(udlanchorValue, current_y + factor, udlanchorValue + valueTextWidthAnchor, current_y + factor);
-        currentX.value = udlanchorValue + valueTextWidthAnchor;
-        current_y = current_y + 10;
-        //     console.log(currentX.value);
+            doc.text(`${anchorDescription.value}`, udlanchorValue, current_y);
+            doc.line(udlanchorValue, current_y + factor, udlanchorValue + valueTextWidthAnchor, current_y + factor);
+            currentX.value = udlanchorValue + valueTextWidthAnchor;
+            current_y = current_y + 10;
+            //     console.log(currentX.value);
 
-        const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
-        const valueTextWidth_3 = doc.getTextWidth(`${udlDescription.value}`);
-        const udldescStartXValue = LeftStart;
+            const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
+            const valueTextWidth_3 = doc.getTextWidth(`${udlDescription.value}`);
+            const udldescStartXValue = LeftStart;
 
-        doc.text(udldescriptionText, udldescStartXValue, current_y);
+            doc.text(udldescriptionText, udldescStartXValue, current_y);
 
-        const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
+            const udldescriptionValue = udldescStartXValue + valueTextWidthpolyDesc;
 
-        doc.text(`${udlDescription.value}`, udldescriptionValue, current_y);
-        doc.line(udldescriptionValue, current_y + factor, udldescriptionValue + valueTextWidth_3, current_y + factor);
-        currentX.value = udldescriptionValue + valueTextWidth_3;
-        console.log(currentX.value);
-        current_y = current_y + 10;
-        // }
+            doc.text(`${udlDescription.value}`, udldescriptionValue, current_y);
+            doc.line(udldescriptionValue, current_y + factor, udldescriptionValue + valueTextWidth_3, current_y + factor);
+            currentX.value = udldescriptionValue + valueTextWidth_3;
+            console.log(currentX.value);
+            current_y = current_y + 10;
+        }
         const sbsnoaText = 'Self Adhered NOA: ';
         const sbsapplicantText = 'S/A NOA Applicant: ';
         const sbsSystemFText = 'S/A System F: ';
@@ -606,20 +545,22 @@ const generatePDF = () => {
             const valueTextWidthsbsApplicant = doc.getTextWidth(sbsapplicantText);
             const valueTextWidthApp = doc.getTextWidth(saApplicant);
             const saApplicantStartXValue = currentX.value + 3;
+            const valueTextAppWidth = doc.getTextWidth(saSystemF);
             doc.text(sbsapplicantText, saApplicantStartXValue, current_y);
             const sbsapplicantValue = saApplicantStartXValue + valueTextWidthsbsApplicant;
             doc.text(saApplicant, sbsapplicantValue, current_y);
-            doc.line(sbsapplicantValue, current_y + factor, sbsapplicantValue + valueTextWidthApp, current_y + factor);
-            currentX.value = sbsapplicantValue + valueTextWidthApp;
+            doc.line(sbsapplicantValue, current_y + factor, sbsapplicantValue + valueTextAppWidth, current_y + factor);
+            currentX.value = sbsapplicantValue + valueTextAppWidth;
             console.log(currentX.value);
 
             const valueTextWidthSystem = doc.getTextWidth(sbsSystemFText);
+            const valueTextSystemFWidth = doc.getTextWidth(saSystemF);
             const saSystemFStartXValue = currentX.value + 3;
             doc.text(sbsSystemFText, saSystemFStartXValue, current_y);
             const sbsSystemFValue = saSystemFStartXValue + valueTextWidthSystem;
             doc.text(saSystemF, sbsSystemFValue, current_y);
-            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextWidthSystem, current_y + factor);
-            currentX.value = sbsSystemFValue + valueTextWidthSystem;
+            doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextSystemFWidth, current_y + factor);
+            currentX.value = sbsSystemFValue + valueTextSystemFWidth;
             console.log(currentX.value);
             current_y = current_y + 10;
 
@@ -706,7 +647,6 @@ const generatePDF = () => {
         }
         current_y = current_y + 10;
 
-        doc.setFontSize(10);
         const valueTextWidth0 = doc.getTextWidth(`${applicant.value}`);
         const valueTextWidthApp = doc.getTextWidth(applicantText);
         const applicantStartXValue = LeftStart;
@@ -715,69 +655,80 @@ const generatePDF = () => {
         doc.text(`${applicant.value}`, applicantValue, current_y);
         doc.line(applicantValue, current_y + factor, applicantValue + valueTextWidth0, current_y + factor);
 
-        currentX.value = applicantValue + valueTextWidth0;
+        currentX.value = applicantValue + valueTextWidthApp + 10;
 
         const noaValueTextWidth = doc.getTextWidth(noaText);
         const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
         const noaStartXValue = currentX.value + noaValueTextWidth;
-        doc.text(noaText, currentX.value + 2, current_y);
-        doc.text(`${noa.value}`, noaStartXValue + 2, current_y);
-        doc.line(noaStartXValue, current_y + factor, noaStartXValue + valueTextWidth3, current_y + factor);
-        currentX.value = noaStartXValue + valueTextWidth3;
-
+        doc.text(noaText, noaStartXValue, current_y);
+        const noaXValue = noaStartXValue + 38;
+        doc.text(`${noa.value}`, noaXValue, current_y);
+        doc.line(noaXValue, current_y + factor, noaXValue + valueTextWidth3, current_y + factor);
+        currentX.value = noaXValue + valueTextWidth3;
+        current_y = current_y + 10;
         // if (currentX.value < max_width)
 
         // currentX provides the update of the x coordinate
         const fourthYCoordinate = current_y;
+        if (multiContent === true) {
+            const valueTextWidthTileType = doc.getTextWidth(TileTypeText);
+            const valueTextWidthMaterial = doc.getTextWidth(`${tileType.value}`);
+            const TileTypeStartXValue = LeftStart;
+            doc.text(TileTypeText, TileTypeStartXValue, fourthYCoordinate);
+            const tileTypeValue = TileTypeStartXValue + valueTextWidthTileType;
+            currentX.value = valueTextWidthTileType + valueTextWidthMaterial;
 
-        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
-        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        const materialStartXValue = currentX.value + 5;
-        doc.text(materialText, materialStartXValue, fourthYCoordinate);
-        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-        currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
+            doc.text(`${tileType.value}`, tileTypeValue, fourthYCoordinate);
+            doc.line(tileTypeValue, fourthYCoordinate + factor, tileTypeValue + valueTextWidthMaterial, fourthYCoordinate + factor);
+            current_y = current_y + 10;
+            const valueTextWidthFastener = doc.getTextWidth(fastenerText);
+            const valueWidthFastener = doc.getTextWidth(`${tileFastener.value}`);
+            currentX.value = LeftStart;
+            // if (currentX.value > max_width) current_y = current_y + 10;
+            // this is the text we want to underline
+            const FastenerStartXValue = currentX.value;
+            doc.text(fastenerText, FastenerStartXValue, current_y);
+            console.log(currentX.value);
+            const fastenerValue = FastenerStartXValue + valueTextWidthFastener;
+            doc.text(`${tileFastener.value}`, fastenerValue, current_y);
+            doc.line(fastenerValue, current_y + factor, fastenerValue + valueWidthFastener, current_y + factor);
+            currentX.value = fastenerValue + valueWidthFastener;
+            current_y = current_y + 10;
+        } else {
+            const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
+            const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+            const materialStartXValue = currentX.value + 5;
+            doc.text(materialText, materialStartXValue, fourthYCoordinate);
+            const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
+            currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
 
-        console.log(currentX.value, topRightx);
-        if (currentX.value > topRightx) current_y = current_y + 10;
-        doc.text(`${material.value}`, materialValue, fourthYCoordinate);
-        doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
+            current_y = current_y + 10;
+            doc.text(`${material.value}`, materialValue, fourthYCoordinate);
+            doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
 
-        // current_y = current_y + 10;
-        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-        const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
-        currentX.value = materialValue + valueTextWidthDesc;
-        current_y = current_y + 10;
-        const descStartXValue = LeftStart;
-        doc.text(descriptionText, descStartXValue, current_y);
-        console.log(currentX.value);
-        // if (currentX.value > max_width) current_y = current_y + 10;
-        // this is the text we want to underline
-        const descriptionValue = descStartXValue + valueTextWidthDesc;
-        doc.text(`${description.value}`, descriptionValue, current_y);
-        doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidthDescription, current_y + factor);
-        currentX.value = descriptionValue + valueTextWidthDescription;
-
-        const valueTextWidthFastener = doc.getTextWidth(fastenerText);
-        const valueWidthFastener = doc.getTextWidth(`${tileFastener.value}`);
-        currentX.value = currentX.value + 5;
-        // if (currentX.value > max_width) current_y = current_y + 10;
-        // this is the text we want to underline
-        const FastenerStartXValue = currentX.value;
-        doc.text(fastenerText, FastenerStartXValue, current_y);
-        console.log(currentX.value);
-        const fastenerValue = FastenerStartXValue + valueTextWidthFastener;
-        doc.text(`${tileFastener.value}`, fastenerValue, current_y);
-        doc.line(fastenerValue, current_y + factor, fastenerValue + valueWidthFastener, current_y + factor);
-        currentX.value = fastenerValue + valueWidthFastener;
+            // current_y = current_y + 10;
+            const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+            const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
+            currentX.value = materialValue + valueTextWidthDesc;
+            current_y = current_y + 10;
+            const descStartXValue = LeftStart;
+            doc.text(descriptionText, descStartXValue, current_y);
+            console.log(currentX.value);
+            // if (currentX.value > max_width) current_y = current_y + 10;
+            // this is the text we want to underline
+            const descriptionValue = descStartXValue + valueTextWidthDesc;
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidthDescription, current_y + factor);
+            currentX.value = descriptionValue + valueTextWidthDescription;
+        }
 
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
-        //
         const tableData = [
             // Zone 1
-            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
-            ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
-            ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+            ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'x', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'x', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
         // doc.setFont('times', 'normal');
@@ -799,6 +750,7 @@ const generatePDF = () => {
             doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
             doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
             doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            startYY += 5; // Move to next row
             startYY += 5; // Move to next row
         });
         current_y = current_y + 20;
@@ -834,7 +786,7 @@ const generatePDF = () => {
                 if (response.ok) {
                     uploadUrl.value = s3Url;
 
-                    alert('File uploaded successfully!');
+                    alert('Mechanical File uploaded successfully!');
                 } else {
                     alert(`Failed to upload file. Status: ${response.status}`);
                 }

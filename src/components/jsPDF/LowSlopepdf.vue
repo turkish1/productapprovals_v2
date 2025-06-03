@@ -140,8 +140,8 @@ const generatePDF = () => {
         doc.text(approved, 10, 270, { align: 'left' });
         const approvedWidth = doc.getTextWidth(approved);
         doc.text('on: ' + formattedDate, approvedWidth + 15, 270);
-        doc.text(`${processNumber.value}`, 10, 280, { align: 'left' });
-        const procWidth = doc.getTextWidth(`${processNumber.value}`);
+        doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
+        const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
         doc.text(`${municipality.value}`, procWidth + 15, 280);
 
         // Add a paragraph of text
@@ -416,7 +416,7 @@ const generatePDF = () => {
                 if (response.ok) {
                     uploadUrl.value = s3Url;
 
-                    alert('File uploaded successfully!');
+                    alert('LowSlope File uploaded successfully!');
                 } else {
                     alert(`Failed to upload file. Status: ${response.status}`);
                 }

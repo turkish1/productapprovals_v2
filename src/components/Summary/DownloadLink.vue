@@ -1,42 +1,13 @@
 <template>
     <div class="card">
-        <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
-
+        <i class="pi pi-home" style="font-size: 2rem" @click="navigateNext"></i>
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
-            <!-- <Stripes /> -->
-            <!-- -->
             <div class="payment-widget">
                 <h2 style="color: black">Download Link</h2>
                 <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="startDownload" />
-                <!--
-                <BuyButton @click="handleTime" /> -->
-                <!-- <div class="form-group">
-                        <label for="cardholder-name">Cardholder Name</label>
-                        <input type="text" id="cardholder-name" v-model="form.cardholderName" placeholder="Boris Gomez" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="card-number">Card Number</label>
-                        <input type="text" id="card-number" v-model="form.cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required />
-                    </div>
-
-                    <div class="form-group small-inputs">
-                        <div>
-                            <label for="expiry-date">Expiry Date</label>
-                            <input type="text" id="expiry-date" v-model="form.expiryDate" maxlength="5" placeholder="MM/YY" required />
-                        </div>
-                        <div>
-                            <label for="cvv">CVV</label>
-                            <input type="text" id="cvv" v-model="form.cvv" maxlength="4" placeholder="123" required />
-                        </div>
-                    </div>
-
-                    <button type="submit">Pay</button>
-                </form> -->
-
-                <div v-if="submitted" class="confirmation">
-                    <p>Thank you, {{ Name }}! Your payment of ${{ 107.0 }} was processed.</p>
-                </div>
+            </div>
+            <div v-if="submitted" class="confirmation">
+                <p>Thank you, {{ Name }}! Your payment of ${{ 107.0 }} was processed.</p>
             </div>
         </div>
     </div>
@@ -48,23 +19,22 @@ import { countStore } from '@/stores/countStore';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
-
 import { invoke, tryOnMounted, until, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
-import { VueSpinnerBall } from 'vue3-spinners';
+import { useRouter } from 'vue-router';
+
 const permitStore = usePermitappStore();
 
 const cntStore = countStore();
 const count = ref(0);
 
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
-
+const { secondFetch } = useDownloadpdf(muniProcessNumber.value);
 // State for the form and payment
 
 // State for toggles
 const isdataValid = ref(false);
-const isloading = ref(false);
 const isUrldownloadValid = ref(false);
 const status = ref(false);
 const timedOut = ref(false);
@@ -72,13 +42,13 @@ const submitted = ref(false);
 
 const checkoutRef = ref(null);
 
-const { getNumber, result, secondFetch } = useDownloadpdf();
+// const { getNumber, result, secondFetch } = useDownloadpdf();
 const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
 
 // Global state
 const { resp } = useGlobalState();
-
+const router = useRouter();
 // On mount
 onMounted(() => {
     count.value = 1;
@@ -108,7 +78,7 @@ const store = useLocalStorage('my-storage', {
 
 // Example function that triggers a store/composable call
 const handleTime = tryOnMounted(() => {
-    getNumber();
+    // getNumber();
     // setTimeout(() => {
     //     timedOut.value = true;
     // }, 1000);
@@ -118,41 +88,10 @@ const handleTime = tryOnMounted(() => {
 });
 
 watchOnce(handleTime, () => {});
-// async function downloadPdfFromS3() {
-//     try {
-//         console.log(result);
-//         // Construct the public URL for the file in the bucket
-//         const url = result.download_url;
-//         //  `https://digitalsolutionsroofs.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${muniProcessNumber.value}.zip`;
-//         // console.log(url);
-//         // Fetch the PDF file as a blob
-//         const response = await fetch(url);
-
-//         if (!response.ok) {
-//             throw new Error(`Failed to fetch file. HTTP status: ${response.status}`);
-//         }
-
-//         const blob = await response.blob();
-//         console.log(blob);
-//         // Create a temporary link element
-//         const link = document.createElement('a');
-//         link.href = URL.createObjectURL(blob);
-//         link.download = fName.value; // This sets the default file name for the download
-//         document.body.appendChild(link);
-
-//         // Trigger the download
-//         link.click();
-
-//         // Clean up
-//         document.body.removeChild(link);
-//         URL.revokeObjectURL(link.href);
-//     } catch (error) {
-//         console.error('Error downloading PDF:', error);
-//     }
-// }
 
 function startDownload() {
-    secondFetch(store.value);
+    // getNumber();
+    secondFetch(store.value.processNumber);
     downloadFile();
 }
 
@@ -164,6 +103,10 @@ const setOffdownload = tryOnMounted(() => {
     console.log(store.value);
     downloadFile();
 });
+
+const navigateNext = () => {
+    router.push('/');
+};
 const downloadFile = async () => {
     const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
     console.log(arr);
@@ -192,6 +135,7 @@ const downloadFile = async () => {
     isUrldownloadValid.value = true;
     submitted.value = true;
     // OR isUrldownloadValid.value = true;
+    // localStorage.clear();
 };
 
 watchOnce(setOffdownload, startDownload, () => {});
@@ -278,5 +222,9 @@ button:hover {
     color: red;
 }
 
- 
+/* .confirmation {
+    margin-top: 20px;
+    text-align: center;
+    color: green;
+} */
 </style>

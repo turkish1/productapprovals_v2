@@ -94,8 +94,29 @@ export default {
                 formDatas.license_status = '';
             } else if (license_stat.value === 'A') {
                 formDatas.license_status = 'Active';
+                DateCheck();
             } else if (license_stat.value === 'I') {
                 formDatas.license_status = 'Inactive';
+                alert('Your license is Inactive!');
+                navigateNext();
+            }
+        }
+        const isDateValid = ref(false);
+
+        function DateCheck() {
+            // or false depending on your desired default
+            console.log(formDatas.expiration_date);
+            const selected = new Date(formDatas.expiration_date);
+            const now = new Date();
+
+            // Reset time part for accurate comparison
+            selected.setHours(0, 0, 0, 0);
+            now.setHours(0, 0, 0, 0);
+
+            if (selected <= now) {
+                isDateValid === true;
+                alert('Your license is Expired!');
+                navigateNext();
             }
         }
 
@@ -192,7 +213,9 @@ export default {
             disabled,
             navigateNext,
             authStore,
+            DateCheck,
             message,
+            isDateValid,
             isFormValid,
             trade,
             trades,
@@ -219,6 +242,7 @@ export default {
                 <label for="lic1" style="color: #122620">State of Florida License No.</label>
                 <!-- :invalid="formDatas.license === ''" -->
                 <InputText v-tooltip="'Enter your license and hit tab'" type="text" v-model="formDatas.license" placeholder="CRC000000" @change="checkLicense" :invalid="formDatas.license === ''" @keydown.tab="retriveContractor" />
+                <!-- <p v-if="!isDateValid">Your license is expired.</p> -->
             </div>
             <div class="flex flex-wrap gap-2">
                 <label for="trade" style="color: #122620">Trade</label>

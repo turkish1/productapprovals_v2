@@ -35,39 +35,39 @@
         <div class="h-[30rem]"></div>
         <div class="flex flex-wrap justify-center gap-8">
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="slide-up" data-aos-duration="1000">
-                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" size="xlarge" />
-                <span class="text-2xl font-medium">Donna Romito</span>
-                <span class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
+                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/onyamalimba.png" shape="circle" size="xlarge" />
+                <span class="text-2xl font-medium">Boris Sursky</span>
+                <span class="text-center">Creator and Founder.</span>
             </div>
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="slide-down" data-aos-duration="1000">
-                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png" shape="circle" size="xlarge" />
-                <span class="text-2xl font-medium">Nancy Perez</span>
-                <span class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
+                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/onyamalimba.png" shape="circle" size="xlarge" />
+                <span class="text-2xl font-medium">Hugo Blanco</span>
+                <span class="text-center">Developer and co-Founder.</span>
             </div>
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="slide-right" data-aos-duration="1000">
                 <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/onyamalimba.png" shape="circle" size="xlarge" />
-                <span class="text-2xl font-medium">Flavio Gomez</span>
-                <span class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
+                <span class="text-2xl font-medium">Future Investor</span>
+                <span class="text-center">Position to be filled.</span>
             </div>
         </div>
         <div class="h-[30rem]"></div>
         <div class="flex flex-wrap justify-center gap-8">
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="zoom-in-left" data-aos-duration="1000">
-                <span class="bg-white/20 text-xl font-medium rounded-xl px-4 py-2">850K</span>
-                <span class="text-2xl font-bold">Customers</span>
-                <span class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
+                <span class="bg-white/20 text-xl font-medium rounded-xl px-4 py-2">150K</span>
+                <span class="text-2xl font-bold">Permits Issued</span>
+                <span class="text-center">Number of permits accepted by cities.</span>
             </div>
 
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="zoom-in-right" data-aos-duration="1000">
                 <span class="bg-white/20 text-xl font-medium rounded-xl px-4 py-2">$1.5M</span>
-                <span class="text-2xl font-bold">Revenue</span>
-                <span class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
+                <span class="text-2xl font-bold">Cost Saving</span>
+                <span class="text-center">How much the city saved.</span>
             </div>
 
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="zoom-in-down" data-aos-duration="1000">
-                <span class="bg-white/20 text-xl font-medium rounded-xl px-4 py-2">140K</span>
-                <span class="text-2xl font-bold">Sales</span>
-                <span class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
+                <span class="bg-white/20 text-xl font-medium rounded-xl px-4 py-2">14K</span>
+                <span class="text-2xl font-bold">Time Saved in hours</span>
+                <span class="text-center">The time cities now have to allocated to other projects.</span>
             </div>
         </div>
         <div class="h-[20rem]"></div>
@@ -83,8 +83,8 @@
                 <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
                     <i class="pi pi-database !text-2xl"></i>
                 </div>
-                <span class="text-2xl font-bold" @click="navRegister">Register </span>
-                <span class="text-center">Click to Register</span>
+                <span class="text-2xl font-bold">Click to Register </span>
+                <span class="text-center"> <Button id="register" icon="pi pi-building" severity="contrast" variant="text" rounded aria-label="Register" :size="size" :loading="loading" @click="navRegister" /> </span>
             </div>
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="flip-left" data-aos-duration="1000">
                 <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
