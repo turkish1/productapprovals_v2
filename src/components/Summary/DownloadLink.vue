@@ -1,6 +1,8 @@
 <template>
     <div class="card">
-        <i class="pi pi-home" style="font-size: 2rem" @click="navigateNext"></i>
+        <!-- <i class="pi pi-home" style="font-size: 2rem" @click="navigateNext"></i> -->
+        <Button icon="pi pi-home" severity="info" style="font-size: 2rem" @click="navigateNext" />
+
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
             <div class="payment-widget">
                 <h2 style="color: black">Download Link</h2>
