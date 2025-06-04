@@ -29,9 +29,9 @@ export default defineConfig({
         //     open: true // Open the report after the build
         // })
     ],
-    compilerOptions: {
-        isCustomElement: (tag) => tag === 'stripe-buy-button'
-    },
+    // compilerOptions: {
+    //     isCustomElement: (tag) => tag === 'stripe-buy-button'
+    // },
     // build: {
     //     rollupOptions: {
     //         output: {
@@ -50,9 +50,9 @@ export default defineConfig({
     //     }
     // },
 
-    define: {
-        'process.env': process.env // Define process.env to use with Vite
-    },
+    // define: {
+    //     'process.env': process.env // Define process.env to use with Vite
+    // },
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))

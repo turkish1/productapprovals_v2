@@ -11,11 +11,11 @@ const permitStore = usePermitappStore();
 import { ref } from 'vue';
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
-const publishableKey = process.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
 const { secondFetch } = useDownloadpdf();
 
-const buyButtonId = process.env.VITE_BUY_BTN_ID;
+const buyButtonId = import.meta.env.VITE_BUY_BTN_ID;
 
 const timedOut = ref(false);
 const handleTime = tryOnMounted(() => {

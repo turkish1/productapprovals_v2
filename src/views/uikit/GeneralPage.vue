@@ -5,11 +5,12 @@ import { useGlobalState } from '@/stores/accountsStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-import { invoke, until } from '@vueuse/core';
+// import { invoke, until } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import Divider from 'primevue/divider';
-import { defineAsyncComponent, onMounted, ref } from 'vue';
+// defineAsyncComponent,
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
@@ -20,9 +21,9 @@ const generalpageStore = useGeneralpdfStore();
 const { accountUsers } = useGlobalState();
 const { addgeneralpdfData } = storeToRefs(generalpageStore);
 
-const stepGeneralPagePDF = defineAsyncComponent(() => import('@/components/jsPDF/Generalpagepdf.vue'));
+// const stepGeneralPagePDF = defineAsyncComponent(() => import('@/components/jsPDF/Generalpagepdf.vue'));
 
-const availableComponentsPDF = [stepGeneralPagePDF];
+// const availableComponentsPDF = [stepGeneralPagePDF];
 
 let total = ref('');
 let low1 = ref('');
@@ -130,28 +131,28 @@ function roofArea() {
 const steps = ref([
     { component: null } // General Page
 ]);
-const generatePDf = () => {
-    isGenaralPageValid.value = true;
-    const pdfpage = [isGenaralPageValid.value];
-    pdfpage.forEach((val, i) => {
-        if (val) {
-            // steps.value[i].label = stepLabels[i];
-            steps.value[i].component = availableComponentsPDF[i];
-            console.log(i, val);
-            console.log(steps.value[i].component);
-        } else {
-            // steps.value[i].label = '';
-            steps.value[i].component = null;
-        }
-    });
-};
+// const generatePDf = () => {
+//     isGenaralPageValid.value = true;
+//     const pdfpage = [isGenaralPageValid.value];
+//     pdfpage.forEach((val, i) => {
+//         if (val) {
+//             // steps.value[i].label = stepLabels[i];
+//             steps.value[i].component = availableComponentsPDF[i];
+//             console.log(i, val);
+//             console.log(steps.value[i].component);
+//         } else {
+//             // steps.value[i].label = '';
+//             steps.value[i].component = null;
+//         }
+//     });
+// };
 const navigateNext = () => {
     router.push('/dynamicstepper');
 };
 
-invoke(async () => {
-    await until(generatePDf).toBe(true);
-});
+// invoke(async () => {
+//     await until(generatePDf).toBe(true);
+// });
 </script>
 
 <template>
@@ -233,7 +234,11 @@ invoke(async () => {
                     <!-- <label style="margin-left: 50px; margin-top: 30px; color: #122620">Roof Area </label> -->
                 </div>
                 <Divider />
-                <div class="flex items-center space-y-6 gap-4" style="margin-left: 350px"><label style="color: #122620">Roof Area </label></div>
+                <div class="flex items-center space-y-4 gap-4" style="margin-left: 300px">
+                    <label style="color: #122620; font-weight: bold">Roof Area: </label>
+                    <Label style="color: #122620; font-weight: bold; margin-left: 5px; margin-bottom: 10px">{{ total }}</Label>
+                    <!-- <InputText v-model="total" placeholder="Total" /> -->
+                </div>
                 <Divider />
                 <div class="flex flex-col md:w-3/4 mt-4 space-y-6 md:flex-row gap-6">
                     <!-- <div><label for="lowslope" class="ml-1 text-left" style="color: #122620">Low Slope </label></div> -->
@@ -257,7 +262,7 @@ invoke(async () => {
                 <!-- <div class="md:w-2/3 flex flex-col bg-local hover:bg-fixed gap-4"></div> -->
 
                 <div class="md:w-1/3 flex p-2 mt-8 space-y-8 flex-col gap-2" style="margin-top: 80px">
-                    <Button class="w-1/3" type="submit" label="Submit" style="background-color: #a4b5b9" raised as="router-link" to="/dynamicstepper" @click="generatePDf" />
+                    <Button class="w-1/3" type="submit" label="Submit" style="background-color: #a4b5b9" raised as="router-link" to="/dynamicstepper" @click="navigateNext" />
                 </div>
             </div>
         </div>

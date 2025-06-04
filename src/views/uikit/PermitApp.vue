@@ -63,12 +63,13 @@ export default {
 
         async function setProperties() {
             googleAccount.value = await accountUsers.value[0];
-            console.log(googleAccount.value?.bphone);
+
             phone.value = googleAccount.value?.bphone;
             name.value = googleAccount.value?.name;
             email.value = googleAccount.value?.email;
             licenseStatus.value = googleAccount.value?.secondary_status;
             dba.value = googleAccount.value?.dba;
+            console.log(phone.value, googleAccount.value);
         }
 
         watchOnce(setProperties, () => {});
@@ -176,7 +177,6 @@ export default {
 
                 checkV.value = formData.folio;
                 checkMB.value = checkV.value.substring(1, 2);
-                phone.value = googleAccount.value?.bphone;
             } catch (err) {
                 error.value = err.message;
             } finally {
@@ -224,6 +224,7 @@ export default {
             selectedApplication,
             type,
             resNum,
+            setProperties,
             localStorage,
             ...toRefs(formData),
             responseMessage,
@@ -287,7 +288,7 @@ export default {
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label id="phone" style="color: #122620">Cell Phone Number</label>
-                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="phone === ''" />
+                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" />
                                 <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 
