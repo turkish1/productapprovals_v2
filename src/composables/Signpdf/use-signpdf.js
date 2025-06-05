@@ -61,12 +61,12 @@ export default function useSignpdf() {
     //         // alert('An error occurred while fetching data.');
     //     }
     // };
-    async function getSignpdf(processNumber) {
+    function getSignpdf(processNumber) {
         console.log(processNumber);
         sendProc.value = processNumber + '/';
 
         // procNum.value = Number(inp.value);
-        await fetchSignPdf();
+        fetchSignPdf();
     }
 
     const fetchSignPdf = async () => {
