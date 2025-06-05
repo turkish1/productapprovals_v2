@@ -2,7 +2,7 @@ import { useGlobalState } from '@/stores/pdfsignStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 
-export default function useSignpdf(proc) {
+export default function useSignpdf() {
     const inp = ref();
     const sentInput = ref(proc);
     const sendProcessnumber = ref('');
@@ -26,10 +26,14 @@ export default function useSignpdf(proc) {
 
     function getNumbers(Input) {
         inp.value = Input;
-
         sendProcessnumber.value = inp.value + '/';
+        if (sendProcessnumber.value === 'undefined/') {
+            return '';
+        } else {
+            // fetchData();
+        }
 
-        fetchData();
+        // fetchData();
     }
     const { confirmResponse, addResponse } = useGlobalState();
 
@@ -43,7 +47,7 @@ export default function useSignpdf(proc) {
                 results.isFinished = response.isFinished;
                 results.isLoading = response.isLoading;
             });
-            addResponse(results);
+            // addResponse(results);
 
             return results;
         } catch (error) {
@@ -70,7 +74,7 @@ export default function useSignpdf(proc) {
 
                 // return res;
             });
-            store.addDownload(res);
+            addResponse(res);
 
             return res;
         } catch (error) {
