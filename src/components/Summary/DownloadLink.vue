@@ -100,8 +100,6 @@ const setOffdownload = tryOnMounted(() => {
 });
 
 const navigateNext = () => {
-    localStorage.clear();
-    console.log('local storage cleared');
     router.push('/');
 };
 const downloadFile = async () => {

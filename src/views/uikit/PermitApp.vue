@@ -300,11 +300,11 @@ export default {
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="muni" style="color: #122620">Municipality</label>
-                                <InputText id="muni" v-model="muni" type="text" placeholder="municipality" />
+                                <InputText id="muni" v-model="muni" type="text" placeholder="municipality" :style="{ color: 'green' }" />
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="folio" style="color: #122620">Folio</label>
-                                <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" />
+                                <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" :style="{ color: 'green' }" />
                             </div>
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
