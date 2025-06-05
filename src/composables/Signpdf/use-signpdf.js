@@ -23,7 +23,7 @@ export default function useSignpdf() {
         isFinished: '',
         isLoading: ''
     });
-    const procNum = ref();
+    // const procNum = ref();
     const error = ref('');
 
     let url = 'https://4cgf7owinctxji4vx56hnisxh40iskps.lambda-url.us-east-1.on.aws/';
@@ -87,7 +87,8 @@ export default function useSignpdf() {
         } catch (error) {
             console.log('Error, fectching data', error);
             // alert('An error occurred while fetching data.');
+            // procNum,
         }
     };
-    return { error, getNumbers, sendProc, getSignpdf, fetchSignPdf, procNum, sentInput, fetchData, result, confirmResponse, results };
+    return { error, getNumbers, sendProc, getSignpdf, fetchSignPdf, sentInput, result, confirmResponse, results };
 }
