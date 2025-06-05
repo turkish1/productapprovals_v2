@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue';
 
 export default function useSignpdf() {
     const inp = ref();
-    const sentInput = ref(proc);
+    const sentInput = ref('');
     const sendProcessnumber = ref('');
     // let results = ref([]);
 
