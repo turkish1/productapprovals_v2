@@ -3,9 +3,9 @@ import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 
 export default function useSignpdf() {
-    const inp = ref();
-    const sentInput = ref('');
-    const sendProcessnumber = ref('');
+    // const inp = ref();
+    // const sentInput = ref('');
+    // const sendProcessnumber = ref('');
     // let results = ref([]);
 
     const sendProc = ref('');
@@ -30,17 +30,17 @@ export default function useSignpdf() {
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
-    function getNumbers(Input) {
-        inp.value = Input;
-        sendProcessnumber.value = inp.value + '/';
-        if (sendProcessnumber.value === 'undefined/') {
-            return '';
-        } else {
-            // fetchData();
-        }
+    // function getNumbers(Input) {
+    //     inp.value = Input;
+    //     sendProcessnumber.value = inp.value + '/';
+    //     if (sendProcessnumber.value === 'undefined/') {
+    //         return '';
+    //     } else {
+    //         // fetchData();
+    //     }
 
-        // fetchData();
-    }
+    //     // fetchData();
+    // }
     const { confirmResponse, addResponse } = useGlobalState();
 
     // const fetchData = async () => {
@@ -87,8 +87,8 @@ export default function useSignpdf() {
         } catch (error) {
             console.log('Error, fectching data', error);
             // alert('An error occurred while fetching data.');
-            // procNum,
+            // procNum, getNumbers, sentInput,
         }
     };
-    return { error, getNumbers, sendProc, getSignpdf, fetchSignPdf, sentInput, result, confirmResponse, results };
+    return { error, sendProc, getSignpdf, fetchSignPdf, result, confirmResponse, results };
 }

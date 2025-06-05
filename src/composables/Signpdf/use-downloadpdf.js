@@ -3,11 +3,11 @@ import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 
-export default function useDownloadpdf(dnumber) {
+export default function useDownloadpdf() {
     const inp = ref();
     const sendProcessnumber = ref('');
     const sendProc = ref('');
-    const sentInputs = ref(dnumber);
+    // const sentInputs = ref(dnumber);
     const result = reactive({
         status: '',
         message: '',
@@ -22,38 +22,38 @@ export default function useDownloadpdf(dnumber) {
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
     const store = usedownloadStore();
-    function getNumber() {
-        sendProcessnumber.value = sentInputs.value + '/';
-        console.log(sendProcessnumber.value);
-        // procNum.value = Number(inp.value);
-        if (sendProcessnumber.value === 'undefined/') {
-            return '';
-        } else {
-            // fetchData();
-        }
-    }
+    // function getNumber() {
+    //     sendProcessnumber.value = sentInputs.value + '/';
+    //     console.log(sendProcessnumber.value);
+    //     // procNum.value = Number(inp.value);
+    //     if (sendProcessnumber.value === 'undefined/') {
+    //         return '';
+    //     } else {
+    //         // fetchData();
+    //     }
+    // }
 
-    const fetchData = async () => {
-        try {
-            const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((res) => {
-                result.status = res.response.value.status;
-                result.download_url = res.data.value.download_url;
+    // const fetchData = async () => {
+    //     try {
+    //         const response = await execute({ params: { processnumber: sendProcessnumber.value } }).then((res) => {
+    //             result.status = res.response.value.status;
+    //             result.download_url = res.data.value.download_url;
 
-                result.message = res.data.value.message;
-                result.isFinished = res.isFinished;
-                result.isLoading = res.isLoading;
+    //             result.message = res.data.value.message;
+    //             result.isFinished = res.isFinished;
+    //             result.isLoading = res.isLoading;
 
-                // store.addDownload(zip_download_url.value);
-                return res;
-            });
-            store.addDownload(result);
+    //             // store.addDownload(zip_download_url.value);
+    //             return res;
+    //         });
+    //         store.addDownload(result);
 
-            return result;
-        } catch (error) {
-            console.log('Error, fectching data', error);
-            // alert('An error occurred while fetching data.');
-        }
-    };
+    //         return result;
+    //     } catch (error) {
+    //         console.log('Error, fectching data', error);
+    //         // alert('An error occurred while fetching data.');
+    //     }
+    // };
 
     async function secondFetch(processNumber) {
         console.log(processNumber);
@@ -80,7 +80,8 @@ export default function useDownloadpdf(dnumber) {
         } catch (error) {
             console.log('Error, fectching data', error);
             // alert('An error occurred while fetching data.');
+            // sentInputs,
         }
     };
-    return { error, result, secondFetch, fetchDataDownload, sentInputs, getNumber, zip_download_url, store, fetchData };
+    return { error, result, secondFetch, fetchDataDownload, zip_download_url, store };
 }
