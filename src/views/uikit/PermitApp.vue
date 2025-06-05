@@ -48,6 +48,8 @@ export default {
             date: new Date()
         });
         const cccValid = ref(true);
+        const cellPhone = ref('');
+        const isPhoneValid = ref(false);
         const name = ref('');
         const email = ref('');
         const phone = ref('');
@@ -65,7 +67,7 @@ export default {
         async function setProperties() {
             googleAccount.value = await accountUsers.value[0];
 
-            phone.value = googleAccount.value?.bphone;
+            cellPhone.value = googleAccount.value?.bphone;
             name.value = googleAccount.value?.name;
             email.value = googleAccount.value?.email;
             licenseStatus.value = googleAccount.value?.secondary_status;
@@ -77,8 +79,6 @@ export default {
             await until(setProperties).toBe(true);
         });
 
-        const cellPhone = ref('');
-        const isPhoneValid = ref(false);
         const selectedApplication = computed(() => {
             return cccValid.value === true ? type.value[0] : '';
         });
@@ -87,10 +87,10 @@ export default {
             if (accountUsers.value[0]?.bphone !== '') {
                 console.log('not free');
                 isPhoneValid.value = true;
-                cellPhone.value = phone.value;
+                phone.value = accountUsers.value[0]?.bphone;
                 console.log('not free', cellPhone.value, accountUsers.value[0]?.bphone, isPhoneValid.value);
             }
-            return isPhoneValid.value === true ? cellPhone.value : accountUsers.value[0]?.bphone;
+            return isPhoneValid.value === true ? phone.value : accountUsers.value[0]?.bphone;
         });
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
@@ -308,7 +308,7 @@ export default {
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label id="phone" style="color: #122620">Cell Phone Number</label>
-                                <InputMask v-model="cellPhn" mask="(999) 999-9999" placeholder="(999) 999-9999" />
+                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" />
                                 <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 

@@ -60,6 +60,7 @@ const generatePDF = () => {
         let isUDLValidPresc = ref(false);
         let isSAValidPresc = ref(false);
         let multiContent = ref(false);
+
         if (mechStore.tilemech.value[0]?.Table2?.content === 'multiple') {
             multiContent = true;
         }
@@ -78,7 +79,7 @@ const generatePDF = () => {
             format: 'a4', // Smaller page size
             compress: true
         });
-
+        console.log(mechStore.tilemech.value[0]?.Table2);
         const factor = 1;
         const initialYValue = 90;
         const max_width = 179;
@@ -104,8 +105,8 @@ const generatePDF = () => {
         const perimeter = ref(mechStore.tilemech.value[0]?.perimeter || 'N/A');
         const udlPrescriptive = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.prescriptiveSelection);
         console.log(mechStore.tilemech.value[0].prescriptiveSelection);
-        const prescriptive = isUDLValidPresc === true ? udlPrescriptive : ref(mechStore.tilemech.value[0]?.prescriptiveSelection || 'N/A');
-
+        const prescriptive = ref(mechStore.tilemech.value[0]?.prescriptiveSelection || 'N/A');
+        // isUDLValidPresc === true ? udlPrescriptive :
         const area = ref(mechStore.tilemech.value[0]?.area || '');
         const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
         const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
@@ -118,21 +119,21 @@ const generatePDF = () => {
         const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[7]?.dripMTileMaterial || '');
         console.log(mechStore.tilemech.value[0]);
         current_y = current_y + 10;
-        const mf1 = ref(mechStore.tilemech.value[0].mf1 || '');
-        const lambda1 = ref(mechStore.tilemech.value[0].lambda1 || '');
-        const mg1 = ref(mechStore.tilemech.value[0].mg1 || '');
-        const mr1 = ref(mechStore.tilemech.value[0].mr1 || '');
-        const zoneone = ref(mechStore.tilemech.value[0].zoneone || '');
-        const mf2 = ref(mechStore.tilemech.value[0].mf2 || '');
-        const lambda2 = ref(mechStore.tilemech.value[0].lambda2 || '');
-        const mg2 = ref(mechStore.tilemech.value[0].mg2 || '');
-        const mr2 = ref(mechStore.tilemech.value[0].mr2 || '');
-        const zonetwo = ref(mechStore.tilemech.value[0].zonetwo || '');
-        const mf3 = ref(mechStore.tilemech.value[0].mf3 || '');
-        const lambda3 = ref(mechStore.tilemech.value[0].lambda3 || '');
-        const mg3 = ref(mechStore.tilemech.value[0].mg3 || '');
-        const mr3 = ref(mechStore.tilemech.value[0].mr3);
-        const zonethree = ref(mechStore.tilemech.value[0].zonethree || '');
+        const mf1 = ref(mechStore.tilemech.value[0]?.mf1 || '');
+        const lambda1 = ref(mechStore.tilemech.value[0]?.lambda1 || '');
+        const mg1 = ref(mechStore.tilemech.value[0]?.mg1 || '');
+        const mr1 = ref(mechStore.tilemech.value[0]?.mr1 || '');
+        const zoneone = ref(mechStore.tilemech.value[0]?.zoneone || '');
+        const mf2 = ref(mechStore.tilemech.value[0]?.mf2 || '');
+        const lambda2 = ref(mechStore.tilemech.value[0]?.lambda2 || '');
+        const mg2 = ref(mechStore.tilemech.value[0]?.mg2 || '');
+        const mr2 = ref(mechStore.tilemech.value[0]?.mr2 || '');
+        const zonetwo = ref(mechStore.tilemech.value[0]?.zonetwo || '');
+        const mf3 = ref(mechStore.tilemech.value[0]?.mf3 || '');
+        const lambda3 = ref(mechStore.tilemech.value[0]?.lambda3 || '');
+        const mg3 = ref(mechStore.tilemech.value[0]?.mg3 || '');
+        const mr3 = ref(mechStore.tilemech.value[0].mr3 || '');
+        const zonethree = ref(mechStore.tilemech.value[0]?.zonethree || '');
 
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
@@ -164,7 +165,7 @@ const generatePDF = () => {
         const lambdaImage = new Image();
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
-        lambdaImage.src = '/demo/images/lambda.jpeg';
+        lambdaImage.src = '/demo/images/lambda.png';
         doc.addImage(logoImage, 'JPEG', 10, 0, 50, 30);
 
         // Set background image for the entire PDF
@@ -337,7 +338,7 @@ const generatePDF = () => {
         const tileType = multiContent === true ? ref(mechStore.tilemech.value[0]?.tiletype) : ref(mechStore.tilemech.value[0]?.material);
         const description = multiContent !== true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
         const tileFastener = multiContent === true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
-        console.log(current_y);
+        console.log(mechStore.tilemech.value[0]?.description, mechStore.tilemech.value[0]?.savedfastener);
         const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
         const prescriptiveTextWidth = doc.getTextWidth(`${prescriptive.value}`);
         const prescriptiveStartXValue = LeftStart;
@@ -683,6 +684,7 @@ const generatePDF = () => {
             current_y = current_y + 10;
             const valueTextWidthFastener = doc.getTextWidth(fastenerText);
             const valueWidthFastener = doc.getTextWidth(`${tileFastener.value}`);
+            console.log(tileFastener.value);
             currentX.value = LeftStart;
             // if (currentX.value > max_width) current_y = current_y + 10;
             // this is the text we want to underline
@@ -697,23 +699,23 @@ const generatePDF = () => {
         } else {
             const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
             const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-            const materialStartXValue = currentX.value + 5;
+            currentX.value = LeftStart;
+            console.log(material.value);
+            const materialStartXValue = currentX.value;
             doc.text(materialText, materialStartXValue, fourthYCoordinate);
             const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-            currentX.value = currentX.value + valueTextWidthMaterial + valueTextWidthMaterialDesc + valueTextWidthApp + valueTextWidth0;
-
-            current_y = current_y + 10;
             doc.text(`${material.value}`, materialValue, fourthYCoordinate);
             doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
-
+            currentX.value = valueTextWidthMaterialDesc + valueTextWidthMaterial + 20;
+            console.log(currentX.value);
             // current_y = current_y + 10;
             const valueTextWidthDesc = doc.getTextWidth(descriptionText);
             const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
-            currentX.value = materialValue + valueTextWidthDesc;
-            current_y = current_y + 10;
-            const descStartXValue = LeftStart;
+
+            // current_y = current_y + 10;
+            const descStartXValue = currentX.value + 10;
             doc.text(descriptionText, descStartXValue, current_y);
-            console.log(currentX.value);
+
             // if (currentX.value > max_width) current_y = current_y + 10;
             // this is the text we want to underline
             const descriptionValue = descStartXValue + valueTextWidthDesc;
@@ -721,7 +723,7 @@ const generatePDF = () => {
             doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidthDescription, current_y + factor);
             currentX.value = descriptionValue + valueTextWidthDescription;
         }
-
+        current_y = current_y + 10;
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
         const tableData = [
