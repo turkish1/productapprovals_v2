@@ -3,8 +3,6 @@
         <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
 
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
-            <!-- <Stripes /> -->
-            <!-- -->
             <div class="payment-widget">
                 <h2 style="color: black">Download Link</h2>
                 <Button v-show="isUrldownloadValid" @click="startDownload" severity="contrast">Click Download Files</Button>

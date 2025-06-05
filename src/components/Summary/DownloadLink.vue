@@ -133,7 +133,7 @@ const downloadFile = async () => {
     // localStorage.clear();
 };
 
-watchOnce(setOffdownload, startDownload, () => {});
+watchOnce(setOffdownload, () => {});
 invoke(async () => {
     await until(setOffdownload).toBe(true);
 });
