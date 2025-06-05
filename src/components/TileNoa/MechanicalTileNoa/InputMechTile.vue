@@ -1420,7 +1420,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <label style="color: #122620" for="selecttile">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
-            <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 30px">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="updateMF" />
             </div>

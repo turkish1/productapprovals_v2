@@ -125,11 +125,17 @@ export default {
                 // 3. Make the Fetch API request with CORS enabled
                 // const response = (await fetch(url)).json().then(addresses);
                 // console.log(muniProcess.value);
-                formData.license = accountUsers.value[0].license;
-                formData.contractor = accountUsers.value[0].name;
-                formData.emails = accountUsers.value[0].email;
+                formData.license = licenseStatus.value;
+                formData.contractor = dba.value;
+                formData.emails = email.value;
                 formData.muniProc = muniProcess.value;
-                formData.phNumber = accountUsers.value[0].bphone;
+                formData.phNumber = phone.value;
+
+                //     phone.value = googleAccount.value?.bphone;
+                // name.value = googleAccount.value?.name;
+                // email.value = googleAccount.value?.email;
+                // licenseStatus.value = googleAccount.value?.secondary_status;
+                // dba.value = googleAccount.value?.dba;
                 // console.log(resNum.value);
                 // let strLength = String(lastNum.value.body);
                 let strLength = String(resNum.value);

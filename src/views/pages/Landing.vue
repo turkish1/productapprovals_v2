@@ -113,6 +113,7 @@ const loading = ref(false);
 
 const load = () => {
     loading.value = true;
+
     setTimeout(() => {
         loading.value = false;
     }, 2000);
@@ -124,6 +125,7 @@ onMounted(() => {
         easing: 'ease-in-out', // Easing for animations
         once: true // Whether animation happens only once
     });
+    localStorage.clear();
 });
 
 function navLogin() {

@@ -58,9 +58,12 @@ export default function useDownloadpdf(dnumber) {
     async function secondFetch(processNumber) {
         console.log(processNumber);
         sendProc.value = processNumber + '/';
-
+        if (sendProc.value === 'undefined/') {
+            return '';
+        } else {
+            await fetchDataDownload();
+        }
         // procNum.value = Number(inp.value);
-        await fetchDataDownload();
     }
     const fetchDataDownload = async () => {
         try {
