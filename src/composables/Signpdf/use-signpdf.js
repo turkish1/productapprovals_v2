@@ -19,7 +19,7 @@ export default function useSignpdf() {
     const result = reactive({
         status: '',
         message: '',
-        download_url: '',
+
         isFinished: '',
         isLoading: ''
     });
