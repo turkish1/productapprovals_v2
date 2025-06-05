@@ -80,19 +80,12 @@ const store = useLocalStorage('my-storage', {
 
 // Example function that triggers a store/composable call
 const handleTime = tryOnMounted(() => {
-    // getNumber();
-    // setTimeout(() => {
-    //     timedOut.value = true;
-    // }, 1000);
     isUrldownloadValid.value = true;
-    // secondFetch(store.value);
-    // console.log(store.value);
 });
 
 watchOnce(handleTime, () => {});
 
 function startDownload() {
-    // getNumber();
     secondFetch(store.value.processNumber);
     downloadFile();
 }
@@ -102,11 +95,13 @@ const setOffdownload = tryOnMounted(() => {
         timedOut.value = true;
     }, 1000);
     secondFetch(store.value);
-    console.log(store.value);
+
     downloadFile();
 });
 
 const navigateNext = () => {
+    localStorage.clear();
+    console.log('local storage cleared');
     router.push('/');
 };
 const downloadFile = async () => {
