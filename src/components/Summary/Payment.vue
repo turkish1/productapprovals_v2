@@ -22,7 +22,7 @@ import { usePermitappStore } from '@/stores/permitapp';
 import { invoke, tryOnMounted, until, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { VueSpinnerBall } from 'vue3-spinners';
 
@@ -47,15 +47,14 @@ const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
 const router = useRouter();
 
+onBeforeMount(() => {
+    localStorage.clear();
+});
 const store = useLocalStorage('my-storage', {
     processNumber: muniProcessNumber.value
 });
 // Global state
 const { resp } = useGlobalState();
-
-onBeforeUnmount(() => {
-    // endProgress();
-});
 
 const toast = useToast();
 const value1 = ref(0);

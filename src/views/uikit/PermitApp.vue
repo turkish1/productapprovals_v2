@@ -61,7 +61,6 @@ export default {
             setProperties();
             isDialog.value = true;
             // setProperties();
-            localStorage.clear();
         });
 
         async function setProperties() {
