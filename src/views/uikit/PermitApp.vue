@@ -56,8 +56,9 @@ export default {
         const googleAccount = ref([]);
 
         tryOnMounted(() => {
-            isDialog.value = true;
             setProperties();
+            isDialog.value = true;
+            // setProperties();
             localStorage.clear();
         });
 
@@ -69,17 +70,28 @@ export default {
             email.value = googleAccount.value?.email;
             licenseStatus.value = googleAccount.value?.secondary_status;
             dba.value = googleAccount.value?.dba;
-            console.log(phone.value, googleAccount.value);
         }
 
         watchOnce(setProperties, () => {});
         invoke(async () => {
             await until(setProperties).toBe(true);
         });
+
+        const cellPhone = ref('');
+        const isPhoneValid = ref(false);
         const selectedApplication = computed(() => {
             return cccValid.value === true ? type.value[0] : '';
         });
 
+        const cellPhn = computed(() => {
+            if (accountUsers.value[0]?.bphone !== '') {
+                console.log('not free');
+                isPhoneValid.value = true;
+                cellPhone.value = phone.value;
+                console.log('not free', cellPhone.value, accountUsers.value[0]?.bphone, isPhoneValid.value);
+            }
+            return isPhoneValid.value === true ? cellPhone.value : accountUsers.value[0]?.bphone;
+        });
         const { pNum } = useProcess();
         const { lastNum, resNum } = useLast();
         // fix the phone error with if statement and validation
@@ -125,11 +137,17 @@ export default {
                 // 3. Make the Fetch API request with CORS enabled
                 // const response = (await fetch(url)).json().then(addresses);
                 // console.log(muniProcess.value);
-                formData.license = accountUsers.value[0].license;
-                formData.contractor = accountUsers.value[0].name;
-                formData.emails = accountUsers.value[0].email;
+                formData.license = licenseStatus.value;
+                formData.contractor = dba.value;
+                formData.emails = email.value;
                 formData.muniProc = muniProcess.value;
-                formData.phNumber = accountUsers.value[0].bphone;
+                formData.phNumber = phone.value;
+
+                //     phone.value = googleAccount.value?.bphone;
+                // name.value = googleAccount.value?.name;
+                // email.value = googleAccount.value?.email;
+                // licenseStatus.value = googleAccount.value?.secondary_status;
+                // dba.value = googleAccount.value?.dba;
                 // console.log(resNum.value);
                 // let strLength = String(lastNum.value.body);
                 let strLength = String(resNum.value);
@@ -216,6 +234,8 @@ export default {
             invoke,
             phone,
             name,
+            cellPhn,
+            cellPhone,
             licenseStatus,
             muniProcess,
             addUser,
@@ -288,7 +308,7 @@ export default {
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label id="phone" style="color: #122620">Cell Phone Number</label>
-                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" />
+                                <InputMask v-model="cellPhn" mask="(999) 999-9999" placeholder="(999) 999-9999" />
                                 <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 

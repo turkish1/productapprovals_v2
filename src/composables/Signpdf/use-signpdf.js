@@ -81,7 +81,7 @@ export default function useSignpdf() {
 
                 // return res;
             });
-            addResponse(res);
+            addResponse(result);
 
             // return res;
         } catch (error) {
