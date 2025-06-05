@@ -8,6 +8,7 @@ export default function useSignpdf(proc) {
     const sendProcessnumber = ref('');
     // let results = ref([]);
 
+    const sendProc = ref('');
     const results = reactive({
         status: '',
         message: '',
@@ -55,27 +56,27 @@ export default function useSignpdf(proc) {
         sendProc.value = processNumber + '/';
 
         // procNum.value = Number(inp.value);
-        await fetchDataDownload();
+        await fetchSignPdf();
     }
 
     const fetchSignPdf = async () => {
         try {
             const response = await execute({ params: { processnumber: sendProc.value } }).then((res) => {
-                results.status = response.response.value.status;
+                res.status = response.response.value.status;
 
-                results.message = response.data.value;
-                results.isFinished = response.isFinished;
-                results.isLoading = response.isLoading;
+                res.message = response.data.value;
+                res.isFinished = response.isFinished;
+                res.isLoading = response.isLoading;
 
                 // return res;
             });
-            store.addDownload(results);
+            store.addDownload(res);
 
-            return results;
+            return res;
         } catch (error) {
             console.log('Error, fectching data', error);
             // alert('An error occurred while fetching data.');
         }
     };
-    return { error, getNumbers, getSignpdf, fetchSignPdf, procNum, sentInput, fetchData, confirmResponse, results };
+    return { error, getNumbers, sendProc, getSignpdf, fetchSignPdf, procNum, sentInput, fetchData, confirmResponse, results };
 }
