@@ -95,7 +95,7 @@ const timedOut = ref(false);
 const submitted = ref(false);
 // Download composable
 
-const { getNumbers } = useSignpdf(muniProcessNumber.value);
+const { getSignpdf } = useSignpdf();
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
         dba.value = item.dba;
@@ -104,7 +104,8 @@ function displayUserInfo() {
 
 const callPdfSign = tryOnMounted(() => {
     // This creates the digital signature
-    getNumbers(muniProcessNumber.value);
+    // getNumbers(muniProcessNumber.value);
+    getSignpdf(muniProcessNumber.value);
     isSigned.value = true;
     setTimeout(() => {
         isSigned.value = true;

@@ -50,6 +50,32 @@ export default function useSignpdf(proc) {
             // alert('An error occurred while fetching data.');
         }
     };
+    async function getSignpdf(processNumber) {
+        console.log(processNumber);
+        sendProc.value = processNumber + '/';
 
-    return { error, getNumbers, procNum, sentInput, fetchData, confirmResponse, results };
+        // procNum.value = Number(inp.value);
+        await fetchDataDownload();
+    }
+
+    const fetchSignPdf = async () => {
+        try {
+            const response = await execute({ params: { processnumber: sendProc.value } }).then((res) => {
+                results.status = response.response.value.status;
+
+                results.message = response.data.value;
+                results.isFinished = response.isFinished;
+                results.isLoading = response.isLoading;
+
+                // return res;
+            });
+            store.addDownload(results);
+
+            return results;
+        } catch (error) {
+            console.log('Error, fectching data', error);
+            // alert('An error occurred while fetching data.');
+        }
+    };
+    return { error, getNumbers, getSignpdf, fetchSignPdf, procNum, sentInput, fetchData, confirmResponse, results };
 }
