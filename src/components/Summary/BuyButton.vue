@@ -21,7 +21,7 @@ const timedOut = ref(false);
 const handleTime = tryOnMounted(() => {
     setTimeout(() => {
         timedOut.value = true;
-    }, 2000);
+    }, 1000);
 
     secondFetch(muniProcessNumber.value);
     timedOut.value = false;

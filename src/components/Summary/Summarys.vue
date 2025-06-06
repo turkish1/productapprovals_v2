@@ -51,7 +51,6 @@
 <script setup>
 import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { useGlobalState } from '@/stores/accountsStore';
-
 import { countStore } from '@/stores/countStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
@@ -94,7 +93,7 @@ const status = ref(false);
 const timedOut = ref(false);
 const submitted = ref(false);
 // Download composable
-
+const { confirmResponse, resp } = useGlobalState();
 const { getSignpdf } = useSignpdf();
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
@@ -107,9 +106,10 @@ const callPdfSign = tryOnMounted(() => {
     // getNumbers(muniProcessNumber.value);
     getSignpdf(muniProcessNumber.value);
     isSigned.value = true;
-    setTimeout(() => {
-        isSigned.value = true;
-    }, 1000);
+    console.log(resp, confirmResponse);
+    // setTimeout(() => {
+    //     isSigned.value = true;
+    // }, 1000);
 
     console.log(muniProcessNumber.value);
 });

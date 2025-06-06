@@ -85,10 +85,10 @@ const handleTime = tryOnMounted(() => {
 
 watchOnce(handleTime, () => {});
 
-// function startDownload() {
-//     secondFetch(store.value.processNumber);
-//     downloadFile();
-// }
+function startDownload() {
+    secondFetch(store.value.processNumber);
+    downloadFile();
+}
 
 const setOffdownload = tryOnMounted(() => {
     setTimeout(() => {

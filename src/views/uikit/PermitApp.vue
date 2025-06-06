@@ -1,262 +1,189 @@
-<script>
-import useLast from '@/composables/lastNumber.js';
-import useProcess from '@/composables/process.js';
-import usecreateProcessnumber from '@/composables/use-createProcessnumber';
-import { useGlobalState } from '@/stores/accountsStore';
-import { usePermitappStore } from '@/stores/permitapp';
+<script setup>
+// ---- imports -------------------------------------------------------------
+import { useprocStore } from '@/stores/processStore';
 import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
-import { computed, reactive, ref, toRefs } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-// import AOS from 'aos';
-// nextTick,
-export default {
-    setup() {
-        const loading = ref(false);
-        const responseMessage = ref('');
-        const router = useRouter();
-        const isDialog = ref(false);
-        const content = ref();
+import useLast from '@/composables/lastNumber.js';
+import useProcess from '@/composables/process.js';
+import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 
-        const { procData, procReceive } = usecreateProcessnumber();
-        const { accountUsers, getUser, addUser } = useGlobalState();
+import { useGlobalState } from '@/stores/accountsStore';
+import { usePermitappStore } from '@/stores/permitapp';
 
-        // const selectedApplication = ref();
+// ---- state ----------------------------------------------------------------
+const loading = ref(false);
+const responseMessage = ref('');
+const isDialog = ref(false);
+const content = ref();
 
-        const type = ref([
-            { name: 'Roofing Permit', code: 'RP' },
-            { name: 'Doors Permit', code: 'DP' },
-            { name: 'Windows Permit', code: 'WP' }
-        ]);
+const router = useRouter();
+const procStore = useprocStore();
+// composables & stores
+const { procData, procReceive } = useCreateProcessNumber();
+const { accountUsers, getUser, addUser } = useGlobalState();
+const store = usePermitappStore();
 
-        const prefix = ref('me');
-        const store = usePermitappStore();
-        const muniProcess = ref('');
-        const muniProcessdata = ref('');
-        const formData = reactive({
-            address: '',
-            muni: '',
-            license: '',
-            folio: '',
-            contractor: '',
-            permit: '',
-            processNumber: '',
-            phNumber: '',
-            emails: '',
-            muniProc: '',
+// static options
+const type = ref([
+    { name: 'Roofing Permit', code: 'RP' },
+    { name: 'Doors Permit', code: 'DP' },
+    { name: 'Windows Permit', code: 'WP' }
+]);
+const prefix = ref('me');
 
-            date: new Date()
-        });
-        const cccValid = ref(true);
-        const cellPhone = ref('');
-        const isPhoneValid = ref(false);
-        const name = ref('');
-        const email = ref('');
-        const phone = ref('');
-        const licenseStatus = ref('');
-        const dba = ref('');
-        const googleAccount = ref([]);
+// reactive form model
+const formData = reactive({
+    address: '',
+    muni: '',
+    license: '',
+    folio: '',
+    contractor: '',
+    permit: '',
+    processNumber: '',
+    phNumber: '',
+    emails: '',
+    muniProc: '',
+    date: new Date()
+});
 
-        tryOnMounted(() => {
-            setProperties();
-            isDialog.value = true;
-            // setProperties();
-            localStorage.clear();
-        });
+// misc refs
+const muniProcess = ref('');
+const muniProcessdata = ref('');
+const cccValid = ref(true);
+const isPhoneValid = ref(false);
+const licenseStatus = ref('');
+const dba = ref('');
+const phone = ref('');
+const name = ref('');
+const email = ref('');
+const googleAccount = ref([]);
+const address = ref('');
 
-        async function setProperties() {
-            googleAccount.value = await accountUsers.value[0];
-
-            cellPhone.value = googleAccount.value?.bphone;
-            name.value = googleAccount.value?.name;
-            email.value = googleAccount.value?.email;
-            licenseStatus.value = googleAccount.value?.secondary_status;
-            dba.value = googleAccount.value?.dba;
-        }
-
-        watchOnce(setProperties, () => {});
-        invoke(async () => {
-            await until(setProperties).toBe(true);
-        });
-
-        const selectedApplication = computed(() => {
-            return cccValid.value === true ? type.value[0] : '';
-        });
-
-        const cellPhn = computed(() => {
-            if (accountUsers.value[0]?.bphone !== '') {
-                console.log('not free');
-                isPhoneValid.value = true;
-                phone.value = accountUsers.value[0]?.bphone;
-                console.log('not free', cellPhone.value, accountUsers.value[0]?.bphone, isPhoneValid.value);
-            }
-            return isPhoneValid.value === true ? phone.value : accountUsers.value[0]?.bphone;
-        });
-        const { pNum } = useProcess();
-        const { lastNum, resNum } = useLast();
-        // fix the phone error with if statement and validation
-
-        const checkMB = ref('');
-        const checkV = ref('');
-        const datas = ref(null);
-        const data = ref('');
-        const error = ref(null);
-        // const loading = ref(false);
-        // onMounted(() => {
-        //     isDialog.value = true;
-        // });
-        const phCheck = ref('');
-
-        const load = async () => {
-            try {
-                loading.value = true;
-                setTimeout(() => {
-                    loading.value = false;
-                }, 1000);
-                // // const ftAddress = ref('3350 SW 23 ST')
-                // permitStore.$state.permitapp[0]?.formdt?.processNumber || ''
-                muniProcessdata.value = muniProcess.value;
-
-                // console.log(muniProcess.value, muniProcessdata.value);
-                const addr = ref(formData.address);
-                // getaddress(addr.value);
-
-                // console.log(addr.value);
-                const base1URL = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr.value}`;
-                // + `address=${encodeURIComponent(addr.value)}&to=200`;
-                // 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress';
-                // console.log(base1URL);
-                // const city = 'FT. FORT LAUDERDALE'
-                // const baseURL = 'https://www.miamidade.gov/Apps/PA/PApublicServiceProxy/PaServicesProxy.ashx?Operation=GetAddress&clientAppName=PropertySearch&myUnit=&from=1';
-                // const baseBrowardURL = 'https://web.bcpa.net/BcpaClient/search.aspx/getParcelInformation'
-                const url = base1URL;
-                fetchData(url);
-                // `${baseURL}&address=${encodeURIComponent(addr.value)}&to=200`;
-                //  const url_ft = `${baseBrowardURL}&myCity${encodeURIComponent(city)}&myAddress=${encodeURIComponent(ftAddress.value)}&to=200`;
-                // const base1URL = 'https://8v6k1o1s0g.execute-api.us-east-1.amazonaws.com/getaddress'
-                // 3. Make the Fetch API request with CORS enabled
-                // const response = (await fetch(url)).json().then(addresses);
-                // console.log(muniProcess.value);
-                formData.license = licenseStatus.value;
-                formData.contractor = dba.value;
-                formData.emails = email.value;
-                formData.muniProc = muniProcess.value;
-                formData.phNumber = phone.value;
-
-                //     phone.value = googleAccount.value?.bphone;
-                // name.value = googleAccount.value?.name;
-                // email.value = googleAccount.value?.email;
-                // licenseStatus.value = googleAccount.value?.secondary_status;
-                // dba.value = googleAccount.value?.dba;
-                // console.log(resNum.value);
-                // let strLength = String(lastNum.value.body);
-                let strLength = String(resNum.value);
-                // console.log(strLength);
-                //  This removes quotes and backlash from the sting
-                let newNumber = strLength.substring(3, 19);
-                // formData.permit = selectedApplication.value;
-                // console.log(newNumber);
-                const number = useToNumber(newNumber);
-                // console.log(typeof number, number.value);
-                let addNumber = number.value + 1;
-                let createStr = String(addNumber);
-                formData.processNumber = prefix.value.concat(createStr);
-                // if (accountUsers.value[0].bphone || accountUsers.value[0].cphone) {
-                //     updateTick();
-                // }
-                // console.log(formData.muniProcess);
-                procReceive(formData);
-                // if checkMB.value === 13 after number conversion disable shingle roof.
-
-                // setTimeout(() => {
-                //     loading.value = false;
-                // }, 2000);
-            } catch (error) {
-                alert(error);
-            }
-        };
-
-        const fetchData = async (url) => {
-            loading.value = true;
-            error.value = null;
-
-            try {
-                const response = await fetch(url);
-                // console.log(url);
-
-                datas.value = await response.json();
-                data.value = datas.value.MinimumPropertyInfos[0];
-
-                formData.muni = data.value.Municipality;
-
-                formData.folio = data.value.Strap;
-                // accountUsers.value[0]?.projects.push(data.value.Owner1);
-                // accountUsers.value[0]?.projects.push(data.value.SiteAddress);
-
-                checkV.value = formData.folio;
-                checkMB.value = checkV.value.substring(1, 2);
-            } catch (err) {
-                error.value = err.message;
-            } finally {
-                loading.value = false;
-            }
-        };
-        const onSubmit = async () => {
-            procReceive(formData);
-        };
-
-        const navigateNext = () => {
-            router.push('/roofsystem');
-            // router.push('/map');
-        };
-
-        function addItemAndClear(formdt, permType) {
-            formdt = formData;
-            permType = selectedApplication.value;
-            console.log(formdt);
-            if (formdt.length === 0) {
-                return;
-            }
-            // muniProcess.value
-            store.addSystem(formdt, permType, checkMB.value, muniProcess.value, muniProcessdata.value);
-
-            // console.log(store);
-        }
-
-        return {
-            isDialog,
-            fetchData,
-            onSubmit,
-            accountUsers,
-            getUser,
-            email,
-            dba,
-            invoke,
-            phone,
-            name,
-            cellPhn,
-            cellPhone,
-            licenseStatus,
-            muniProcess,
-            addUser,
-            navigateNext,
-            addItemAndClear,
-            selectedApplication,
-            type,
-            resNum,
-            setProperties,
-            localStorage,
-            ...toRefs(formData),
-            responseMessage,
-            lastNum,
-            useLast,
-            load,
-            checkMB,
-            checkV,
-            content
-        };
+// ---- lifecycle ------------------------------------------------------------
+tryOnMounted(() => {
+    setProperties();
+    isDialog.value = true;
+    localStorage.clear();
+});
+const cellPhn = computed(() => {
+    if (accountUsers.value[0]?.bphone !== '') {
+        isPhoneValid.value = true;
+        phone.value = accountUsers.value[0].bphone;
+        console.log(phone.value);
     }
-};
+    return isPhoneValid.value === true ? phone.value : accountUsers.value[0]?.bphone;
+});
+
+async function setProperties() {
+    googleAccount.value = await accountUsers.value[0];
+    console.log(googleAccount.value);
+
+    // phone.value = googleAccount.value?.bphone || '';
+    name.value = googleAccount.value?.name || '';
+    email.value = googleAccount.value?.email || '';
+    licenseStatus.value = googleAccount.value?.secondary_status || '';
+    dba.value = googleAccount.value?.dba || '';
+    address.value = procStore.$state.processinput[0]?.procData?.address;
+    phone.value = accountUsers.value[0]?.bphone;
+    // processN.value = procStore.$state.processinput[0]?.procData?.processNumber;
+}
+
+watchOnce(setProperties, cellPhn, () => {
+    /* noop */
+    console.log(setProperties);
+});
+invoke(async () => {
+    await until(isPhoneValid).toBe(true);
+});
+
+// ---- computed -------------------------------------------------------------
+const selectedApplication = computed(() => (cccValid.value ? type.value[0] : ''));
+
+// composables returning refs
+const { pNum } = useProcess();
+const { resNum } = useLast();
+
+// other refs for api
+const checkMB = ref('');
+const checkV = ref('');
+const datas = ref(null);
+const data = ref('');
+const error = ref(null);
+const convMB = ref('');
+// ---- helpers --------------------------------------------------------------
+async function fetchData(url) {
+    loading.value = true;
+    error.value = null;
+    try {
+        const response = await fetch(url);
+
+        datas.value = await response.json();
+        data.value = datas.value.MinimumPropertyInfos[0];
+        console.log(data.value);
+        formData.muni = data.value.Municipality;
+        formData.folio = data.value.Strap;
+
+        checkV.value = formData.folio;
+        convMB.value = checkV.value.substring(1, 2);
+        checkMB.value = useToNumber(convMB);
+        console.log(typeof checkMB.value);
+    } catch (err) {
+        error.value = err.message;
+    } finally {
+        loading.value = false;
+    }
+}
+
+async function load() {
+    try {
+        loading.value = true;
+        setTimeout(() => (loading.value = false), 1000);
+
+        muniProcessdata.value = muniProcess.value;
+        const addr = address.value;
+        console.log(addr);
+        const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
+        console.log(url);
+        await fetchData(url);
+        console.log(muniProcess.value);
+        // enrich form
+        Object.assign(formData, {
+            license: licenseStatus.value,
+            contractor: dba.value,
+            emails: email.value,
+            muniProc: muniProcess.value,
+            phNumber: phone.value
+        });
+
+        const newNumber = String(resNum.value).substring(3, 19);
+        const nextNum = useToNumber(newNumber).value + 1;
+        formData.processNumber = prefix.value.concat(String(nextNum));
+        formData.muniProc = muniProcess.value;
+        formData.address = address.value;
+        console.log(formData);
+        procReceive(formData);
+    } catch (err) {
+        alert(err);
+    }
+}
+
+function onSubmit() {
+    procReceive(formData);
+}
+
+function navigateNext() {
+    router.push('/roofsystem');
+}
+
+function addItemAndClear() {
+    // if (!formData.address) return;
+    console.log(address.value);
+    store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, address.value);
+
+    console.log(store);
+}
 </script>
 
 <template>
@@ -287,9 +214,9 @@ export default {
                                 <label for="addr" style="color: #122620">Property Address</label>
                                 <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
                                 <!-- v-if="!loading"  -->
-                                <Button id="search" type="button" label="Search" class="w-2/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" @input="createHtml" />
+                                <Button id="search" type="button" label="Search" class="w-2/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" />
 
-                                <!-- <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i> -->
+                                <!-- <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>  @input="createHtml"-->
 
                                 <!-- pi-search-plus -->
                                 <!-- <Message severity="error">Property Address Required</Message> -->
@@ -308,7 +235,7 @@ export default {
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label id="phone" style="color: #122620">Cell Phone Number</label>
-                                <InputMask v-model="phone" mask="(999) 999-9999" placeholder="(999) 999-9999" />
+                                <InputMask v-model="formData.phNumber" mask="(999) 999-9999" placeholder="(999) 999-9999" />
                                 <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 
@@ -320,26 +247,27 @@ export default {
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="muni" style="color: #122620">Municipality</label>
-                                <InputText id="muni" v-model="muni" type="text" placeholder="municipality" :style="{ color: 'green' }" />
+                                <InputText id="muni" v-model="formData.muni" type="text" placeholder="municipality" :style="{ color: 'green' }" />
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="folio" style="color: #122620">Folio</label>
-                                <InputText id="folio" v-model="folio" type="text" placeholder="folio" @input="updatemEProcess" :style="{ color: 'green' }" />
+                                <InputText id="folio" v-model="formData.folio" type="text" placeholder="folio" @input="updatemEProcess" :style="{ color: 'green' }" />
                             </div>
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="permit" style="color: #122620">Master Permit</label>
-                                <InputText id="permit" v-model="permit" type="text" placeholder="20000000" />
+                                <InputText id="permit" v-model="formData.permit" type="text" placeholder="20000000" />
                             </div>
                             <div class="flex flex-col font-semibold mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="processnum" style="color: #122620">mEProcess Number</label>
-                                <InputText id="processnum" v-model="processNumber" type="text" placeholder="process number" />
+                                <InputText id="processnum" v-model="formData.processNumber" type="text" placeholder="process number" />
                             </div>
 
                             <p v-if="responseMessage">{{ responseMessage }}</p>
 
                             <br />
-                            <Button id="submit" type="submit" label="Submit" class="w-2/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear(formData, selectedApplication)" />
+                            <!-- formData -->
+                            <Button id="submit" type="submit" label="Submit" class="w-2/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear" />
                         </form>
 
                         <br />
