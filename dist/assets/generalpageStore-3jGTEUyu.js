@@ -1,0 +1,1 @@
+import{M as a}from"./index-G5mPgPjO.js";const p=a("generalpdfinput",{state:()=>({generalpdfinput:[],id:0}),actions:{addgeneralpdfData(e){this.generalpdfinput.push({generalpdfData:e,completed:!1})}},getters:{generalpdfData:e=>e.generalpdfData}});export{p as u};
