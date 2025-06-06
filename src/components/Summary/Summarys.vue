@@ -104,12 +104,11 @@ function displayUserInfo() {
 const callPdfSign = tryOnMounted(() => {
     // This creates the digital signature
     // getNumbers(muniProcessNumber.value);
-    getSignpdf(muniProcessNumber.value);
-    isSigned.value = true;
-    console.log(resp, confirmResponse);
     // setTimeout(() => {
     //     isSigned.value = true;
     // }, 1000);
+    getSignpdf(muniProcessNumber.value);
+    isSigned.value = true;
 
     console.log(muniProcessNumber.value);
 });
