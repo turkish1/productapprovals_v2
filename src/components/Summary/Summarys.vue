@@ -93,7 +93,7 @@ const status = ref(false);
 const timedOut = ref(false);
 const submitted = ref(false);
 // Download composable
-const { confirmResponse, resp } = useGlobalState();
+
 const { getSignpdf } = useSignpdf();
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
@@ -101,18 +101,17 @@ function displayUserInfo() {
     });
 }
 
-const callPdfSign = tryOnMounted(() => {
-    // This creates the digital signature
-    // getNumbers(muniProcessNumber.value);
-    getSignpdf(muniProcessNumber.value);
-    isSigned.value = true;
-    console.log(resp, confirmResponse);
-    // setTimeout(() => {
-    //     isSigned.value = true;
-    // }, 1000);
+// const callPdfSign = tryOnMounted(() => {
+//     // This creates the digital signature
+//     // getNumbers(muniProcessNumber.value);
+//     setTimeout(() => {
+//         isSigned.value = true;
+//     }, 2000);
+//     getSignpdf(muniProcessNumber.value);
+//     isSigned.value = true;
 
-    console.log(muniProcessNumber.value);
-});
+//     console.log(muniProcessNumber.value);
+// });
 const displayInfo = reactive({
     dim: '',
     item: ''
@@ -151,7 +150,8 @@ const events = ref([
     { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
     { status: displayInfo.item, date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
 ]);
-watchOnce(displayUserInfo, callState, callPdfSign, () => {});
+//  callPdfSign,
+watchOnce(displayUserInfo, callState, () => {});
 invoke(async () => {
     await until(callState).toBe(true);
 });

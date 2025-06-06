@@ -15,12 +15,13 @@
 <script setup>
 import BuyButton from '@/components/Summary/BuyButton.vue';
 import useDownloadpdf from '@/composables/Signpdf/use-downloadpdf';
+import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { countStore } from '@/stores/countStore';
 import { usedownloadStore } from '@/stores/downloadpdfStore';
 import { useGlobalState } from '@/stores/pdfsignStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { sessionStore } from '@/stores/sessionStore';
-import { tryOnMounted, useLocalStorage, watchOnce } from '@vueuse/core';
+import { invoke, tryOnMounted, until, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { VueSpinnerBall } from 'vue3-spinners';
@@ -41,6 +42,17 @@ const isUrldownloadValid = ref(false);
 const status = ref(false);
 const timedOut = ref(false);
 
+const { getSignpdf } = useSignpdf();
+const callPdfSign = tryOnMounted(() => {
+    // This creates the digital signature
+    // getNumbers(muniProcessNumber.value);
+    setTimeout(() => {
+        isSigned.value = true;
+    }, 2000);
+    getSignpdf(store.value.processNumber);
+
+    console.log(muniProcessNumber.value);
+});
 // Example fixed payment amount
 
 // console.log(procNumber.value);
@@ -89,7 +101,10 @@ const handleTime = tryOnMounted(() => {
     // downloadFile();
 });
 watchOnce(handleTime, () => {});
-
+watchOnce(callPdfSign, () => {});
+invoke(async () => {
+    await until(isSigned).toBe(true);
+});
 const downloadFile = async () => {
     const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
     console.log(arr);
