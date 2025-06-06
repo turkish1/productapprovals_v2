@@ -85,10 +85,10 @@ const handleTime = tryOnMounted(() => {
 
 watchOnce(handleTime, () => {});
 
-// function startDownload() {
-//     secondFetch(store.value.processNumber);
-//     downloadFile();
-// }
+function startDownload() {
+    secondFetch(store.value.processNumber);
+    downloadFile();
+}
 
 const setOffdownload = tryOnMounted(() => {
     setTimeout(() => {
@@ -133,7 +133,7 @@ const downloadFile = async () => {
     // localStorage.clear();
 };
 
-watchOnce(setOffdownload, () => {});
+watchOnce(setOffdownload, startDownload, () => {});
 invoke(async () => {
     await until(setOffdownload).toBe(true);
 });

@@ -3,13 +3,17 @@ import useS3download from '@/composables/fetchTech/use-S3download';
 import useS3upload from '@/composables/fetchTech/use-S3upload';
 import useBurDetails from '@/composables/fetchTech/use-burdetailsdocs';
 import useburAxios from '@/composables/use-burAxios';
+import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 import { useBurpdfStore } from '@/stores/burpdfStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
 
-//
+const { procData, procReceive } = useCreateProcessNumber();
+
 // Composable & store setup
 //
+const permitStore = usePermitappStore();
 const { removeBeforeSlash } = useS3upload();
 const { downloadFile, fileUrl } = useS3download();
 const fileName = ref('downloaded-file.pdf');
@@ -17,7 +21,7 @@ const { bMaters, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
 
 const burpdfStore = useBurpdfStore();
 const { burpdfinput, addpdfData } = storeToRefs(burpdfStore);
-
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 //
 // Reactive state
 //
@@ -127,7 +131,7 @@ function updateselectSystem(event) {
     }
 
     selectedBurItems.burSystem = value;
-    console.log('Selected system:', value);
+    console.log('Selected system:', value, selectedBurItems.burSystem);
 
     // Get the first part of the system string
     const getFirstPart = (str) => {
@@ -140,6 +144,7 @@ function updateselectSystem(event) {
     // Copy to clipboard and call details function
     copyToClipboard(firstPart);
     calldetailsdoc(firstPart);
+    handleDownload();
 }
 
 // Copies the given text to the clipboard (or simply sets it to our reactive var)
@@ -168,13 +173,14 @@ function prescriptiveThree(event) {
 //
 
 // Dummy variables; replace these with your actual logic/values.
-const fName = 'some-file.pdf';
+const fName = copiedString.value;
 const pdfBlob = new Blob([], { type: 'application/pdf' });
-const objName = 'folder';
+const objName = muniProcessNumber.value;
 const uploadUrl = ref('');
 
 const handleDownload = async () => {
     // Function to upload a file to S3
+    console.log(permitStore.$state);
     const uploadFile = async (fName, pdfBlob) => {
         if (!fName) {
             // alert('Please select a file to upload.');

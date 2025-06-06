@@ -16,7 +16,7 @@ const permitStore = usePermitappStore();
 
 // Assume that permitStore.$state.permitapp is an array and that the first item
 // has a property "miamibeach" that can be converted to a number.
-const MB = ref(permitStore.$state.permitapp);
+const MB = ref(permitStore.$state.permitapp[0]?.miamibeach);
 
 const area = ref('');
 const selectedItem = ref(null);
@@ -26,10 +26,11 @@ const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fas
 const isMiamiBeachValid = ref(false);
 const mbVal = ref(2);
 // Use MB.value (not MB._value) to access the reactive value.
-const convertMB = useToNumber(MB.value[0].miamibeach);
+const convertMB = useToNumber(MB.value);
 
 tryOnMounted(() => {
     console.log(MB.value);
+    console.log(permitStore.$state);
     if (convertMB.value === mbVal.value) {
         console.log('Entry');
         isMiamiBeachValid.value = true;

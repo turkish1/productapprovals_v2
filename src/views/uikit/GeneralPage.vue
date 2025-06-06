@@ -98,7 +98,7 @@ onMounted(() => {
             dba.value = accountUsers._value[0].dba;
         }
     });
-
+    console.log(accountUsers.value, permitapp.value);
     permitapp.value.forEach((item) => {
         (master.value = item.formdt.permit), (process.value = item.formdt.processNumber), (jobaddress.value = item.formdt.address), (contractor.value = item.formdt.contractor);
     });
