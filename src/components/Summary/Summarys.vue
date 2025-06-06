@@ -49,7 +49,6 @@
 </template>
 
 <script setup>
-import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { useGlobalState } from '@/stores/accountsStore';
 import { countStore } from '@/stores/countStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
@@ -67,7 +66,6 @@ import TileMechanical from '../jsPDF/TileMechanical.vue';
 const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 const isloading = ref(false);
-const isSigned = ref(false);
 
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
@@ -93,25 +91,13 @@ const status = ref(false);
 const timedOut = ref(false);
 const submitted = ref(false);
 // Download composable
-const { confirmResponse, resp } = useGlobalState();
-const { getSignpdf } = useSignpdf();
+
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
         dba.value = item.dba;
     });
 }
 
-const callPdfSign = tryOnMounted(() => {
-    // This creates the digital signature
-    // getNumbers(muniProcessNumber.value);
-    // setTimeout(() => {
-    //     isSigned.value = true;
-    // }, 1000);
-    getSignpdf(muniProcessNumber.value);
-    isSigned.value = true;
-
-    console.log(muniProcessNumber.value);
-});
 const displayInfo = reactive({
     dim: '',
     item: ''
@@ -150,7 +136,8 @@ const events = ref([
     { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
     { status: displayInfo.item, date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
 ]);
-watchOnce(displayUserInfo, callState, callPdfSign, () => {});
+
+watchOnce(displayUserInfo, callState, () => {});
 invoke(async () => {
     await until(callState).toBe(true);
 });

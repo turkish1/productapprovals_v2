@@ -45,7 +45,7 @@ const timedOut = ref(false);
 const { getSignpdf } = useSignpdf();
 const callPdfSign = tryOnMounted(() => {
     // This creates the digital signature
-    // getNumbers(muniProcessNumber.value);
+
     setTimeout(() => {
         isSigned.value = true;
     }, 2000);
@@ -55,10 +55,8 @@ const callPdfSign = tryOnMounted(() => {
 });
 // Example fixed payment amount
 
-// console.log(procNumber.value);
-
 // Download composable
-// const { getNumber, result } = useDownloadpdf(muniProcessNumber.value);
+
 const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
 
@@ -74,8 +72,6 @@ onMounted(() => {
         status.value = true;
         console.log(resp.value.status.status);
     }
-    // localStorage.clear();
-    // cntStore.$reset();
 });
 
 const store = useLocalStorage('my-storage', {
