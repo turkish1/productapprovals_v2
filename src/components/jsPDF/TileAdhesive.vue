@@ -372,23 +372,27 @@ const generatePDF = () => {
             const designPressure = ref(etileStore.$state.tilesysEinput[0].systemDataE.dP);
             const anchorDescription = ref(etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base);
             const udlDescription = ref(etileStore.$state.tilesysEinput[0].systemDataE.tileCap);
-            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
-            const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
-            const udlNoaStartXValue = LeftStart;
-            doc.text(polynoaText, udlNoaStartXValue, current_y);
-            const udlNoaValue = descStartXValue + valueTextWidthNOA;
-            doc.text(`${udlNoa.value}`, udlNoaValue, current_y);
-            doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
-            currentX.value = udlNoaValue + valueTextWidth_1;
+
             const valueTextWidthApplicant = doc.getTextWidth(polyapplicantText);
             const valueTextWidth_ = doc.getTextWidth(`${udlApplicant.value}`);
-            const udlApplicantStartXValue = currentX.value + 2;
+            const udlApplicantStartXValue = LeftStart;
             doc.text(polyapplicantText, udlApplicantStartXValue, current_y);
             const udlApplicantValue = udlApplicantStartXValue + valueTextWidthApplicant;
             doc.text(`${udlApplicant.value}`, udlApplicantValue, current_y);
             doc.line(udlApplicantValue, current_y + factor, udlApplicantValue + valueTextWidth_, current_y + factor);
             const matWidth = doc.getTextWidth(`${udlMaterial.value}`);
             currentX.value = udlApplicantValue + matWidth;
+            const valueTextWidthNOA = doc.getTextWidth(polynoaText);
+            const valueTextWidth_1 = doc.getTextWidth(`${udlNoa.value}`);
+            const udlNoaStartXValue = currentX.value + 40;
+            doc.text(polynoaText, udlNoaStartXValue, current_y);
+            currentX.value = udlNoaStartXValue;
+            console.log(currentX.value, udlNoaStartXValue);
+            const udlNoaValue = valueTextWidthNOA + currentX.value;
+            console.log(udlNoaValue);
+            doc.text(`${udlNoa.value}`, udlNoaValue, current_y);
+            doc.line(udlNoaValue, current_y + factor, udlNoaValue + valueTextWidth_1, current_y + factor);
+            currentX.value = udlNoaValue + valueTextWidth_1;
             current_y = current_y + 10;
             const udlmatStartXValue = LeftStart;
             const valueTextWidthpolyMat = doc.getTextWidth(polymaterialText);
@@ -399,7 +403,7 @@ const generatePDF = () => {
             doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
             currentX.value = udlmaterialValue + valueTextWidth_2;
             if (currentX.value > max_width) current_y = current_y + 10;
-            //     console.log(currentX.value);
+
             const systemEStartXValue = currentX.value + 5;
             const valueTextWidthSystemE = doc.getTextWidth(systemEselectionText);
             const valueTextWidthE = doc.getTextWidth(`${udlSystemE.value}`);
@@ -617,7 +621,7 @@ const generatePDF = () => {
             currentX.value = descriptionValue + valueTextWidth4;
             current_y = current_y + 5;
         }
-        current_y = current_y + 10;
+        current_y = current_y + 5;
         // Data for each row
 
         doc.setFontSize(12);

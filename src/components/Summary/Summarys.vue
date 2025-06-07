@@ -49,7 +49,6 @@
 </template>
 
 <script setup>
-import useSignpdf from '@/composables/Signpdf/use-signpdf.js';
 import { useGlobalState } from '@/stores/accountsStore';
 import { countStore } from '@/stores/countStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
@@ -94,24 +93,12 @@ const timedOut = ref(false);
 const submitted = ref(false);
 // Download composable
 
-const { getSignpdf } = useSignpdf();
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
         dba.value = item.dba;
     });
 }
 
-// const callPdfSign = tryOnMounted(() => {
-//     // This creates the digital signature
-//     // getNumbers(muniProcessNumber.value);
-//     setTimeout(() => {
-//         isSigned.value = true;
-//     }, 2000);
-//     getSignpdf(muniProcessNumber.value);
-//     isSigned.value = true;
-
-//     console.log(muniProcessNumber.value);
-// });
 const displayInfo = reactive({
     dim: '',
     item: ''

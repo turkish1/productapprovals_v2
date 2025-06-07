@@ -98,7 +98,7 @@ const handleTime = tryOnMounted(() => {
 watchOnce(handleTime, () => {});
 
 function startDownload() {
-    downloadFile();
+    navigateNext();
 }
 
 const setOffdownload = tryOnMounted(() => {
@@ -135,7 +135,7 @@ const downloadFile = async () => {
     // Show or hide button as needed
     isUrldownloadValid.value = true;
     // OR isUrldownloadValid.value = true;
-    navigateNext();
+    // navigateNext();
 };
 
 watchOnce(setOffdownload, () => {});
