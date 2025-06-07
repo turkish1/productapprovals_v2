@@ -1,0 +1,1 @@
+import{M as o}from"./index-Chc17Abb.js";const n=o("countinput",{state:()=>({countinput:[],id:0}),actions:{addCount(t){this.countinput.push({countData:t,completed:!1})},reset(){this.countinput=[]},persist:!0}});export{n as c};
