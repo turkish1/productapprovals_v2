@@ -95,7 +95,7 @@ const handleTime = tryOnMounted(() => {
 watchOnce(handleTime, () => {});
 
 function startDownload() {
-    downloadFile();
+    navigateNext();
 }
 
 const setOffdownload = tryOnMounted(() => {
