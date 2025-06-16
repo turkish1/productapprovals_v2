@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card-system">
         <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
 
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
@@ -41,6 +41,7 @@ const isloading = ref(false);
 const isUrldownloadValid = ref(false);
 const status = ref(false);
 const timedOut = ref(false);
+const isSigned = ref(false);
 
 const { getSignpdf } = useSignpdf();
 const callPdfSign = tryOnMounted(() => {
@@ -55,10 +56,8 @@ const callPdfSign = tryOnMounted(() => {
 });
 // Example fixed payment amount
 
-// console.log(procNumber.value);
-
 // Download composable
-// const { getNumber, result } = useDownloadpdf(muniProcessNumber.value);
+
 const pdfstore = usedownloadStore();
 const { downloadinput } = storeToRefs(pdfstore.$state);
 
@@ -136,17 +135,6 @@ const downloadFile = async () => {
 </script>
 
 <style>
-.card {
-    background-image: url('/demo/images/blurredHouse.jpeg');
-
-    background-repeat: no-repeat;
-    background-size: cover;
-    /* the attachment addresses shiftting of the image */
-    background-attachment: fixed;
-    background-position: center;
-    width: 110%;
-    /* height: 150%; */
-}
 .payment-widget {
     max-width: 1200px;
     margin-left: 320px;

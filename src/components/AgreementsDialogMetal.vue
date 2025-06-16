@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex justify-center .">
+    <div class="card-system flex justify-center .">
         <Dialog v-model:visible="visible" modal header="Terms Of Use" :style="{ width: '70rem' }">
             <div class="grid grid-cols-1 gap-2 place-content-center h-8 ...">
                 <p class="text-center text-red-600">mEPermit Application</p>
@@ -21,14 +21,10 @@
                 <p class="text-center text-red-600">The permit applicant shall comply with these installation requirements when obtaining this permit electronically.</p>
             </div>
 
-            <!-- <div class="flex justify-end gap-2">
-                <Button type="button" v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button>
-            </div> -->
             <RadioButton class="p" v-model="agreement" value="1" :invalid="value === null" @click="visible = false" />
             <div class="flex justify-end gap-2">
                 <label class="ml-2"> I Agree</label>
                 <RadioButton v-model="agreement" value="1" :invalid="value === null" @click="visible = false" />
-                <!-- <Button type="button" v-model="agreement" severity="contrast" label="I Agree" @click="visible = false"></Button> -->
             </div>
         </Dialog>
     </div>

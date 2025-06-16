@@ -30,7 +30,7 @@ const isValidtile = ref(false);
 const isValidmechanical = ref(false);
 
 // Here we check for folios with restriction
-const convertMB = isMiamiBeachValid === true ? useToNumber(MB._value[0].miamibeach) : '';
+const convertMB = isMiamiBeachValid === true ? useToNumber(MB.value[0].miamibeach) : '';
 tryOnMounted(() => {
     if (convertMB.value === null || convertMB.value === NaN) {
         return true;

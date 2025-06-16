@@ -19,7 +19,6 @@ const { roofList } = storeToRefs(store);
 const router = useRouter();
 const generalpageStore = useGeneralpdfStore();
 const { accountUsers } = useGlobalState();
-const { addgeneralpdfData } = storeToRefs(generalpageStore);
 
 // const stepGeneralPagePDF = defineAsyncComponent(() => import('@/components/jsPDF/Generalpagepdf.vue'));
 
@@ -123,7 +122,7 @@ function roofArea() {
     dataGeneral.steepData = steep.value;
     dataGeneral.totalData = Number(total.value);
     dataGeneral.roofCheck = checked;
-    console.log(dataGeneral.roofCheck);
+    // console.log(dataGeneral.roofCheck);
     generalpageStore.addgeneralpdfData(dataGeneral);
     isGenaralPageValid.value = true;
 }
@@ -131,35 +130,14 @@ function roofArea() {
 const steps = ref([
     { component: null } // General Page
 ]);
-// const generatePDf = () => {
-//     isGenaralPageValid.value = true;
-//     const pdfpage = [isGenaralPageValid.value];
-//     pdfpage.forEach((val, i) => {
-//         if (val) {
-//             // steps.value[i].label = stepLabels[i];
-//             steps.value[i].component = availableComponentsPDF[i];
-//             console.log(i, val);
-//             console.log(steps.value[i].component);
-//         } else {
-//             // steps.value[i].label = '';
-//             steps.value[i].component = null;
-//         }
-//     });
-// };
+
 const navigateNext = () => {
     router.push('/dynamicstepper');
 };
-
-// invoke(async () => {
-//     await until(generatePDf).toBe(true);
-// });
 </script>
 
 <template>
-    <!-- flex flex-col md:flex-row gap-6 -->
     <div id="generalpg" class="grid grid-cols-2 gap-2" style="margin-left: 120px">
-        <!-- <div class="md:w-2/3"> -->
-        <!-- <div class="md:w-2/3 card flex flex-col gap-6"> -->
         <div class="container">
             <div class="row">
                 <div class="flex flex-col mt-4 space-y-6 gap-4">
@@ -266,8 +244,7 @@ const navigateNext = () => {
                 </div>
             </div>
         </div>
-        <!-- </div> -->
-        <!-- </div> -->
+
         <div>
             <CadViewer />
         </div>
@@ -281,7 +258,7 @@ const navigateNext = () => {
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 800px;
+    min-height: 1000px;
     min-width: 900px;
     top: 10vh;
 }

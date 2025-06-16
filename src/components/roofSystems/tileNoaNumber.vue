@@ -110,13 +110,12 @@ watch(checkPaddCategory, () => {});
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
-    
     noaArray.value = paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0].pdNumbers.noa.body : suggestions.value.pdInput?.[0].pdNumber.noa.body;
     const stringyfied1 = JSON.stringify(noaArray.value).split('[').join();
 
     const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
     const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
-    console.log(newArray.value);
+    // console.log(newArray.value);
 
     return newArray.value.filter((item) => item.toString().includes(query.value));
 });
@@ -151,10 +150,6 @@ async function grabInput() {
         }
 
         // 2) Ensure we have a "firstItem" with singlepaddyData
-        // if (!firstItem.value) {
-        //     console.error('No valid singlepaddyData in firstItem');
-        //     return;
-        // }
 
         // console.log(copiedRef.value);
         // 3) Pass the entire item to paddyInputSelection
@@ -266,7 +261,7 @@ function hideSuggestions() {
     // Delay hiding so click on the suggestion list is registered
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 200);
+    }, 50);
 }
 </script>
 

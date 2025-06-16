@@ -6,12 +6,12 @@
 }
 
 .card {
-    // background-color: #eae7e2;
+
     // mix-blend-mode: screen;
     background: var(--shared-background);
     // background: var(--surface-card);
-    // background-image: url('/src/assets/img/slateconcrete.jpeg');
-    // background-position: left;
+
+
     background-repeat: no-repeat;
     background-size: cover;
     // padding: 1.2rem;
@@ -21,14 +21,26 @@
     // border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     padding: 2rem;
-    //   max-width: 400px;
-    // text-align: center;
-    //   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    // margin-bottom: 1.5rem;
-    // margin-top: 1rem;
-    // border-radius: var(--content-border-radius);
-    // -webkit-transform: scale(0.999);
-    // transform: scale(0.999);
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+.card-system {
+
+    // mix-blend-mode: screen;
+
+    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
+
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    backdrop-filter: blur(10px); /* Apply the blur effect */
+    -webkit-backdrop-filter: blur(60px); /* For Safari */
+    // border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+
     &:last-child {
         margin-bottom: 0;
     }

@@ -122,4 +122,3 @@ watchEffect(() => {
     border: transparent;
 }
 </style>
-<!-- @/composables/Authentication/useGoogleAuth.js -->

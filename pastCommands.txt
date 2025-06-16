@@ -40,7 +40,7 @@
    40  2024-12-13 04:24:09 cd ~/certs
    41  2024-12-13 04:26:34 openssl genrsa -des3 -out myCA.key 2048
    42  2024-12-13 04:37:02 vi createCA.sh
-   43  2024-12-13 04:39:19 chmod u+x createCA.sh 
+   43  2024-12-13 04:39:19 chmod u+x createCA.sh
    44  2024-12-13 04:39:25 openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem
    45  2024-12-13 04:41:46 ll //
    46  2024-12-13 04:41:49 clear
@@ -64,7 +64,7 @@
    64  2024-12-13 04:46:57 ll
    65  2024-12-13 04:47:00 clear
    66  2024-12-13 04:47:18 ll ca-certificates
-   67  2024-12-13 04:47:28 sudo 
+   67  2024-12-13 04:47:28 sudo
    68  2024-12-13 04:47:32 sudo su
    69  2024-09-11 19:43:01 ll
    70  2024-09-11 19:43:11 cd project_v2
@@ -271,7 +271,7 @@
   271  2024-11-25 06:49:15 sudo su
   272  2024-09-14 09:18:19 node --version
   273  2024-09-14 09:18:44 yum search all gcc
-  274  2024-09-14 09:19:17 sudo yum install gcc-plugin-devel.x86_64 
+  274  2024-09-14 09:19:17 sudo yum install gcc-plugin-devel.x86_64
   275  2024-09-14 09:19:50 yum search all gcc
   276  2024-09-14 09:20:52 sudo yum install cross-gcc-common.noarch
   277  2024-09-14 09:21:04 node -v
@@ -279,12 +279,12 @@
   279  2024-09-14 09:22:14 ll
   280  2024-09-14 09:22:15 cd ..
   281  2024-09-14 09:22:16 ll
-  282  2024-09-14 09:22:38 rm -rf glibc-2.27.tar.gz 
+  282  2024-09-14 09:22:38 rm -rf glibc-2.27.tar.gz
   283  2024-09-14 09:22:44 rm -rf glibc-2.27
   284  2024-09-14 09:23:07 wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.28.tar.gz
-  285  2024-09-14 09:23:51 rm -rf glibc-2.28.tar.gz 
+  285  2024-09-14 09:23:51 rm -rf glibc-2.28.tar.gz
   286  2024-09-14 09:24:00 wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz
-  287  2024-09-14 09:24:21 tar -zxvf glibc-2.15.tar.gz 
+  287  2024-09-14 09:24:21 tar -zxvf glibc-2.15.tar.gz
   288  2024-09-14 09:24:50 mkdir glibc-2.15/build
   289  2024-09-14 09:25:01 cd glibc-2.15/build/
   290  2024-09-14 09:25:14 ../configure --prefix=/opt/glibc
@@ -294,11 +294,11 @@
   294  2024-09-14 09:36:31 node --version
   295  2024-09-14 09:36:58 wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.25.tar.gz
   296  2024-09-14 09:37:14 mkdir glibc-2.25/build
-  297  2024-09-14 09:37:45 rm -rf glibc-2.25.tar.gz 
+  297  2024-09-14 09:37:45 rm -rf glibc-2.25.tar.gz
   298  2024-09-14 09:37:50 rm -rf glibc-2.25
   299  2024-09-14 09:37:53 ..
   300  2024-09-14 09:38:02 wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.28.tar.gz
-  301  2024-09-14 09:38:40 tar -zxvf glibc-2.25.tar.gz 
+  301  2024-09-14 09:38:40 tar -zxvf glibc-2.25.tar.gz
   302  2024-09-14 09:38:50 mkdir glibc-2.25/build
   303  2024-09-14 09:39:43 cd glibc-2.25/build
   304  2024-09-14 09:40:21 ll /etc/glibc
@@ -317,7 +317,7 @@
   317  2024-12-13 04:48:51 ll
   318  2024-12-13 04:48:57 cd ..
   319  2024-12-13 04:49:09 cd certs
-  320  2024-12-13 04:49:26 openssl genrsa -des3 -out mb.key 2048 
+  320  2024-12-13 04:49:26 openssl genrsa -des3 -out mb.key 2048
   321  2024-12-13 04:49:57 openssl req -new -key mb.key -out mb.csr
   322  2024-12-13 04:54:21 ll
   323  2024-12-13 04:54:45 cp ~/certs/myCA.pem /var/lib/snapd/snap/core18/2829/etc/ca-certificates/myCA.crt
@@ -338,13 +338,13 @@
   338  2024-12-13 06:32:01 cd ~/practice-csr/
   339  2024-12-13 06:32:11 openssl genrsa -out sammy-server.key
   340  2024-12-13 06:32:20 ll
-  341  2024-12-13 06:32:25 rm sammy-server.key 
+  341  2024-12-13 06:32:25 rm sammy-server.key
   342  2024-12-13 06:32:37 openssl genrsa -out miami-beach.key
   343  2024-12-13 06:34:05 openssl req -new -key miami-beach.key -out miami-beach.req
   344  2024-12-13 06:35:16 ll
   345  2024-12-13 06:39:06 openssl req -new -key miami-beach.key -out miami-beach.req -subj /C=US /ST=Florida /L=Miami\ Beach\ City/O=Miami\ Beach\ Building\ Department\ /OU=Permitting /CN=developer
   346  2024-12-13 06:39:41 openssl req -new -key miami-beach.key -out miami-beach.req -subj \ /C=US /ST=Florida /L=Miami\ Beach\ City/O=Miami\ Beach\ Building\ Department\ /OU=Permitting /CN=developer
-  347  2024-12-13 06:39:52 openssl req -new -key miami-beach.key -out miami-beach.req 
+  347  2024-12-13 06:39:52 openssl req -new -key miami-beach.key -out miami-beach.req
   348  2024-12-13 06:40:52 openssl req -in sammy-server.req -noout -subject
   349  2024-12-13 06:41:14 openssl req -in miami-beach.req -noout -subject
   350  2024-12-13 06:42:10 ll
@@ -352,8 +352,8 @@
   352  2024-12-13 06:42:54 ll /tmp
   353  2024-12-18 20:14:03 ./dk.sh
   354  2024-12-18 20:14:08 ll
-  355  2024-12-18 20:14:32 chmod u+x dk.sh 
-  356  2024-12-18 20:14:42 chmod u+x deployment.sh 
+  355  2024-12-18 20:14:32 chmod u+x dk.sh
+  356  2024-12-18 20:14:42 chmod u+x deployment.sh
   357  2024-12-18 20:14:46 ./dk.sh
   358  2024-12-18 20:16:30 clear
   359  2024-12-18 20:16:50 ./dk.sh
@@ -362,10 +362,10 @@
   362  2024-12-18 20:20:42 pip3.11 install requests
   363  2024-12-18 20:21:16 pip3.11 install --target ./dependencies requests
   364  2024-12-18 20:24:31 clear
-  365  2024-12-18 20:25:04 ./deployment.sh 
+  365  2024-12-18 20:25:04 ./deployment.sh
   366  2024-12-18 20:37:02 pip3.11 install --target ./dependencies 'pyHanko[pkcs11,image-support,opentype,xmp]'
   367  2024-12-18 20:39:03 clear
-  368  2024-12-18 20:39:22 ./deployment.sh 
+  368  2024-12-18 20:39:22 ./deployment.sh
   369  2024-12-18 20:58:00 zip deployment.zip lambda_function.py
   370  2024-12-18 21:16:23 cd dependencies/
   371  2024-12-18 21:16:44 zip -r ../lambda_layers.zip .
@@ -386,12 +386,12 @@
   386  2024-11-29 12:07:02 ll
   387  2024-11-29 12:07:20 node --trace-warnings useS3Upload.js
   388  2024-11-29 12:21:40 ll
-  389  2024-11-29 12:21:48 node --trace-warnings use-pdfuploads.js 
+  389  2024-11-29 12:21:48 node --trace-warnings use-pdfuploads.js
   390  2024-11-29 12:24:20 clear
-  391  2024-11-29 12:24:23 node --trace-warnings use-pdfuploads.js 
-  392  2024-11-29 12:24:56 node --trace-warnings use-pdfuploads.mjs 
+  391  2024-11-29 12:24:23 node --trace-warnings use-pdfuploads.js
+  392  2024-11-29 12:24:56 node --trace-warnings use-pdfuploads.mjs
   393  2024-11-29 12:30:40 clear
-  394  2024-11-29 12:30:42 node --trace-warnings use-pdfuploads.mjs 
+  394  2024-11-29 12:30:42 node --trace-warnings use-pdfuploads.mjs
   395  2024-11-11 08:49:14 git add --all
   396  2024-11-11 08:49:49 git commit -m 'singlepaddy data fix and list color'
   397  2024-11-11 08:50:00 npm run build
@@ -482,7 +482,7 @@
   482  2024-12-20 09:51:14 aws s3api list-buckets --query "dsr-pdfupload"
   483  2024-12-20 09:51:33 aws s3api list-buckets --query "Buckets[].Name"
   484  2024-12-20 09:52:22 base64 certificate.p12 > certificate_base64.txt
-  485  2024-12-20 09:57:39 python3.11 
+  485  2024-12-20 09:57:39 python3.11
   486  2024-12-20 09:58:16 source encryption/bin/activate
   487  2024-12-20 10:00:49 mkdir package
   488  2024-12-20 10:01:02 pip3.11 install -r requirements.txt -t package
@@ -502,32 +502,32 @@
   502  2024-12-20 10:31:06 ll
   503  2024-12-20 10:33:12 pip3.11 install -r requirements.txt
   504  2024-12-20 10:33:16 ll
-  505  2024-12-20 10:36:00 rm -rf requirements.txt 
+  505  2024-12-20 10:36:00 rm -rf requirements.txt
   506  2024-12-20 10:36:22 pip3.11 freeze > requirements.txt
   507  2024-12-20 10:36:25 ll
-  508  2024-12-20 10:36:34 cat requirements.txt 
-  509  2024-12-20 15:03:03  /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40917 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py 
+  508  2024-12-20 10:36:34 cat requirements.txt
+  509  2024-12-20 15:03:03  /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40917 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py
   510  2024-12-20 15:13:35 cd package/
   511  2024-12-20 15:14:30 pip3.11 install OpenSSL
   512  2024-12-20 15:15:13 pip3.11 install pyOpenSSL
   513  2024-12-20 15:19:16 clear
-  514  2024-12-20 15:19:16  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33266 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py 
+  514  2024-12-20 15:19:16  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33266 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py
   515  2024-12-20 15:19:37 clear
-  516  2024-12-20 15:19:37  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50496 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py 
+  516  2024-12-20 15:19:37  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50496 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py
   517  2024-12-20 15:19:52 clear
-  518  2024-12-20 15:19:52  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43326 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py 
+  518  2024-12-20 15:19:52  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43326 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py
   519  2024-12-20 15:25:08 clear
-  520  2024-12-20 15:25:08  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54221 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py 
+  520  2024-12-20 15:25:08  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54221 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py
   521  2024-12-20 15:25:13 clear
-  522  2024-12-20 15:25:13  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48523 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py 
-  523  2024-12-20 15:25:51  /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 57713 -- accessible-view-accessibility.verbosity.terminal 
+  522  2024-12-20 15:25:13  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48523 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py
+  523  2024-12-20 15:25:51  /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 57713 -- accessible-view-accessibility.verbosity.terminal
   524  2024-12-20 15:26:13 clear
-  525  2024-12-20 15:26:13  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48587 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py 
+  525  2024-12-20 15:26:13  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48587 -- /home/dev-user/code/data/python-code/aws-encryption-api/package/lambda_function.py
   526  2024-12-21 02:17:31 clear
-  527  2024-12-21 02:17:31  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33857 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  527  2024-12-21 02:17:31  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33857 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   528  2024-12-21 02:18:59 pip3.11 install --target ./dependencies pyHanko 'pyHanko[image-support]'
   529  2024-12-21 02:19:19 clear
-  530  2024-12-21 02:19:19  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 56535 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  530  2024-12-21 02:19:19  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /home/dev-user/code/data/python-code/aws-encryption-api/encryption/bin/python /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 56535 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   531  2024-12-21 02:19:47 exit
   532  2024-12-20 13:51:20 cd package/
   533  2024-12-20 13:51:53 zip -r ../lambda_function.zip .
@@ -549,156 +549,156 @@
   549  2024-12-21 02:20:17 source encryption/bin/deactivate
   550  2024-12-21 02:21:07 exit
   551  2024-12-21 02:22:12 deactivate
-  552  2024-12-21 02:23:55  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54855 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  552  2024-12-21 02:23:55  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54855 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   553  2024-12-21 02:24:22 pip3.11 install pyHanko 'pyHanko[image-support]'
   554  2024-12-21 02:24:30 clear
-  555  2024-12-21 02:24:30  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48231 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  555  2024-12-21 02:24:30  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48231 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   556  2024-12-21 02:25:45 clearclear
-  557  2024-12-21 02:25:45  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 47114 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  557  2024-12-21 02:25:45  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 47114 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   558  2024-12-21 02:26:31 clear
-  559  2024-12-21 02:26:31  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33122 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  559  2024-12-21 02:26:31  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33122 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   560  2024-12-21 02:26:47 clear
-  561  2024-12-21 02:26:47  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42032 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  561  2024-12-21 02:26:47  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42032 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   562  2024-12-21 02:29:20 clear
-  563  2024-12-21 02:29:20  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40105 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  563  2024-12-21 02:29:20  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40105 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   564  2024-12-21 02:30:51 ear
-  565  2024-12-21 02:30:51  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 60898 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  565  2024-12-21 02:30:51  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 60898 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   566  2024-12-21 02:33:43 clear
-  567  2024-12-21 02:33:43  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 39804 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  567  2024-12-21 02:33:43  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 39804 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   568  2024-12-21 02:40:06 clear
-  569  2024-12-21 02:40:06  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 45865 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  569  2024-12-21 02:40:06  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 45865 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   570  2024-12-21 02:42:34 clear
-  571  2024-12-21 02:42:34  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40719 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  571  2024-12-21 02:42:34  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40719 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   572  2024-12-21 02:42:56 clear
-  573  2024-12-21 02:42:56  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 36871 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  573  2024-12-21 02:42:56  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 36871 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   574  2024-12-21 02:43:24 clear
-  575  2024-12-21 02:43:24  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50038 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  575  2024-12-21 02:43:24  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50038 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   576  2024-12-21 02:54:26 clear
-  577  2024-12-21 02:54:26  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 47002 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  577  2024-12-21 02:54:26  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 47002 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   578  2024-12-21 02:57:02 clear
-  579  2024-12-21 02:57:02  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40730 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  579  2024-12-21 02:57:02  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40730 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   580  2024-12-21 02:59:29 clear
-  581  2024-12-21 02:59:29  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 59083 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  581  2024-12-21 02:59:29  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 59083 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   582  2024-12-21 03:02:49 clear
-  583  2024-12-21 03:02:49  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34674 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  583  2024-12-21 03:02:49  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34674 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   584  2024-12-21 03:04:22 clear
-  585  2024-12-21 03:04:22  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 37101 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  585  2024-12-21 03:04:22  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 37101 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   586  2024-12-21 03:08:12 clear
-  587  2024-12-21 03:08:12  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42462 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  587  2024-12-21 03:08:12  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42462 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   588  2024-12-21 03:11:46 clear
-  589  2024-12-21 03:11:46  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 59574 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  589  2024-12-21 03:11:46  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 59574 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   590  2024-12-21 03:16:25 clear
-  591  2024-12-21 03:16:25  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50248 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  591  2024-12-21 03:16:25  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50248 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   592  2024-12-21 03:26:33 clear
-  593  2024-12-21 03:26:33  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42845 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  593  2024-12-21 03:26:33  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42845 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   594  2024-12-21 03:27:10 clear
-  595  2024-12-21 03:27:10  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38211 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
-  596  2024-12-21 03:28:57  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43137 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  595  2024-12-21 03:27:10  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38211 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
+  596  2024-12-21 03:28:57  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43137 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   597  2024-12-21 03:31:06 clear
-  598  2024-12-21 03:31:06  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 56034 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  598  2024-12-21 03:31:06  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 56034 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   599  2024-12-21 03:32:18 clear
-  600  2024-12-21 03:32:18  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 58482 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  600  2024-12-21 03:32:18  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 58482 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   601  2024-12-21 03:36:15 clear
-  602  2024-12-21 03:36:15  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 55273 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  602  2024-12-21 03:36:15  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 55273 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   603  2024-12-21 03:37:56 clear
-  604  2024-12-21 03:37:56  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44669 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  604  2024-12-21 03:37:56  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44669 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   605  2024-12-21 03:42:32 clear
-  606  2024-12-21 03:42:32  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42807 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  606  2024-12-21 03:42:32  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42807 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   607  2024-12-21 03:49:34 clear
-  608  2024-12-21 03:49:34  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33816 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  608  2024-12-21 03:49:34  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33816 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   609  2024-12-21 03:51:48 clear
-  610  2024-12-21 03:51:48  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 37238 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  610  2024-12-21 03:51:48  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 37238 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   611  2024-12-21 04:01:59 clear
-  612  2024-12-21 04:01:59  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 32864 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  612  2024-12-21 04:01:59  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 32864 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   613  2024-12-21 04:09:39 clear
-  614  2024-12-21 04:09:39  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 47181 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  614  2024-12-21 04:09:39  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 47181 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   615  2024-12-21 04:16:01 clear
-  616  2024-12-21 04:16:01  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 39758 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  616  2024-12-21 04:16:01  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 39758 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   617  2024-12-21 04:16:57 clear
-  618  2024-12-21 04:16:58  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33458 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  618  2024-12-21 04:16:58  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 33458 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   619  2024-12-21 04:18:25 clear
-  620  2024-12-21 04:18:25  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50963 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  620  2024-12-21 04:18:25  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 50963 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   621  2024-12-21 04:21:58 clear
-  622  2024-12-21 04:21:58  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40968 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
-  623  2024-12-21 06:42:40  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44636 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  622  2024-12-21 04:21:58  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40968 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
+  623  2024-12-21 06:42:40  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44636 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   624  2024-12-21 06:49:28 clear
-  625  2024-12-21 06:49:38  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 41946 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  625  2024-12-21 06:49:38  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 41946 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   626  2024-12-21 06:52:28 clear
-  627  2024-12-21 06:52:28  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42420 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  627  2024-12-21 06:52:28  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42420 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   628  2024-12-21 06:55:35 clear
-  629  2024-12-21 06:55:35  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 60081 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  629  2024-12-21 06:55:35  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 60081 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   630  2024-12-21 07:01:19 clear
-  631  2024-12-21 07:01:19  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 39032 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  631  2024-12-21 07:01:19  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 39032 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   632  2024-12-21 07:01:52 clear
-  633  2024-12-21 07:01:52  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 46029 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  633  2024-12-21 07:01:52  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 46029 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   634  2024-12-21 07:11:29 clear
-  635  2024-12-21 07:11:29  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54145 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  635  2024-12-21 07:11:29  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54145 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   636  2024-12-21 07:32:13 clear
-  637  2024-12-21 07:32:13  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40487 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  637  2024-12-21 07:32:13  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40487 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   638  2024-12-21 08:44:24 clear
-  639  2024-12-21 08:44:24  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44918 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  639  2024-12-21 08:44:24  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44918 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   640  2024-12-21 08:53:58 clear
-  641  2024-12-21 08:53:58  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38971 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  641  2024-12-21 08:53:58  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38971 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   642  2024-12-21 08:55:11 clear
-  643  2024-12-21 08:55:11  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 51873 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  643  2024-12-21 08:55:11  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 51873 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   644  2024-12-21 08:57:46 clear
-  645  2024-12-21 08:57:46  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34143 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  645  2024-12-21 08:57:46  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34143 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   646  2024-12-21 08:58:45 clear
-  647  2024-12-21 08:58:46  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 60221 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  647  2024-12-21 08:58:46  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 60221 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   648  2024-12-21 09:01:11 clear
-  649  2024-12-21 09:01:12  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43340 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  649  2024-12-21 09:01:12  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43340 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   650  2024-12-21 09:10:06 clear
-  651  2024-12-21 09:10:07  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34377 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  651  2024-12-21 09:10:07  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34377 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   652  2024-12-21 09:13:23 openssl x509 -in ca-cert.pem -text -noout
   653  2024-12-21 10:59:37 clear
-  654  2024-12-21 10:59:38  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48514 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  654  2024-12-21 10:59:38  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 48514 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   655  2024-12-21 11:08:20 clear
-  656  2024-12-21 11:08:20  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 58190 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  656  2024-12-21 11:08:20  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 58190 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   657  2024-12-21 11:11:12 clear
-  658  2024-12-21 11:11:12  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44770 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  658  2024-12-21 11:11:12  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 44770 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   659  2024-12-21 13:15:43 clear
-  660  2024-12-21 13:15:43  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34827 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  660  2024-12-21 13:15:43  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34827 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   661  2024-12-21 13:17:02 clear
-  662  2024-12-21 13:17:02  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40502 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  662  2024-12-21 13:17:02  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 40502 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   663  2024-12-21 13:17:15 clear
-  664  2024-12-21 13:17:15  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 46530 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
-  665  2024-12-21 13:18:26  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 41087 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
-  666  2024-12-21 13:24:17  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38181 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  664  2024-12-21 13:17:15  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 46530 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
+  665  2024-12-21 13:18:26  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 41087 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
+  666  2024-12-21 13:24:17  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38181 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   667  2024-12-21 13:28:33 clear
-  668  2024-12-21 13:28:33  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 45259 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
-  669  2024-12-21 13:30:11  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 36133 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  668  2024-12-21 13:28:33  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 45259 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
+  669  2024-12-21 13:30:11  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 36133 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   670  2024-12-21 13:32:25 clear
-  671  2024-12-21 13:32:25  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38340 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
-  672  2024-12-21 13:33:53  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43175 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  671  2024-12-21 13:32:25  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 38340 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
+  672  2024-12-21 13:33:53  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 43175 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   673  2024-12-21 13:36:32 clear
-  674  2024-12-21 13:36:32  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42555 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
-  675  2024-12-21 13:38:49  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 59001 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  674  2024-12-21 13:36:32  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 42555 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
+  675  2024-12-21 13:38:49  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 59001 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   676  2024-12-21 13:54:06 clear
-  677  2024-12-21 13:54:06  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 46333 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  677  2024-12-21 13:54:06  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 46333 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   678  2024-12-21 13:54:55 clear
-  679  2024-12-21 13:54:55  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34028 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  679  2024-12-21 13:54:55  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 34028 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   680  2024-12-21 13:56:00 clear
-  681  2024-12-21 13:56:00  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54878 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  681  2024-12-21 13:56:00  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54878 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   682  2024-12-21 13:56:37 clear
-  683  2024-12-21 13:56:37  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 41740 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  683  2024-12-21 13:56:37  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 41740 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   684  2024-12-21 13:58:39 clear
-  685  2024-12-21 13:58:39  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 36605 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  685  2024-12-21 13:58:39  cd /home/dev-user/code/data/python-code/aws-encryption-api ; /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 36605 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   686  2024-12-21 06:34:36 ll /usr/local/share/
   687  2024-12-21 06:34:47 ll /usr/local/
   688  2024-12-21 06:35:02 ll /usr/local/bin
   689  2024-12-21 06:35:42 find /usr/local/ | grep "ca-certificates"
   690  2024-12-21 06:37:15 ll /etc/pki/ca-trust/source/anchors/
   691  2024-12-21 06:37:33 ll
-  692  2024-12-21 16:02:56 cd 
+  692  2024-12-21 16:02:56 cd
   693  2024-12-21 16:02:59 ll
   694  2024-12-21 16:03:03 cd Downloads/
   695  2024-12-21 16:03:04 ll
-  696  2024-12-21 16:03:17 rm -rf themeforest-q1zy2GZp-hud-vue-3-bootstrap-5-admin-template.zip 
-  697  2024-12-21 16:03:55 tar -C /usr/local -xzf go1.23.4.linux-386.tar.gz 
-  698  2024-12-21 16:04:04 sudo tar -C /usr/local -xzf go1.23.4.linux-386.tar.gz 
+  696  2024-12-21 16:03:17 rm -rf themeforest-q1zy2GZp-hud-vue-3-bootstrap-5-admin-template.zip
+  697  2024-12-21 16:03:55 tar -C /usr/local -xzf go1.23.4.linux-386.tar.gz
+  698  2024-12-21 16:04:04 sudo tar -C /usr/local -xzf go1.23.4.linux-386.tar.gz
   699  2024-12-21 16:04:23 cd ..
   700  2024-12-21 16:04:55 vi ~/.bashrc
-  701  2024-12-21 15:25:24  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 55820 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py 
+  701  2024-12-21 15:25:24  /usr/bin/env /usr/local/bin/python3.11 /home/dev-user/.vscode/extensions/ms-python.debugpy-2024.0.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher 55820 -- /home/dev-user/code/data/python-code/aws-encryption-api/lambda_function.py
   702  2024-12-21 06:28:03 cd my-ca/
   703  2024-12-21 06:28:20 openssl rsa -check -in ca-key.pem
   704  2024-12-21 06:28:32 openssl x509 -in ca-cert.pem -text -noout
@@ -797,7 +797,7 @@
   797  2024-12-21 13:50:38 pip3.11 install pyHanko 'pyHanko[xmp]'
   798  2024-12-21 13:51:03 pip3.11 install pyHanko 'pyHanko[image-support,opentype]'
   799  2024-12-21 15:02:38 pip3.11 install pdftron
-  800  2024-12-21 15:04:17 pip3.11 install install apryse-sdk 
+  800  2024-12-21 15:04:17 pip3.11 install install apryse-sdk
   801  2024-12-21 15:07:28 pip3.11 install apryse-sdk --extra-index-url=https://pypi.apryse.com
   802  2024-12-21 15:13:14 clear
   803  2024-12-21 15:22:44 pip3.11 install PDFNet --extra-index-url=https://pypi.apryse.com
@@ -819,11 +819,11 @@
   819  2024-12-21 08:35:09 mkdir -p /etc/pki/nssdb
   820  2024-12-21 08:35:19 certutil -N -d sql:/etc/pki/nssdb
   821  2024-12-21 08:36:13 ll /etc/pki/nssdb
-  822  2024-12-21 08:36:41 cat /etc/pki/nssdb/pkcs11.txt 
+  822  2024-12-21 08:36:41 cat /etc/pki/nssdb/pkcs11.txt
   823  2024-12-21 08:37:25 certutil -N -d sql:/etc/pki/nssdb
   824  2024-12-21 15:46:12 clear
   825  2024-12-21 15:46:14 ll
-  826  2024-12-21 15:47:36 cd code 
+  826  2024-12-21 15:47:36 cd code
   827  2024-12-21 15:47:37 ls
   828  2024-12-21 15:47:39 cd data
   829  2024-12-21 15:47:40 ll
@@ -882,11 +882,11 @@
   882  2024-12-18 19:51:23 which openssl
   883  2024-12-18 19:51:31 openssl version
   884  2024-12-18 19:51:50 ll
-  885  2024-12-18 19:52:05 rm -rf openssl-1.1.1w.tar.gz 
+  885  2024-12-18 19:52:05 rm -rf openssl-1.1.1w.tar.gz
   886  2024-12-18 19:52:18 wget https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
   887  2024-12-18 19:52:29 tar xvf Python-3.11.9.tgz
   888  2024-12-18 19:52:37 cd Python-3.11*/
-  889  2024-12-18 19:52:45 LDFLAGS="${LDFLAGS} -Wl,-rpath=/usr/local/openssl/lib" ./configure --with-openssl=/usr/local/openssl 
+  889  2024-12-18 19:52:45 LDFLAGS="${LDFLAGS} -Wl,-rpath=/usr/local/openssl/lib" ./configure --with-openssl=/usr/local/openssl
   890  2024-12-18 19:53:33 sudo make altinstall
   891  2024-12-18 19:59:57  python3.11 --version
   892  2024-12-18 20:00:12 python3.11
@@ -897,12 +897,12 @@
   897  2024-12-18 20:03:22 pip3.11 install awscli
   898  2024-12-18 20:03:34 cd ~
   899  2024-12-18 20:03:35 ll
-  900  2024-12-18 20:03:49 rm -rf Python-3.11.9.tgz 
-  901  2024-12-18 20:03:58 cd code 
+  900  2024-12-18 20:03:49 rm -rf Python-3.11.9.tgz
+  901  2024-12-18 20:03:58 cd code
   902  2024-12-18 20:03:59 ll
   903  2024-12-18 20:04:02 cd data
   904  2024-12-18 20:04:03 ll
-  905  2024-12-18 20:04:18 cd python-code 
+  905  2024-12-18 20:04:18 cd python-code
   906  2024-12-18 20:04:19 ll
   907  2024-12-18 20:04:26 cd programming
   908  2024-12-18 20:04:27 ll
@@ -934,13 +934,13 @@
   934  2024-12-22 14:35:52 rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
   935  2024-12-22 14:36:01 sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
   936  2024-12-22 14:36:15 ll
-  937  2024-12-22 14:36:26 rm -rf go1.23.4.linux-amd64.tar.gz 
+  937  2024-12-22 14:36:26 rm -rf go1.23.4.linux-amd64.tar.gz
   938  2024-12-22 14:37:39 ll
   939  2024-12-22 14:37:55 sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-386.tar.gz
   940  2024-12-22 14:39:00  tar -C /usr/local -xzf go1.23.4.linux-386.tar.gz
   941  2024-12-22 14:39:25 sudo tar -C /usr/local -xzf go1.23.4.linux-386.tar.gz
   942  2024-12-22 14:39:37 ll /usr/local/go
-  943  2024-12-22 14:40:08 cat /usr/local/go/VERSION 
+  943  2024-12-22 14:40:08 cat /usr/local/go/VERSION
   944  2024-12-22 14:41:07 vi ~/.bashrc
   945  2024-12-22 14:41:30 echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
   946  2024-12-22 14:41:46 source ~/.bashrc
@@ -1010,3 +1010,14 @@
  1010  2024-12-22 16:09:59 nvm lsit node
  1011  2024-12-22 16:10:22 npm -v
  1012  2024-12-22 16:11:09 history > pastCommands.txt
+
+
+
+//   max-width: 400px;
+    // text-align: center;
+    //   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    // margin-bottom: 1.5rem;
+    // margin-top: 1rem;
+    // border-radius: var(--content-border-radius);
+    // -webkit-transform: scale(0.999);
+    // transform: scale(0.999);

@@ -1,14 +1,14 @@
 @media screen and (min-width: 1400px) {
     .layout-main,
     .landing-wrapper {
-        width: 1200px;
+        width: 1100px;
         margin-left: auto !important;
         // margin-left: auto !important;
         margin-right: auto !important;
     }
 }
 
-@media (min-width: 800px) {
+@media (min-width: 1000px) {
     .layout-wrapper {
         &.layout-overlay {
             .layout-main-container {

@@ -38,8 +38,8 @@ export default function usetileInputdouble() {
         dripEdgeMaterial: [],
         dripEdgeSize: [],
         deckType: '',
-        expiration_date: '',
-        prescriptiveSelection: ''
+        prescriptiveSelection: '',
+        paddy_category: ''
     });
 
     function getTilenoa(number) {
@@ -77,6 +77,8 @@ export default function usetileInputdouble() {
                 tileData.tile_map = noaNum.value[0].Tile_Map;
                 tileData.table2_map = noaNum.value[0].Table2_Map;
                 tileData.resistance = noaNum.value[0].Resistance;
+                tileData.expiration_date = noaNum.value[0].expiration_date;
+                tileData.paddy_category = noaNum.value[0].paddy_category;
                 useDoublepaddy.addtileDatas(tileData);
             } else if (response.length > 0) {
                 console.log(noaNum.value);
@@ -92,7 +94,8 @@ export default function usetileInputdouble() {
                 tileData.tile_map = noaNum.value[0].Tile_Map;
                 tileData.table2_map = noaNum.value[0].Table2_Map;
                 tileData.resistance = noaNum.value[0].Resistance;
-
+                tileData.expiration_date = noaNum.value[0].expiration_date;
+                tileData.paddy_category = noaNum.value[0].paddy_category;
                 useDoublepaddy.addtileDatas(tileData);
 
                 console.log(tileData, 'System added');

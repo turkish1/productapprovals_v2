@@ -320,3 +320,10 @@ lines.forEach(line => {
 
 
     <stripe-buy-button buy-button-id="buy_btn_1RVdS4E9FsYF7D6YupNeXupi" publishable-key="pk_test_51PDPFeE9FsYF7D6YfBrV7kYvnDYIAR5QQfaR8ba5TGnoQAbEQgSeY7DLwhOZafrl8ZXJOPsbZN9tYl5HMLlhkxB100cmCtoWo7" @update="captureSession">Pay</stripe-buy-button>
+ // margin: 0;
+    // padding: 0;
+    // min-height: 100%;
+    // -webkit-font-smoothing: antialiased;
+    // -moz-osx-font-smoothing: grayscale;
+    // -webkit-transform: scale(0.999);
+    // transform: scale(0.999);

@@ -56,7 +56,7 @@ invoke(async () => {
 
 const generatePDF = () => {
     // Initialize   jsPDF instance
-    // tileInputvalues[0]?.tileValues[0]
+
     console.log(tileInputvalues, savedTileinput[0]?.savedValues?.paddySelection);
     const paddyCheck = ref(savedTileinput[0]?.savedValues?.paddySelection || '');
     const singlePaddy = ref(false);
@@ -65,6 +65,7 @@ const generatePDF = () => {
     if (paddyCheck.value === 'single') {
         singlePaddy.value = true;
         console.log(singlePaddy.value);
+        doublePaddy.value = false;
     } else {
         doublePaddy.value = true;
         console.log(doublePaddy.value);

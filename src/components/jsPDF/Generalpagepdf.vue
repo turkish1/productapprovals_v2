@@ -235,7 +235,7 @@ const generatePDF = () => {
 
         doc.text('New Roof: ', currentX.value, current_y);
 
-        const checkedBox1 = isNewRoof.value === true ? doc.rect(currentX.value + 20, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox0, 4, 4);
+        const checkedBox1 = isNewRoof.value === true ? doc.rect(currentX.value + 25, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 25, alignCheckbox0, 4, 4);
         console.log(checkedBox0, checkedBox1);
         current_y = current_y + 10;
         const tTotal = 'Total: ';

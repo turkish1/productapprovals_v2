@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex justify-center">
+    <div class="card-system flex justify-center">
         <Toast position="bottom-center" group="bc" @close="onClose">
             <template #message="slotProps">
                 <div class="flex flex-col items-start flex-auto">

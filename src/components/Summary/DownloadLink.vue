@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card-system">
         <!-- <i class="pi pi-home" style="font-size: 2rem" @click="navigateNext"></i> -->
         <Button icon="pi pi-home" severity="info" style="font-size: 2rem" @click="navigateNext" />
 

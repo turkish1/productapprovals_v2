@@ -468,7 +468,7 @@ watch(
     <Divider />
     <Divider />
     <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
-        <div class="card gap-2 mt-2 shadow-lg shadow-cyan-800" style="margin-left: 5px">
+        <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800" style="margin-left: 5px">
             <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
                 <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                     <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -486,7 +486,7 @@ watch(
                 </div>
             </div>
 
-            <div v-show="isSAValid" class="card gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
+            <div v-show="isSAValid" class="card-system gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
                 <div class="flex flex-row space-x-20">
                     <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                         <label style="color: #122620" for="saapplicant">S/A Applicant</label>

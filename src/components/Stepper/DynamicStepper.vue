@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card-system">
         <div class="stepper">
             <!-- Iterate over filtered steps to build the stepper UI -->
             <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }">
@@ -12,7 +12,7 @@
         </div>
 
         <!-- Step Content -->
-        <div v-if="!isLoading" class="step-content">
+        <div v-if="!isLoading" class="card-system">
             <component :is="activeComponent" />
         </div>
         <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
@@ -231,8 +231,10 @@ console.log(isFirstStep.value, isLastStep.value, filteredSteps.value.length);
 </script>
 
 <style scoped>
-.card {
+.card-system {
+    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
     background-size: cover;
+    background-position: center;
 }
 button {
     appearance: auto;
@@ -295,7 +297,7 @@ button {
     width: 400px;
     height: 4.5px;
     background-color: #f5ece6;
-    margin-top: 40px;
+    margin-top: 38px;
     margin-left: 5px;
 }
 

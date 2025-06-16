@@ -52,7 +52,8 @@ export default function useTileSystemE() {
         TileCap_Sheet_Description_E13: '',
         arraySystem: [],
         Maps: [],
-        systemCheck: []
+        systemCheck: [],
+        expiration_date: ''
     });
 
     function getV(saNo) {
@@ -97,7 +98,7 @@ export default function useTileSystemE() {
             systemDataE.system = noaNum.value[0].System;
             systemDataE.designPressure = noaNum.value[0].DesignPressure;
             systemDataE.Maps = noaNum.value[0].Maps;
-
+            systemDataE.expiration_date = noaNum.value[0].expiration_date;
             systemDataE.TileCap_Sheet_Description = noaNum.value[0].TileCap_Sheet_Description;
             store.addData(systemDataE);
             // // area.value = '';
