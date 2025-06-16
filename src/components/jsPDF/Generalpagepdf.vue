@@ -229,13 +229,13 @@ const generatePDF = () => {
 
         const checkedBox0 = isReroof.value === true ? doc.rect(currentX.value + 20, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 20, alignCheckbox0, 4, 4);
 
-        currentX.value = LeftStart + 100;
+        currentX.value = LeftStart + 120;
         current_y = param_y;
         console.log(current_y);
 
         doc.text('New Roof: ', currentX.value, current_y);
 
-        const checkedBox1 = isNewRoof.value === true ? doc.rect(currentX.value + 23, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 23, alignCheckbox0, 4, 4);
+        const checkedBox1 = isNewRoof.value === true ? doc.rect(currentX.value + 25, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 25, alignCheckbox0, 4, 4);
         console.log(checkedBox0, checkedBox1);
         current_y = current_y + 10;
         const tTotal = 'Total: ';

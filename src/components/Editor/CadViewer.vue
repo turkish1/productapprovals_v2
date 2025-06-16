@@ -149,8 +149,8 @@ const deleteFile = (index) => {
 }
 
 .drop-zone {
-    width: 700px;
-    height: 800px;
+    width: 500px;
+    height: 500px;
     border: 2px dashed #ccc;
     border-radius: 10px;
     display: flex;
@@ -158,7 +158,7 @@ const deleteFile = (index) => {
     align-items: center;
     /* background-color: #e0e0e0; */
     margin-bottom: 10px;
-    margin-left: 40px;
+    margin-left: 30px;
     transition: background-color 0.3s;
     background-image: url('/demo/images/cad.jpeg');
     background-size: cover; /* Options: contain, cover, auto */

@@ -60,7 +60,7 @@ export default function useTileInputSingle() {
             // .json();
             console.log(response);
             // && data.value[0].Table2.content) || data.value[0].Table3.content
-            if (data.value.length > 0 && data.value[0].Table2.content) {
+            if (data.value.length > 0 && data.value[0].Table2.content === 'multiple') {
                 console.log('Entered due to Table2 and Table3 content multiple');
                 // using the data.value[0] to make use of the async await.
                 const multiTile = await data.value[0];
@@ -76,6 +76,7 @@ export default function useTileInputSingle() {
                 tileDatas.Table2_obj_map = await multiTile.Table2_Map;
                 tileDatas.resistance = await multiTile.Resistance;
                 tileDatas.paddy_cat = await multiTile.paddy_category;
+                tileDatas.expiration_date = await multiTile.expiration_date;
                 console.log('Tile data fetched:', tileDatas);
                 paddyStore.addtileData(tileDatas);
             } else if (data.value.length > 0) {
@@ -92,7 +93,8 @@ export default function useTileInputSingle() {
                 tileDatas.tile_map = await fetched.Tile_Map;
                 tileDatas.table2_map = await fetched.Table2_Map;
                 tileDatas.resistance = await fetched.Resistance;
-                // tileDatas.paddy_cat = await fetched.paddy_category[0];
+                tileDatas.expiration_date = await fetched.expiration_date;
+                tileDatas.paddy_cat = await fetched.paddy_category;
 
                 console.log('Tile data fetched:', tileDatas);
                 paddyStore.addtileData(tileDatas);

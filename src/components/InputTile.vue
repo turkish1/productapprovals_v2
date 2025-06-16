@@ -3,6 +3,7 @@ import DripEdAdTile from '@/components/DripEdgeChildren/DripEdAdTile.vue';
 // import Buttons from '@/components/Features/Buttons.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
+import { useExpiry } from '@/composables/ExpirationCheck/useExpiry';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 
@@ -80,7 +81,7 @@ const underlaymentType = ref([
     { selectedBasesheet: '(S/A) Tile Capsheet adhered diretly to a wood deck, per the NOA System F', key: 2 },
     { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
 ]);
-
+const licenseEnd = ref('');
 let isUDLValid = ref(false);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
@@ -111,6 +112,8 @@ const tilenoas = reactive({
     select_tile: [],
     tile_map: [],
     table2_map: [],
+    Table3_obj_map: [],
+    Table2_obj_map: [],
     slope: 0,
     height: 0,
     dripEdgeMaterial: [],
@@ -302,12 +305,17 @@ const updateTick = () => {
     console.log(dtMounted.value, manufacturerData.value);
     nextTick(() => {
         if (manufacturerData.value.content === 'multiple') {
-            isMultiTileValid.value = true;
+            isMultiTileValid = true;
             isTileValid = true;
 
             isTileData.value = true;
             tilenoas.manufacturer = manufacturerData.value.applicant;
             tilenoas.select_tile = manufacturerData.value.select_tile;
+            tilenoas.expiration_date = manufacturerData.value.expiration_date;
+            console.log(tilenoas.expiration_date);
+            licenseEnd.value = tilenoas.expiration_date;
+            const { isExpired } = useExpiry(licenseEnd);
+            console.log(isExpired);
         } else {
             // This is for the rest of the NOAs
 
@@ -319,8 +327,11 @@ const updateTick = () => {
             tilenoas.description = manufacturerData.value.description;
             console.log(tilenoas.description);
             tilenoas.material = manufacturerData.value.material;
-
-            // checkZones();
+            tilenoas.expiration_date = manufacturerData.value.expiration_date;
+            console.log(tilenoas.expiration_date);
+            licenseEnd.value = tilenoas.expiration_date;
+            const { isExpired } = useExpiry(licenseEnd);
+            console.log(isExpired);
         }
         addSystemvalues(tilenoas);
         checkZones();
@@ -342,6 +353,10 @@ const updateDoubletick = () => {
             isTileData.value = true;
             tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
             tilenoas.select_tile = manufacturerDoubleData.value.select_tile;
+            tilenoas.expiration_date = manufacturerDoubleData.value.expiration_date;
+            licenseEnd.value = tilenoas.expiration_date;
+            const { isExpired } = useExpiry(licenseEnd);
+            console.log(isExpired);
         } else {
             isTileData.value = true;
             isTileValid = true;
@@ -349,7 +364,10 @@ const updateDoubletick = () => {
             tilenoas.description = manufacturerDoubleData.value.description;
             console.log(tilenoas.description);
             tilenoas.material = manufacturerDoubleData.value.material;
-
+            tilenoas.expiration_date = manufacturerDoubleData.value.expiration_date;
+            licenseEnd.value = tilenoas.expiration_date;
+            const { isExpired } = useExpiry(licenseEnd);
+            console.log(isExpired);
             isMultiTileValid = false;
         }
         addSystemvalues(tilenoas);
@@ -369,31 +387,24 @@ function clearData() {
     tilenoas.description = '';
     tilenoas.material = [];
     tilenoas.select_tile = [];
+    tilenoas.expiration_date = '';
     resetStore.$reset();
     // reset()
     // saveTileData.reset()
     // {
     //         this.savedTileinput = [];
     //     }
-    // zoneone.lambda1 = '';
-    // zonetwo.lambda2 = '';
-    // zonethree.lambda3 = '';
+    zoneone.lambda1 = '';
+    zonetwo.lambda2 = '';
+    zonethree.lambda3 = '';
 
-    // zoneone.zone = '';
-    // zonetwo.zone = '';
-    // zonethree.zone = '';
+    zoneone.mg1 = '';
+    zonetwo.mg2 = '';
+    zonethree.mg3 = '';
 
-    // zoneone.mg1 = '';
-    // zonetwo.mg2 = '';
-    // zonethree.mg3 = '';
-
-    // zoneone.mr1 = '';
-    // zonetwo.mr2 = '';
-    // zonethree.mr3 = '';
-
-    // zoneone.mf1 = '';
-    // zonetwo.mf2 = '';
-    // zonethree.mf3 = '';
+    zoneone.mf1 = '';
+    zonetwo.mf2 = '';
+    zonethree.mf3 = '';
 }
 const tileValue = reactive({
     k: '',
@@ -423,7 +434,7 @@ function checkZones() {
 // Multi-tile
 function updateTile(event) {
     let type = selectedOption.value === 'double' ? manufacturerDoubleData.value.table2_map : manufacturerData.value.Table2_obj_map;
-    console.log(type);
+    console.log(type, isMultiTileValid.value);
     const valMulti = Object.entries(type).map((obj) => {
         const key = obj[0];
         const value = obj[1];
@@ -534,7 +545,8 @@ const saTiles = reactive({
     Description_F11: '',
     Description_F12: '',
     arrDesignPressure: [],
-    pressure: ''
+    pressure: '',
+    expiration_date: ''
 });
 
 const udlTile = reactive({
@@ -579,7 +591,8 @@ const udlTile = reactive({
     TileCap_Sheet_Description_E13: '',
     arrDesignPressure: [],
     syst: '',
-    pressure: ''
+    pressure: '',
+    expiration_date: ''
 });
 
 watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
@@ -690,6 +703,11 @@ function checkInputSystem() {
         saTiles.Description_F8 = item.systemData.Description_F8;
         saTiles.Description_F9 = item.systemData.Description_F9;
         saTiles.arrDesignPressure = item.systemData.designPressure;
+        saTiles.expiration_date = item.systemData.expiration_date;
+        console.log(saTiles.expiration_date);
+        licenseEnd.value = saTiles.expiration_date;
+        const { isExpired } = useExpiry(licenseEnd);
+        console.log(isExpired);
         if (item.systemData.system.length > 1) {
             addFSystem();
         } else {
@@ -863,7 +881,6 @@ function checkInput() {
         isMultiTileValid = false;
         isTileValid = true;
         isTileData = true;
-        // checkTile();
     }
 }
 
@@ -1425,7 +1442,7 @@ watch(
 
         <div></div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label style="color: #122620" for="area">Area of Roof</label>
+            <label style="color: #122620" for="area">Area of Tile</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
@@ -1467,8 +1484,12 @@ watch(
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
         </div>
-        <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
+        <div v-show="isSAValid" class="columns-2 flex flex-row w-64" style="margin-left: 2px">
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
+            <div class="w-128 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 100px">
+                <label style="color: #122620" for="material">S/A Expiration Date</label>
+                <InputText v-model="saTiles.expiration_date" />
+            </div>
         </div>
 
         <div v-show="isPaddyCategoryValid" class="w-56 flex flex-col gap-2" style="margin-left: 50px">
@@ -1498,8 +1519,8 @@ watch(
     <Divider />
     <Divider />
 
-    <div class="md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 5px">
-        <div v-show="isTileData" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 1px">
+    <div class="md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 1px">
+        <div v-show="isTileData" class="w-full flex flex-row space-x-10 space-y-1" style="margin-left: 20px">
             <div class="min-w-[450px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
@@ -1518,13 +1539,16 @@ watch(
             <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @change="updateMF" />
-
-                <!-- @click="updateMF" -->
             </div>
             <div v-show="!isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
+        </div>
+        <!-- !isMultiTileValid -->
+        <div v-show="isTileData" class="w-64 flex flex-col mt-8 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
+            <label style="color: #122620" for="material">NOA Expiration Date</label>
+            <InputText v-model="tilenoas.expiration_date" />
         </div>
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
@@ -1560,7 +1584,7 @@ watch(
         </div>
 
         <div class="gap-4 mt-10 space-x-10 space-y-6">
-            <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
+            <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20" style="margin-left: 25px">
                 <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="saapplicant">S/A Applicant</label>
                     <InputText id="saapplicant" v-model="saTiles.manufacturer" />
@@ -1580,7 +1604,7 @@ watch(
                     <InputText id="designpressure" v-model="saTiles.designpressure" />
                 </div>
             </div>
-            <div v-show="isSAValid" class="max-w-screen-lg flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div v-show="isSAValid" class="max-w-screen-lg flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 25px">
                 <label style="color: #122620" for="sadescription">S/A Description</label>
                 <InputText id="capsheetdescription" v-model="saTiles.description" />
             </div>

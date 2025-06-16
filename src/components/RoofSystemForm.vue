@@ -122,6 +122,7 @@ function clear() {
 
         <div class="flex flex-col gap-4">
             <div>
+                <!-- /generalpage -->
                 <Button class="button" label="Submit" raised style="margin-right: 90px; margin-top: 230px; background-color: #a4b5b9" as="router-link" to="/generalpage"></Button>
             </div>
         </div>

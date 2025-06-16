@@ -12,8 +12,9 @@ export default function useMech() {
     const num = ref();
     const error = ref('');
 
-    let url = 'https://2dz45lw4aeav6valksiiquuwqq0ejsio.lambda-url.us-east-1.on.aws/'
-     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
+    let url = 'https://2dz45lw4aeav6valksiiquuwqq0ejsio.lambda-url.us-east-1.on.aws/';
+    // 'https://8c6racnaj6.execute-api.us-east-1.amazonaws.com/mechanicalTile/mechanicalTile';
+    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
     const mechanicalData = reactive({
         noa: '',
         manufacturer: '',
@@ -36,7 +37,8 @@ export default function useMech() {
         area: null,
         slope: null,
         perimeter: null,
-        decktype: null
+        decktype: null,
+        expiration_date: ''
     });
     function takeMechInput(inputMech) {
         input.value = inputMech;
@@ -64,7 +66,7 @@ export default function useMech() {
                 mechanicalData.select_tile = noaNum.value[0].Select_Tile;
                 mechanicalData.tile_map = noaNum.value[0].Tile_Map;
                 mechanicalData.table2_map = noaNum.value[0].Table2_Map;
-
+                mechanicalData.expiration_date = noaNum.value[0].expiration_date;
                 mechanicalData.Table2 = noaNum.value[0].Table2;
                 mechanicalData.Table3 = noaNum.value[0].Table3;
                 mechanicalData.resistance = noaNum.value[0].Resistance;

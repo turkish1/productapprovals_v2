@@ -92,8 +92,10 @@
                 </div>
                 <span class="text-center">Click to Login</span>
                 <span class="text-2xl font-bold">
-                    <Button id="signin" icon="pi pi-user" severity="contrast" variant="text" rounded aria-label="Login Page" :size="size" :loading="loading" @click="load" />
+                    <Button icon="pi pi-user" severity="contrast" rounded :loading="loading" @click="signIn" @change="checkAuth" raised @input="email" />
                 </span>
+
+                <pre v-if="idPayload">{{ idPayload }}</pre>
             </div>
         </div>
     </div>
@@ -101,9 +103,15 @@
 
 <script setup>
 import AOS from 'aos';
-import { onMounted, ref } from 'vue';
+// import {  ref } from 'vue';
+import { useGoogleAuth } from '@/composables/Authentication/useGoogleAuth.js';
+import { useGlobalState } from '@/stores/accountsStore';
 import { useRouter } from 'vue-router';
+// import { useAuthStore } from '@/stores/auth';
+import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
+const { accessToken, idPayload, signIn, localData } = useGoogleAuth();
+const acctCompare = ref([]);
 const router = useRouter();
 defineProps({
     heading: { type: String, required: true },
@@ -111,14 +119,59 @@ defineProps({
 });
 const loading = ref(false);
 
-const load = () => {
-    loading.value = true;
+let accountUser = reactive({
+    dba: '',
+    email: '',
+    cphone: '',
+    bphone: '',
+    expiration_date: '',
+    name: '',
+    projects: [],
+    secondary_status: '',
+    license: '',
+    phone: ''
+});
 
-    setTimeout(() => {
-        loading.value = false;
-    }, 2000);
-    navLogin();
+const { getUser } = useGlobalState();
+const checkAuth = () => {
+    console.log(getUser);
+    localData.value.forEach((item, index) => {
+        for (let i = 0; i < item.length; i++) {
+            if (accessToken.value) {
+                acctCompare.value.push(item[i]);
+                accountUser.phone = item[i].bphone;
+                callNavigate();
+            }
+        }
+    });
 };
+
+function callNavigate() {
+    navigateNext();
+    // console.log('Line 57: callNavigate');
+}
+
+function navigateNext() {
+    router.push('/permitapp');
+}
+
+watch(checkAuth, () => {});
+watchEffect(() => {
+    if (accessToken.value) {
+        // Example: list 10 newest messages
+        fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=4', { headers: { Authorization: `Bearer ${accessToken.value}` } })
+            .then((r) => r.json())
+            .then(console.log);
+    }
+});
+// const load = () => {
+//     loading.value = true;
+
+//     setTimeout(() => {
+//         loading.value = false;
+//     }, 2000);
+//     navLogin();
+// };
 onMounted(() => {
     AOS.init({
         duration: 800, // Animation duration in ms
@@ -127,10 +180,6 @@ onMounted(() => {
     });
     localStorage.clear();
 });
-
-function navLogin() {
-    router.push('/login');
-}
 
 function navRegister() {
     router.push('/registration');

@@ -68,7 +68,7 @@ export default function useTileSystemF() {
                 systemData.noa = noaNum.value[0].NOA;
                 systemData.manufacturer = noaNum.value[0].Manufacturer;
                 systemData.material = noaNum.value[0].Material;
-
+                systemData.expiration_date = noaNum.value[0].expiration_date;
                 systemData.Description_F1 = noaNum.value[0].TileCap_Sheet_Description_F1;
                 systemData.Description_F2 = noaNum.value[0].TileCap_Sheet_Description_F2;
                 systemData.Description_F3 = noaNum.value[0].TileCap_Sheet_Description_F3;

@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card-system">
         <Timeline :value="events" align="alternate" class="customized-timeline" style="margin-top: 50px">
             <template #marker="slotProps">
                 <span class="flex w-8 h-8 items-center justify-center text-white rounded-full z-10 shadow-sm" :style="{ backgroundColor: slotProps.item.color }">
@@ -66,6 +66,7 @@ import TileMechanical from '../jsPDF/TileMechanical.vue';
 const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 const isloading = ref(false);
+const isSigned = ref(false);
 
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
@@ -136,7 +137,7 @@ const events = ref([
     { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
     { status: displayInfo.item, date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
 ]);
-
+//  callPdfSign,
 watchOnce(displayUserInfo, callState, () => {});
 invoke(async () => {
     await until(callState).toBe(true);
