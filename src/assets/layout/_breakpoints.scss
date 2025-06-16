@@ -1,0 +1,42 @@
+// src/styles/_breakpoints.scss
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1536px; // 2K+
+$breakpoint-ultra: 2560px; // Curved/Ultra-wide
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: $breakpoint-xs) { @content; }
+  } @else if $breakpoint == sm {
+    @media (min-width: #{$breakpoint-xs  + 1 })and (max-width: $breakpoint-sm) { @content; }
+  } @else if $breakpoint == md {
+    @media (min-width: #{$breakpoint-sm + 1 }) and (max-width: $breakpoint-md) { @content; }
+  } @else if $breakpoint == lg {
+    @media (min-width: #{$breakpoint-md + 1 }) and (max-width: $breakpoint-lg) { @content; }
+  } @else if $breakpoint == xl {
+    @media (min-width: #{$breakpoint-lg + 1 }) and (max-width: $breakpoint-xl) { @content; }
+  } @else if $breakpoint == ultra {
+    @media (min-width: #{$breakpoint-xl + 1 }) { @content; }
+  }
+}
+
+
+.container {
+    padding: .25rem;
+
+    @include respond-to(xs) {
+      font-size: 9px;
+    }
+
+    @include respond-to(md) {
+      font-size: 10px;
+    }
+
+    @include respond-to(ultra) {
+      font-size: 16px;
+      max-width: 2000px;
+      margin: 0 auto;
+    }
+  }
