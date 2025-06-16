@@ -29,6 +29,13 @@ export default defineConfig({
         //     open: true // Open the report after the build
         // })
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                additionalData: `@import "@/assets/layout/layout.scss";`
+            }
+        }
+    },
     // compilerOptions: {
     //     isCustomElement: (tag) => tag === 'stripe-buy-button'
     // },
