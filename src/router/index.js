@@ -94,6 +94,11 @@ const router = createRouter({
                     component: () => import('@/components/Tile.vue')
                 },
                 {
+                    path: '/metalpanel',
+                    name: 'metalpanel',
+                    component: () => import('@/components/MetalPanel.vue')
+                },
+                {
                     path: '/summary',
                     name: 'summary',
                     component: () => import('@/components/Summary/Summarys.vue')
