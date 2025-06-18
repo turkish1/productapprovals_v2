@@ -2,11 +2,11 @@
 // ---- imports -------------------------------------------------------------
 import { useprocStore } from '@/stores/processStore';
 import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import useLast from '@/composables/lastNumber.js';
-import useProcess from '@/composables/process.js';
+// import useProcess from '@/composables/process.js';
 import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 
 import { useGlobalState } from '@/stores/accountsStore';
@@ -53,7 +53,7 @@ const muniProcess = ref('');
 const muniProcessdata = ref('');
 const cccValid = ref(true);
 const isPhoneValid = ref(false);
-const licenseStatus = ref('');
+const licenseStat = ref('');
 const dba = ref('');
 const phone = ref('');
 const name = ref('');
@@ -61,9 +61,20 @@ const email = ref('');
 const googleAccount = ref([]);
 const address = ref('');
 
+const disabled = ref(false);
 // ---- lifecycle ------------------------------------------------------------
+
+onMounted(() => {
+    if (disabled.value === false && accountUsers.value[0].secondary_status === 'I') {
+        console.log(disabled.value);
+        alert('Your license is Inactive!');
+    } else {
+        disabled.value = true;
+    }
+});
 tryOnMounted(() => {
     setProperties();
+
     isDialog.value = true;
     localStorage.clear();
 });
@@ -76,24 +87,23 @@ const cellPhn = computed(() => {
     return isPhoneValid.value === true ? phone.value : accountUsers.value[0]?.bphone;
 });
 
+watchOnce(setProperties, cellPhn, () => {
+    /* noop */
+    // console.log(setProperties);
+});
+
 async function setProperties() {
     googleAccount.value = await accountUsers.value[0];
-    console.log(googleAccount.value);
 
     // phone.value = googleAccount.value?.bphone || '';
     name.value = googleAccount.value?.name || '';
     email.value = googleAccount.value?.email || '';
-    licenseStatus.value = googleAccount.value?.secondary_status || '';
+    licenseStat.value = googleAccount.value?.secondary_status || '';
     dba.value = googleAccount.value?.dba || '';
     address.value = procStore.$state.processinput[0]?.procData?.address;
     phone.value = accountUsers.value[0]?.bphone;
     // processN.value = procStore.$state.processinput[0]?.procData?.processNumber;
 }
-
-watchOnce(setProperties, cellPhn, () => {
-    /* noop */
-    console.log(setProperties);
-});
 invoke(async () => {
     await until(isPhoneValid).toBe(true);
 });
@@ -102,7 +112,7 @@ invoke(async () => {
 const selectedApplication = computed(() => (cccValid.value ? type.value[0] : ''));
 
 // composables returning refs
-const { pNum } = useProcess();
+
 const { resNum } = useLast();
 
 // other refs for api
@@ -128,7 +138,6 @@ async function fetchData(url) {
         checkV.value = formData.folio;
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
-        console.log(typeof checkMB.value);
     } catch (err) {
         error.value = err.message;
     } finally {
@@ -150,7 +159,7 @@ async function load() {
         console.log(muniProcess.value);
         // enrich form
         Object.assign(formData, {
-            license: licenseStatus.value,
+            license: licenseStat.value,
             contractor: dba.value,
             emails: email.value,
             muniProc: muniProcess.value,
@@ -173,9 +182,9 @@ function onSubmit() {
     procReceive(formData);
 }
 
-function navigateNext() {
-    router.push('/roofsystem');
-}
+// function navigateNext() {
+//     router.push('/roofsystem');
+// }
 
 function addItemAndClear() {
     // if (!formData.address) return;
@@ -200,8 +209,7 @@ function addItemAndClear() {
                     </div>
                     <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3" style="max-width: 200px; margin-left: 30px">
                         <label for="license" style="color: #122620">License Status</label>
-                        <InputText id="license" v-model="licenseStatus" type="text" placeholder="status" />
-                        <!-- <Message severity="error">Contractor Name Required</Message> -->
+                        <InputText id="license" v-model="licenseStat" type="text" placeholder="status" />
                     </div>
                     <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
                         <form class="md:w-3/4 grid grid-cols-2 gap-6" @submit="onSubmit">
@@ -230,20 +238,17 @@ function addItemAndClear() {
                             <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4" style="margin-left: 55px">
                                 <label for="name" style="color: #122620">Contractor Name</label>
                                 <InputText id="name" v-model="name" type="text" placeholder="name" />
-                                <!-- <Message severity="error">Contractor Name Required</Message> -->
                             </div>
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label id="phone" style="color: #122620">Cell Phone Number</label>
                                 <InputMask v-model="formData.phNumber" mask="(999) 999-9999" placeholder="(999) 999-9999" />
-                                <!-- placeholder="(999) 999-9999" :invalid="phone === ''" -->
                             </div>
 
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label id="Email" style="color: #122620">Email</label>
                                 <InputText v-model="email" :invalid="email === null" :error="emailError" />
                                 <Message v-if="invalid" severity="error">Email is required</Message>
-                                <!-- @click="navigateNext" -->
                             </div>
                             <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
                                 <label for="muni" style="color: #122620">Municipality</label>
@@ -267,7 +272,7 @@ function addItemAndClear() {
 
                             <br />
                             <!-- formData -->
-                            <Button id="submit" type="submit" label="Submit" class="w-2/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear" />
+                            <Button id="submit" type="submit" disabled label="Submit" class="w-2/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear" />
                         </form>
 
                         <br />

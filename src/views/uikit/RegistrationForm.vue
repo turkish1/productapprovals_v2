@@ -59,8 +59,8 @@ export default {
             formDatas.name = '';
             formDatas.license_status = '';
             formDatas.dba = '';
-            formDatas.username = '';
-            formDatas.password = '';
+            // formDatas.username = '';
+            // formDatas.password = '';
             formDatas.address = '';
             formDatas.cphone = '';
             formDatas.bphone = '';
@@ -273,11 +273,11 @@ export default {
                 <label for="license" style="color: #122620">Insurance Carrier</label>
                 <InputText id="license" type="text" v-model="formDatas.carrier" placeholder=" " :invalid="formDatas.carrier === ''" />
             </div>
-            <div class="flex flex-col gap-2">
+            <!-- <div class="flex flex-col gap-2">
                 <label for="username" style="color: #122620">User Name</label>
                 <InputText id="username" type="text" v-model="formDatas.username" placeholder="user name" :invalid="formDatas.username === ''" />
-            </div>
-            <div class="flex flex-col gap-2">
+            </div> -->
+            <!-- <div class="flex flex-col gap-2">
                 <label for="fname" style="color: #122620">Password</label>
                 <Password v-model="formDatas.password" :invalid="formDatas.pasword === ''">
                     <template #header>
@@ -293,7 +293,7 @@ export default {
                         </ul>
                     </template>
                 </Password>
-            </div>
+            </div> -->
         </div>
         <div class="h-[10rem]"></div>
         <!-- <div class="font-semibold text-xl" style="margin-left: 50px">Contact Info</div> -->
@@ -348,7 +348,6 @@ export default {
 <style scoped>
 .container {
     padding-bottom: 10px;
-    /* padding-top: 12px; */
     border: none;
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
