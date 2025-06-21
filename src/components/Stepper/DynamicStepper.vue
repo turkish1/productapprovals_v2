@@ -1,36 +1,39 @@
 <template>
-    <div class="card-system">
-        <div class="stepper">
-            <!-- Iterate over filtered steps to build the stepper UI -->
-            <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }">
-                <div class="step">
-                    <span>{{ step.label }} </span>
+    <div class="layout-main-container-stepper">
+        <div class="card-system">
+            <div class="stepper">
+                <!-- Iterate over filtered steps to build the stepper UI -->
+                <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }">
+                    <div class="step">
+                        <span>{{ step.label }} </span>
+                    </div>
+                    <!-- Separator line (not after the last step) -->
+                    <div v-if="index < filteredSteps.length - 1" class="line"></div>
                 </div>
-                <!-- Separator line (not after the last step) -->
-                <div v-if="index < filteredSteps.length - 1" class="line"></div>
             </div>
-        </div>
 
-        <!-- Step Content -->
-        <div v-if="!isLoading" class="card-system">
-            <component :is="activeComponent" />
-        </div>
-        <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
+            <!-- Step Content -->
+            <div v-if="!isLoading" class="card-system">
+                <component :is="activeComponent" />
+            </div>
+            <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
 
-        <div class="stepper-controls">
-            <button class="button" @click="prevStep" :disabled="isFirstStep">Back</button>
-            <button class="button" @click="nextStep" :disabled="isLastStep">Next</button>
+            <div class="stepper-controls">
+                <Button label="Back" severity="contrast" raised @click="prevStep" :disabled="isFirstStep"></Button>
+                <BUtton label="Next" severity="contrast" raised @click="nextStep" :disabled="isLastStep"></BUtton>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-// import Button from '@/components/Features/Buttons.vue';
+import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
+
 // Composables / Stores
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
@@ -38,6 +41,12 @@ const { roofList } = storeToRefs(store);
 const sessions = ref([]); // [{ session_id, label, completed }]
 const active = ref(0);
 // Reactive State
+
+onMounted(() => {
+    const { width, isUltraWide, height, isLongScreen } = useScreenSize();
+    console.log(width, isUltraWide);
+    return { width, isUltraWide, height, isLongScreen };
+});
 const isLoading = ref(false);
 
 // Booleans that decide which steps are valid / included
@@ -231,11 +240,11 @@ console.log(isFirstStep.value, isLastStep.value, filteredSteps.value.length);
 </script>
 
 <style scoped>
-.card-system {
-    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
-    background-size: cover;
-    background-position: center;
-}
+/* .card-system { */
+/* background-image: url('/src/assets/img/Roof_Systems_Background.jpeg'); */
+/* background-size: cover;
+    background-position: center; */
+/* } */
 button {
     appearance: auto;
 
@@ -267,7 +276,7 @@ button {
 .stepper {
     display: flex;
     flex-direction: row;
-    width: 100%;
+    /* width: 100%; */
     margin-top: 16px;
 }
 
@@ -303,14 +312,14 @@ button {
 
 .step-content {
     margin-top: 18px;
-    margin-left: -30px;
+    margin-left: -20px;
     font-size: 14px;
 }
 
 /* Controls Layout */
 .stepper-controls {
     display: flex;
-    gap: 1500px;
-    margin-top: 45px;
+    gap: 1600px;
+    margin-top: 5px;
 }
 </style>

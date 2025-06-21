@@ -1,20 +1,23 @@
 // this html covers the whole system
-html {
+html, body {
+    margin: 0;
+    padding: 0;
     height: 100%;
-    font-size: 14px;
     width: 100%;
-
+    font-size: 14px;
 }
-
 body {
     font-family: 'Lato', sans-serif;
-    // color: whitesmoke;
+
     margin: 0; /* Remove default margins */
-    // height: 100vh;
+
     background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
 
-    background-repeat: no-repeat;
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+
 
 }
 
@@ -23,11 +26,16 @@ a {
 }
 
 .layout-wrapper {
-    min-height: 100vh;
-    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
 
-    background-repeat: no-repeat;
-    background-size: cover;
-    // background-attachment: fixed;
-    // min-height: 5%;
+      // max-height: fit-content;
+      background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
+      background-size: cover;
+       background-repeat: no-repeat;
+       background-position: center;
+       background-attachment: fixed;
+}
+
+
+* {
+    box-sizing: border-box;
 }

@@ -1,11 +1,11 @@
 <script setup>
 // ---- imports -------------------------------------------------------------
+import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
+import useLast from '@/composables/lastNumber.js';
 import { useprocStore } from '@/stores/processStore';
 import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-
-import useLast from '@/composables/lastNumber.js';
 // import useProcess from '@/composables/process.js';
 import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 
@@ -33,6 +33,11 @@ const type = ref([
 ]);
 const prefix = ref('me');
 
+onMounted(() => {
+    const { width, isUltraWide, height, isLongScreen } = useScreenSize();
+    console.log(width, isUltraWide);
+    return { width, isUltraWide, height, isLongScreen };
+});
 // reactive form model
 const formData = reactive({
     address: '',
@@ -65,7 +70,7 @@ const disabled = ref(false);
 // ---- lifecycle ------------------------------------------------------------
 
 onMounted(() => {
-    if (disabled.value === false && accountUsers.value[0].secondary_status === 'I') {
+    if (disabled.value === false && accountUsers.value[0]?.secondary_status === 'I') {
         console.log(disabled.value);
         alert('Your license is Inactive!');
     } else {
@@ -98,7 +103,8 @@ async function setProperties() {
     // phone.value = googleAccount.value?.bphone || '';
     name.value = googleAccount.value?.name || '';
     email.value = googleAccount.value?.email || '';
-    licenseStat.value = googleAccount.value?.secondary_status || '';
+    licenseStat.value = googleAccount.value.secondary_status || '';
+    console.log(licenseStat.value);
     dba.value = googleAccount.value?.dba || '';
     address.value = procStore.$state.processinput[0]?.procData?.address;
     phone.value = accountUsers.value[0]?.bphone;
@@ -194,110 +200,253 @@ function addItemAndClear() {
     console.log(store);
 }
 </script>
-
 <template>
-    <!-- <div id="permitapp" ref="permitapp" class="flex flex-col md:flex-row gap-2" style="margin-left: 220px; background-color: #122620"> @click="selectPermitType"-->
+    <!-- dialog stays unchanged -->
     <PermitInitalAgreement v-if="isDialog" />
-    <!-- <div class="grid grid-cols-1 gap-2"> -->
-    <div class="container md:w-1/3" style="margin-left: 650px">
-        <form>
-            <div class="flex flex-row">
-                <div class="flex mt-4 space-y-2 flex-col gap-2">
-                    <div class="font-semibold text-xl" style="color: #122620; margin-left: 230px">Permit Application</div>
-                    <div class="flex justify-center">
-                        <Select v-model="selectedApplication" :options="type" showClear optionLabel="name" placeholder="Select a permit type" class="w-full md:w-56" style="margin-top: 30px" />
-                    </div>
-                    <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3" style="max-width: 200px; margin-left: 30px">
-                        <label for="license" style="color: #122620">License Status</label>
-                        <InputText id="license" v-model="licenseStat" type="text" placeholder="status" />
-                    </div>
-                    <div class="flex mt-3 space-y-2 flex-col gap-2" style="margin-left: 30px">
-                        <form class="md:w-3/4 grid grid-cols-2 gap-6" @submit="onSubmit">
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-4">
-                                <label for="processMuni" style="color: #122620">Municipality Process Number</label>
-                                <InputText id="processMuni" v-tooltip.top="'Enter Municipality Process Number'" v-model="muniProcess" type="text" placeholder="municipal process number" @change="load" />
-                            </div>
 
-                            <div class="flex flex-col mt-3 w-full w-64 space-y-2 grow basis-0 gap-4">
-                                <label for="addr" style="color: #122620">Property Address</label>
-                                <InputText id="addr" v-tooltip.top="'Make sure that either street or avenue is spelled out, direction could be shorten (sw)'" type="text" v-model="address" placeholder="address" />
-                                <!-- v-if="!loading"  -->
-                                <Button id="search" type="button" label="Search" class="w-2/3" style="background-color: #a4b5b9" raised icon="pi pi-search-plus" :loading="loading" @click="load" />
+    <section class="hero">
+        <div class="card">
+            <!-- heading -->
+            <h1 class="title">Permit Application</h1>
 
-                                <!-- <i v-else class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>  @input="createHtml"-->
+            <!-- permit selector -->
+            <Select v-model="selectedApplication" :options="type" optionLabel="name" placeholder="Select a permit type" class="w-full permit-select" />
 
-                                <!-- pi-search-plus -->
-                                <!-- <Message severity="error">Property Address Required</Message> -->
-                            </div>
-
-                            <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4">
-                                <label for="dba" style="color: #122620">DBA </label>
-                                <InputText id="dba" v-model="dba" type="text" placeholder="dba" />
-                                <!-- <Message severity="error">Contractor Name Required</Message> -->
-                            </div>
-                            <div class="flex flex-col w-full md:w-72 mt-3 space-y-2 grow basis-0 gap-4" style="margin-left: 55px">
-                                <label for="name" style="color: #122620">Contractor Name</label>
-                                <InputText id="name" v-model="name" type="text" placeholder="name" />
-                            </div>
-
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                <label id="phone" style="color: #122620">Cell Phone Number</label>
-                                <InputMask v-model="formData.phNumber" mask="(999) 999-9999" placeholder="(999) 999-9999" />
-                            </div>
-
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                <label id="Email" style="color: #122620">Email</label>
-                                <InputText v-model="email" :invalid="email === null" :error="emailError" />
-                                <Message v-if="invalid" severity="error">Email is required</Message>
-                            </div>
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                <label for="muni" style="color: #122620">Municipality</label>
-                                <InputText id="muni" v-model="formData.muni" type="text" placeholder="municipality" :style="{ color: 'green' }" />
-                            </div>
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                <label for="folio" style="color: #122620">Folio</label>
-                                <InputText id="folio" v-model="formData.folio" type="text" placeholder="folio" @input="updatemEProcess" :style="{ color: 'green' }" />
-                            </div>
-
-                            <div class="flex flex-col mt-3 space-y-2 grow basis-0 gap-3">
-                                <label for="permit" style="color: #122620">Master Permit</label>
-                                <InputText id="permit" v-model="formData.permit" type="text" placeholder="20000000" />
-                            </div>
-                            <div class="flex flex-col font-semibold mt-3 space-y-2 grow basis-0 gap-3">
-                                <label for="processnum" style="color: #122620">mEProcess Number</label>
-                                <InputText id="processnum" v-model="formData.processNumber" type="text" placeholder="process number" />
-                            </div>
-
-                            <p v-if="responseMessage">{{ responseMessage }}</p>
-
-                            <br />
-                            <!-- formData -->
-                            <Button id="submit" type="submit" disabled label="Submit" class="w-2/3" style="background-color: #a4b5b9" raised as="router-link" to="/roofsystem" @click="addItemAndClear" />
-                        </form>
-
-                        <br />
+            <!-- main form -->
+            <form class="grid-form" @submit.prevent="onSubmit">
+                <!-- license status -->
+                <div class="field">
+                    <label for="license">License Status</label>
+                    <InputText id="license" v-model="licenseStat" placeholder="active / inactive" />
+                </div>
+                <!-- municipality process # -->
+                <div class="field">
+                    <label for="processMuni">Municipality Process #</label>
+                    <InputText id="processMuni" v-model="muniProcess" placeholder="00000000" @change="load" />
+                </div>
+                <!-- property address & search -->
+                <div class="field span-2">
+                    <label for="addr">Property Address</label>
+                    <div class="input-row">
+                        <InputText id="addr" v-model="address" placeholder="123 SW 1st St" />
+                        <Button type="button" icon="pi pi-search" :loading="loading" @click="load" />
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
 
-    <!-- </div> -->
+                <!-- DBA -->
+                <div class="field">
+                    <label for="dba">DBA</label>
+                    <InputText id="dba" v-model="dba" placeholder="company alias" />
+                </div>
+
+                <!-- contractor name -->
+                <div class="field span-2">
+                    <label for="name">Contractor Name</label>
+                    <InputText id="name" v-model="name" placeholder="full name" />
+                </div>
+
+                <!-- phone -->
+                <div class="field">
+                    <label for="phone">Cell Phone</label>
+                    <InputMask id="phone" v-model="formData.phNumber" mask="(999) 999-9999" placeholder="(999) 999-9999" />
+                </div>
+
+                <!-- email -->
+                <div class="field">
+                    <label for="email">Email</label>
+                    <InputText id="email" v-model="email" :invalid="invalid" placeholder="you@example.com" />
+                    <small v-if="invalid" class="error">Email is required</small>
+                </div>
+
+                <!-- municipality -->
+                <div class="field">
+                    <label for="muni">Municipality</label>
+                    <InputText id="muni" v-model="formData.muni" placeholder="Miami Beach" />
+                </div>
+
+                <!-- folio -->
+                <div class="field">
+                    <label for="folio">Folio</label>
+                    <InputText id="folio" v-model="formData.folio" placeholder="00-0000-000-0000" @input="updatemEProcess" />
+                </div>
+
+                <!-- master permit -->
+                <div class="field">
+                    <label for="permit">Master Permit</label>
+                    <InputText id="permit" v-model="formData.permit" placeholder="20000000" />
+                </div>
+
+                <!-- mEProcess # -->
+                <div class="field">
+                    <label for="processnum">mEProcess #</label>
+                    <InputText id="processnum" v-model="formData.processNumber" placeholder="auto-generated" />
+                </div>
+
+                <!-- server response -->
+                <p v-if="responseMessage" class="response span-2">{{ responseMessage }}</p>
+
+                <!-- submit -->
+                <div class="span-2 submit-row">
+                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear" />
+                </div>
+            </form>
+        </div>
+    </section>
 </template>
 <style scoped>
-.container {
-    padding-bottom: 170px;
-
-    border: none;
-    border-radius: 12px;
-    box-shadow: 4px 4px 16px rgb(22, 183, 183);
-    position: center;
-    min-height: 80px;
-    margin-top: 20px;
-    background-color: #eae7e2;
+/* ─── 1. CSS custom properties for easy theme tweaks ─────────────────────── */
+:root {
+    --c-bg: #f4f4f4;
+    --c-bg-card: rgba(255, 255, 255, 0.85);
+    --c-bg-card-dark: rgba(30, 41, 59, 0.85);
+    --c-primary: #00857a;
+    --c-primary-dark: #10bda7;
+    --c-text: #1b1b1b;
+    --c-text-light: #ffffff;
+    --radius: 1.2rem;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
 }
 
-.ql-container {
-    height: calc(100% - 52px);
+@media (prefers-color-scheme: dark) {
+    :root {
+        --c-bg: #0f172a;
+        --c-text: #e2e8f0;
+    }
+}
+
+/* ─── 2. Layout wrappers ─────────────────────────────────────────────────── */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 4rem 1rem;
+    background: var(--c-bg);
+    background-image: radial-gradient(at 10% 20%, #e0f7fa 0%, transparent 50%), radial-gradient(at 90% 80%, #ccfbf1 0%, transparent 50%);
+}
+
+.card {
+    width: 100%;
+    max-width: 48rem;
+    background: var(--c-bg-card);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 3rem 2.5rem;
+}
+
+/* dark mode card tint */
+@media (prefers-color-scheme: dark) {
+    .card {
+        background: var(--c-bg-card-dark);
+    }
+}
+
+/* ─── 3. Typography ──────────────────────────────────────────────────────── */
+.title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--c-primary);
+    margin-bottom: 1.75rem;
+}
+
+/* ─── 4. Form grid ───────────────────────────────────────────────────────── */
+.grid-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.25rem 2rem;
+}
+
+/* span helpers */
+.span-2 {
+    grid-column: span 2;
+}
+@media (max-width: 640px) {
+    .span-2 {
+        grid-column: span 1;
+    }
+}
+
+/* individual field block */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.field label {
+    font-weight: 500;
+    color: var(--c-text);
+    font-size: 0.9rem;
+}
+
+/* horizontal input + button combo */
+.input-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* response text */
+.response {
+    text-align: center;
+    color: #e11d48; /* rose-600 */
+    font-weight: 500;
+}
+
+/* submit row → centre button */
+.submit-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+/* ─── 5. PrimeVue component tweaks via :deep() ───────────────────────────── */
+:deep(.p-inputtext),
+:deep(.p-inputmask),
+:deep(.p-dropdown) {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #cbd5e1;
+    padding: 0.55rem 0.75rem;
+    transition: box-shadow 0.15s ease;
+}
+
+:deep(.p-inputtext:focus),
+:deep(.p-inputmask:focus),
+:deep(.p-dropdown:not(.p-disabled):focus) {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 35%, transparent);
+}
+
+:deep(.p-button) {
+    background: var(--c-primary);
+    border: none;
+    color: var(--c-text-light);
+    padding: 0.55rem 1.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: background 0.15s ease;
+}
+:deep(.p-button:hover) {
+    background: var(--c-primary-dark);
+}
+:deep(.p-button:focus) {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 45%, transparent);
+}
+:deep(.p-button.p-disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* error helper */
+.error {
+    font-size: 0.75rem;
+    color: #e11d48;
+}
+
+/* permit type selector extra spacing (optional) */
+.permit-select {
+    margin-bottom: 1.5rem;
 }
 </style>

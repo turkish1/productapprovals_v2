@@ -1,5 +1,5 @@
 <template>
-    <div class="card-system">
+    <div id="summary" class="card-system">
         <Timeline :value="events" align="alternate" class="customized-timeline" style="margin-top: 50px">
             <template #marker="slotProps">
                 <span class="flex w-8 h-8 items-center justify-center text-white rounded-full z-10 shadow-sm" :style="{ backgroundColor: slotProps.item.color }">
@@ -144,20 +144,4 @@ invoke(async () => {
 });
 </script>
 
-<style lang="scss" scoped>
-@media screen and (max-width: 960px) {
-    ::v-deep(.customized-timeline) {
-        .p-timeline-event:nth-child(even) {
-            flex-direction: row;
-
-            .p-timeline-event-content {
-                text-align: left;
-            }
-        }
-
-        .p-timeline-event-opposite {
-            flex: 0;
-        }
-    }
-}
-</style>
+<style lang="scss" scoped></style>

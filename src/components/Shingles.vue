@@ -42,8 +42,4 @@ function checkSlope() {
         <input-shingle :slopeEntered="slope" style="margin-left: 2px" @change="checkSlope"></input-shingle>
     </div>
 </template>
-<style scoped>
-#id {
-    height: 1200px;
-}
-</style>
+<style scoped></style>

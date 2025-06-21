@@ -1,10 +1,16 @@
 // src/styles/_breakpoints.scss
 $breakpoint-xs: 480px;
 $breakpoint-sm: 768px;
-$breakpoint-md: 1024px;
-$breakpoint-lg: 1280px;
-$breakpoint-xl: 1536px; // 2K+
+$breakpoint-md: 868px;
+$breakpoint-lg: 1000px;
+$breakpoint-xl: 1336px; // 2K+
 $breakpoint-ultra: 2560px; // Curved/Ultra-wide
+
+$breakpoint-height-xs: 400px;
+$breakpoint-height-sm: 800px;
+$breakpoint-height-md: 1200px;
+$breakpoint-height-lg: 1300px;
+
 
 @mixin respond-to($breakpoint) {
   @if $breakpoint == xs {
@@ -19,6 +25,16 @@ $breakpoint-ultra: 2560px; // Curved/Ultra-wide
     @media (min-width: #{$breakpoint-lg + 1 }) and (max-width: $breakpoint-xl) { @content; }
   } @else if $breakpoint == ultra {
     @media (min-width: #{$breakpoint-xl + 1 }) { @content; }
+  } @else if $dimension == height {
+    @if $breakpoint == xs {
+      @media (max-height: $breakpoint-height-xs) { @content; }
+    } @else if $breakpoint == sm {
+      @media (min-height: #{$breakpoint-height-xs + 1}) and (max-height: $breakpoint-height-sm) { @content; }
+    } @else if $breakpoint == md {
+      @media (min-height: #{$breakpoint-height-sm + 1}) and (max-height: $breakpoint-height-md) { @content; }
+    } @else if $breakpoint == lg {
+      @media (min-height: #{$breakpoint-height-md + 1}) and (max-height: $breakpoint-height-lg) { @content; }
+    }
   }
 }
 
@@ -37,6 +53,7 @@ $breakpoint-ultra: 2560px; // Curved/Ultra-wide
     @include respond-to(ultra) {
       font-size: 16px;
       max-width: 2000px;
+      max-height: 1500px;
       margin: 0 auto;
     }
   }
