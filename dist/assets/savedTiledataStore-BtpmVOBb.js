@@ -1,1 +1,0 @@
-import{C as t}from"./index-BFHByW5m.js";const a=t("savedTileinput",{state:()=>({savedTileinput:[]}),actions:{addSavedvalues(e){this.savedTileinput.push({savedValues:e,completed:!1})},reset(){this.savedTileinput=[]}},getters:{getSavedvalues:e=>e.savedTileinput}});export{a as u};
