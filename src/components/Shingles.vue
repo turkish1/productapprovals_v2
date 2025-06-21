@@ -43,7 +43,7 @@ function checkSlope() {
     </div>
 </template>
 <style scoped>
-#id {
+/* #shingle {
     height: 1200px;
-}
+} */
 </style>

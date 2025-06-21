@@ -81,14 +81,14 @@ export function useGoogleAuth() {
             if ((await localData.value[0][i]?.email) === uEmail) {
                 acctUser.email = await localData.value[0][i].email;
                 acctUser.name = await localData.value[0][i].name;
-
+                console.log(localData.value[0][0].secondary_status);
                 acctUser.dba = await localData.value[0][i].dba;
                 acctUser.cphone = await localData.value[0][i].cphone;
                 acctUser.bphone = await localData.value[0][i].bphone;
                 acctUser.phone = await localData.value[0][i].bphone;
                 acctUser.expiration_date = await localData.value[0][i].expiration_date;
                 acctUser.projects = await localData.value[0][i].projects;
-                acctUser.secondary_status = await localData.value[0][i].secondary_status;
+                acctUser.secondary_status = await localData.value[0][0].secondary_status;
 
                 acctUser.license = await localData.value[0][i].license;
                 console.log(acctUser);

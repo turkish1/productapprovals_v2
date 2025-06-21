@@ -135,7 +135,7 @@ const navigateNext = () => {
     router.push('/dynamicstepper');
 };
 </script>
-
+<!-- GeneralInfoView.vue  ──────────────────────────────────────────── -->
 <template>
     <div id="generalpg" class="grid grid-cols-2 gap-2" style="margin-left: 120px">
         <div class="container">
@@ -197,8 +197,6 @@ const navigateNext = () => {
                         <label for="adtile1" class="ml-2" style="color: #122620"> Adhesive Set Tile </label>
                         <Checkbox v-model="checkedadtile" inputId="adtile1" name="adtile" value="Mortar/Adhesive Set Tile" severity="contrast" :binary="true" />
                     </div>
-                    <!-- <br />
-                        <label></label> -->
 
                     <div class="flex items-center gap-4">
                         <label for="shingle1" class="ml-2" style="color: #122620"> Asphalt Shingle </label>
@@ -208,18 +206,14 @@ const navigateNext = () => {
                         <label for="metal" class="ml-2" style="color: #122620"> Metal Panel </label>
                         <Checkbox v-model="checkedmetal" inputId="metal1" name="metal1" value="metal panel" severity="contrast" :binary="true" />
                     </div>
-
-                    <!-- <label style="margin-left: 50px; margin-top: 30px; color: #122620">Roof Area </label> -->
                 </div>
                 <Divider />
                 <div class="flex items-center space-y-4 gap-4" style="margin-left: 300px">
                     <label style="color: #122620; font-weight: bold">Roof Area: </label>
                     <Label style="color: #122620; font-weight: bold; margin-left: 5px; margin-bottom: 10px">{{ total }}</Label>
-                    <!-- <InputText v-model="total" placeholder="Total" /> -->
                 </div>
                 <Divider />
                 <div class="flex flex-col md:w-3/4 mt-4 space-y-6 md:flex-row gap-6">
-                    <!-- <div><label for="lowslope" class="ml-1 text-left" style="color: #122620">Low Slope </label></div> -->
                     <label for="" style="margin-top: 20px; color: #122620">Low Slope </label>
                     <InputGroup style="margin-left: 10px">
                         <InputText v-model="lowslope" placeholder="Low Slope" @change="roofArea" />
@@ -237,7 +231,6 @@ const navigateNext = () => {
                         <InputText v-model="total" placeholder="Total" />
                     </InputGroup>
                 </div>
-                <!-- <div class="md:w-2/3 flex flex-col bg-local hover:bg-fixed gap-4"></div> -->
 
                 <div class="md:w-1/3 flex p-2 mt-8 space-y-8 flex-col gap-2" style="margin-top: 80px">
                     <Button class="w-1/3" type="submit" label="Submit" style="background-color: #a4b5b9" raised as="router-link" to="/dynamicstepper" @click="navigateNext" />
@@ -250,6 +243,7 @@ const navigateNext = () => {
         </div>
     </div>
 </template>
+
 <style scoped>
 .container {
     padding-bottom: 25px;
@@ -258,13 +252,9 @@ const navigateNext = () => {
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 1000px;
+    min-height: 1090px;
     min-width: 900px;
     top: 10vh;
-}
-
-.ql-container {
-    height: calc(100% - 52px);
 }
 
 .editor-layout {
@@ -275,35 +265,5 @@ const navigateNext = () => {
     border-color: blue;
     margin-left: 20px;
     padding-bottom: 30px;
-}
-
-.pintura-editor {
-    --color-background: 255, 255, 255;
-    --color-foreground: 0, 0, 0;
-    /* --color-background: 255, 255, 255;
-    --color-foreground: 10, 10, 10; */
-    --editor-max-width: 50em;
-    --editor-max-height: 40em;
-    --color-preview-outline: 255, 0, 0;
-    --color-primary: #2990ff;
-    --color-primary-dark: #1a80ec;
-    --color-primary-text: #fff;
-    --color-secondary: #03a9f4;
-    --color-secondary-dark: #046bbf;
-    --color-focus: 255, 0, 0;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    /* html {
-        /* color: #fff;
-        background: #fff; */
-    /* } */
-
-    .pintura-editor {
-        --color-background: 10, 10, 10;
-        --color-foreground: 255, 255, 255;
-        box-shadow: 0 0 0 1px rgba(238, 233, 233, 0.1);
-    }
 }
 </style>

@@ -1364,7 +1364,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
         </div>
 
-        <div class="card gap-4 mt-10 space-x-10 space-y-6">
+        <div class="card-system gap-4 mt-10 space-x-10 space-y-6">
             <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
                 <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="saapplicant">S/A Applicant</label>

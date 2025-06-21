@@ -327,3 +327,14 @@ lines.forEach(line => {
     // -moz-osx-font-smoothing: grayscale;
     // -webkit-transform: scale(0.999);
     // transform: scale(0.999);
+
+
+/* .layout-main-container-frontpages {
+    background: var(--shared-background);
+
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    width: 100%;
+    padding: 3.5rem;
+} */

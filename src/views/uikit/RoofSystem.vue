@@ -12,10 +12,6 @@ import RoofSystemApp from '../../components/RoofSystemApp.vue';
             <file-saver></file-saver>
             <!-- <CadViewer /> -->
         </div>
-
-        <!-- <div data-aos="fade-up-right" data-aos-delay="500" style="margin-top: 120px">
-
-        </div> -->
     </div>
 </template>
 <style scoped></style>

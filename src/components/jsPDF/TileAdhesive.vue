@@ -71,7 +71,7 @@ const generatePDF = () => {
         console.log(doublePaddy.value);
     }
 
-    if (tileInputvalues[0].length === 0) {
+    if (tileInputvalues[0]?.length === 0) {
         console.log('lenghth is zero');
     } else {
         const doc = new jsPDF({
