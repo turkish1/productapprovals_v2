@@ -264,7 +264,7 @@ const generatePDF = () => {
         const polyapplicantText = 'UDL NOA Applicant: ';
         const polymaterialText = 'Fastened UDL Material: ';
         const polydescriptionText = 'UDL Description: ';
-        const Perscriptive = 'Perscriptive: ';
+        const Prescriptive = 'Prescriptive: ';
 
         console.log(shingleStore.$state.inputshingle[0]);
         const noa = ref(shingleStore.$state.inputshingle[0]?.shingleData?.noa || '');
@@ -273,13 +273,13 @@ const generatePDF = () => {
         const description = ref(shingleStore.$state.inputshingle[0]?.shingleData?.description || '');
         const prescriptive = ref(shingleStore.$state.inputshingle[0]?.shingleData?.prescriptiveSelection || '');
 
-        const valueTextWidth_0 = doc.getTextWidth(Perscriptive);
-        const perscriptiveTextValue = doc.getTextWidth(`${prescriptive.value}`);
+        const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
+        const prescriptiveTextValue = doc.getTextWidth(`${prescriptive.value}`);
         const perspectiveStartXValue = LeftStart;
-        doc.text(Perscriptive, perspectiveStartXValue, current_y);
-        const perscriptiveValue = valueTextWidth_0 + 10;
-        doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
-        doc.line(perscriptiveValue, current_y + factor, perscriptiveValue + perscriptiveTextValue, current_y + factor);
+        doc.text(Prescriptive, perspectiveStartXValue, current_y);
+        const prescriptiveValue = valueTextWidth_0 + 10;
+        doc.text(`${prescriptive.value}`, prescriptiveValue, current_y);
+        doc.line(prescriptiveValue, current_y + factor, prescriptiveValue + prescriptiveTextValue, current_y + factor);
 
         current_y = current_y + 8;
 
