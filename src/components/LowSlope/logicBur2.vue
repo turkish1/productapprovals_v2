@@ -102,7 +102,7 @@ function updateselectSystem(event) {
     sp4.value = convert.split(/(?=[)⁴])/);
     sp5.value = convert.split(/(?=[)⁵])/);
 
-    console.log('Split parts:', sp5);
+    console.log('Split parts:', sp4.value);
 
     // Apply logic based on the parts to determine primeone and primethree.
     if (sp2.value[2] === '²' || sp2.value[3] === '²' || sp5.value[1] === '⁵' || sp2.value[4] === '²' || sp2.value[1] === '⁵') {
@@ -113,13 +113,13 @@ function updateselectSystem(event) {
         primeone.value = Perimeters.p1_three;
         primethree.value = Perimeters.p2_three;
     }
-    if (sp4.value[2] === '⁴' || sp4.value[2] === '⁵' || sp4.value[1] === '⁵') {
+    if (sp4.value[2] === '⁴') {
         // Note: This condition currently overrides the previous ones.
         primeone.value = Perimeters.p1_four;
         primethree.value = Perimeters.p2_four;
-        // If you need to assign additional values, consider using mutually exclusive conditions.
-        primeone.value = Perimeters.p1_five;
-        primethree.value = Perimeters.p2_five;
+        // // If you need to assign additional values, consider using mutually exclusive conditions.
+        // primeone.value = Perimeters.p1_five;
+        // primethree.value = Perimeters.p2_five;
     }
     if (sp5.value[4] === '⁵' || sp5.value[1] === '⁵' || sp5.value[2] === '⁵' || sp5.value[3] === '⁵') {
         primeone.value = Perimeters.p1_five;

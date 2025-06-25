@@ -23,14 +23,13 @@ import { ref } from 'vue';
 const { getUser } = useGlobalState();
 const sbsStore = usesystemfStore();
 const permitStore = usePermitappStore();
-const roofStore = useRoofListStore();
+
 const shingleStore = useShingleStore();
 const polypropolyneStore = usePolyStore();
 const store = useRoofListStore();
 const dripShingleStore = usedripedgeshingleStore();
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 
-// const systemAreaImport =  ref(roofStore.$state.roofList[0].dim1);
 const roofType = ref(store.$state.roofList);
 
 let isRoofShingleValid = ref(false);
@@ -55,6 +54,9 @@ invoke(async () => {
 });
 const generatePDF = () => {
     // Initialize jsPDF instance
+
+    const roofStore = useRoofListStore();
+    console.log(roofStore.$state.roofList);
     if (shingleStore.$state.inputshingle.length === 0) {
         console.log('lenghth is zero');
     } else {
@@ -94,8 +96,20 @@ const generatePDF = () => {
         const height = ref(shingleStore.$state.inputshingle[0]?.shingleData?.height || '');
         const slope = ref(shingleStore.$state.inputshingle[0]?.shingleData?.slope || '');
         const deckType = ref(shingleStore.$state.inputshingle[0]?.shingleData?.deckType || '');
-        // console.log(shingleStore.$state.inputshingle[0].shingleData.height, height.value);
-        const area = ref(roofStore.$state.roofList[0].dim1);
+
+        console.log(roofStore.$state.roofList);
+
+        const shingleArea = ref('');
+        for (let i = 0; i < roofStore.$state.roofList.length; i++) {
+            console.log(roofStore.$state.roofList[i].item);
+            if (roofStore.$state.roofList[i].item === 'Asphalt Shingle') {
+                shingleArea.value = roofStore.$state.roofList[i].dim1;
+            }
+        }
+
+        const area = shingleArea.value;
+        console.log(`${area}`);
+
         // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
         const uploadUrl = ref('');
 
@@ -214,11 +228,11 @@ const generatePDF = () => {
         current_y = current_y + 5;
 
         const tAreaTextWidth = doc.getTextWidth(tArea);
-        const AreaTextWidth = doc.getTextWidth(`${area.value}`);
+        const AreaTextWidth = doc.getTextWidth(`${area}`);
         const areaStartXValue = currentX.value;
         doc.text(tArea, areaStartXValue, current_y);
         const areaValue = tAreaTextWidth + areaStartXValue;
-        doc.text(`${area.value}`, areaValue, current_y);
+        doc.text(`${area}`, areaValue, current_y);
 
         doc.line(areaValue, current_y + 2, areaValue + AreaTextWidth, current_y + 2);
         currentX.value = areaValue + AreaTextWidth;
