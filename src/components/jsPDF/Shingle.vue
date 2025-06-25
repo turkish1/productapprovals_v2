@@ -264,7 +264,7 @@ const generatePDF = () => {
         const polyapplicantText = 'UDL NOA Applicant: ';
         const polymaterialText = 'Fastened UDL Material: ';
         const polydescriptionText = 'UDL Description: ';
-        const Prescriptive = 'Prescriptive: ';
+        const Prescriptive = 'Prescriptive Attachment: ';
 
         console.log(shingleStore.$state.inputshingle[0]);
         const noa = ref(shingleStore.$state.inputshingle[0]?.shingleData?.noa || '');
@@ -311,65 +311,65 @@ const generatePDF = () => {
         doc.line(dripSizeStartValue, current_y + factor, dripSizeStartValue + dripEdgeTextWidth, current_y + factor);
         current_y = current_y + 10;
 
-        const valueTextWidthShingleCategory = doc.getTextWidth(applicantText);
-        const valueTextWidthShingle = doc.getTextWidth(`${applicant.value}`);
-        const shingleApplicantStartXValue = LeftStart;
-        doc.text(applicantText, shingleApplicantStartXValue, current_y);
-        const shingleApplicantValue = shingleApplicantStartXValue + valueTextWidthShingleCategory;
-        doc.text(`${applicant.value}`, shingleApplicantValue, current_y);
-        doc.line(shingleApplicantValue, current_y + factor, shingleApplicantValue + valueTextWidthShingle, current_y + factor);
-        currentX.value = shingleApplicantValue + valueTextWidthShingle;
+        // const valueTextWidthShingleCategory = doc.getTextWidth(applicantText);
+        // const valueTextWidthShingle = doc.getTextWidth(`${applicant.value}`);
+        // const shingleApplicantStartXValue = LeftStart;
+        // doc.text(applicantText, shingleApplicantStartXValue, current_y);
+        // const shingleApplicantValue = shingleApplicantStartXValue + valueTextWidthShingleCategory;
+        // doc.text(`${applicant.value}`, shingleApplicantValue, current_y);
+        // doc.line(shingleApplicantValue, current_y + factor, shingleApplicantValue + valueTextWidthShingle, current_y + factor);
+        // currentX.value = shingleApplicantValue + valueTextWidthShingle;
 
-        const valueTextWidthNoa = doc.getTextWidth(noaText);
-        const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        const shingleStartXValue = currentX.value + 3;
-        doc.text(noaText, shingleStartXValue, current_y);
-        const noaValue = valueTextWidthNoa + shingleStartXValue;
-        doc.text(`${noa.value}`, noaValue, current_y);
-        doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
-        currentX.value = noaValue + valueTextWidth3;
+        // const valueTextWidthNoa = doc.getTextWidth(noaText);
+        // const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
+        // const shingleStartXValue = currentX.value + 3;
+        // doc.text(noaText, shingleStartXValue, current_y);
+        // const noaValue = valueTextWidthNoa + shingleStartXValue;
+        // doc.text(`${noa.value}`, noaValue, current_y);
+        // doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
+        // currentX.value = noaValue + valueTextWidth3;
 
-        current_y = current_y + 10;
+        // current_y = current_y + 10;
 
-        // currentX provides the update of the x coordinate
+        // // currentX provides the update of the x coordinate
 
-        const materialStartXValue = LeftStart;
-        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
-        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
-        doc.text(materialText, materialStartXValue, current_y);
-        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
-        doc.text(`${material.value}`, materialValue, current_y);
-        doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
-        currentX.value = materialValue + valueTextWidthMaterial;
-        current_y = current_y + 10;
+        // const materialStartXValue = LeftStart;
+        // const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
+        // const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        // doc.text(materialText, materialStartXValue, current_y);
+        // const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
+        // doc.text(`${material.value}`, materialValue, current_y);
+        // doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
+        // currentX.value = materialValue + valueTextWidthMaterial;
+        // current_y = current_y + 10;
 
-        console.log(currentX.value, max_width);
+        // console.log(currentX.value, max_width);
 
-        const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
-        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
-        currentX.value = materialValue + valueTextWidthMaterial + valueTextWidth4 + valueTextWidthDesc + 25;
-        console.log(valueTextWidth4, valueTextWidthDesc);
-        const descStartXValue = LeftStart;
-        doc.text(descriptionText, descStartXValue, current_y);
+        // const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
+        // const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        // currentX.value = materialValue + valueTextWidthMaterial + valueTextWidth4 + valueTextWidthDesc + 25;
+        // console.log(valueTextWidth4, valueTextWidthDesc);
+        // const descStartXValue = LeftStart;
+        // doc.text(descriptionText, descStartXValue, current_y);
 
-        if (valueTextWidth4 > 170) {
-            current_y = current_y + 4;
-            const descStartXValue = LeftStart;
-            const descriptionValue = descStartXValue;
-            doc.text(`${description.value}`, descriptionValue, current_y);
-            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-            current_y = current_y + 8;
-        } else {
-            // const descStartXValue = LeftStart + valueTextWidthDesc;
-            // doc.text(descriptionText, descStartXValue, current_y);
-            // this is the text we want to underline
-            const descriptionValue = descStartXValue + valueTextWidthDesc;
-            doc.text(`${description.value}`, descriptionValue, current_y);
-            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
-            currentX.value = descriptionValue + valueTextWidth4;
-        }
+        // if (valueTextWidth4 > 170) {
+        //     current_y = current_y + 4;
+        //     const descStartXValue = LeftStart;
+        //     const descriptionValue = descStartXValue;
+        //     doc.text(`${description.value}`, descriptionValue, current_y);
+        //     doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+        //     current_y = current_y + 8;
+        // } else {
+        //     // const descStartXValue = LeftStart + valueTextWidthDesc;
+        //     // doc.text(descriptionText, descStartXValue, current_y);
+        //     // this is the text we want to underline
+        //     const descriptionValue = descStartXValue + valueTextWidthDesc;
+        //     doc.text(`${description.value}`, descriptionValue, current_y);
+        //     doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+        //     currentX.value = descriptionValue + valueTextWidth4;
+        // }
 
-        current_y = current_y + 10;
+        // current_y = current_y + 10;
         console.log(polypropolyneStore.$state.polyinput.length);
         if (polypropolyneStore.$state.polyinput.length === 0) {
             const udlNoa = 'n/a';
@@ -605,6 +605,67 @@ const generatePDF = () => {
             if (currentX.value >= max_width) current_y = current_y + 10;
             console.log(currentX.value);
         }
+
+        const valueTextWidthShingleCategory = doc.getTextWidth(applicantText);
+        const valueTextWidthShingle = doc.getTextWidth(`${applicant.value}`);
+        const shingleApplicantStartXValue = LeftStart;
+        doc.text(applicantText, shingleApplicantStartXValue, current_y);
+        const shingleApplicantValue = shingleApplicantStartXValue + valueTextWidthShingleCategory;
+        doc.text(`${applicant.value}`, shingleApplicantValue, current_y);
+        doc.line(shingleApplicantValue, current_y + factor, shingleApplicantValue + valueTextWidthShingle, current_y + factor);
+        currentX.value = shingleApplicantValue + valueTextWidthShingle;
+
+        const valueTextWidthNoa = doc.getTextWidth(noaText);
+        const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
+        const shingleStartXValue = currentX.value + 3;
+        doc.text(noaText, shingleStartXValue, current_y);
+        const noaValue = valueTextWidthNoa + shingleStartXValue;
+        doc.text(`${noa.value}`, noaValue, current_y);
+        doc.line(noaValue, current_y + factor, noaValue + valueTextWidth3, current_y + factor);
+        currentX.value = noaValue + valueTextWidth3;
+
+        current_y = current_y + 10;
+
+        // currentX provides the update of the x coordinate
+
+        const materialStartXValue = LeftStart;
+        const valueTextWidthMaterialDesc = doc.getTextWidth(materialText);
+        const valueTextWidthMaterial = doc.getTextWidth(`${material.value}`);
+        doc.text(materialText, materialStartXValue, current_y);
+        const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
+        doc.text(`${material.value}`, materialValue, current_y);
+        doc.line(materialValue, current_y + factor, materialValue + valueTextWidthMaterial, current_y + factor);
+        currentX.value = materialValue + valueTextWidthMaterial;
+        current_y = current_y + 10;
+
+        console.log(currentX.value, max_width);
+
+        const valueTextWidth4 = doc.getTextWidth(`${description.value}`);
+        const valueTextWidthDesc = doc.getTextWidth(descriptionText);
+        currentX.value = materialValue + valueTextWidthMaterial + valueTextWidth4 + valueTextWidthDesc + 25;
+        console.log(valueTextWidth4, valueTextWidthDesc);
+        const descStartXValue = LeftStart;
+        doc.text(descriptionText, descStartXValue, current_y);
+
+        if (valueTextWidth4 > 170) {
+            current_y = current_y + 4;
+            const descStartXValue = LeftStart;
+            const descriptionValue = descStartXValue;
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            current_y = current_y + 8;
+        } else {
+            // const descStartXValue = LeftStart + valueTextWidthDesc;
+            // doc.text(descriptionText, descStartXValue, current_y);
+            // this is the text we want to underline
+            const descriptionValue = descStartXValue + valueTextWidthDesc;
+            doc.text(`${description.value}`, descriptionValue, current_y);
+            doc.line(descriptionValue, current_y + factor, descriptionValue + valueTextWidth4, current_y + factor);
+            currentX.value = descriptionValue + valueTextWidth4;
+        }
+
+        current_y = current_y + 10;
+
         // Save the PDF
         // doc.save('Shingle.pdf');
         const fName = 'Shingle.pdf';

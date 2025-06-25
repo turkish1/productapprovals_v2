@@ -311,12 +311,12 @@ function addCheckmarks() {
 function getIndexs() {
     console.log(selectedSlopelow);
 
-    if (selectedSlopelow.value === '2 Plies ASTM # 30 with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c' || selectedSlopehigh.value === '1 Ply ASTM # 30 with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c') {
+    if (selectedSlopelow.value === '2 Plies # 30 with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c') {
         isUDLNOAValid = false;
         isSAValid = false;
         isShingleValid = true;
     }
-    if (selectedSlopelow.value === '2 Plies Polypropylene with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c' || selectedSlopehigh.value === '1 Ply Polypropylene with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c') {
+    if (selectedSlopelow.value === '2 Plies Poly with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c' || selectedSlopehigh.value === '1 Ply Polypropylene with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c') {
         isUDLNOAValid = true;
         isSAValid = false;
         isShingleValid = true;
