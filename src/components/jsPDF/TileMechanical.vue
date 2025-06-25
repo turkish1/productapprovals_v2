@@ -117,7 +117,7 @@ const generatePDF = () => {
         // console.log(dripmechTileStore.$state, muniNum.value);
         const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[5]?.dripMTileMaterial || '');
         const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[7]?.dripMTileMaterial || '');
-        console.log(mechStore.tilemech.value[0]);
+        console.log(mechStore.tilemech.value);
         current_y = current_y + 10;
         const mf1 = ref(mechStore.tilemech.value[0]?.mf1 || '');
         const lambda1 = ref(mechStore.tilemech.value[0]?.lambda1 || '');

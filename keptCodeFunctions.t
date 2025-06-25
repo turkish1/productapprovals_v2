@@ -109,3 +109,7 @@
             // doc.line(startX, startY - 5, startX + colWidth * rows.length, startY - 5);
             // // Bottom boundary line
             // doc.line(startX, startY + rowHeight - 5, startX + colWidth * rows.length, startY + rowHeight - 5);
+
+
+// return suggestions.value.sysEInput?.[0].sysENumber.noa.filter((item) => console.log(item))
+    // filter((item) => item.toString().includes(query.value));

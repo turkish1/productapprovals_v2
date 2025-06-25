@@ -21,9 +21,8 @@ import { ref } from 'vue';
 const { getUser } = useGlobalState();
 
 const permitStore = usePermitappStore();
-const roofStore = useRoofListStore();
 const burpdfStore = useBurpdfStore();
-const area = ref(roofStore.$state.roofList[0]?.dim2 || '');
+
 const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
 const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
@@ -76,6 +75,7 @@ invoke(async () => {
 });
 const generatePDF = () => {
     const burpdfStore = useBurpdfStore();
+    const roofStore = useRoofListStore();
 
     if (burpdfStore.$state.burpdfinput.length === 0) {
         console.log('lenghth is zero');
@@ -217,6 +217,17 @@ const generatePDF = () => {
         const factor = 2;
         const initialYValue = current_y;
         const param_y = initialYValue;
+
+        console.log(roofStore.$state.roofList);
+        const lowSlopArea = ref('');
+        for (let i = 0; i < roofStore.$state.roofList.length; i++) {
+            if (roofStore.$state.roofList[i].item === 'Low Slope') {
+                lowSlopArea.value = roofStore.$state.roofList[i].dim2;
+            }
+        }
+
+        const area = lowSlopArea.value;
+        console.log(`${area}`, lowSlopArea.value);
         const tArea = 'Roof Area: ';
         const tDeck = 'Decktype: ';
         const tHeight = 'Mean Roof Height: ';
@@ -236,11 +247,11 @@ const generatePDF = () => {
         currentX.value = LeftStart;
 
         const tAreaTextWidth = doc.getTextWidth(tArea);
-        const AreaTextWidth = doc.getTextWidth(`${area.value}`);
+        const AreaTextWidth = doc.getTextWidth(`${area}`);
         const areaStartXValue = currentX.value;
         doc.text(tArea, areaStartXValue, current_y);
         const areaValue = tAreaTextWidth + areaStartXValue;
-        doc.text(`${area.value}`, areaValue, current_y);
+        doc.text(`${area}`, areaValue, current_y);
 
         doc.line(areaValue, current_y + 2, areaValue + AreaTextWidth, current_y + 2);
         currentX.value = areaValue + AreaTextWidth;

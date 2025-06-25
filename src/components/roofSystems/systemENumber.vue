@@ -94,14 +94,10 @@ const filteredSuggestions = computed(() => {
     systemENOA.value = suggestions.value.sysEInput?.[0].sysENumber.noa.body;
     const stringyfied1 = JSON.stringify(systemENOA.value).split('[').join();
     const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
-    // .filter((item) => console.log(item));
-    console.log(stringyfied2);
     const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
     console.log(newArray.value);
 
     return newArray.value.filter((item) => item.toString().includes(query.value));
-    // return suggestions.value.sysEInput?.[0].sysENumber.noa.filter((item) => console.log(item))
-    // filter((item) => item.toString().includes(query.value));
 });
 
 function grabInputUDL() {
@@ -109,7 +105,6 @@ function grabInputUDL() {
 
     if (query.value !== null) {
         //  17040522
-        console.log(udlInput.value);
         getV(datasystemE.value);
     }
 
@@ -145,7 +140,6 @@ const Anchor_Base = reactive({
 });
 function EcheckInputSystem() {
     // 23111506
-    console.log(datamountedsystemE);
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
 
@@ -162,7 +156,6 @@ function EcheckInputSystem() {
         Anchor_Base.Anchor_Base_Sheet_E11 = item.systemDataE.Anchor_Base_Sheet_E11;
         Anchor_Base.Anchor_Base_Sheet_E12 = item.systemDataE.Anchor_Base_Sheet_E12;
         Anchor_Base.Anchor_Base_Sheet_E13 = item.systemDataE.Anchor_Base_Sheet_E13;
-        console.log(Anchor_Base.Anchor_Base_Sheet_E2, item.systemDataE.Anchor_Base_Sheet_E1);
         udlTile.TileCap_Sheet_Description_E1 = item.systemDataE.TileCap_Sheet_Description_E1;
         udlTile.TileCap_Sheet_Description_E2 = item.systemDataE.TileCap_Sheet_Description_E2;
         udlTile.TileCap_Sheet_Description_E3 = item.systemDataE.TileCap_Sheet_Description_E3;

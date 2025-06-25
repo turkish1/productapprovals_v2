@@ -67,7 +67,6 @@ const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
     polyData.value = suggestions.value?.noapoly[0]?.polyNoaNumber?.noa;
-    console.log(polyData.value);
     polyIterate.value = polyData.value.body ?? [];
     const stringyfied1 = JSON.stringify(polyIterate.value).split('[').join();
 

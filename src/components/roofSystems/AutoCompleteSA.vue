@@ -78,7 +78,6 @@ const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
     saData.value = suggestions.value.noasa[0]?.saNoaNumber?.noa;
-    console.log(suggestions.value.noasa[0]?.saNoaNumber?.noa);
     saIterate.value = saData.value.body ?? [];
     // .body ?? [];
     const stringyfied1 = JSON.stringify(saIterate.value).split('[').join();
