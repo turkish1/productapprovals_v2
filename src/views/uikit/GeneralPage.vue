@@ -137,7 +137,7 @@ const navigateNext = () => {
 </script>
 <!-- GeneralInfoView.vue  ──────────────────────────────────────────── -->
 <template>
-    <div id="generalpg" class="grid grid-cols-2 gap-2" style="margin-left: 120px">
+    <div id="generalpg" class="layout-main-generalpage-container grid grid-cols-2 gap-2" style="margin-left: 120px">
         <div class="container">
             <div class="row">
                 <div class="flex flex-col mt-4 space-y-6 gap-4">
@@ -246,9 +246,9 @@ const navigateNext = () => {
 
 <style scoped>
 .container {
-    padding-bottom: 25px;
-    padding-top: 50px;
-    border: none;
+    /* padding-bottom: 25px; */
+    padding-top: 80px;
+    border: 10px;
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;

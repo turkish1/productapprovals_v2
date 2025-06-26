@@ -593,33 +593,30 @@ const generatePDF = () => {
             doc.line(sbsSystemFValue, current_y + factor, sbsSystemFValue + valueTextWidthSys, current_y + factor);
             currentX.value = sbsSystemFValue + valueTextWidthSys;
 
-            current_y = current_y + 10;
             console.log(currentX.value);
 
             const valueTextWidthsbsMaterial = doc.getTextWidth(sbsmaterialText);
             const valueTextWidthMat = doc.getTextWidth(`${saMaterial.value}`);
-            const saMaterialStartXValue = LeftStart;
+            const saMaterialStartXValue = currentX.value + 5;
             doc.text(sbsmaterialText, saMaterialStartXValue, current_y);
             const sbsmaterialValue = saMaterialStartXValue + valueTextWidthsbsMaterial;
             doc.text(`${saMaterial.value}`, sbsmaterialValue, current_y);
             doc.line(sbsmaterialValue, current_y + factor, sbsmaterialValue + valueTextWidthMat, current_y + factor);
             currentX.value = sbsmaterialValue + valueTextWidthMat;
 
-            if (currentX.value > max_width) current_y = current_y + 10;
+            // if (currentX.value > max_width)
+            current_y = current_y + 10;
             console.log(currentX.value);
 
             const valueTextWidthsbsDescription = doc.getTextWidth(sbsdescriptionText);
             const valueTextWidthDesc = doc.getTextWidth(`${saDescription.value}`);
-            const saDescriptionStartXValue = currentX.value + 3;
+            const saDescriptionStartXValue = LeftStart;
             doc.text(sbsdescriptionText, saDescriptionStartXValue, current_y);
             const sbsdescriptionValue = saDescriptionStartXValue + valueTextWidthsbsDescription;
             doc.text(`${saDescription.value}`, sbsdescriptionValue, current_y);
             doc.line(sbsdescriptionValue, current_y + factor, sbsdescriptionValue + valueTextWidthDesc, current_y + factor);
-            currentX.value = sbsdescriptionValue + valueTextWidthDesc;
-            if (currentX.value >= max_width) current_y = current_y + 10;
-            console.log(currentX.value);
         }
-
+        current_y = current_y + 10;
         const valueTextWidthShingleCategory = doc.getTextWidth(applicantText);
         const valueTextWidthShingle = doc.getTextWidth(`${applicant.value}`);
         const shingleApplicantStartXValue = LeftStart;

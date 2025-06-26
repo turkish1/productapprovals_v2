@@ -6,35 +6,44 @@
     background-repeat: no-repeat;
     background-size: cover;
 
-     height: 100%;
-    // width: 100%;
-    padding: 0.25rem;
+
 
 
 
 
 }
 
+.layout-main-generalpage-container {
+
+
+    background: var(--shared-background);
+
+    background-repeat: no-repeat;
+    background-size: cover;
+
+
+    padding: 5.75rem;
+
+
+
+
+}
 
 
 
 
 .layout-main-container-stepper {
-    // display: cover;
-    // background-color: #eae7e2;
+     // background-color: #eae7e2;
     background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
 
-    // background: var(--shared-background);
-    background-repeat: no-repeat;
+     background-repeat: no-repeat;
     background-size: cover;
-    // height: 100%;
-    // width: 100%;
-    // padding: 0.1rem;
+
 
 }
 
 .layout-main {
-    //flex: 1 1 auto;
+    // flex: 1 1 auto;
     padding-bottom: 0.5rem;
     background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
     background-size: cover;
