@@ -498,7 +498,7 @@ watch(
                     </div>
 
                     <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                        <label style="color: red">Select System F *</label>
+                        <label style="color: red">Select System *</label>
                         <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
                     </div>
                 </div>

@@ -243,7 +243,12 @@ const generatePDF = () => {
         const system = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.burSystem || '');
         const primeone = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.p1 || '');
         const primethree = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData?.p3 || '');
-        console.log(primeone);
+        const [bursystemTitle, bursystemDescription] = (() => {
+            const parts = system.value.split(/:(.+)/); // split only on first colon
+            console.log(parts);
+            return [parts[0].trim(), parts[1]?.trim() ?? ''];
+        })();
+
         currentX.value = LeftStart;
 
         const tAreaTextWidth = doc.getTextWidth(tArea);
@@ -309,8 +314,6 @@ const generatePDF = () => {
         const dripEdgeMaterial = 'DripEdge Material: ';
 
         const dripEdgeSize = 'DripEdge Size: ';
-        // const dripedgeMaterials = ref(dripinput.value[0]?.dripData || '');
-        console.log(dripStore, dripinput);
         const dripedgeMaterials = ref(dripStore.$state.dripinput[0]?.dripMaterial || '');
         const dripedgeSize = ref(dripStore.$state.dripinput[2]?.dripMaterial || '');
         console.log(dripedgeMaterials, dripedgeSize);
@@ -351,22 +354,23 @@ const generatePDF = () => {
 
         doc.setFontSize(12);
         const tburSystemTextWidth = doc.getTextWidth(burSystemText);
-        const SystemTextWidth = doc.getTextWidth(`${system.value}`);
+        const SystemTextWidth = doc.getTextWidth(bursystemTitle);
+        const bursystemDescriptionTextWidth = doc.getTextWidth(bursystemDescription);
         const systemStartXValue = currentX.value;
 
         doc.text(burSystemText, systemStartXValue, current_y);
-        current_y = current_y + 10;
-        doc.setFontSize(8.5);
-        currentX.value = LeftStart - 3;
-        doc.text(`${system.value}`, currentX.value, current_y);
-        doc.setFontSize(12);
-        doc.line(SystemTextWidth, current_y + 2, SystemTextWidth, current_y + 2);
-        // const systemValue = SystemTextWidth + 5;
 
-        // doc.line(systemValue, current_y + 2, systemValue, current_y + 2);
+        currentX.value = tburSystemTextWidth + 15;
+        doc.text(bursystemTitle, currentX.value, current_y);
+
+        doc.line(currentX.value, current_y + factor, currentX.value + SystemTextWidth, current_y + factor);
+        current_y = current_y + 10;
+
+        doc.text(bursystemDescription, LeftStart, current_y);
+
+        doc.line(LeftStart, current_y + factor, LeftStart + bursystemDescriptionTextWidth, current_y + factor);
 
         current_y = current_y + 10;
-        doc.setFontSize(10);
         const tprimeoneTextWidth = doc.getTextWidth(primeOneText);
 
         const PrimeoneTextWidth = doc.getTextWidth(`${primeone.value}`);
@@ -376,9 +380,9 @@ const generatePDF = () => {
         current_y = current_y + 10;
 
         const primeoneValue = LeftStart;
-        doc.setFontSize(10);
+
         doc.text(primeone.value, primeoneValue, current_y);
-        doc.line(primeoneValue, current_y + 2, primeoneValue + PrimeoneTextWidth + 70, current_y + 2);
+        doc.line(primeoneValue, current_y + factor, primeoneValue + PrimeoneTextWidth, current_y + factor);
         current_y = current_y + 10;
 
         currentX.value = LeftStart;
@@ -395,11 +399,9 @@ const generatePDF = () => {
 
         doc.text(primethree.value, primethreeValue, current_y);
 
-        doc.line(primethreeValue, current_y + 2, primethreeValue + PrimethreeTextWidth + 70, current_y + 2);
+        doc.line(primethreeValue, current_y + factor, primethreeValue + PrimethreeTextWidth, current_y + factor);
         current_y = current_y + 10;
 
-        // Save the PDF
-        // doc.save('LowSlope.pdf');
         const fName = 'LowSlope.pdf';
         const pdfBlob = doc.output('blob');
 
