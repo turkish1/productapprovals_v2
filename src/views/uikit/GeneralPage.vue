@@ -252,9 +252,12 @@ const navigateNext = () => {
     border-radius: 12px;
     box-shadow: 4px 4px 16px rgb(22, 183, 183);
     position: center;
-    min-height: 1000px;
+    height: 100%;
     min-width: 900px;
-    top: 10vh;
+    background-size: cover;
+    /* padding: 0.25rem; */
+
+    /* top: 10vh; */
 }
 
 .editor-layout {
