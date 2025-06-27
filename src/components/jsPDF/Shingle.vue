@@ -187,7 +187,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` }
+            { category: 'mEProcess Number', value: `${processNumber.value}` }
         ];
 
         let startXCategory = 10; // X position for category column

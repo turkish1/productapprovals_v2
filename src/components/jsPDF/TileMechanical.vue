@@ -221,7 +221,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'Process Number', value: `${processNumber.value}` }
+            { category: 'mEProcess Number', value: `${processNumber.value}` }
             // { category: 'Folio', value: `${folio.value}` }
         ];
 

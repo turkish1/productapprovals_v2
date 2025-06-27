@@ -181,7 +181,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'meProcess Number', value: `${processNumber.value}` }
+            { category: 'mEProcess Number', value: `${processNumber.value}` }
         ];
 
         // Set starting position
