@@ -178,7 +178,7 @@ const generatePDF = () => {
         doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
 
         const secondYCoordinate = 108;
-        doc.text('Decktype:', 10, secondYCoordinate);
+        doc.text('Deck Type:', 10, secondYCoordinate);
         const decktypeStartXValue = 30 + valueTextWidth2;
         doc.text(`${deckType.value}`, decktypeStartXValue, secondYCoordinate);
         const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`) * 2;

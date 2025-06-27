@@ -209,7 +209,7 @@ const generatePDF = () => {
         const initialYValue = 90;
         const param_y = initialYValue;
         const tArea = 'Roof Area: ';
-        const tDeck = 'DeckType: ';
+        const tDeck = 'Deck Type: ';
         const tHeight = 'Mean Roof Height: ';
         const tSlope = 'Roof Slope: ';
         const tPerimeter = 'Roof Perimeter: ';
@@ -270,8 +270,8 @@ const generatePDF = () => {
         const anchordescriptionText = 'Anchor Base Sheet: ';
         const udldescriptionText = 'UDL Description: ';
         const Underlayment = 'Select Underlayment: ';
-        const dripEdgeMaterial = 'DripEdge Material: ';
-        const dripEdgeSize = 'DripEdge Size: ';
+        const dripEdgeMaterial = 'Drip Edge Material: ';
+        const dripEdgeSize = 'Drip Edge Size: ';
         const dripedgeMaterials = ref(dripadTileStore.$state.dripinputadt[4]?.dripTileMaterial || '');
         const dripedgeSize = ref(dripadTileStore.$state.dripinputadt[6]?.dripTileMaterial || '');
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);

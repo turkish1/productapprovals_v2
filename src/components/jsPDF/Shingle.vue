@@ -220,7 +220,7 @@ const generatePDF = () => {
 
         doc.setFontSize(12);
         const tArea = 'Roof Area: ';
-        const tDeck = 'Decktype: ';
+        const tDeck = 'Deck Type: ';
         const tHeight = 'Mean Roof Height: ';
         const tSlope = 'Roof Slope: ';
 
@@ -297,9 +297,9 @@ const generatePDF = () => {
 
         current_y = current_y + 8;
 
-        const dripEdgeMaterial = 'DripEdge Material: ';
+        const dripEdgeMaterial = 'Drip Edge Material: ';
 
-        const dripEdgeSize = 'DripEdge Size: ';
+        const dripEdgeSize = 'Drip Edge Size: ';
         console.log(dripShingleStore);
         const dripedgeMaterials = ref(dripShingleStore.$state.dripinputshin[1]?.dripShinMaterial || '');
         const dripedgeSize = ref(dripShingleStore.$state.dripinputshin[3]?.dripShinMaterial || '');

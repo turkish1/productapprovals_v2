@@ -229,7 +229,7 @@ const generatePDF = () => {
         const area = lowSlopArea.value;
         console.log(`${area}`, lowSlopArea.value);
         const tArea = 'Roof Area: ';
-        const tDeck = 'Decktype: ';
+        const tDeck = 'Deck Type: ';
         const tHeight = 'Mean Roof Height: ';
         const tSlope = 'Roof Slope: ';
         const tPerimeter = 'Roof Perimeter: ';
@@ -311,9 +311,9 @@ const generatePDF = () => {
 
         currentX.value = LeftStart;
 
-        const dripEdgeMaterial = 'DripEdge Material: ';
+        const dripEdgeMaterial = 'Drip Edge Material: ';
 
-        const dripEdgeSize = 'DripEdge Size: ';
+        const dripEdgeSize = 'Drip Edge Size: ';
         const dripedgeMaterials = ref(dripStore.$state.dripinput[0]?.dripMaterial || '');
         const dripedgeSize = ref(dripStore.$state.dripinput[2]?.dripMaterial || '');
         console.log(dripedgeMaterials, dripedgeSize);
