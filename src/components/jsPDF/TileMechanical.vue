@@ -221,7 +221,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'Process Number', value: `${muniProcessNumber.value}` }
+            { category: 'mEProcess Number', value: `${processNumber.value}` }
             // { category: 'Folio', value: `${folio.value}` }
         ];
 
@@ -303,7 +303,7 @@ const generatePDF = () => {
         const valueTextWidthDeck = doc.getTextWidth('Deck Type');
         const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`);
         currentX.value = currentX.value + valueTextWidthDeck - 30;
-        doc.text('Decktype:', currentX.value, current_y);
+        doc.text('Deck Type:', currentX.value, current_y);
         const decktypeStartXValue = currentX.value + 20;
 
         doc.text(`${deckType.value}`, decktypeStartXValue, current_y);
@@ -325,9 +325,9 @@ const generatePDF = () => {
         const udldescriptionText = '(UDL) Description: ';
         const Prescriptive = 'Prescriptive: ';
 
-        const dripEdgeMaterial = 'DripEdge Material: ';
+        const dripEdgeMaterial = 'Drip Edge Material: ';
 
-        const dripEdgeSize = 'DripEdge Size: ';
+        const dripEdgeSize = 'Drip Edge Size: ';
 
         console.log(mechStore.tilemech.value[0]);
 
