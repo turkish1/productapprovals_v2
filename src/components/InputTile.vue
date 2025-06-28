@@ -54,7 +54,7 @@ const { zones } = useGlobalState();
 const { zoned } = useExposureD();
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
-
+const childQueryRef = ref();
 // Reactive State
 const selectedOption = ref('');
 const query = ref('');
@@ -123,7 +123,6 @@ const tilenoas = reactive({
     prescriptiveSelection: '',
     perimeter: ''
 });
-
 const visible = ref(false);
 const selectedExposures = ref('');
 const exposureChoosen = ref('');
@@ -134,6 +133,10 @@ const { getDatas } = useExposured();
 const dimensions = computed(() => {
     setRoofInputs();
 });
+function clearQueryInput() {
+    childQueryRef.value?.clearInput();
+}
+const paddyTracker = ref('');
 
 //  a check if single is change to double, and tile input boxes have data clear it.
 const selectPaddy = computed(() => {
@@ -150,13 +153,10 @@ const selectPaddy = computed(() => {
         addPaddyCatval(selectedOption);
         isMultiTileValid = false;
         isTileValid = true;
+
         clearData();
     }
 });
-
-// function clearTileSystem(event) {
-//     console.log(event);
-// }
 
 watch(
     selectPaddy,
@@ -167,7 +167,12 @@ watch(
 );
 const dtMounted = ref();
 const dtMounteds = ref();
-
+// May want to put this code on the other watcher
+watch(selectedOption, (newVal, oldVal) => {
+    console.log(newVal, oldVal);
+    paddyTracker.value = oldVal;
+    console.log(paddyTracker.value);
+});
 // Methods
 function getdeckType(event) {
     if (selectedDeck._value.name === event.value.name) {
@@ -275,21 +280,18 @@ let datatilenoaDoublePaddy = ref('');
 
 let datatilenoas = ref('');
 let datatilenoa = ref('');
-
 //
 async function grabInput() {
     if (selectedOption.value == 'double') {
         console.log(selectedOption.value, 'Entered double');
         datatilenoaDoublePaddy.value = query.value;
         console.log(datatilenoaDoublePaddy.value);
-        // isPaddyusers.value = false;
-        // isTileValid = true;
+
         updateDoubletick();
     } else if (selectedOption.value == 'single') {
         console.log(selectedOption.value, 'Entered single');
         datatilenoas.value = query.value;
-        // console.log(datatilenoa.value);
-        // isTileValid = true;
+
         updateTick();
     } else {
         console.log('all was skipped');
@@ -383,6 +385,8 @@ function clearData() {
     // isTileData.value = false;
     // isUDLNOAValid.value = false;
     // isSAValid.value = false;
+    // recordPaddy();
+
     tilenoas.manufacturer = '';
     tilenoas.description = '';
     tilenoas.material = [];
@@ -405,6 +409,13 @@ function clearData() {
     zoneone.mf1 = '';
     zonetwo.mf2 = '';
     zonethree.mf3 = '';
+
+    if (paddyTracker.value == '') {
+        return;
+    } else if (paddyTracker.value !== selectedOption.value) {
+        console.log('clearQuery exec', selectedOption.value);
+        clearQueryInput();
+    }
 }
 const tileValue = reactive({
     k: '',
@@ -616,7 +627,6 @@ const whatChanged = computed(() => {
     checkMR3();
     sysEcheckInput();
     setRoofInputs();
-    // selectPaddy();
     grabInput();
     addCheckmarks();
     validateHeight();
@@ -1506,13 +1516,8 @@ watch(
             </div>
         </div>
         <Divider />
-        <div v-show="isTileValid" class="w-96" style="margin-left: 3px">
-            <!-- @change="grabInput"  -->
-            <tileNoaNumber v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" @keydown.tab.exact.stop="grabInput" @change="grabInput" />
-            <!-- <i class="pi pi-refresh" severity="info" style="font-size: 2rem; margin-left: 220px; margin-bottom: 50px" raised @click="clearData"></i>&nbsp; -->
-
-            <!--
-            <Button @click="clearData">Clear Page</Button> pi-refresh  <i class="pi pi-refresh" severity="help" style="font-size: 2rem"></i>-->
+        <div v-show="isPaddyCategoryValid" class="w-96" style="margin-left: 3px">
+            <tileNoaNumber ref="childQueryRef" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" @keydown.tab.exact.stop="grabInput" @change="grabInput" />
         </div>
     </div>
 
