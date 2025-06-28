@@ -381,13 +381,12 @@ const generatePDF = () => {
 
         const primeoneValue = LeftStart;
 
-        doc.text(primeone.value, primeoneValue, current_y);
+        doc.text(`${primeone.value}`, primeoneValue, current_y);
         doc.line(primeoneValue, current_y + factor, primeoneValue + PrimeoneTextWidth, current_y + factor);
         current_y = current_y + 10;
 
         currentX.value = LeftStart;
 
-        // const tprimethreeTextWidth = doc.getTextWidth(primeThreeText);
         const PrimethreeTextWidth = doc.getTextWidth(`${primethree.value}`);
         const primethreeStartXValue = currentX.value;
 
@@ -397,7 +396,7 @@ const generatePDF = () => {
         currentX.value = LeftStart;
         const primethreeValue = currentX.value;
 
-        doc.text(primethree.value, primethreeValue, current_y);
+        doc.text(`${primethree.value}`, primethreeValue, current_y);
 
         doc.line(primethreeValue, current_y + factor, primethreeValue + PrimethreeTextWidth, current_y + factor);
         current_y = current_y + 10;
