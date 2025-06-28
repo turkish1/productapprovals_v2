@@ -6,13 +6,11 @@
           1) We trigger 'grabInput()' on Enter, Tab, or when user leaves the input,
              ensuring 'query' is used properly.
         -->
-                <InputText id="tilenoa" v-tooltip.bottom="'Press Tab after value'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" @update="checkPaddCategory" />
-                <!--     @keydown.tab.exact.stop="grabInput"  @click="grabInput"
-                    @change="grabInput"      @keydown.tab.exact.stop="grabInput"-->
+                <InputText id="tilenoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" @update="checkPaddCategory" />
+
                 <label for="ac">Tile NOA: 00000000</label>
             </FloatLabel>
         </div>
-        <!-- <Button @click="updateMessage">update</Button> -->
         <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
             <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
                 {{ suggestion }}
@@ -64,7 +62,7 @@ const showSuggestions = ref(false);
 const isPaddyvaluesingle = ref(false);
 
 const paddyCategory = ref(paddyCat.$state.paddycatInput[0].paddyValues);
-
+const count = ref(0);
 const suggestionTempSingle = ref([]);
 
 const suggestionTempDouble = ref([]);
@@ -122,6 +120,11 @@ const filteredSuggestions = computed(() => {
 // ----------------------------
 // 5) "grabInput" is called once the user finalizes input
 // ----------------------------
+
+function refresh() {
+    count.value++;
+    console.log('refresh called');
+}
 async function grabInput() {
     if (!query.value) return;
     // If paddyStore inputdata is an array with at least one item
@@ -165,6 +168,12 @@ async function grabInput() {
 
 const data = ref([]);
 
+function clearInput() {
+    query.value = '';
+}
+
+// , refresh
+defineExpose({ clearInput });
 watch(
     () => paddyStore.inputdata,
     (newValue) => {
