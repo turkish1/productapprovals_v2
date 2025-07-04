@@ -83,11 +83,11 @@ const generatePDF = () => {
         const topRightx = page.pageContext.mediaBox.topRightX;
         const topRighty = page.pageContext.mediaBox.topRightY;
         const currentX = ref(0);
-        const currentY = ref(0);
+        const currenty = ref(0);
         var LeftStart = 595.28 - 585.28;
         var current_y = topRighty - thirdYCoordinate;
         currentX.value = LeftStart;
-        currentY.value = current_y;
+        currenty.value = current_y;
         // Initialize jsPDF instance
         const address = ref(permitStore.$state.permitapp[0]?.formdt?.address);
         const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni);
@@ -136,6 +136,8 @@ const generatePDF = () => {
         const image = new Image();
         const logoImage = new Image();
         image.src = '/demo/images/officepaper.jpeg';
+        // we need to preprocess the image through color editor then add it.
+        // Will work on Gimp later for the logo
         logoImage.src = '/demo/images/logo.jpeg';
 
         doc.addImage(logoImage, 'JPEG', 10, 0, 50, 30);
@@ -225,7 +227,7 @@ const generatePDF = () => {
         const tSlope = 'Roof Slope: ';
 
         const factor = 1;
-        current_y = current_y + 5;
+        current_y = current_y + 1;
 
         const tAreaTextWidth = doc.getTextWidth(tArea);
         const AreaTextWidth = doc.getTextWidth(`${area}`);
@@ -496,7 +498,7 @@ const generatePDF = () => {
         }
         const sbsnoaText = 'Self Adhered NOA: ';
         const sbsapplicantText = 'S/A NOA Applicant: ';
-        const sbsSystemFText = 'S/A System F: ';
+        const sbsSystemFText = 'S/A System: ';
         const sbsmaterialText = 'S/A Material: ';
         const sbsdescriptionText = 'S/A Description: ';
         console.log(sbsStore.$state.systeminput.length);
