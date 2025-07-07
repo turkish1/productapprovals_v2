@@ -103,7 +103,7 @@ async function setProperties() {
     // phone.value = googleAccount.value?.bphone || '';
     name.value = googleAccount.value?.name || '';
     email.value = googleAccount.value?.email || '';
-    licenseStat.value = googleAccount.value.secondary_status || '';
+    licenseStat.value = googleAccount.value?.secondary_status || '';
     console.log(licenseStat.value);
     dba.value = googleAccount.value?.dba || '';
     address.value = procStore.$state.processinput[0]?.procData?.address;

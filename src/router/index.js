@@ -48,6 +48,11 @@ const router = createRouter({
                     component: () => import('@/components/UserLanding/UserDash.vue')
                 },
                 {
+                    path: '/terms',
+                    name: 'termsofUse',
+                    component: () => import('@/components/TermsUse/TermsofUse.vue')
+                },
+                {
                     path: '/dynamicstepper',
                     name: 'dynamicstepper',
                     component: () => import('@/components/Stepper/DynamicStepper.vue')

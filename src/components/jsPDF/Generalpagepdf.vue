@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- <button @click="generatePDF">Download PDF</button> -->
+        <button @click="generatePDF">Download PDF</button>
     </div>
 </template>
 
@@ -24,7 +24,7 @@ const masterPermit = ref(permitStore.$state.permitapp[0]?.formdt?.permit || 'N|A
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
-const area = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData);
+// const area = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData);
 // const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
 
 const dba = ref(getUser.value[0]?.dba || '');
@@ -121,7 +121,7 @@ const generatePDF = () => {
         doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
         const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
         doc.text(`${municipality.value}`, procWidth + 15, 280);
-        const tArea = 'Roof Area: ';
+        // const tArea = 'Roof Area: ';
         const adtileChk = ref(false);
         const metalChk = ref(false);
         const mtileChk = ref(false);
@@ -159,7 +159,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Roof Area', value: `${area.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'mEProcess Number', value: `${processNumber.value}` },
+            { category: 'meProcess Number', value: `${processNumber.value}` },
             { category: 'Master Permit', value: `${masterPermit.value}` }
         ];
 

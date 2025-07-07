@@ -1,379 +1,399 @@
-<script>
+<script setup>
+import { storeToRefs } from 'pinia';
+import { useToast } from 'primevue/usetoast';
+import { computed, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 import usecreateAccount from '@/composables/Authentication/use-createAccount';
 import useRegAxios from '@/composables/Authentication/use-registrationAxios';
 import { useAuthStore } from '@/stores/auth.js';
-import { tryOnUnmounted } from '@vueuse/core';
-import { jsPDF } from 'jspdf';
-import { storeToRefs } from 'pinia';
-import { useToast } from 'primevue/usetoast';
-import { computed, onMounted, reactive, ref, toRefs } from 'vue';
-import { useRouter } from 'vue-router';
 
-export default {
-    setup() {
-        // Use a ref for events (assuming contractors is returned as a ref)
-        const events = ref([]);
-        const authStore = useAuthStore();
-        const { message } = storeToRefs(authStore);
+const router = useRouter();
+const toast = useToast();
 
-        const router = useRouter();
-        const disabled = ref(false);
-        const isGmailValid = ref(false);
-        // Define form data. Note: removed duplicate "password" and added "city".
-        const formDatas = reactive({
-            license: '',
-            dba: '',
-            name: '',
-            username: '',
-            password: '',
-            license_status: '',
-            expiration_date: '',
-            address: '',
-            city: '',
-            projects: [],
-            cphone: '',
-            bphone: '',
-            email: '',
-            insurance: '',
-            carrier: '',
-            date: new Date()
-        });
+const authStore = useAuthStore();
+const { message } = storeToRefs(authStore);
 
-        // Get the contractors from the registration Axios composable.
-        const { cccAccounts, retrieveAccount, foundContrator } = useRegAxios();
-        const dataLic = ref('');
+const showTerms = ref(true);
+const disabled = ref(false);
+const isDateValid = ref(false);
+const isGmailValid = ref(false);
 
-        onMounted(() => {
-            // Assuming contractors is a ref, assign its value to events.
-        });
+const formDatas = reactive({
+    license: '',
+    dba: '',
+    name: '',
+    username: '',
+    password: '',
+    license_status: '',
+    expiration_date: '',
+    address: '',
+    city: '',
+    projects: [],
+    cphone: '',
+    bphone: '',
+    email: '',
+    insurance: '',
+    carrier: '',
+    date: new Date()
+});
 
-        const license_stat = ref('');
-        const { Data, takp } = usecreateAccount();
+const { cccAccounts, retrieveAccount } = useRegAxios();
+const { takp } = usecreateAccount();
 
-        // onSubmit calls your account creation function, resets fields, then navigates.
-        const onSubmit = async () => {
-            if (!isFormValid.value) return; // safety net
-            takp(formDatas);
-            // Reset fields
-            formDatas.license = '';
-            formDatas.name = '';
-            formDatas.license_status = '';
-            formDatas.dba = '';
-            // formDatas.username = '';
-            // formDatas.password = '';
-            formDatas.address = '';
-            formDatas.cphone = '';
-            formDatas.bphone = '';
-            formDatas.email = '';
-            formDatas.insurance = '';
-            formDatas.carrier = '';
-            navigateNext();
-        };
-        function retriveContractor() {
-            retrieveAccount(formDatas.license);
+const events = ref([]);
+const license_stat = ref('');
+const fileupload = ref(null);
 
-            events.value = cccAccounts;
-            console.log('Contractors:', events.value);
-            formDatas.dba = events.value.dba;
-            formDatas.name = events.value.name;
-            formDatas.expiration_date = events.value.expiration_date;
-            formDatas.address = events.value.address;
-            formDatas.city = events.value.city;
-            formDatas.expiration_date = events.value.expiration_date;
-            formDatas.license_status = events.value.license_status;
-            license_stat.value = events.value.license_status;
-            console.log(formDatas, license_stat.value);
-            licenseStatus();
-        }
+const trades = ref(null);
+const dropdownItemstSelected = ref(null);
+const dropdownItemctSelected = ref(null);
 
-        const isFormValid = computed(() => formDatas.insurance.trim() !== '' && formDatas.carrier.trim() !== '' && formDatas.license_status.trim() !== '' && formDatas.license_status.trim() !== 'I' && formDatas.email.trim() !== '');
+const dropdownItemSt = ref([
+    { name: 'Florida', code: 'Florida' },
+    { name: 'Georgia', code: 'Georgia' }
+]);
+const dropdownItemCt = ref([
+    { name: 'Miami', code: 'Miami' },
+    { name: 'Homestead', code: 'Homestead' },
+    { name: 'Miami Beach', code: 'Miami Beach' },
+    { name: 'Miami Gardens', code: 'Miami Gardens' }
+]);
+const trade = ref([
+    { name: 'Roofing Contractor', code: 'Roofing' },
+    { name: 'General Contractor', code: 'General' }
+]);
 
-        // Set the textual status based on the license secondary status.
-        function licenseStatus() {
-            if (license_stat.value === '') {
-                formDatas.license_status = '';
-            } else if (license_stat.value === 'A') {
-                formDatas.license_status = 'Active';
-                DateCheck();
-            } else if (license_stat.value === 'I') {
-                formDatas.license_status = 'Inactive';
-                alert('Your license is Inactive!');
-                navigateNext();
-            }
-        }
-        const isDateValid = ref(false);
+const isFormValid = computed(() => formDatas.insurance.trim() !== '' && formDatas.carrier.trim() !== '' && formDatas.license_status.trim() !== '' && formDatas.license_status.trim() !== 'I' && formDatas.email.trim() !== '');
 
-        function DateCheck() {
-            // or false depending on your desired default
-            console.log(formDatas.expiration_date);
-            const selected = new Date(formDatas.expiration_date);
-            const now = new Date();
+function onSubmit() {
+    if (!isFormValid.value) return;
+    takp(formDatas);
+    Object.assign(formDatas, {
+        license: '',
+        name: '',
+        license_status: '',
+        dba: '',
+        address: '',
+        cphone: '',
+        bphone: '',
+        email: '',
+        insurance: '',
+        carrier: ''
+    });
+    navigateNext();
+}
 
-            // Reset time part for accurate comparison
-            selected.setHours(0, 0, 0, 0);
-            now.setHours(0, 0, 0, 0);
+function retriveContractor() {
+    retrieveAccount(formDatas.license);
+    events.value = cccAccounts;
 
-            if (selected <= now) {
-                isDateValid === true;
-                alert('Your license is Expired!');
-                navigateNext();
-            }
-        }
+    const e = events.value;
+    formDatas.dba = e.dba;
+    formDatas.name = e.name;
+    formDatas.expiration_date = e.expiration_date;
+    formDatas.address = e.address;
+    formDatas.city = e.city;
+    formDatas.license_status = e.license_status;
+    license_stat.value = e.license_status;
 
-        const navigateNext = () => {
-            router.push('/');
-        };
+    licenseStatus();
+}
 
-        const toast = useToast();
-        const fileupload = ref();
-
-        const upload = () => {
-            if (fileupload.value && fileupload.value.upload) {
-                fileupload.value.upload();
-            }
-        };
-
-        const onUpload = () => {
-            toast.add({
-                severity: 'contrast',
-                summary: 'Contrast',
-                detail: 'File Uploaded',
-                life: 3000
-            });
-        };
-
-        // Dropdown items for state and city selections.
-        const dropdownItemSt = ref([
-            { name: 'Florida', code: 'Florida' },
-            { name: 'Georgia', code: 'Georgia' }
-        ]);
-        const dropdownItemCt = ref([
-            { name: 'Miami', code: 'Miami' },
-            { name: 'Homestead', code: 'Homestead' },
-            { name: 'Miami Beach', code: 'Miami Beach' },
-            { name: 'Miami Gardens', code: 'Miami Gardens' }
-        ]);
-        const trade = ref([
-            { name: 'Roofing Contractor', code: 'Roofing' },
-            { name: 'General Contractor', code: 'General' }
-        ]);
-
-        // Selected values for dropdowns.
-        const trades = ref(null);
-        const dropdownItemstSelected = ref(null);
-        const dropdownItemctSelected = ref(null);
-
-        // Function to generate a PDF from the element with id "shingle".
-        const generatePdf = () => {
-            const element = document.getElementById('shingle');
-            console.log('Element to capture:', element);
-            if (!element) {
-                console.error('Element with id "shingle" not found');
-                return;
-            }
-            html2canvas(element).then((canvas) => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF();
-                pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-                const pdfBlob = pdf.output('blob');
-                savePdfBlobSilently(pdfBlob);
-            });
-        };
-
-        // // Save the generated PDF using the File System Access API.
-        const savePdfBlobSilently = async (blob) => {
-            try {
-                const fileHandle = await window.showSaveFilePicker({
-                    suggestedName: 'permitapp.pdf',
-                    types: [
-                        {
-                            description: 'PDF file',
-                            accept: { 'application/pdf': ['.pdf'] }
-                        }
-                    ]
-                });
-                const writable = await fileHandle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                console.log('PDF saved successfully without popping download dialog!');
-            } catch (error) {
-                console.error('Error saving file:', error);
-            }
-        };
-
-        // When the component unmounts, generate the PDF.
-        tryOnUnmounted(() => {
-            generatePdf();
-            console.log('Component unmounted: PDF generated.');
-        });
-
-        return {
-            formDatas,
-            ...toRefs(formDatas),
-            disabled,
-            navigateNext,
-            authStore,
-            DateCheck,
-            message,
-            isDateValid,
-            isFormValid,
-            trade,
-            trades,
-            onSubmit,
-            onUpload,
-            upload,
-            retriveContractor,
-            dropdownItemCt,
-            dropdownItemSt,
-            dropdownItemct: dropdownItemctSelected,
-            dropdownItemst: dropdownItemstSelected,
-            generatePdf
-        };
+function licenseStatus() {
+    if (license_stat.value === '') {
+        formDatas.license_status = '';
+    } else if (license_stat.value === 'A') {
+        formDatas.license_status = 'Active';
+        DateCheck();
+    } else if (license_stat.value === 'I') {
+        formDatas.license_status = 'Inactive';
+        alert('Your license is Inactive!');
+        navigateNext();
     }
-};
+}
+
+function DateCheck() {
+    const selected = new Date(formDatas.expiration_date);
+    const now = new Date();
+    selected.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    if (selected <= now) {
+        isDateValid.value = true;
+        alert('Your license is Expired!');
+        navigateNext();
+    }
+}
+
+function handleAccepted() {
+    router.push('/registration');
+}
+
+function navigateNext() {
+    router.push('/');
+}
+
+function upload() {
+    if (fileupload.value?.upload) {
+        fileupload.value.upload();
+    }
+}
+
+function onUpload() {
+    toast.add({
+        severity: 'contrast',
+        summary: 'Contrast',
+        detail: 'File Uploaded',
+        life: 3000
+    });
+}
 </script>
 <template>
-    <div class="card">
-        <form class="container md:w-2/3" @submit.prevent="onSubmit" style="margin-left: 350px; margin-top: 50px">
-            <!-- grid h-56 grid-cols-3 content-start gap-4 flex flex-col w-64 space-y-2 gap-4... -->
-            <div class="h-[10rem]"></div>
-            <div class="grid h-56 grid-cols-3 content-start gap-4" style="margin-left: 50px; margin-top: 50px; margin-right: 40px">
+    <section class="hero">
+        <div class="card">
+            <!-- heading -->
+            <h1 class="title">Registration</h1>
+            <form class="grid-form" @submit.prevent="onSubmit">
+                <div class="h-[10rem]"></div>
                 <div class="font-semibold text-xl">Contractor Information</div>
-                <div class="flex flex-col gap-4">
+                <div class="field">
                     <label for="lic1" style="color: #122620">State of Florida License No.</label>
                     <!-- :invalid="formDatas.license === ''" -->
                     <InputText v-tooltip="'Enter your license and hit tab'" type="text" v-model="formDatas.license" placeholder="CRC000000" @change="checkLicense" :invalid="formDatas.license === ''" @keydown.tab="retriveContractor" />
                     <!-- <p v-if="!isDateValid">Your license is expired.</p> -->
                 </div>
-                <div class="flex flex-wrap gap-2">
+                <div class="field">
                     <label for="trade" style="color: #122620">Trade</label>
                     <Select id="trad" v-model="trades" :options="trade" optionLabel="name" placeholder="Select One" class="w-full"></Select>
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="field">
                     <label for="dba" style="color: #122620">DBA</label>
                     <InputText id="dba" type="text" v-model="formDatas.dba" placeholder=" " :invalid="formDatas.dba === ''" />
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="field">
+                    <label for="addr" style="color: #122620">Business Address</label>
+                    <InputText id="addr" type="text" v-model="formDatas.address" placeholder="address" />
+                </div>
+                <div class="field span-2">
                     <label for="name" style="color: #122620">Qualifier Name</label>
                     <InputText id="name" type="text" v-model="formDatas.name" placeholder=" " :invalid="formDatas.name === ''" />
                 </div>
 
-                <div class="flex flex-col gap-2">
+                <div class="field">
                     <label for="secondary_status" style="color: #122620">License Status</label>
                     <InputText id="secondary_status" type="text" v-model="formDatas.license_status" placeholder=" " :invalid="formDatas.license_status === ''" />
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="field">
                     <label for="license" style="color: #122620">License Expiration Date</label>
                     <InputText id="license" type="text" v-model="formDatas.expiration_date" placeholder=" " :invalid="formDatas.expiration_date === ''" />
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="field">
                     <label for="license" style="color: #122620">Insurance Policy Number</label>
                     <InputText id="license" type="text" v-model="formDatas.insurance" placeholder=" " :invalid="formDatas.insurance === ''" />
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="field">
                     <label for="license" style="color: #122620">Insurance Carrier</label>
                     <InputText id="license" type="text" v-model="formDatas.carrier" placeholder=" " :invalid="formDatas.carrier === ''" />
                 </div>
-                <!-- <div class="flex flex-col gap-2">
-                <label for="username" style="color: #122620">User Name</label>
-                <InputText id="username" type="text" v-model="formDatas.username" placeholder="user name" :invalid="formDatas.username === ''" />
-            </div> -->
-                <!-- <div class="flex flex-col gap-2">
-                <label for="fname" style="color: #122620">Password</label>
-                <Password v-model="formDatas.password" :invalid="formDatas.pasword === ''">
-                    <template #header>
-                        <div class="font-semibold text-xm mb-4">Pick a password</div>
-                    </template>
-                    <template #footer>
-                        <Divider />
-                        <ul class="pl-2 ml-2 my-0 leading-normal">
-                            <li>At least one lowercase</li>
-                            <li>At least one uppercase</li>
-                            <li>At least one numeric</li>
-                            <li>Minimum 8 characters</li>
-                        </ul>
-                    </template>
-                </Password>
-            </div> -->
-            </div>
-            <div class="h-[10rem]"></div>
-            <!-- <div class="font-semibold text-xl" style="margin-left: 50px">Contact Info</div> -->
-            <div class="grid h-64 grid-cols-3 content-around gap-12 ..." style="margin-left: 250px; margin-right: 40px">
-                <!-- class="flex flex-col grow basis-0 gap-3" -->
-                <div class="flex flex-col gap-4">
-                    <label for="addr" style="color: #122620">Business Address</label>
-                    <InputText id="addr" type="text" v-model="formDatas.address" placeholder="address" />
-                </div>
+
+                <!-- <div class="h-[10rem]"></div> -->
+
                 <!-- class="flex flex-col grow basis-1 gap-3" -->
-                <div class="flex flex-col gap-4">
+                <div class="field">
                     <label for="state" style="color: #122620">City</label>
                     <!-- <Select id="state" v-model="dropdownItemct" :options="dropdownItemCt" optionLabel="name" placeholder="Select One" class="w-full"></Select> -->
                     <InputText id="city" type="text" v-model="formDatas.city" placeholder="city" />
                 </div>
                 <!-- class="flex flex-wrap gap-2 w-full" -->
-                <div class="flex flex-col gap-4">
+                <div class="field">
                     <label for="state" style="color: #122620">State</label>
-                    <Select id="state" v-model="dropdownItemst" :options="dropdownItemSt" optionLabel="name" placeholder="Select One" class="w-full"></Select>
+                    <Select id="state" v-model="dropdownItemstSelected" :options="dropdownItemSt" optionLabel="name" placeholder="Select One" class="w-full"></Select>
                 </div>
                 <!-- class="flex flex-col grow basis-0 gap-3" -->
-                <div class="flex flex-col gap-4">
+                <div class="field">
                     <label for="bphone" style="color: #122620">Business Phone</label>
                     <InputMask v-model="formDatas.bphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.bphone === ''" />
                     <!-- <InputMask id="bphone" v-model="formDatas.phone" mask="000-000-0000" placeholder="000-000-0000" /> -->
                 </div>
-                <div class="flex flex-col gap-4">
+                <div class="field">
                     <label for="cphone" style="color: #122620">Cell Phone Number</label>
                     <InputMask v-model="formDatas.cphone" mask="(999) 999-9999" placeholder="(999) 999-9999" :invalid="formDatas.cphone === ''" />
                 </div>
-                <div class="flex flex-col gap-4">
+                <div class="field">
                     <label for="email1" style="color: #122620">Gmail account</label>
                     <InputText v-tooltip="'Enter your gmail account in order to submit'" id="email1" v-model="formDatas.email" type="text" placeholder="email" :invalid="formDatas.email === ''" />
                 </div>
-            </div>
 
-            <div class="md:w-1/4 flex justify-center flex-wrap gap-4" style="margin-left: 50px">
-                <Button label="Submit" severity="contrast" raised @click="onSubmit" :disabled="!isFormValid" />
-                <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
-            </div>
+                <div class="span-2 submit-row">
+                    <Button label="Submit" severity="contrast" raised @click="onSubmit" :disabled="!isFormValid" />
+                    <!-- <NewButton :isActive="MiamiBC" @click="checkValue">Check</NewButton> -->
+                </div>
 
-            <div class="md:w-2/3 flex flex-col gap-2" style="margin-top: 120px">
-                <label for="addr" style="color: #122620">Upload Insurance Information</label>
-                <Toast />
-                <file-saver class="w-2/3"></file-saver>
-            </div>
-        </form>
-        <p v-if="responseMessage">{{ responseMessage }}</p>
-    </div>
-    >
+                <div class="full:w-3/4 flex flex-col gap-2" style="margin-top: 120px">
+                    <label for="addr" style="color: #122620">Upload Insurance Information</label>
+                    <Toast />
+                    <file-saver class="w-3/4"></file-saver>
+                </div>
+            </form>
+            <p v-if="responseMessage">{{ responseMessage }}</p>
+        </div>
+    </section>
 </template>
 <style scoped>
-.container {
-    padding-bottom: 10px;
+/* ─── 1. CSS custom properties for easy theme tweaks ─────────────────────── */
+:root {
+    --c-bg: #f4f4f4;
+    --c-bg-card: rgba(255, 255, 255, 0.85);
+    --c-bg-card-dark: rgba(30, 41, 59, 0.85);
+    --c-primary: #00857a;
+    --c-primary-dark: #10bda7;
+    --c-text: #1b1b1b;
+    --c-text-light: #ffffff;
+    --radius: 1.2rem;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --c-bg: #0f172a;
+        --c-text: #e2e8f0;
+    }
+}
+
+/* ─── 2. Layout wrappers ─────────────────────────────────────────────────── */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 4rem 1rem;
+    background: var(--c-bg);
+    background-image: radial-gradient(at 10% 20%, #e0f7fa 0%, transparent 50%), radial-gradient(at 90% 80%, #ccfbf1 0%, transparent 50%);
+}
+
+.card {
+    width: 100%;
+    max-width: 48rem;
+    background: var(--c-bg-card);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 3rem 2.5rem;
+}
+
+/* dark mode card tint */
+@media (prefers-color-scheme: dark) {
+    .card {
+        background: var(--c-bg-card-dark);
+    }
+}
+
+/* ─── 3. Typography ──────────────────────────────────────────────────────── */
+.title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--c-primary);
+    margin-bottom: 1.75rem;
+}
+
+/* ─── 4. Form grid ───────────────────────────────────────────────────────── */
+.grid-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.25rem 2rem;
+}
+
+/* span helpers */
+.span-2 {
+    grid-column: span 2;
+}
+@media (max-width: 640px) {
+    .span-2 {
+        grid-column: span 1;
+    }
+}
+
+/* individual field block */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.field label {
+    font-weight: 500;
+    color: var(--c-text);
+    font-size: 0.9rem;
+}
+
+/* horizontal input + button combo */
+.input-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* response text */
+.response {
+    text-align: center;
+    color: #e11d48; /* rose-600 */
+    font-weight: 500;
+}
+
+/* submit row → centre button */
+.submit-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+/* ─── 5. PrimeVue component tweaks via :deep() ───────────────────────────── */
+:deep(.p-inputtext),
+:deep(.p-inputmask),
+:deep(.p-dropdown) {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #cbd5e1;
+    padding: 0.55rem 0.75rem;
+    transition: box-shadow 0.15s ease;
+}
+
+:deep(.p-inputtext:focus),
+:deep(.p-inputmask:focus),
+:deep(.p-dropdown:not(.p-disabled):focus) {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 35%, transparent);
+}
+
+:deep(.p-button) {
+    background: var(--c-primary);
     border: none;
-    border-radius: 12px;
-    box-shadow: 4px 4px 16px rgb(22, 183, 183);
-    position: center;
-    min-height: 80px;
-    margin-top: 20px;
-    background-color: #eae7e2;
+    color: var(--c-text-light);
+    padding: 0.55rem 1.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: background 0.15s ease;
 }
-@keyframes slidedown-icon {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(20px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
+:deep(.p-button:hover) {
+    background: var(--c-primary-dark);
+}
+:deep(.p-button:focus) {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 45%, transparent);
+}
+:deep(.p-button.p-disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.slidedown-icon {
-    animation: slidedown-icon;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
+/* error helper */
+.error {
+    font-size: 0.75rem;
+    color: #e11d48;
+}
+
+/* permit type selector extra spacing (optional) */
+.permit-select {
+    margin-bottom: 1.5rem;
 }
 </style>

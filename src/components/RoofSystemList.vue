@@ -41,7 +41,7 @@ function scrollTerminal() {
         } else {
             clearInterval(interval); // Stop scrolling when all lines are displayed
         }
-    }, 1000); // Adjust speed as desired (1000 ms = 1 second)
+    }, 500); // Adjust speed as desired (1000 ms = 1 second)
 }
 onMounted(() => {
     scrollTerminal();
@@ -55,8 +55,7 @@ onMounted(() => {
             </div>
             <div v-for="roof in roofList" :key="roof.id" class="item">
                 <div class="content">
-                    <span :class="{ completed: roof.completed }" :style="{ color: 'green', fontSize: '18px' }">{{ roof.item }} {{ roof.dim1 }} {{ roof.dim2 }} {{ roof.dim3 }} {{ roof.dim4 }} {{ roof.dim5 }}</span>
-                    <!-- <span :class="{ completed: roof.completed }">{{ roof.dim1 }}</span> -->
+                    <span :class="{ completed: roof.completed }" :style="{ color: 'green' }">{{ roof.item }} {{ roof.dim1 }} {{ roof.dim2 }} {{ roof.dim3 }} {{ roof.dim4 }} {{ roof.dim5 }}</span>
                     <span @click.stop="toggleCompleted(roof.id)">&#10004;</span>
                 </div>
             </div>

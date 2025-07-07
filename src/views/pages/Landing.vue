@@ -179,11 +179,7 @@ onMounted(() => {
     localStorage.clear();
 });
 
-// function navLogin() {
-//     router.push('/login');
-// }
-
 function navRegister() {
-    router.push('/registration');
+    router.push('/terms');
 }
 </script>
