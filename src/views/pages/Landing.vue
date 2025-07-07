@@ -192,6 +192,6 @@ onMounted(() => {
 // }
 
 function navRegister() {
-    router.push('/registration');
+    router.push('/terms');
 }
 </script>

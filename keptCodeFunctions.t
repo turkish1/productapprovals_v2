@@ -340,3 +340,48 @@ lines.forEach(line => {
 } */
 
 
+<!-- <template>
+    <div id="roofselect" class="flex card justify-center">
+        <div class="refresh">
+            <Button plain text>
+                <i class="pi pi-refresh" style="font-size: 1.5rem; color: grey; margin-left: 50px; margin-top: 90px" @click="clearSelected"></i>
+            </Button>
+        </div>
+        <div class="flex justify-center">
+            <form>
+
+                <div v-show="!isMiamiBeachValid" class="flex flex-col gap-4">
+                    <label>Enter Square Footage</label>
+                    <InputText type="text" v-model="area" />
+                    <label>Select System</label>
+                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" @change="addItemAndClear" />
+                </div>
+
+                <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
+                    <label>Enter Square Footage</label>
+                    <InputText type="text" v-model="area" />
+                    <label>Select System</label>
+                    <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" @change="addItemAndClear" />
+                </div>
+
+                <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-6">
+                    <div class="flex items-center mt-4 space-y-6">
+                        <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
+                        <label for="newroof" class="ml-2" style="color: #122620">New Roof </label>
+                    </div>
+                    <div class="flex items-center mt-4 space-y-6">
+                        <Checkbox v-model="checked" :invalid="!checked" inputId="reroof" name="checked" value="reroof" />
+                        <label for="reroof" class="ml-2" style="color: #122620">Re-Roof </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex flex-col gap-4">
+            <div>
+
+                <Button class="button" label="Submit" raised style="margin-right: 90px; margin-top: 230px; background-color: #a4b5b9" as="router-link" to="/generalpage"></Button>
+            </div>
+        </div>
+    </div>
+</template> -->

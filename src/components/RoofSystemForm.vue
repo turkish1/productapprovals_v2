@@ -1,4 +1,5 @@
 <script setup>
+import useGeneral from '@/composables/GeneralPage/use-Generalpage.js';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
@@ -38,6 +39,9 @@ tryOnMounted(() => {
     }
 });
 
+// Add general page data to create pdf later
+const { addRoof } = useGeneral();
+
 // Reset the roof list store.
 function clearSelected() {
     store.$reset();
@@ -73,9 +77,13 @@ function addItemAndClear() {
     }
     dataGeneral.roofCheck = checked;
     generalpageStore.addgeneralpdfData(dataGeneral);
-    clear();
+    console.log(generalpageStore);
+    // clear();
 }
-
+const addGeneralpageData = () => {
+    addRoof();
+    // clear();
+};
 // Clear the input fields.
 function clear() {
     area.value = '';
@@ -111,51 +119,6 @@ function clear() {
                     <label for="system">Roof System</label>
                     <Select id="system" v-model="selectedItem" :options="isMiamiBeachValid ? types : type" optionLabel="name" placeholder="Select roof system" class="w-full" @change="addItemAndClear" />
                 </div>
-
-                <!-- <Button class="wide-btn" label="Add Item" severity="contrast" raised type="button" @click="addItemAndClear" /> -->
-            </form>
-
-            <footer class="footer">
-                <Button label="Submit" severity="contrast" raised as="router-link" to="/generalpage" />
-            </footer>
-            <br />
-            <roof-system-list></roof-system-list>
-        </aside>
-
-        <!-- ── Blueprint PDF drop-zone ────────────────────────────────── -->
-
-        <!-- <section class="card dropzone" @dragover.prevent="dragOver = true" @dragleave="dragOver = false" @drop.prevent="handleDrop">
-            <p class="dz-title">For PDF documents</p>
-            <p class="dz-sub">Drag &amp; drop files here<br />or click to upload</p>
-            <input type="file" accept="application/pdf" multiple class="file-input" @change="handleFiles" />
-        </section> -->
-    </main>
-</template>
-
-<!-- <template>
-    <div id="roofselect" class="flex card justify-center">
-        <div class="refresh">
-            <Button plain text>
-                <i class="pi pi-refresh" style="font-size: 1.5rem; color: grey; margin-left: 50px; margin-top: 90px" @click="clearSelected"></i>
-            </Button>
-        </div>
-        <div class="flex justify-center">
-            <form>
-
-                <div v-show="!isMiamiBeachValid" class="flex flex-col gap-4">
-                    <label>Enter Square Footage</label>
-                    <InputText type="text" v-model="area" />
-                    <label>Select System</label>
-                    <Select v-model="selectedItem" :options="type" optionLabel="name" placeholder="Select roof system" class="w-full md:w-72" @change="addItemAndClear" />
-                </div>
-
-                <div v-show="isMiamiBeachValid" class="card flex flex-col gap-4">
-                    <label>Enter Square Footage</label>
-                    <InputText type="text" v-model="area" />
-                    <label>Select System</label>
-                    <Select v-model="selectedItem" :options="types" optionLabel="name" placeholder="Select roof system" class="w-full md:w-56" @change="addItemAndClear" />
-                </div>
-
                 <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-6">
                     <div class="flex items-center mt-4 space-y-6">
                         <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
@@ -167,16 +130,24 @@ function clear() {
                     </div>
                 </div>
             </form>
-        </div>
 
-        <div class="flex flex-col gap-4">
-            <div>
+            <footer class="footer">
+                <Button label="Submit" severity="contrast" raised as="router-link" to="/dynamicstepper" @click="addGeneralpageData" />
+                <!-- to="/generalpage" -->
+            </footer>
+            <br />
+            <roof-system-list></roof-system-list>
+        </aside>
 
-                <Button class="button" label="Submit" raised style="margin-right: 90px; margin-top: 230px; background-color: #a4b5b9" as="router-link" to="/generalpage"></Button>
-            </div>
-        </div>
-    </div>
-</template> -->
+        <!-- ── Blueprint PDF drop-zone ────────────────────────────────── -->
+
+        <section class="card dropzone" @dragover.prevent="dragOver = true" @dragleave="dragOver = false" @drop.prevent="handleDrop">
+            <p class="dz-title">For PDF documents</p>
+            <p class="dz-sub">Drag &amp; drop files here<br />or click to upload</p>
+            <input type="file" accept="application/pdf" multiple class="file-input" @change="handleFiles" />
+        </section>
+    </main>
+</template>
 
 <!-- ──────────────────────────── styles ───────────────────────────────── -->
 

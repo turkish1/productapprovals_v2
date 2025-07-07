@@ -29,7 +29,7 @@
     </div>
 
     <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
-        <div>
+        <div v-show="isGenaralPageValid">
             <GeneralPage />
         </div>
         <div v-show="isRoofShingleValid">
@@ -97,6 +97,7 @@ function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
         dba.value = item.dba;
     });
+    console.log(generalStore, generalType);
 }
 
 const displayInfo = reactive({
@@ -144,20 +145,4 @@ invoke(async () => {
 });
 </script>
 
-<style lang="scss" scoped>
-// @media screen and (max-width: 960px) {
-//     ::v-deep(.customized-timeline) {
-//         .p-timeline-event:nth-child(even) {
-//             flex-direction: row;
-
-//             .p-timeline-event-content {
-//                 text-align: left;
-//             }
-//         }
-
-//         .p-timeline-event-opposite {
-//             flex: 0;
-//         }
-//     }
-// }
-</style>
+<style lang="scss" scoped></style>

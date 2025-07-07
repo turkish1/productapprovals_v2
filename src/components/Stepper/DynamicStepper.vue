@@ -61,6 +61,7 @@ const isValidMechanicalPDF = ref(false);
 const isValidSummary = ref(true);
 const isValidPayment = ref(true);
 const isValidDownload = ref(true);
+// const isValidGeneralpage = ref(true);
 // Permitapp / miami beach logic
 const MB = ref(permitStore.$state.permitapp);
 const mbVal = ref(2);
