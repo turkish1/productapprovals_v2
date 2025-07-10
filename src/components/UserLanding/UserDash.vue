@@ -1,10 +1,14 @@
 <template>
-    <div class="columns-1 ...">
-        <div class="w-1/2 p-grid mt-6 p-dir-col">
+    <div class="relative h-screen">
+        <div class="absolute inset-0 opacity-10">
+            <!-- <img src="/demo/images/server-room.jpeg" class="absolute inset-0 w-full h-full object-cover filter brightness-50" /> -->
+        </div>
+        <div class="relative z-10 p-4">
+            <!-- NOC widgets here -->
+        </div>
+        <!-- <div class="w-1/2 p-grid mt-8 p-dir-col">
             <h2>User Dashboard</h2>
-            <SpeedDial :model="items" :radius="80" type="circle" :style="{ position: 'right' }" :buttonProps="{ severity: 'warn', rounded: true }" />
 
-            <!-- Top statistics row -->
             <div class="p-grid">
                 <div class="p-col-12 p-md-4">
                     <Card title="Total Users"> </Card>
@@ -20,11 +24,13 @@
                     </Card>
                 </div>
             </div>
-        </div>
-        <div class="gap-5 columns-2">
+        </div> -->
+        <!-- <div class="gap-5 columns-2">
             <div class="card">
-                <div :style="{ position: 'relative', height: '200px' }" class="flex items-center justify-center">
-                    <div class="w-1/2 card flex justify-right">
+                <SpeedDial :model="items" :radius="130" type="circle" :style="{ position: 'center' }" :buttonProps="{ severity: 'warn', rounded: true }" />
+
+                <div :style="{ position: 'relative', height: '1400px' }" class="flex items-center justify-center">
+                    <div class="w-1/3 card flex justify-right">
                         <PanelMenu :model="itemsNext">
                             <template #item="{ item }">
                                 <a v-ripple class="flex items-center px-4 py-2 cursor-pointer group">
@@ -40,8 +46,8 @@
                     <Toast />
                 </div>
             </div>
-            <Map></Map>
-        </div>
+
+        </div> -->
     </div>
 </template>
 
@@ -165,15 +171,18 @@ onMounted(() => {
 </script>
 
 <style>
+.noc-bg {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 1) 100%);
+}
 .p-grid {
-    margin-bottom: 2rem;
+    margin-bottom: 11rem;
 }
 
 .p-col-12 {
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
 .p-md-4 {
-    padding: 1rem;
+    padding: 0.5rem;
 }
 </style>

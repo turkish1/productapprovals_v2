@@ -6,7 +6,7 @@ import { useprocStore } from '@/stores/processStore';
 import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-// import useProcess from '@/composables/process.js';
+
 import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 
 import { useGlobalState } from '@/stores/accountsStore';
@@ -16,13 +16,17 @@ import { usePermitappStore } from '@/stores/permitapp';
 const loading = ref(false);
 const responseMessage = ref('');
 const isDialog = ref(false);
-const content = ref();
+// const content = ref();
+
+// add this ref; your logic will set this to true/false
+const isHistoric = ref(false);
 
 const router = useRouter();
 const procStore = useprocStore();
 // composables & stores
 const { procData, procReceive } = useCreateProcessNumber();
-const { accountUsers, getUser, addUser } = useGlobalState();
+// getUser, addUser these two go after accountUsers but are not being used - marked for removal
+const { accountUsers } = useGlobalState();
 const store = usePermitappStore();
 
 // static options
@@ -50,6 +54,7 @@ const formData = reactive({
     phNumber: '',
     emails: '',
     muniProc: '',
+    historic: Boolean,
     date: new Date()
 });
 
@@ -107,6 +112,7 @@ async function setProperties() {
     console.log(licenseStat.value);
     dba.value = googleAccount.value?.dba || '';
     address.value = procStore.$state.processinput[0]?.procData?.address;
+    console.log(address.value);
     phone.value = accountUsers.value[0]?.bphone;
     // processN.value = procStore.$state.processinput[0]?.procData?.processNumber;
 }
@@ -134,10 +140,13 @@ async function fetchData(url) {
     error.value = null;
     try {
         const response = await fetch(url);
-
+        // console.log(response);
         datas.value = await response.json();
-        data.value = datas.value.MinimumPropertyInfos[0];
-        console.log(data.value);
+
+        isHistoric.value = datas.value.body.isHistoric;
+
+        data.value = datas.value.body.MinimumPropertyInfos[0];
+
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
 
@@ -158,11 +167,11 @@ async function load() {
 
         muniProcessdata.value = muniProcess.value;
         const addr = address.value;
-        console.log(addr);
+
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
-        console.log(url);
+
         await fetchData(url);
-        console.log(muniProcess.value);
+
         // enrich form
         Object.assign(formData, {
             license: licenseStat.value,
@@ -175,9 +184,10 @@ async function load() {
         const newNumber = String(resNum.value).substring(3, 19);
         const nextNum = useToNumber(newNumber).value + 1;
         formData.processNumber = prefix.value.concat(String(nextNum));
+
         formData.muniProc = muniProcess.value;
         formData.address = address.value;
-        console.log(formData);
+
         procReceive(formData);
     } catch (err) {
         alert(err);
@@ -188,12 +198,7 @@ function onSubmit() {
     procReceive(formData);
 }
 
-// function navigateNext() {
-//     router.push('/roofsystem');
-// }
-
 function addItemAndClear() {
-    // if (!formData.address) return;
     console.log(address.value);
     store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, address.value);
 
@@ -222,17 +227,24 @@ function addItemAndClear() {
                 <!-- municipality process # -->
                 <div class="field">
                     <label for="processMuni">Municipality Process #</label>
-                    <InputText id="processMuni" v-model="muniProcess" placeholder="00000000" @change="load" />
+                    <!-- @change="load"  -->
+                    <InputText id="processMuni" v-model="muniProcess" placeholder="00000000" />
                 </div>
                 <!-- property address & search -->
-                <div class="field span-2">
+                <div class="field">
                     <label for="addr">Property Address</label>
                     <div class="input-row">
                         <InputText id="addr" v-model="address" placeholder="123 SW 1st St" />
+                        <!-- blinking label -->
+
                         <Button type="button" icon="pi pi-search" :loading="loading" @click="load" />
                     </div>
                 </div>
+                <div class="field">
+                    <span v-if="isHistoric" class="historic-indicator">Property is Historic</span>
+                </div>
 
+                <!-- <br /> -->
                 <!-- DBA -->
                 <div class="field">
                     <label for="dba">DBA</label>
@@ -240,7 +252,7 @@ function addItemAndClear() {
                 </div>
 
                 <!-- contractor name -->
-                <div class="field span-2">
+                <div class="field">
                     <label for="name">Contractor Name</label>
                     <InputText id="name" v-model="name" placeholder="full name" />
                 </div>
@@ -326,8 +338,8 @@ function addItemAndClear() {
 }
 
 .card {
-    width: 100%;
-    max-width: 48rem;
+    width: 50%;
+    max-width: 52rem;
     background: var(--c-bg-card);
     backdrop-filter: blur(12px);
     border-radius: var(--radius);
@@ -447,6 +459,29 @@ function addItemAndClear() {
 
 /* permit type selector extra spacing (optional) */
 .permit-select {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* blinking animation */
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+.historic-indicator {
+    margin: 0 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-weight: 600;
+    color: #2eca6f;
+    display: inline-block; /* or `display:block` */
+    min-width: 100%; /* now it stretches full width */
+    background-color: var(--c-primary);
+    border-radius: 0.65rem;
+    animation: blink 1s step-start infinite;
 }
 </style>

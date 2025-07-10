@@ -8,11 +8,11 @@
 .card {
 
 
-    background: var(--shared-background);
-    background-repeat: no-repeat;
-    background-size: cover;
-    backdrop-filter: blur(10px); /* Apply the blur effect */
-    -webkit-backdrop-filter: blur(60px); /* For Safari */
+    // background: var(--shared-background);
+    // background-repeat: no-repeat;
+    // background-size: cover;
+    // backdrop-filter: blur(10px); /* Apply the blur effect */
+    // -webkit-backdrop-filter: blur(60px); /* For Safari */
     // border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     padding: 1.5rem;
@@ -22,8 +22,8 @@
     }
 }
 .card-system {
+    background: var(--shared-background);
 
-    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
     background-repeat: no-repeat;
     background-size: cover;
     backdrop-filter: blur(10px); /* Apply the blur effect */
