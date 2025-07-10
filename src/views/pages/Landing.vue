@@ -104,11 +104,9 @@
 <script setup>
 import { useGoogleAuth } from '@/composables/Authentication/useGoogleAuth.js';
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
-import { useGlobalState } from '@/stores/accountsStore';
 import AOS from 'aos';
-import { useRouter } from 'vue-router';
-// import { useAuthStore } from '@/stores/auth';
 import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
+import { useRouter } from 'vue-router';
 
 const { accessToken, idPayload, signIn, localData } = useGoogleAuth();
 const acctCompare = ref([]);
@@ -132,9 +130,7 @@ let accountUser = reactive({
     phone: ''
 });
 
-const { getUser } = useGlobalState();
 const checkAuth = () => {
-    console.log(getUser);
     localData.value.forEach((item, index) => {
         for (let i = 0; i < item.length; i++) {
             if (accessToken.value) {

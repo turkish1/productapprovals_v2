@@ -28,6 +28,16 @@ const router = createRouter({
                     component: () => import('@/components/UserLanding/Noc.vue')
                 },
                 {
+                    path: '/portal',
+                    name: 'portal',
+                    component: () => import('@/components/UserLanding/CentralPortal.vue')
+                },
+                {
+                    path: '/contractorjob',
+                    name: 'jobs',
+                    component: () => import('@/components/UserLanding/ContractorJobs.vue')
+                },
+                {
                     path: '/registration',
                     name: 'registration',
                     component: () => import('@/views/uikit/RegistrationForm.vue')

@@ -10,9 +10,7 @@ body {
     font-family: 'Lato', sans-serif;
 
     margin: 0; /* Remove default margins */
-
-    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
-
+    background: var(--shared-background);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -26,9 +24,8 @@ a {
 }
 
 .layout-wrapper {
+    background: var(--shared-background);
 
-      // max-height: fit-content;
-      background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
       background-size: cover;
        background-repeat: no-repeat;
        background-position: center;

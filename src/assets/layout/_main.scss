@@ -36,9 +36,9 @@
 .layout-main-container-stepper {
     // display: cover;
     // background-color: #eae7e2;
-    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
+    // background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
 
-    // background: var(--shared-background);
+    background: var(--shared-background);
     background-repeat: no-repeat;
     background-size: cover;
     // height: 100%;
@@ -50,7 +50,7 @@
 .layout-main {
     // flex: 1 1 auto;
     padding-bottom: 0.5rem;
-    background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
+    // background-image: url('/src/assets/img/Roof_Systems_Background.jpeg');
     background-size: cover;
     background-position: center;
     position: absolute;
