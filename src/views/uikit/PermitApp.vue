@@ -69,7 +69,7 @@ const phone = ref('');
 const name = ref('');
 const email = ref('');
 const googleAccount = ref([]);
-const address = ref('');
+const inputAddress = ref('');
 
 const disabled = ref(false);
 // ---- lifecycle ------------------------------------------------------------
@@ -111,8 +111,8 @@ async function setProperties() {
     licenseStat.value = googleAccount.value?.secondary_status || '';
     console.log(licenseStat.value);
     dba.value = googleAccount.value?.dba || '';
-    address.value = procStore.$state.processinput[0]?.procData?.address;
-    console.log(address.value);
+    // address.value = procStore.$state.processinput[0]?.procData?.address;
+    // console.log(address.value);
     phone.value = accountUsers.value[0]?.bphone;
     // processN.value = procStore.$state.processinput[0]?.procData?.processNumber;
 }
@@ -143,13 +143,12 @@ async function fetchData(url) {
         // console.log(response);
         datas.value = await response.json();
 
-        isHistoric.value = datas.value.body.isHistoric;
-
         data.value = datas.value.body.MinimumPropertyInfos[0];
 
+        console.log(data.value);
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
-
+        isHistoric.value = await datas.value.body.isHistoric;
         checkV.value = formData.folio;
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
@@ -166,8 +165,8 @@ async function load() {
         setTimeout(() => (loading.value = false), 1000);
 
         muniProcessdata.value = muniProcess.value;
-        const addr = address.value;
-
+        const addr = inputAddress.value;
+        // https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
         await fetchData(url);
@@ -186,7 +185,7 @@ async function load() {
         formData.processNumber = prefix.value.concat(String(nextNum));
 
         formData.muniProc = muniProcess.value;
-        formData.address = address.value;
+        formData.address = inputAddress.value;
 
         procReceive(formData);
     } catch (err) {
@@ -199,8 +198,8 @@ function onSubmit() {
 }
 
 function addItemAndClear() {
-    console.log(address.value);
-    store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, address.value);
+    console.log(inputAddress.value);
+    store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, inputAddress.value);
 
     console.log(store);
 }
@@ -234,7 +233,7 @@ function addItemAndClear() {
                 <div class="field">
                     <label for="addr">Property Address</label>
                     <div class="input-row">
-                        <InputText id="addr" v-model="address" placeholder="123 SW 1st St" />
+                        <InputText id="addr" v-model="inputAddress" placeholder="123 SW 1st St" />
                         <!-- blinking label -->
 
                         <Button type="button" icon="pi pi-search" :loading="loading" @click="load" />
@@ -273,7 +272,7 @@ function addItemAndClear() {
                 <!-- municipality -->
                 <div class="field">
                     <label for="muni">Municipality</label>
-                    <InputText id="muni" v-model="formData.muni" placeholder="Miami Beach" />
+                    <InputText id="muni" v-model="formData.muni" placeholder="Miami" />
                 </div>
 
                 <!-- folio -->

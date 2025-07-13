@@ -60,7 +60,7 @@ const isValidTilePDF = ref(false);
 const isValidMechanicalPDF = ref(false);
 const isValidSummary = ref(true);
 const isValidPayment = ref(true);
-const isValidDownload = ref(true);
+// const isValidDownload = ref(true);
 // const isValidGeneralpage = ref(true);
 // Permitapp / miami beach logic
 const MB = ref(permitStore.$state.permitapp);
@@ -80,7 +80,7 @@ const Step5Summary = defineAsyncComponent(() => import('@/components/Summary/Sum
 const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/Paymentgateway.vue'));
 // const Step6Payment = defineAsyncComponent(() => import('@/components/Summary/NewStripe.vue'));
 
-const Step7Download = defineAsyncComponent(() => import('@/components/Summary/Payment.vue'));
+// const Step7Download = defineAsyncComponent(() => import('@/components/Summary/Payment.vue'));
 
 const steps = ref([
     { label: '', component: null }, // Shingles
@@ -88,8 +88,8 @@ const steps = ref([
     { label: '', component: null }, // Adhesive Tile
     { label: '', component: null }, // Mechanical Tile
     { label: '', component: null }, // Summary
-    { label: '', component: null }, // Payment
-    { label: '', component: null } // Start again
+    { label: '', component: null } // Payment
+    // { label: '', component: null } // Start again
 ]);
 
 // Predefine actual components to map them easily
@@ -99,12 +99,11 @@ const availableComponents = [
     Step3AdhesiveTile, // Adhesive Tile
     Step4MechanicalTile, // Step4TMechilePDF,
     Step5Summary,
-    Step6Payment,
-    Step7Download
+    Step6Payment
+    // Step7Download
 ];
 
-// const availableComponentsPDF = [Step3ADTilePDF, Step4TMechilePDF];
-const stepLabels = ['Shingles', 'Low Slope', 'Adhesive Tile', 'Mechanical Tile', 'Summary', 'PaymentPage', 'Download'];
+const stepLabels = ['Shingles', 'Low Slope', 'Adhesive Tile', 'Mechanical Tile', 'Summary', 'PaymentPage'];
 
 function newSessionId() {
     return crypto.randomUUID(); // widely supported; drop‑in for uuid libs
@@ -160,8 +159,8 @@ function checkState() {
     });
 
     // Map booleans to our steps array in one pass
-    // The order of these booleans must match the steps definition
-    const bools = [isValidShingle.value, isValidBur.value, isValidTile.value, isValidMechanical.value, isValidSummary.value, isValidPayment.value, isValidDownload.value];
+    // The order of these booleans must match the steps definition isValidDownload.value
+    const bools = [isValidShingle.value, isValidBur.value, isValidTile.value, isValidMechanical.value, isValidSummary.value, isValidPayment.value];
 
     bools.forEach((val, i) => {
         if (val) {
