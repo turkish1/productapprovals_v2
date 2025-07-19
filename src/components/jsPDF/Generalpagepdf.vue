@@ -78,10 +78,10 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        const drapdropImage = new Image();
+        // const drapdropImage = new Image();
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
-        drapdropImage.src = '/demo/images/DragAndDrop.jpeg';
+        // drapdropImage.src = '/demo/images/DragAndDrop.jpeg';
 
         const max_width = 179;
         const thirdYCoordinate = 725;
@@ -320,7 +320,7 @@ const generatePDF = () => {
 
         current_y = current_y + 10;
         // Save the PDF
-        doc.addImage(drapdropImage, 'JPEG', LeftStart + 40, current_y, 100, 100);
+        // doc.addImage(drapdropImage, 'JPEG', LeftStart + 40, current_y, 100, 100);
 
         const fName = 'GeneralPage.pdf';
         const pdfBlob = doc.output('blob');
