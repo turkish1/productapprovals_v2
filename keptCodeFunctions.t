@@ -385,3 +385,13 @@ lines.forEach(line => {
         </div>
     </div>
 </template> -->
+
+  // current_y = param_y - 10;
+        // const tAreaTextWidth = doc.getTextWidth(tArea);
+        // const AreaTextWidth = doc.getTextWidth(`${area.value}`);
+        // const areaStartXValue = currentX.value;
+        // doc.text(tArea, areaStartXValue, current_y);
+        // const areaValue = tAreaTextWidth + areaStartXValue;
+        // doc.text(`${area.value}`, areaValue, current_y);
+        // doc.line(areaValue, current_y + 2, areaValue + AreaTextWidth, current_y + 2);
+        // .$state.generalpdfinput[1]?.generalpdfData?.roofCheck[0]

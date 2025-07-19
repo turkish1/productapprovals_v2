@@ -1,11 +1,13 @@
 import { useprocStore } from '@/stores/processStore';
+
+import usePostToLambda from '@/composables/Postdata/usePostToLambda';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { reactive, ref } from 'vue';
 export default function usecreateProcess() {
     const responseMessage = ref('');
     let results = ref([]);
     const procStore = useprocStore();
-
+    const { post } = usePostToLambda();
     const error = ref('');
 
     let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/process';
@@ -14,7 +16,7 @@ export default function usecreateProcess() {
 
     let procData = reactive({});
     function procReceive(form) {
-        console.log(form);
+        // console.log(form);
         procData = form;
         console.log(procData);
         if (procData.processNumber === 'meNaN') {
@@ -22,15 +24,12 @@ export default function usecreateProcess() {
         } else {
             execute({ data: form });
             responseMessage.value = 'Form submitted successfully!';
-            procStore.addData(procData);
+
             // store the values
-
+            procStore.addData(procData);
             // then clear the page
-
-            console.log(procData, 'System added');
-
-            // return results;
-            // });
+            post(procData);
+            console.log('System added');
         }
     }
 

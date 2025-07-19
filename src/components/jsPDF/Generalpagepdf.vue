@@ -32,10 +32,6 @@ const dba = ref(getUser.value[0]?.dba || '');
 const uploadUrl = ref('');
 const generalType = ref(generalpageStore.$state.generalpdfinput);
 
-// Path to your self-signed `.pfx` file
-// const digitalIdFilePath = './HugoBlanco.pfx';
-// const pfxPassword = 'miamibeach20'; // The password you set when creating the .pfx file
-
 function testGeneralType() {
     if (generalType.value.length !== 1) {
         isGenaralPageValid.value = true;
@@ -43,7 +39,6 @@ function testGeneralType() {
 }
 tryOnMounted(() => {
     testGeneralType();
-    // generatePDF();
 });
 
 invoke(async () => {
@@ -59,8 +54,6 @@ const generatePDF = () => {
     } else {
         // Initialize jsPDF instance
 
-        // const doc = new jsPDF();
-
         const doc = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -73,7 +66,7 @@ const generatePDF = () => {
         // Set font size, alignment, and rotation for the watermark
         doc.setFontSize(24);
         doc.setTextColor('black');
-        doc.setFont('helvetica');
+        // doc.setFont('helvetica');
         // doc.setFont('Courier', 'bolditalic');
         // Light gray color for watermark
         // doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2
@@ -192,6 +185,7 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
+        console.log(doc.getFont());
         doc.setTextColor('black');
         doc.setFontSize(12);
         const factor = 2;
@@ -200,19 +194,9 @@ const generatePDF = () => {
         const isReroof = ref(false);
         const isNewRoof = ref(false);
 
-        // const area = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData);
         currentX.value = LeftStart + 40;
-        // current_y = param_y - 10;
-        // const tAreaTextWidth = doc.getTextWidth(tArea);
-        // const AreaTextWidth = doc.getTextWidth(`${area.value}`);
-        // const areaStartXValue = currentX.value;
-        // doc.text(tArea, areaStartXValue, current_y);
-        // const areaValue = tAreaTextWidth + areaStartXValue;
-        // doc.text(`${area.value}`, areaValue, current_y);
-        // doc.line(areaValue, current_y + 2, areaValue + AreaTextWidth, current_y + 2);
-        // .$state.generalpdfinput[1]?.generalpdfData?.roofCheck[0]
 
-        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.roofCheck[0] === 'reroof') {
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0] === 'reroof') {
             isReroof.value = true;
             console.log(isReroof.value);
         } else {
@@ -242,10 +226,10 @@ const generatePDF = () => {
 
         const tSlope = 'Low Slope: ';
         const tSteep = 'Steep Slope: ';
-        // permitStore.$state.permitapp[0]?.formdt?.muni || '';
+
         const total = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData || '');
-        const slope = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.slopeData || '');
-        const steep = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.steepData || '');
+        const slope = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.slopeData || '0');
+        const steep = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.steepData || '0');
         console.log(generalpageStore.$state.generalpdfinput[1].generalpdfData);
         currentX.value = LeftStart + 25;
         current_y = param_y + 10;

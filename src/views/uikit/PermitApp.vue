@@ -1,5 +1,8 @@
 <script setup>
 // ---- imports -------------------------------------------------------------
+// import usePostToMongo from '@/composables/Postdata/TileADpdf';
+// import usePostToLambda from '@/composables/Postdata/usePostToLambda';
+
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 import useLast from '@/composables/lastNumber.js';
 import { useprocStore } from '@/stores/processStore';
@@ -11,7 +14,8 @@ import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
-
+// const { pushData } = usePostToMongo();
+// const { post } = usePostToLambda();
 // ---- state ----------------------------------------------------------------
 const loading = ref(false);
 const responseMessage = ref('');
@@ -193,12 +197,51 @@ async function load() {
     }
 }
 
+// const uploadfiles = async () => {
+//     try {
+
+//    if(muniProcessNumber){
+//         console.log('Uploading file:', muniProcessNumber.value);
+
+//         // Build the object key using the file's name (or any naming logic you like)
+//         const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}`;
+
+//         // If the File is already a PDF, you can just pass it directly in the body
+//         // and set the Content-Type header appropriately.
+//         // If you need to ensure it's recognized as a Blob,
+//         // you can do: const pdfBlob = new Blob([fileItem], { type: 'application/pdf' });
+
+//         const response = await fetch(s3Url, {
+//             method: 'PUT',
+//             headers: {
+//                 'Content-Type': 'application/pdf'
+//             },
+//             // Body should be a Blob/File, NOT the filename string
+//             body: muniProcessNumber
+//         });
+
+//         if (!response.ok) {
+//             console.error(`Failed to created Folder : ${response.status}`);
+
+//         }
+
+//         console.log(`Successfully created Folder ${fileItem.name} to S3.`);
+//     }
+
+//     } catch (error) {
+//         console.error('Error uploading to S3:', error);
+//         alert('Failed to upload file.');
+//     }
+// };
+
 function onSubmit() {
     procReceive(formData);
 }
 
 function addItemAndClear() {
     console.log(inputAddress.value);
+    // post(formData);
+
     store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, inputAddress.value);
 
     console.log(store);

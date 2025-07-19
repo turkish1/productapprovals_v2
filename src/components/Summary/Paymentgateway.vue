@@ -2,7 +2,7 @@
     <div class="card-system">
         <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
 
-        <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
+        <div class="flex flex-col w-1/2 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 300px; margin-top: 200px">
             <div class="payment-widget">
                 <h2 style="color: black">Credit Card Payment</h2>
 
@@ -104,34 +104,34 @@ watchOnce(callPdfSign, () => {});
 invoke(async () => {
     await until(isSigned).toBe(true);
 });
-const downloadFile = async () => {
-    const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
-    console.log(arr);
-    if (!arr || arr.length === 0) {
-        return;
-    }
-    console.log(arr);
+// const downloadFile = async () => {
+//     const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
+//     console.log(arr);
+//     if (!arr || arr.length === 0) {
+//         return;
+//     }
+//     console.log(arr);
 
-    const dlData = pdfstore.downloadinput[0]?.downloadData?.download_url;
-    // arr[0]?.downloadData?.download_url;
-    if (!dlData) return;
+//     const dlData = pdfstore.downloadinput[0]?.downloadData?.download_url;
+//     // arr[0]?.downloadData?.download_url;
+//     if (!dlData) return;
 
-    isdataValid.value = true;
+//     isdataValid.value = true;
 
-    const fileUrl = dlData;
-    const fileName = 'processnumber.zip';
+//     const fileUrl = dlData;
+//     const fileName = 'processnumber.zip';
 
-    // Create an anchor & trigger download
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = fileName;
-    link.click();
-    link.remove();
+//     // Create an anchor & trigger download
+//     const link = document.createElement('a');
+//     link.href = fileUrl;
+//     link.download = fileName;
+//     link.click();
+//     link.remove();
 
-    // Show or hide button as needed
-    isUrldownloadValid.value = true;
-    // OR isUrldownloadValid.value = true;
-};
+//     // Show or hide button as needed
+//     isUrldownloadValid.value = true;
+//     // OR isUrldownloadValid.value = true;
+// };
 </script>
 
 <style>

@@ -7,6 +7,7 @@ import { useExpiry } from '@/composables/ExpirationCheck/useExpiry';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 
+// import usePostToMongo from '@/composables/Postdata/TileADpdf';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
 import useExposured from '@/composables/Tiletables/exposure_d';
@@ -41,7 +42,7 @@ const store = usevalueStore();
 
 const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
-
+// const { postData, response, error, loading } = usePostToMongo();
 const { multiAdinput } = storeToRefs(multipleStore);
 const { addSystemvalues, tileInputvalues } = usevalueStore();
 const resetStore = useSavedStore();
@@ -335,6 +336,9 @@ const updateTick = () => {
             const { isExpired } = useExpiry(licenseEnd);
             console.log(isExpired);
         }
+        console.log(tilenoas);
+        // postData(tilenoas);
+
         addSystemvalues(tilenoas);
         checkZones();
     });
@@ -372,6 +376,9 @@ const updateDoubletick = () => {
             console.log(isExpired);
             isMultiTileValid = false;
         }
+        console.log(tilenoas);
+
+        postData(tilenoas);
         addSystemvalues(tilenoas);
         checkZones();
     });
@@ -393,11 +400,7 @@ function clearData() {
     tilenoas.select_tile = [];
     tilenoas.expiration_date = '';
     resetStore.$reset();
-    // reset()
-    // saveTileData.reset()
-    // {
-    //         this.savedTileinput = [];
-    //     }
+
     zoneone.lambda1 = '';
     zonetwo.lambda2 = '';
     zonethree.lambda3 = '';
@@ -934,6 +937,7 @@ function checkMaterial() {
         console.log(zonethree.mg3);
     } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
+        console.log(slopeRange);
         zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
         zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
         zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;

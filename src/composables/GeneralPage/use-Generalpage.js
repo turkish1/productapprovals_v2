@@ -36,7 +36,8 @@ export default function useGeneral() {
     const checkedmetal = ref(false);
     const checkedslp = ref(false);
 
-    function addRoof() {
+    function addRoof(rfCheck) {
+        console.log(rfCheck);
         roofList.value.forEach((item, index) => {
             console.log(item.item, index);
             if (item.item === 'Asphalt Shingle') {
@@ -88,7 +89,7 @@ export default function useGeneral() {
         dataGeneral.steepData = steep.value;
         dataGeneral.totalData = Number(total.value);
         dataGeneral.roofCheck = checked;
-        // console.log(dataGeneral.roofCheck);
+        console.log(dataGeneral.roofCheck);
         generalpageStore.addgeneralpdfData(dataGeneral);
 
         console.log(generalpageStore, generalType);

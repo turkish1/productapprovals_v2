@@ -76,13 +76,14 @@ function addItemAndClear() {
         store.addSystemMetal(item, dim5);
     }
     dataGeneral.roofCheck = checked;
+
     generalpageStore.addgeneralpdfData(dataGeneral);
     console.log(generalpageStore);
-    // clear();
+    clear();
 }
 const addGeneralpageData = () => {
-    addRoof();
-    // clear();
+    addRoof(checked);
+    clear();
 };
 // Clear the input fields.
 function clear() {
@@ -106,7 +107,6 @@ function clear() {
             <Button class="icon-btn" plain text @click="clearSelected">
                 <i class="pi pi-refresh"></i>
             </Button>
-
             <h2 class="title">Roof System</h2>
 
             <form class="grid-form" @submit.prevent>
@@ -119,7 +119,7 @@ function clear() {
                     <label for="system">Roof System</label>
                     <Select id="system" v-model="selectedItem" :options="isMiamiBeachValid ? types : type" optionLabel="name" placeholder="Select roof system" class="w-full" @change="addItemAndClear" />
                 </div>
-                <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-6">
+                <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-8">
                     <div class="flex items-center mt-4 space-y-6">
                         <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
                         <label for="newroof" class="ml-2" style="color: #122620">New Roof </label>
@@ -133,16 +133,16 @@ function clear() {
 
             <footer class="footer">
                 <Button label="Submit" severity="contrast" raised as="router-link" to="/dynamicstepper" @click="addGeneralpageData" />
-                <!-- to="/generalpage" -->
             </footer>
             <br />
             <roof-system-list></roof-system-list>
+
+            <!-- ── Blueprint PDF drop-zone ────────────────────────────────── -->
         </aside>
 
         <!-- ── Blueprint PDF drop-zone ────────────────────────────────── -->
-
         <section class="card dropzone" @dragover.prevent="dragOver = true" @dragleave="dragOver = false" @drop.prevent="handleDrop">
-            <p class="dz-title">For PDF documents</p>
+            <p class="dz-title">For Images documents</p>
             <p class="dz-sub">Drag &amp; drop files here<br />or click to upload</p>
             <input type="file" accept="application/pdf" multiple class="file-input" @change="handleFiles" />
         </section>
@@ -195,12 +195,11 @@ body {
 /* ── 3. Re-usable card base + animated border ────────────────────── */
 .card {
     position: relative;
-    padding: 2.5rem 2rem;
+    padding: 1.5rem 2rem;
     border-radius: var(--c-radius);
     box-shadow: var(--c-shadow);
     overflow: hidden;
     isolation: isolate;
-    background: url('/blurredhome.jpeg') center/cover;
 }
 .card::before {
     content: '';
@@ -226,6 +225,7 @@ body {
 }
 
 /* ── 4. Glass variant for the form ───────────────────────────────── */
+
 .glass {
     backdrop-filter: blur(var(--c-card-blur));
     background-color: rgba(255, 255, 255, 0.8);
