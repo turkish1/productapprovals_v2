@@ -45,7 +45,7 @@ export default function useTileInputSingle() {
         // await fetchData();
         fetchData();
     }
-    const url = 'https://bndobvdmx2hlyfu7pbizohgova0aefyp.lambda-url.us-east-1.on.aws';
+    const url = 'https://bndobvdmx2hlyfu7pbizohgova0aefyp.lambda-url.us-east-1.on.aws/';
 
     const { execute, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
@@ -58,7 +58,7 @@ export default function useTileInputSingle() {
             });
             // .get()
             // .json();
-            console.log(response);
+            console.log(data.value);
             // && data.value[0].Table2.content) || data.value[0].Table3.content
             if (data.value.length > 0 && data.value[0].Table2.content === 'multiple') {
                 console.log('Entered due to Table2 and Table3 content multiple');
@@ -66,7 +66,7 @@ export default function useTileInputSingle() {
                 const multiTile = await data.value[0];
                 console.log(multiTile);
                 tileDatas.noa = await multiTile.NOA;
-                tileDatas.content = await multiTile.content;
+                tileDatas.content = await multiTile.Table2.content;
                 tileDatas.applicant = await multiTile.applicant;
                 tileDatas.material = await multiTile.AdhesiveMaterial;
                 tileDatas.selection = await multiTile.AdhesiveMaterials;
