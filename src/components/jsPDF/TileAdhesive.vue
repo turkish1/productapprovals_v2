@@ -8,6 +8,7 @@
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
 // import { usedripedgeStore } from '@/stores/dripEdgeStore';
+import '@/assets/fonts/DejaVuSans-normal';
 import { usedripADStore } from '@/stores/dripEdgeADTileStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
@@ -24,11 +25,10 @@ const saStore = usetilesysfStore();
 const etileStore = usetilesysEStore();
 const { getUser } = useGlobalState();
 const { tileInputvalues } = usevalueStore();
-// const tileStores = usePaddyStore();
-// const { inputdata, addtileData, tileData } = usePaddyStore();
+
 const { savedTileinput } = useSavedStore();
 const permitStore = usePermitappStore();
-// const roofStore = useRoofListStore();
+
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const tileStore = useGlobalStates();
@@ -56,7 +56,7 @@ invoke(async () => {
 
 const generatePDF = () => {
     // Initialize   jsPDF instance
-
+    // tileInputvalues[0]?.tileValues[0]
     console.log(tileInputvalues, savedTileinput[0]?.savedValues?.paddySelection);
     const paddyCheck = ref(savedTileinput[0]?.savedValues?.paddySelection || '');
     const singlePaddy = ref(false);
@@ -65,13 +65,12 @@ const generatePDF = () => {
     if (paddyCheck.value === 'single') {
         singlePaddy.value = true;
         console.log(singlePaddy.value);
-        doublePaddy.value = false;
     } else {
         doublePaddy.value = true;
         console.log(doublePaddy.value);
     }
 
-    if (tileInputvalues[0]?.length === 0) {
+    if (tileInputvalues[0].length === 0) {
         console.log('lenghth is zero');
     } else {
         const doc = new jsPDF({
@@ -181,7 +180,7 @@ const generatePDF = () => {
             { category: 'DBA', value: `${dba.value}` },
             { category: 'Municipality', value: `${municipality.value}` },
             { category: 'Job Address', value: `${address.value}` },
-            { category: 'mEProcess Number', value: `${processNumber.value}` }
+            { category: 'meProcess Number', value: `${processNumber.value}` }
         ];
         // Set starting position
         let startXCategory = 10; // X position for category column
@@ -291,8 +290,11 @@ const generatePDF = () => {
         doc.line(dripSizeStartValue, current_y + factor, dripSizeStartValue + dripEdgeTextWidth, current_y + factor);
         current_y = current_y + 10;
 
+        console.log(savedTileinput[0]?.savedValues?.zoneone.mf1);
+
         console.log(savedTileinput);
-        const mf1 = ref(savedTileinput[0]?.savedValues?.zoneone.mf1 || '');
+        const mf1 = ref(savedTileinput[0]?.savedValues?.zoneone.mf1);
+        console.log(mf1.value);
         const lambda1 = ref(savedTileinput[0]?.savedValues?.zoneone.lambda1 || '');
         const mg1 = ref(savedTileinput[0]?.savedValues?.zoneone.mg1 || '');
         const mr1 = ref(savedTileinput[0]?.savedValues?.zoneone.mr1 || '');
@@ -626,15 +628,16 @@ const generatePDF = () => {
         // Data for each row
 
         doc.setFontSize(12);
-
+        doc.setFont('DejaVuSans');
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
 
+        console.log(doc.getFont());
         console.log(currentX.value, current_y);
         const tableData = [
             ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
             ['Zone 2:', `${zonetwo.value}`, 'x', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
-            ['Zone 3:', `${zonethree.value}`, 'x', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr3:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+            ['Zone 3:', `${zonethree.value}`, 'x', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
 

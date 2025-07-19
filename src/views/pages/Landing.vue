@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex flex-col items-center overflow-hidden">
+    <div class="card flex flex-col items-center">
         <div class="flex flex-col items-center gap-2">
             <span class="text-xl font-medium">Scroll Down</span>
             <span class="animate-bounce h-8 w-8 bg-secondary text-secondary-contrast rounded-full inline-flex items-center justify-center">
@@ -65,7 +65,7 @@
             </div>
 
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="zoom-in-down" data-aos-duration="1000">
-                <span class="bg-white/20 text-xl font-medium rounded-xl px-4 py-2">14K</span>
+                <span class="text-xl font-medium rounded-xl px-4 py-2">14K</span>
                 <span class="text-2xl font-bold">Time Saved in hours</span>
                 <span class="text-center">The time cities now have to allocated to other projects.</span>
             </div>
@@ -175,11 +175,28 @@ onMounted(() => {
     localStorage.clear();
 });
 
-// function navLogin() {
-//     router.push('/login');
-// }
-
 function navRegister() {
     router.push('/terms');
 }
 </script>
+<style scoped>
+:root {
+    --c-bg: #f4f4f4;
+    /* --c-bg-card: rgba(255, 255, 255, 0.85); */
+    --c-bg-card-dark: rgba(30, 41, 59, 0.85);
+    --c-primary: #00857a;
+    --c-primary-dark: #10bda7;
+    --c-text: #1b1b1b;
+    --c-text-light: #ffffff;
+    --radius: 1.2rem;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.card {
+    background: var(--c-bg-card);
+    /* backdrop-filter: blur(12px); */
+    /* border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 3rem 2.5rem; */
+}
+</style>

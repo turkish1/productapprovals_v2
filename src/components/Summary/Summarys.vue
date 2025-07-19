@@ -55,7 +55,6 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
-
 import { onMounted, reactive, ref } from 'vue';
 import GeneralPage from '../jsPDF/Generalpagepdf.vue';
 import LowSlope from '../jsPDF/LowSlopepdf.vue';

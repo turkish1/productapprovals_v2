@@ -6,9 +6,9 @@
 </template>
 
 <script setup>
-import { useGlobalState } from '@/stores/accountsStore';
-// import { usedripedgeStore } from '@/stores/dripEdgeStore';
+import '@/assets/fonts/DejaVuSans-normal';
 import useMech from '@/composables/InputLogic/use-tileMechanical';
+import { useGlobalState } from '@/stores/accountsStore';
 import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
@@ -724,6 +724,8 @@ const generatePDF = () => {
             currentX.value = descriptionValue + valueTextWidthDescription;
         }
         current_y = current_y + 10;
+
+        doc.setFont('DejaVuSans');
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
         const tableData = [

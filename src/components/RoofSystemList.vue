@@ -8,23 +8,13 @@ const { roofList } = storeToRefs(store);
 
 const { toggleCompleted } = storeToRefs(store);
 
-const lines = [
-    'Initializing system...',
-    'Loading modules...',
-    'Connecting to server...',
-    'Server connection established.',
-    'Fetching data...',
-    'Data received successfully.',
-    'Processing information...',
-    'System ready.',
-    'Awaiting Roof System Selection...'
-];
+const lines = ['Initializing system...', 'Loading modules...', 'Connecting to server...', 'Server connection established.', 'Awaiting Roof System Selection...'];
 
 // Controls the visible lines
 const visibleLines = ref([]);
 
 // Number of lines to display at once in the terminal
-const maxVisibleLines = 5;
+const maxVisibleLines = 10;
 
 function scrollTerminal() {
     let index = 0;
@@ -70,8 +60,8 @@ onMounted(() => {
 .terminal {
     width: 100%;
     max-width: 500px;
-    height: 200px;
-    background-color: transparent;
+    height: 150px;
+    /* background-color: transparent; */
     color: black;
     font-family: monospace;
     overflow: hidden;
