@@ -6,11 +6,11 @@
 </template>
 
 <script setup>
+import '@/assets/fonts/DejaVuSans-normal';
 import { useGlobalState } from '@/stores/accountsStore';
 import { useBurpdfStore } from '@/stores/burpdfStore';
 import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { usePermitappStore } from '@/stores/permitapp';
-
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
@@ -112,6 +112,7 @@ const generatePDF = () => {
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
         // const brightImgData = brightenImage(logoImage);
+        doc.setFont('DejaVuSans');
 
         const max_width = 179;
         const thirdYCoordinate = 725;
@@ -217,7 +218,7 @@ const generatePDF = () => {
         const factor = 2;
         const initialYValue = current_y;
         const param_y = initialYValue;
-
+        // doc.setFont('DejaVuSans');
         console.log(roofStore.$state.roofList);
         const lowSlopArea = ref('');
         for (let i = 0; i < roofStore.$state.roofList.length; i++) {
@@ -263,7 +264,7 @@ const generatePDF = () => {
 
         const tHeightTextWidth = doc.getTextWidth(tHeight);
         const HeightTextWidth = doc.getTextWidth(`${height.value}`);
-        const heightStartXValue = currentX.value + 18;
+        const heightStartXValue = currentX.value + 8;
 
         doc.text(tHeight, heightStartXValue, current_y);
         const heightValue = tHeightTextWidth + heightStartXValue;
@@ -275,7 +276,7 @@ const generatePDF = () => {
 
         const tSlopeTextWidth = doc.getTextWidth(tSlope);
         const SlopeTextWidth = doc.getTextWidth(`${slope.value}`);
-        const slopeStartXValue = currentX.value + 18;
+        const slopeStartXValue = currentX.value + 8;
 
         doc.text(tSlope, slopeStartXValue, current_y);
         const slopeValue = tSlopeTextWidth + slopeStartXValue;
@@ -287,7 +288,7 @@ const generatePDF = () => {
 
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
-        const permStartXValue = currentX.value + 18;
+        const permStartXValue = currentX.value + 8;
 
         doc.text(tPerimeter, permStartXValue, current_y);
         const perimeterValue = tPermTextWidth + permStartXValue;

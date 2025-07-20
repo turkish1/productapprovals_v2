@@ -219,7 +219,7 @@ const handleDownload = async () => {
 </script>
 
 <template>
-    <div class="md:w-2/3 grid grid-cols-1 gap-2 border-2 border-gray-700 focus:border-orange-600 shadow-md shadow-cyan-800" style="margin-left: 450px; border-radius: 5px">
+    <div class="md:w-1/2 grid grid-cols-1 gap-2 border-2 border-gray-700 focus:border-orange-600 shadow-md shadow-cyan-800" style="margin-left: 450px; border-radius: 5px">
         <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
         <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
         <label for="system" style="color: red">Type of Low Slope BUR System: *</label>

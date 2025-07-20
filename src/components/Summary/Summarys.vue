@@ -107,10 +107,12 @@
 
 <script setup>
 import { useGlobalState } from '@/stores/accountsStore';
+import { useBurpdfStore } from '@/stores/burpdfStore';
 import { countStore } from '@/stores/countStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
+import { useSavedStore } from '@/stores/savedTiledataStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
 import { onMounted, reactive, ref } from 'vue';
@@ -119,14 +121,13 @@ import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
 import TileAdhesive from '../jsPDF/TileAdhesive.vue';
 import TileMechanical from '../jsPDF/TileMechanical.vue';
-
 const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 
 const pdStore = usevalueStore();
 const isloading = ref(false);
 const isSigned = ref(false);
-
+const tileADstore = useSavedStore();
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
 let isRoofTileMechanicalValid = ref(false);
@@ -134,7 +135,7 @@ let isRoofShingleValid = ref(false);
 let isRoofLowslopeValid = ref(false);
 const dba = ref('');
 const name = ref('');
-
+const burpdfStore = useBurpdfStore();
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
@@ -146,11 +147,19 @@ const generalType = ref(generalStore.$state.generalpdfinput);
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 const license = ref(permitStore.$state.permitapp[0]?.formdt?.license || '');
 const tileNoaInfo = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]);
+const isTileSystem = ref(false);
+const isPaddySingle = ref(false);
+const singlePaddyData = ref(tileNoaInfo.value?.singlepaddyData || '');
+const doublePaddyData = ref(tileNoaInfo.value?.doublepaddyData || '');
 //  Second section
-const Noa = ref(tileNoaInfo.value.singlepaddyData?.noa || tileNoaInfo.value.doublepaddyData?.noa);
-const Manufacturer = ref(tileNoaInfo.value.singlepaddyData?.applicant || tileNoaInfo.value.doublepaddyData?.applicant);
-const Description = ref(tileNoaInfo.value.singlepaddyData?.description || tileNoaInfo.value.doublepaddyData?.description);
-const Expiration_Date = ref(tileNoaInfo.value.singlepaddyData?.expiration_date || tileNoaInfo.value.doublepaddyData?.expiration_date);
+// if (isRoofTileADValid.value === true) {
+//     tileADstore.$state.savedTileinput[0].savedValues.paddySelection == 'single'
+//     isPaddySingle.value = true;
+//     //  isRoofTileADValid.value
+// } else {
+//     isPaddySingle.value = false;
+// }
+
 // State for toggles
 const isdataValid = ref(false);
 const count = ref(secCountStore.$state.countinput[0]?.countData || '');
@@ -184,6 +193,9 @@ const callState = tryOnMounted(() => {
             } else if (roofType.value[i].item === 'Adhesive Set Tile') {
                 console.log(roofType.value[i].item);
                 isRoofTileADValid.value = true;
+                if (tileADstore.$state.savedTileinput[0].savedValues.paddySelection == 'single') {
+                    isPaddySingle.value = true;
+                }
             } else if (roofType.value[i].item === 'Mechanical Fastened Tile') {
                 console.log(roofType.value[i].item);
                 isRoofTileMechanicalValid.value = true;
@@ -194,17 +206,16 @@ const callState = tryOnMounted(() => {
         }
     }
 });
+const Noa = isPaddySingle.value === true ? singlePaddyData.value.noa : doublePaddyData.value.noa;
 
+const Manufacturer = isPaddySingle.value === true ? singlePaddyData.value.applicant : doublePaddyData.value.applicant;
+const Description = isPaddySingle.value === true ? singlePaddyData.value.description : doublePaddyData.value.description;
+const Expiration_Date = isPaddySingle.value === true ? singlePaddyData.value.expiration_date : doublePaddyData.value.expiration_date;
 onMounted(() => {
     displayUserInfo();
-    console.log(generalStore, generalType, pdStore.$state.tileInputvalues[0]?.tileValues[0]);
+    console.log(generalStore, burpdfStore);
 });
 
-const events = ref([
-    { status: 'RoofSystems', date: '15/10/2020 10:30', icon: 'pi pi-cog', color: '#9C27B0', image: '/src/assets/img/roofing_tile.jpg' },
-    { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
-    { status: displayInfo.item, date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' }
-]);
 //  callPdfSign,
 watchOnce(displayUserInfo, callState, () => {});
 invoke(async () => {

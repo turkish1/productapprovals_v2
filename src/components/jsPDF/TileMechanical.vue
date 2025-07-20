@@ -235,6 +235,7 @@ const generatePDF = () => {
         // Set font size
         doc.setFontSize(12);
 
+        doc.setFont('DejaVuSans');
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
             const currentY = startY + index * 10; // Increment Y position for each row
@@ -725,7 +726,7 @@ const generatePDF = () => {
         }
         current_y = current_y + 10;
 
-        doc.setFont('DejaVuSans');
+        // doc.setFont('DejaVuSans');
         const lambdaSymbol = new Image();
         lambdaSymbol.src = '/demo/images/lambda.png';
         const tableData = [
