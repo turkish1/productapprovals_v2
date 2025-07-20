@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click="generatePDF">Download PDF</button>
+        <!-- <button @click="generatePDF">Download PDF</button> -->
     </div>
 </template>
 

@@ -73,3 +73,16 @@ export default function usePostToMongo() {
     // , pushData
     return { response, error, Data, data, post, pushData, loading, postData, jobData };
 }
+//
+// const response = await fetch('https://neiyrwtsedlm7brkgmzer3w4xe0shdfl.lambda-url.us-east-1.on.aws/', {
+//     method: 'POST',
+//     headers: {
+//         'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify(payload)
+// });
+
+// if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+
+// const json = await response.json();
+// data.value = json;
