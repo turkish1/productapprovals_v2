@@ -378,7 +378,7 @@ const updateDoubletick = () => {
         }
         console.log(tilenoas);
 
-        postData(tilenoas);
+        // postData(tilenoas);
         addSystemvalues(tilenoas);
         checkZones();
     });

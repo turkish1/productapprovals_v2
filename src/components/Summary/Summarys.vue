@@ -145,12 +145,12 @@ const generalStore = useGeneralpdfStore();
 const generalType = ref(generalStore.$state.generalpdfinput);
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 const license = ref(permitStore.$state.permitapp[0]?.formdt?.license || '');
-
+const tileNoaInfo = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]);
 //  Second section
-const Noa = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]?.singlepaddyData?.noa || '');
-const Manufacturer = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]?.singlepaddyData?.applicant || '');
-const Description = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]?.singlepaddyData?.description || '');
-const Expiration_Date = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]?.singlepaddyData?.expiration_date || '');
+const Noa = ref(tileNoaInfo.value.singlepaddyData?.noa || tileNoaInfo.value.doublepaddyData?.noa);
+const Manufacturer = ref(tileNoaInfo.value.singlepaddyData?.applicant || tileNoaInfo.value.doublepaddyData?.applicant);
+const Description = ref(tileNoaInfo.value.singlepaddyData?.description || tileNoaInfo.value.doublepaddyData?.description);
+const Expiration_Date = ref(tileNoaInfo.value.singlepaddyData?.expiration_date || tileNoaInfo.value.doublepaddyData?.expiration_date);
 // State for toggles
 const isdataValid = ref(false);
 const count = ref(secCountStore.$state.countinput[0]?.countData || '');
@@ -197,7 +197,7 @@ const callState = tryOnMounted(() => {
 
 onMounted(() => {
     displayUserInfo();
-    console.log(generalStore, generalType, pdStore.$state.tileInputvalues[0]?.tileValues[0]?.singlepaddyData?.noa);
+    console.log(generalStore, generalType, pdStore.$state.tileInputvalues[0]?.tileValues[0]);
 });
 
 const events = ref([
