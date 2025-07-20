@@ -3,14 +3,14 @@ import { useAxios } from '@vueuse/integrations/useAxios';
 import axios from 'axios';
 import { ref } from 'vue';
 
+const lambdaUrl = 'https://neiyrwtsedlm7brkgmzer3w4xe0shdfl.lambda-url.us-east-1.on.aws/';
+
 export default function usePostToLambda() {
     // const data = ref(null);
     const errors = ref(null);
     const loading = ref(false);
 
     var payload = ref(null);
-
-    const lambdaUrl = 'https://neiyrwtsedlm7brkgmzer3w4xe0shdfl.lambda-url.us-east-1.on.aws/';
 
     // const { execute, data } = useAxios(url, { method: 'POST' }, { immediate: false });
 
@@ -26,7 +26,7 @@ export default function usePostToLambda() {
         // ③ axios instance
         axios,
         // ④ don't fire immediately
-        { immediate: false }
+        { immediate: true }
     );
 
     /**
@@ -35,11 +35,27 @@ export default function usePostToLambda() {
      */
 
     async function post(value) {
-        payload.value = value;
-
-        console.log('Payload:', payload.value);
-        await execute({ data: payload.value });
+        try {
+            payload.value = value;
+            // testOptionsPreflight();
+            console.log('Payload:', payload.value);
+            await execute({ data: payload.value });
+        } catch (e) {
+            // prevents uncaught promise — you can also forward this to your UI
+            console.error('Lambda post failed:', e);
+        }
     }
+
+    // const testOptionsPreflight = async () => {
+    //     const res = await fetch('https://neiyrwtsedlm7brkgmzer3w4xe0shdfl.lambda-url.us-east-1.on.aws/', {
+    //         method: 'OPTIONS',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         }
+    //     });
+
+    //     console.log(await res.text());
+    // };
     // const postAction = async () => {
     //     console.log(payload);
     //     loading.value = true;
