@@ -73,21 +73,21 @@
         <div class="h-[20rem]"></div>
         <div class="flex flex-wrap justify-center gap-8">
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="flip-right" data-aos-duration="1000">
-                <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
+                <div class="rounded-full border-2 border-white w-48 h-12 flex items-center justify-center">
                     <i class="pi pi-question-circle !text-2xl"></i>
                 </div>
                 <span class="text-2xl font-bold">Support </span>
                 <span class="text-center">Click here for support </span>
             </div>
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="flip-up" data-aos-duration="1000">
-                <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
+                <div class="rounded-full border-2 border-white w-48 h-12 flex items-center justify-center">
                     <i class="pi pi-database !text-2xl"></i>
                 </div>
                 <span class="text-2xl font-bold">Click to Register </span>
                 <span class="text-center"> <Button id="register" icon="pi pi-building" severity="contrast" variant="text" rounded aria-label="Register" :size="size" :loading="loading" @click="navRegister" /> </span>
             </div>
             <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="flip-left" data-aos-duration="1000">
-                <div class="rounded-full border-2 border-white w-12 h-12 flex items-center justify-center">
+                <div class="rounded-full border-2 border-white w-48 h-12 flex items-center justify-center">
                     <i class="pi pi-sign-in !text-2xl"></i>
                 </div>
                 <span class="text-center">Click to Login</span>
@@ -181,7 +181,7 @@ function navRegister() {
 </script>
 <style scoped>
 :root {
-    --c-bg: #f4f4f4;
+    /* --c-bg: #f4f4f4; */
     /* --c-bg-card: rgba(255, 255, 255, 0.85); */
     --c-bg-card-dark: rgba(30, 41, 59, 0.85);
     --c-primary: #00857a;
@@ -193,10 +193,10 @@ function navRegister() {
 }
 
 .card {
-    background: var(--c-bg-card);
+    background: var(--c-primary-dark);
     /* backdrop-filter: blur(12px); */
-    /* border-radius: var(--radius);
+    border-radius: var(--radius);
     box-shadow: var(--shadow);
-    padding: 3rem 2.5rem; */
+    padding: 3rem 2.5rem;
 }
 </style>

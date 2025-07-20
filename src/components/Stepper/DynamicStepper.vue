@@ -4,7 +4,8 @@
             <div class="stepper">
                 <!-- Iterate over filtered steps to build the stepper UI -->
                 <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }">
-                    <div class="step">
+                    <div :class="{ highlight: index === currentStepIndex }">
+                        <!--  class="step" -->
                         <span>{{ step.label }} </span>
                     </div>
                     <!-- Separator line (not after the last step) -->
@@ -247,9 +248,7 @@ console.log(isFirstStep.value, isLastStep.value, filteredSteps.value.length);
 /* } */
 button {
     appearance: auto;
-
     font-size: 30px;
-
     text-rendering: auto;
     color: buttontext;
     letter-spacing: normal;
@@ -284,7 +283,19 @@ button {
     display: flex;
     margin-top: 75px;
 }
-
+.highlight {
+    background-color: #eae7e2;
+    color: #987284;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px 4px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 100%;
+    width: 90px;
+    height: 50px;
+}
 .step {
     cursor: pointer;
     padding: 2px 4px;
@@ -292,7 +303,7 @@ button {
     font-weight: bold;
     border-radius: 100%;
     width: 90px;
-    height: 40px;
+    height: 50px;
     border: 2px solid #eae7e2;
     background-color: #eae7e2;
 }
@@ -301,11 +312,16 @@ button {
     background-color: #2a6bb0;
     color: #21c21c;
 }
-
+.step-wrapper.active .step span {
+    background-color: #c1c4c3;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
 .line {
     width: 400px;
     height: 4.5px;
-    background-color: #f5ece6;
+    background-color: #6c6a68;
     margin-top: 38px;
     margin-left: 5px;
 }
