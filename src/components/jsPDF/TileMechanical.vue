@@ -97,6 +97,7 @@ const generatePDF = () => {
         currentX.value = LeftStart;
         currentY.value = current_y;
         // Initialize jsPDF instance
+        doc.setFont('DejaVuSans');
         console.log(permitStore.$state.permitapp);
         console.log(mechStore.tilemech.value[0]);
         const height = ref(mechStore.tilemech.value[0]?.height || 'N/A');
@@ -235,7 +236,6 @@ const generatePDF = () => {
         // Set font size
         doc.setFontSize(12);
 
-        doc.setFont('DejaVuSans');
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
             const currentY = startY + index * 10; // Increment Y position for each row
@@ -256,34 +256,38 @@ const generatePDF = () => {
         });
 
         doc.setFontSize(12);
-
         console.log(current_y);
+        const tArea = 'Roof Area: ';
+        const tDeck = 'Deck Type: ';
+        const tHeight = 'Mean Roof Height: ';
+        const tSlope = 'Roof Slope: ';
         const tPerimeter = 'Roof Perimeter: ';
-        const areaLabelWidth = doc.getTextWidth('Roof Area: ');
+
+        const areaLabelWidth = doc.getTextWidth(tArea);
         const areaValueWidth = doc.getTextWidth(`${area.value}`);
-        doc.text('Roof Area:', LeftStart, initialYValue);
+        doc.text(tArea, LeftStart, initialYValue);
         const systemAreaValueWidth = areaLabelWidth + 10;
         doc.text(`${area.value}`, systemAreaValueWidth, initialYValue);
         doc.line(systemAreaValueWidth, initialYValue + factor, systemAreaValueWidth + areaValueWidth, initialYValue + factor);
         currentX.value = areaLabelWidth + areaValueWidth;
         console.log(currentX.value);
 
-        const valueTextWidth1 = doc.getTextWidth('Mean Roof Height:');
+        const valueTextWidth1 = doc.getTextWidth(tHeight);
         const heightValueText = doc.getTextWidth(`${height.value}`);
         const heightStartXValue = currentX.value + 15;
-        doc.text('Mean Roof Height:', heightStartXValue, initialYValue);
-        const roofHeightWidthValue = valueTextWidth1 + 45;
+        doc.text(tHeight, heightStartXValue, initialYValue);
+        const roofHeightWidthValue = valueTextWidth1 + 50;
         doc.text(`${height.value}`, roofHeightWidthValue, initialYValue);
         doc.line(roofHeightWidthValue, initialYValue + factor, roofHeightWidthValue + heightValueText, initialYValue + factor); // Get text width
-        currentX.value = valueTextWidth1 + heightValueText;
+        currentX.value = valueTextWidth1 + roofHeightWidthValue;
         console.log(currentX.value);
 
-        const slopeTextWidth1 = doc.getTextWidth('Roof Slope: ');
+        const slopeTextWidth1 = doc.getTextWidth(tSlope);
         const valueTextWidth2 = doc.getTextWidth(`${slope.value}`);
         const slopeStartX = currentX.value + 50;
-        doc.text('Roof Slope:', slopeStartX, initialYValue);
+        doc.text(tSlope, slopeStartX, initialYValue);
         // Get the currentX value and add the text width
-        const slopeStartXValue = slopeStartX + 25;
+        const slopeStartXValue = slopeStartX + slopeTextWidth1;
         doc.text(`${slope.value}`, slopeStartXValue, initialYValue);
 
         doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
@@ -301,10 +305,10 @@ const generatePDF = () => {
         doc.line(perimeterValue, initialYValue + factor, perimeterValue + PermTextWidth, initialYValue + factor);
 
         current_y = initialYValue + 30;
-        const valueTextWidthDeck = doc.getTextWidth('Deck Type');
+        const valueTextWidthDeck = doc.getTextWidth(tDeck);
         const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`);
-        currentX.value = currentX.value + valueTextWidthDeck - 30;
-        doc.text('Deck Type:', currentX.value, current_y);
+        currentX.value = currentX.value + valueTextWidthDeck - 55;
+        doc.text(tDeck, currentX.value, current_y);
         const decktypeStartXValue = currentX.value + 20;
 
         doc.text(`${deckType.value}`, decktypeStartXValue, current_y);
@@ -340,14 +344,21 @@ const generatePDF = () => {
         const description = multiContent !== true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
         const tileFastener = multiContent === true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
         console.log(mechStore.tilemech.value[0]?.description, mechStore.tilemech.value[0]?.savedfastener);
+
+        const [prescriptiveSplit] = (() => {
+            const parts = prescriptive.value.split(/:(.+)/); // split only on first colon
+            console.log(parts);
+            return [parts[0].trim(), parts[1]?.trim() ?? ''];
+        })();
+
         const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
-        const prescriptiveTextWidth = doc.getTextWidth(`${prescriptive.value}`);
+        const prescriptiveTextWidth = doc.getTextWidth(prescriptiveSplit);
         const prescriptiveStartXValue = LeftStart;
         doc.text(Prescriptive, prescriptiveStartXValue, current_y - 15);
         const prescriptiveStartValue = valueTextWidth_0 + prescriptiveStartXValue;
         const perscriptiveValue = LeftStart;
         current_y = current_y - 9;
-        doc.text(`${prescriptive.value}`, perscriptiveValue, current_y);
+        doc.text(prescriptiveSplit, perscriptiveValue, current_y);
         doc.line(perscriptiveValue, current_y + factor, perscriptiveValue + prescriptiveTextWidth, current_y + factor);
         current_y = current_y + 10;
 

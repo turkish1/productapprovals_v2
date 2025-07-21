@@ -8,24 +8,26 @@
 import { useGlobalState } from '@/stores/accountsStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { useRoofListStore } from '@/stores/roofList';
+import { useroofCheckStore } from '@/stores/roofCheckStore';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { jsPDF } from 'jspdf';
-
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 const { getUser } = useGlobalState();
 
 let isGenaralPageValid = ref(false);
 const permitStore = usePermitappStore();
-const roofStore = useRoofListStore();
+
 const generalpageStore = useGeneralpdfStore();
+
+const roofCheck = useroofCheckStore();
+const { roofinput } = storeToRefs(roofCheck);
+
 const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
 const masterPermit = ref(permitStore.$state.permitapp[0]?.formdt?.permit || 'N|A');
 const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
-// const area = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData);
-// const objName = processNumber.value.length !== 0 ? processNumber.value : 'files';
 
 const dba = ref(getUser.value[0]?.dba || '');
 
@@ -33,11 +35,12 @@ const uploadUrl = ref('');
 const generalType = ref(generalpageStore.$state.generalpdfinput);
 
 function testGeneralType() {
-    if (generalType.value.length !== 1) {
+    if (generalType.value.length > 0) {
         isGenaralPageValid.value = true;
     }
 }
 tryOnMounted(() => {
+    console.log(generalpageStore, generalType.value.length);
     testGeneralType();
 });
 
@@ -49,7 +52,8 @@ invoke(async () => {
 const generatePDF = () => {
     // const { burpdfinput } = storeToRefs(burpdfStore);
     // Initialize jsPDF instance
-    if (generalpageStore.$state.generalpdfinput.length === 0) {
+    isGenaralPageValid.value = true;
+    if (isGenaralPageValid.value === false) {
         console.log('lenghth is   zero');
     } else {
         // Initialize jsPDF instance
@@ -66,7 +70,7 @@ const generatePDF = () => {
         // Set font size, alignment, and rotation for the watermark
         doc.setFontSize(24);
         doc.setTextColor('black');
-        doc.setFont('helvetica');
+        // doc.setFont('helvetica');
         // doc.setFont('Courier', 'bolditalic');
         // Light gray color for watermark
         // doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2
@@ -145,7 +149,8 @@ const generatePDF = () => {
         // Add content below the header
         doc.setFontSize(12);
 
-        const area = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData);
+        const area = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.totalData);
+
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
         const data = [
@@ -185,6 +190,7 @@ const generatePDF = () => {
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
 
+        console.log(doc.getFont());
         doc.setTextColor('black');
         doc.setFontSize(12);
         const factor = 2;
@@ -192,10 +198,10 @@ const generatePDF = () => {
         const param_y = initialYValue;
         const isReroof = ref(false);
         const isNewRoof = ref(false);
-
+        const isEqual = ref(roofCheck.$state.roofinput[0]?.roofCheckdata?.roofCheck[0]);
         currentX.value = LeftStart + 40;
-
-        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.roofCheck[0] === 'reroof') {
+        console.log(isEqual.value);
+        if (isEqual.value === 'reroof') {
             isReroof.value = true;
             console.log(isReroof.value);
         } else {
@@ -221,15 +227,15 @@ const generatePDF = () => {
         const checkedBox1 = isNewRoof.value === true ? doc.rect(currentX.value + 25, alignCheckbox0, 4, 4, 'FD') : doc.rect(currentX.value + 25, alignCheckbox0, 4, 4);
         console.log(checkedBox0, checkedBox1);
         current_y = current_y + 10;
-        const tTotal = 'Total: ';
 
+        // This gets pulled from the composable use-Generalpage.js
+        const tTotal = 'Total: ';
         const tSlope = 'Low Slope: ';
         const tSteep = 'Steep Slope: ';
-
-        const total = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.totalData || '');
-        const slope = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.slopeData || '0');
-        const steep = ref(generalpageStore.$state.generalpdfinput[1]?.generalpdfData?.steepData || '0');
-        console.log(generalpageStore.$state.generalpdfinput[1].generalpdfData);
+        console.log(generalpageStore, roofinput, roofCheck);
+        const total = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.totalData || '0');
+        const slope = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.slopeData || '0');
+        const steep = ref(generalpageStore.$state.generalpdfinput[0]?.generalpdfData?.steepData || '0');
         currentX.value = LeftStart + 25;
         current_y = param_y + 10;
         const SlopesTextWidth = doc.getTextWidth(tSlope);
@@ -265,22 +271,21 @@ const generatePDF = () => {
 
         doc.line(totalValue, current_y, totalValue + TotalTextWidth, current_y);
         currentX.value = totalValue + TotalTextWidth;
-        console.log(generalpageStore.$state.generalpdfinput[1]);
-        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.slopeChk === true) {
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.slopeChk === true) {
             slopeChk.value = true;
             console.log('Slope Checked');
         }
-        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.adtileChk === true) {
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.adtileChk === true) {
             adtileChk.value = true;
         }
 
-        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.metalChk === true) {
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.metalChk === true) {
             metalChk.value = true;
         }
-        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.mtileChk === true) {
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.mtileChk === true) {
             mtileChk.value = true;
         }
-        if (generalpageStore.$state.generalpdfinput[1].generalpdfData.shingleChk === true) {
+        if (generalpageStore.$state.generalpdfinput[0].generalpdfData.shingleChk === true) {
             shingleChk.value = true;
             console.log('Shingle Checked');
         }

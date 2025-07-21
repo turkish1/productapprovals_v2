@@ -219,7 +219,7 @@ const handleDownload = async () => {
 </script>
 
 <template>
-    <div class="md:w-1/2 grid grid-cols-1 gap-2 border-2 border-gray-700 focus:border-orange-600 shadow-md shadow-cyan-800" style="margin-left: 450px; border-radius: 5px">
+    <!-- <div class="md:w-1/2 grid grid-cols-1 gap-2 border-2 border-gray-700 focus:border-orange-600 shadow-md shadow-cyan-800" style="margin-left: 450px; border-radius: 5px">
         <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
         <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
         <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
@@ -228,6 +228,43 @@ const handleDownload = async () => {
         <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" @change="prescriptiveOne" />
         <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: * </label>
         <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" @change="prescriptiveThree" />
+    </div> -->
+    <div class="md:w-1/2 mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6" style="margin-left: 450px; border-radius: 5px">
+        <div>
+            <label for="material" class="block text-sm font-medium text-red-600 mb-1"> Type of Low‑Slope BUR Material <span class="text-red-500">*</span> </label>
+            <Select
+                id="material"
+                v-model="selectedBur"
+                :options="mat"
+                placeholder="Make a selection"
+                @click="findSelected"
+                @change="updateselection"
+                class="w-full rounded-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition"
+            />
+        </div>
+
+        <div>
+            <label for="system" class="block text-sm font-medium text-red-600 mb-1"> Type of Low‑Slope BUR System <span class="text-red-500">*</span> </label>
+            <Select
+                id="system"
+                v-model="selectedSystem"
+                :options="syst"
+                placeholder="Make a selection"
+                @click="selectSystem"
+                @change="updateselectSystem"
+                class="w-full rounded-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition"
+            />
+        </div>
+
+        <div>
+            <label for="fieldPresc1" class="block text-sm font-medium text-red-600 mb-1"> Attach P(1') Prime using P(1) Field Prescriptive Basesheet <span class="text-red-500">*</span> </label>
+            <Select id="fieldPresc1" v-model="selectedPrimeone" :options="primeone" placeholder="Make a selection" @change="prescriptiveOne" class="w-full rounded-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition" />
+        </div>
+
+        <div>
+            <label for="fieldPresc3" class="block text-sm font-medium text-red-600 mb-1"> Attach P(2) Perimeter using P(3) Corner Prescriptive <span class="text-red-500">*</span> </label>
+            <Select id="fieldPresc3" v-model="selectedPrimethree" :options="primethree" placeholder="Make a selection" @change="prescriptiveThree" class="w-full rounded-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition" />
+        </div>
     </div>
 </template>
 

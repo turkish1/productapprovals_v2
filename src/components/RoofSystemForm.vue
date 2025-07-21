@@ -2,18 +2,22 @@
 import useGeneral from '@/composables/GeneralPage/use-Generalpage.js';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
+import { useroofCheckStore } from '@/stores/roofCheckStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import RoofSystemList from './RoofSystemList.vue';
 
 const generalpageStore = useGeneralpdfStore();
+const roofCheck = useroofCheckStore();
 
 const store = useRoofListStore();
 const permitStore = usePermitappStore();
+
+// Add general page data to create pdf later
 
 // Assume that permitStore.$state.permitapp is an array and that the first item
 // has a property "miamibeach" that can be converted to a number.
@@ -41,15 +45,13 @@ tryOnMounted(() => {
 
 // Add general page data to create pdf later
 const { addRoof } = useGeneral();
-
+const showGeneralPage = ref('');
 // Reset the roof list store.
 function clearSelected() {
     store.$reset();
 }
 const checked = ref(false);
-const dataGeneral = {
-    roofCheck: ''
-};
+const dataGeneral = reactive({ roofCheck: '' });
 // When the user changes the selection, add the item based on the entered area.
 function addItemAndClear() {
     // Get the selected item name (if any)
@@ -75,10 +77,13 @@ function addItemAndClear() {
         const dim5 = area.value;
         store.addSystemMetal(item, dim5);
     }
+    // showGeneralPage.value = 'show';
+    // generalpageStore.addgeneralpdfData(showGeneralPage);
     dataGeneral.roofCheck = checked;
+    console.log(dataGeneral.roofCheck);
+    roofCheck.addCheck(dataGeneral);
 
-    generalpageStore.addgeneralpdfData(dataGeneral);
-    console.log(generalpageStore);
+    console.log(roofCheck);
     clear();
 }
 const addGeneralpageData = () => {
