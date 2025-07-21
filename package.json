@@ -51,6 +51,7 @@
     "pspdfkit": "^2024.8.1",
     "signature_pad": "^5.0.4",
     "square": "^39.1.1",
+    "swiper": "^11.2.10",
     "three": "^0.168.0",
     "three-cad-viewer": "^3.1.6",
     "vue": "^3.4.34",
