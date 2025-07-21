@@ -20,10 +20,10 @@
 <script setup>
 import { ref } from 'vue';
 // Icons from lucide; install with: npm i lucide-vue-next
-import { Cloud, Database, Globe, Layers, Package, PieChart, Shuffle, Wifi } from 'lucide-vue-next';
+// import { Cloud, Database, Globe, Layers, Package, PieChart, Shuffle, Wifi } from 'lucide-vue-next';
 
 // Array keeps components so we can v-for over them
-const icons = [Globe, Wifi, PieChart, Cloud, Layers, Shuffle, Package, Database];
+// const icons = [Globe, Wifi, PieChart, Cloud, Layers, Shuffle, Package, Database];
 
 const isActive = ref(false);
 
