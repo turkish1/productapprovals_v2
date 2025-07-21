@@ -1,0 +1,1 @@
+import{E as t}from"./index-BajlCrKI.js";const r=t("roofinput",{state:()=>({roofinput:[],id:0}),actions:{addCheck(o){this.roofinput.push({roofCheckdata:o,completed:!1})},reset(){this.roofinput=[]},persist:!0}});export{r as u};
