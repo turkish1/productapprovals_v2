@@ -449,14 +449,14 @@ watch(
                 <AutoCompleteSA @keydown.tab.exact.stop="checkInputSystem" />
             </div>
         </div>
-        <div v-show="isShingleValid" class="w-96" style="margin-left: 2px">
+        <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <!-- @click.stop.prevent -->
                 <AutoComplete @keydown.tab.exact.stop="checkInput" />
             </div>
         </div>
 
-        <div v-show="isSelectVisible2" class="md:w-1/3 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px">
+        <div v-show="isSelectVisible2" class="md:w-1/3 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px; margin-top: 2px">
             <label style="color: red">Select Underlayment (S/A) *</label>
             <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
         </div>

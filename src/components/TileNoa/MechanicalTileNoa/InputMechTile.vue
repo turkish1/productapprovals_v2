@@ -454,8 +454,8 @@ let selectedUnderlayment = ref('');
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
     { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
-    { selectedBasesheet: '(S/A) Tile Capsheet adhered diretly to a wood deck, per the NOA System F', key: 2 },
-    { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
+    { selectedBasesheet: '(S/A) Tile Capsheet: adhered diretly to a wood deck, per the NOA System F', key: 2 },
+    { selectedBasesheet: '(S/A) Tile Capsheet: adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
 ]);
 
 watch(selectedUnderlayment, () => {
