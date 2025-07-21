@@ -1,5 +1,6 @@
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
+import 'swiper/css';
 import Aura from '@primevue/themes/aura';
 import { useGeolocation } from '@vueuse/core';
 import AOS from 'aos';
@@ -14,15 +15,16 @@ import { createApp } from 'vue';
 import { VueSpinnersPlugin } from 'vue3-spinners';
 import App from './App.vue';
 import router from './router';
-
 import AnimateOnScroll from 'primevue/animateonscroll';
 
 const app = createApp(App);
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
+
 app.use(useGeolocation);
 app.use('animateonscroll', AnimateOnScroll);
+
 app.use('tooltip', Tooltip);
 app.use(VueSpinnersPlugin);
 app.use(AOS);

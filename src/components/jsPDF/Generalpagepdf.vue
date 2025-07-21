@@ -323,6 +323,24 @@ const generatePDF = () => {
         console.log(checkBox6, checkBox5);
 
         current_y = current_y + 10;
+        const requiredHtml = ref(`
+
+<h2 class="text-2xl font-semibold mt-8 mb-4">Required at First Inspection:</h2>
+
+  <ul class="list-disc ml-6">
+    <li>A recorded copy of the Notice of Commencement.</li>
+    <li>A copy of the current MDC NOA(s) for the applicable roof system(s) or materials.</li>
+    <li>For Low Slope Roofs NOA's: Provide Page 1, the Low Slope Assembly specification page(s), and the limitation page(s).</li>
+    <li>A current copy of the Class "A" fire listing page for the proposed Roofing Assembly (if applicable).</li>
+    <ul>Completed and applicable forms for:/ul>
+    <li>Appliance Flue Vent Compliance</li>
+ <li>Decking Attachment - Affidavit of Compliance</li>
+ <li>Roof to Wall Connection - Affidavit of Compliance</li>
+  </ul>
+
+
+`);
+        // doc.text(requiredHtml, LeftStart, current_y);
         // Save the PDF
         // doc.addImage(drapdropImage, 'JPEG', LeftStart + 40, current_y, 100, 100);
 

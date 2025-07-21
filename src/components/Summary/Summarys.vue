@@ -1,28 +1,5 @@
 <template>
     <div id="summary">
-        <!-- <Timeline :value="events" align="alternate" class="customized-timeline" style="margin-top: 50px">
-            <template #marker="slotProps">
-                <span class="flex w-8 h-8 items-center justify-center text-white rounded-full z-10 shadow-sm" :style="{ backgroundColor: slotProps.item.color }">
-                    <i :class="slotProps.item.icon"></i>
-                </span>
-            </template>
-            <template #content="slotProps">
-                <Card class="mt-4">
-                    <template #title>
-                        {{ slotProps.item.status }}
-                    </template>
-                    <template #subtitle>
-                        {{ slotProps.item.date }}
-                    </template>
-                    <template #content>
-                        <p>The roof systems you selected</p>
-
-
-                        <Button label="Read more" text></Button>
-                    </template>
-                </Card>
-             </template>
-        </Timeline> -->
         <div class="card flex flex-col items-left">
             <div class="flex flex-wrap justify-left gap-12">
                 <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-left" data-aos-duration="1000">
@@ -53,33 +30,34 @@
                 </div>
             </div>
             <div class="h-[10rem]"></div>
-            <div class="flex flex-wrap justify-left gap-12">
+            <div class="card flex flex-wrap justify-left gap-12">
                 <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-96 rounded-2xl p-8 gap-4" data-aos="fade-left" data-aos-duration="1000">
                     <div class="rounded-full bg-secondary text-secondary-contrast w-48 h-24 flex items-center justify-center">
                         <i class="pi pi-info-circle !text-2xl"></i>
                     </div>
-                    <span class="text-2xl font-bold">Selection</span>
-                    <span class="text-muted-color text-center"> Noa: {{ Noa }}</span>
-                    <span class="text-muted-color text-center"> {{ Manufacturer }}</span>
-                    <span class="text-muted-color text-center"> {{ Description }} </span>
-                    <span class="text-muted-color text-center"> Expiration Date: {{ Expiration_Date }} </span>
+                    <span class="text-2xl font-bold">More Info</span>
+                    <span class="text-muted-color text-center">To Come</span>
+
+                    <!-- <span class="text-2xl font-bold">Selection</span>
+                    <span v-for="(item, i) in infoItems" :key="i" class="text-muted-color text-center"> {{ item.label }}{{ item.value }} </span> -->
                 </div>
 
                 <div class="flex flex-col border border-surface shadow-lg justify-left items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-up" data-aos-duration="1000">
                     <div class="rounded-full bg-secondary text-secondary-contrast w-48 h-24 flex items-center justify-center">
                         <i class="pi pi-spin pi-cog !text-2xl"></i>
                     </div>
-                    <span class="text-2xl font-bold">More Information</span>
-                    <span class="text-muted-color text-center">Soon to Come</span>
-                    <!-- <span class="text-muted-color text-center">{{ muni }}</span> -->
+                    <span class="text-2xl font-bold">More Info</span>
+                    <span class="text-muted-color text-center">To Come</span>
+                    <!-- <span class="text-2xl font-bold">Bur Selection</span>
+                    <span v-for="(item, i) in infoItemsbur" :key="i" class="text-muted-color text-center"> {{ item.label }}{{ item.value }} </span> -->
                 </div>
-
-                <div class="flex flex-col border border-surface shadow-lg justify-left items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-right" data-aos-duration="1000">
-                    <div class="rounded-full bg-secondary text-secondary-contrast w-48 h-24 flex items-center justify-center">
-                        <i class="pi pi-align-justify !text-2xl"></i>
-                    </div>
-                    <span class="text-2xl font-bold">More Information</span>
-                    <span class="text-muted-color text-center">Soon to Come</span>
+                <div class="flex flex-wrap justify-left gap-12">
+                    <Swiper :modules="[EffectCards, Navigation, Pagination]" effect="cards" grab-cursor="true" navigation pagination class="w-md max-w-md mx-auto">
+                        <!-- class="flex justify-center items-center" -->
+                        <SwiperSlide v-for="(card, i) in cards" :key="i">
+                            <StackCard :icon="card.icon" :title="card.title" :items="card.items" :bgClass="card.bg" :textClass="card.text" />
+                        </SwiperSlide>
+                    </Swiper>
                 </div>
             </div>
         </div>
@@ -106,6 +84,7 @@
 </template>
 
 <script setup>
+import StackCard from '@/components/Summary/StackCard.vue';
 import { useGlobalState } from '@/stores/accountsStore';
 import { useBurpdfStore } from '@/stores/burpdfStore';
 import { countStore } from '@/stores/countStore';
@@ -113,9 +92,26 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { useSavedStore } from '@/stores/savedTiledataStore';
+import { useShingleStore } from '@/stores/shingleStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
-import { onMounted, reactive, ref } from 'vue';
+
+import { Swiper, SwiperSlide } from 'swiper/vue';
+
+// Core CSS
+import 'swiper/css';
+
+// individual module imports + CSS
+import 'swiper/css/effect-cards';
+import EffectCards from '../../../node_modules/swiper/modules/effect-cards';
+
+import 'swiper/css/navigation';
+import Navigation from '../../../node_modules/swiper/modules/navigation';
+
+import 'swiper/css/pagination';
+import Pagination from '../../../node_modules/swiper/modules/pagination';
+
+import { computed, onMounted, reactive, ref } from 'vue';
 import GeneralPage from '../jsPDF/Generalpagepdf.vue';
 import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
@@ -125,8 +121,7 @@ const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 
 const pdStore = usevalueStore();
-const isloading = ref(false);
-const isSigned = ref(false);
+
 const tileADstore = useSavedStore();
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
@@ -134,8 +129,9 @@ let isRoofTileMechanicalValid = ref(false);
 let isRoofShingleValid = ref(false);
 let isRoofLowslopeValid = ref(false);
 const dba = ref('');
-const name = ref('');
+
 const burpdfStore = useBurpdfStore();
+const shingleStore = useShingleStore();
 const permitStore = usePermitappStore();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
@@ -147,27 +143,15 @@ const generalType = ref(generalStore.$state.generalpdfinput);
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 const license = ref(permitStore.$state.permitapp[0]?.formdt?.license || '');
 const tileNoaInfo = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]);
-const isTileSystem = ref(false);
+const burInfo = ref(burpdfStore.$state.burpdfinput[1]);
 const isPaddySingle = ref(false);
+const burInfoData = ref(burInfo.value?.burpdfData || '');
 const singlePaddyData = ref(tileNoaInfo.value?.singlepaddyData || '');
 const doublePaddyData = ref(tileNoaInfo.value?.doublepaddyData || '');
-//  Second section
-// if (isRoofTileADValid.value === true) {
-//     tileADstore.$state.savedTileinput[0].savedValues.paddySelection == 'single'
-//     isPaddySingle.value = true;
-//     //  isRoofTileADValid.value
-// } else {
-//     isPaddySingle.value = false;
-// }
+const shingleInfo = ref(shingleStore.$state.inputshingle[0]);
+const shData = ref(shingleInfo.value?.shingleData || '');
 
-// State for toggles
-const isdataValid = ref(false);
-const count = ref(secCountStore.$state.countinput[0]?.countData || '');
-const isUrldownloadValid = ref(false);
-const status = ref(false);
-const timedOut = ref(false);
-const submitted = ref(false);
-// Download composable
+//  Second section
 
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
@@ -195,6 +179,7 @@ const callState = tryOnMounted(() => {
                 isRoofTileADValid.value = true;
                 if (tileADstore.$state.savedTileinput[0].savedValues.paddySelection == 'single') {
                     isPaddySingle.value = true;
+                    console.log(isPaddySingle);
                 }
             } else if (roofType.value[i].item === 'Mechanical Fastened Tile') {
                 console.log(roofType.value[i].item);
@@ -206,14 +191,80 @@ const callState = tryOnMounted(() => {
         }
     }
 });
-const Noa = isPaddySingle.value === true ? singlePaddyData.value.noa : doublePaddyData.value.noa;
 
-const Manufacturer = isPaddySingle.value === true ? singlePaddyData.value.applicant : doublePaddyData.value.applicant;
-const Description = isPaddySingle.value === true ? singlePaddyData.value.description : doublePaddyData.value.description;
-const Expiration_Date = isPaddySingle.value === true ? singlePaddyData.value.expiration_date : doublePaddyData.value.expiration_date;
+function pick(field) {
+    return isPaddySingle.value ? singlePaddyData.value[field] : doublePaddyData.value[field];
+}
+
+function burpick(burfield) {
+    return isRoofLowslopeValid.value ? burInfoData.value[burfield] : '';
+}
+function shinglePick(shfield) {
+    return isRoofShingleValid.value ? shData.value[shfield] : '';
+}
+// helper to build items array
+function makeItems(defs, pickerFn) {
+    // defs = [ [field, label], … ]
+    return defs.map(([field, label]) => ({
+        label,
+        value: pickerFn(field)
+    }));
+}
+
+const burDefs = [
+    ['burMaterial', 'Material: '],
+    ['burSystem', 'System: '],
+    ['p1', 'P1: '],
+    ['p3', 'P3: ']
+];
+
+// field‑label definitions
+const tileDefs = [
+    ['noa', 'Noa: '],
+    ['applicant', 'Applicant: '],
+    ['description', 'Description: '],
+    ['expiration_date', 'Expiration Date: ']
+];
+
+const shingleDefs = [
+    ['noa', 'Noa: '],
+    ['applicant', 'Applicant: '],
+    ['description', 'Description: '],
+    ['prescriptiveSelection', 'Prescriptive: ']
+];
+
+// now build an array of “cards”
+
+const cards = computed(() => [
+    {
+        icon: 'pi-info-circle',
+        title: 'Tile',
+        items: makeItems(tileDefs, pick),
+        bg: 'bg-metal', // dark background
+        text: 'text-white' // light text
+    },
+    {
+        icon: 'pi-spin pi-cog',
+        title: 'Bur ',
+        items: makeItems(burDefs, burpick),
+
+        bg: 'bg-midnight',
+        text: 'text-white'
+    },
+    {
+        icon: 'pi-align-justify',
+        title: 'Shingle',
+        items: makeItems(shingleDefs, shinglePick),
+        bg: 'bg-brown-400',
+        text: 'text-white'
+    }
+]);
+
+// computed array of label/value pairs
+
 onMounted(() => {
     displayUserInfo();
-    console.log(generalStore, burpdfStore);
+    console.log(shData);
 });
 
 //  callPdfSign,
@@ -237,10 +288,22 @@ invoke(async () => {
 }
 
 .card {
-    background: var(--c-primary-dark);
+    background: var(--c-bg-card);
     backdrop-filter: blur(12px);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 3rem 2.5rem;
+}
+
+.swiper-card {
+    background: var(--c-bg-card-dark);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 3rem 2.5rem;
+    color: var(--c-text-light);
+}
+.swiper {
+    height: 350px;
 }
 </style>

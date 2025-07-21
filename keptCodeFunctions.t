@@ -395,3 +395,46 @@ lines.forEach(line => {
         // doc.text(`${area.value}`, areaValue, current_y);
         // doc.line(areaValue, current_y + 2, areaValue + AreaTextWidth, current_y + 2);
         // .$state.generalpdfinput[1]?.generalpdfData?.roofCheck[0]
+                        <!-- <StackCard v-for="(card, idx) in cards" :key="idx" :icon="card.icon" :title="card.title" :items="card.items" :animation="card.animation" /> -->
+
+
+    <!-- <div class="flex flex-col border border-surface shadow-lg justify-left items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="rounded-full bg-secondary text-secondary-contrast w-48 h-24 flex items-center justify-center">
+                        <i class="pi pi-align-justify !text-2xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold">More Information</span>
+                    <span v-for="(item, i) in infoItemShingle" :key="i" class="text-muted-color text-center"> {{ item.label }}{{ item.value }} </span>
+                </div> -->
+// const infoItemShingle = computed(() => [
+//     { label: '', value: shinglePick('burMaterial') },
+//     { label: '', value: shinglePick('burSystem') },
+//     { label: '', value: shinglePick('p1') },
+//     { label: '', value: shinglePick('p3') }
+// ]);
+// const infoItems = computed(() => [
+//     { label: 'Noa: ', value: pick('noa') },
+//     { label: '', value: pick('applicant') },
+//     { label: '', value: pick('description') },
+//     { label: 'Expiration Date: ', value: pick('expiration_date') }
+// ]);
+
+// const infoItemsbur = computed(() => [
+//     { label: '', value: burpick('burMaterial') },
+//     { label: '', value: burpick('burSystem') },
+//     { label: '', value: burpick('p1') },
+//     { label: '', value: burpick('p3') }
+// ]);
+   // [
+        //     { label: 'Noa: ', value: pick('noa') },
+        //     { label: 'Applicant: ', value: pick('applicant') },
+        //     { label: 'Description: ', value: pick('description') },
+        //     { label: 'Expiration Date: ', value: pick('expiration_date') }
+        // ],
+        // animation: 'fade-left'
+
+        // [
+        //     { label: 'Material: ', value: burpick('burMaterial') },
+        //     { label: 'System: ', value: burpick('burSystem') },
+        //     { label: 'P1: ', value: burpick('p1') },
+        //     { label: 'P3: ', value: burpick('p3') }
+        // ],
