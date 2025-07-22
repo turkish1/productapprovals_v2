@@ -108,10 +108,10 @@ import EffectCards from '../../../node_modules/swiper/modules/effect-cards';
 import 'swiper/css/navigation';
 import Navigation from '../../../node_modules/swiper/modules/navigation';
 
+import useMech from '@/composables/InputLogic/use-tileMechanical';
 import 'swiper/css/pagination';
-import Pagination from '../../../node_modules/swiper/modules/pagination';
-
 import { computed, onMounted, reactive, ref } from 'vue';
+import Pagination from '../../../node_modules/swiper/modules/pagination';
 import GeneralPage from '../jsPDF/Generalpagepdf.vue';
 import LowSlope from '../jsPDF/LowSlopepdf.vue';
 import Shingle from '../jsPDF/Shingle.vue';
@@ -121,7 +121,7 @@ const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 
 const pdStore = usevalueStore();
-
+const { mechStore } = useMech();
 const tileADstore = useSavedStore();
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
@@ -143,6 +143,8 @@ const generalType = ref(generalStore.$state.generalpdfinput);
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 const license = ref(permitStore.$state.permitapp[0]?.formdt?.license || '');
 const tileNoaInfo = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]);
+const mechtileNoaInfo = ref(mechStore.tilemech.value[0]);
+
 const burInfo = ref(burpdfStore.$state.burpdfinput[1]);
 const isPaddySingle = ref(false);
 const burInfoData = ref(burInfo.value?.burpdfData || '');
@@ -150,7 +152,7 @@ const singlePaddyData = ref(tileNoaInfo.value?.singlepaddyData || '');
 const doublePaddyData = ref(tileNoaInfo.value?.doublepaddyData || '');
 const shingleInfo = ref(shingleStore.$state.inputshingle[0]);
 const shData = ref(shingleInfo.value?.shingleData || '');
-
+const mechData = ref(mechtileNoaInfo.value);
 //  Second section
 
 function displayUserInfo() {
@@ -202,6 +204,10 @@ function burpick(burfield) {
 function shinglePick(shfield) {
     return isRoofShingleValid.value ? shData.value[shfield] : '';
 }
+
+function mechPick(mechfield) {
+    return isRoofTileMechanicalValid.value ? mechData.value[mechfield] : '';
+}
 // helper to build items array
 function makeItems(defs, pickerFn) {
     // defs = [ [field, label], … ]
@@ -224,6 +230,13 @@ const tileDefs = [
     ['applicant', 'Applicant: '],
     ['description', 'Description: '],
     ['expiration_date', 'Expiration Date: ']
+];
+
+const mechtileDefs = [
+    ['noa', 'Noa: '],
+    ['manufacturer', 'Applicant: '],
+    ['description', 'Description: '],
+    ['savedfastener', 'Fastener: ']
 ];
 
 const shingleDefs = [
@@ -257,6 +270,13 @@ const cards = computed(() => [
         items: makeItems(shingleDefs, shinglePick),
         bg: 'bg-brown-400',
         text: 'text-white'
+    },
+    {
+        icon: 'pi-align-justify',
+        title: 'Mechanical',
+        items: makeItems(mechtileDefs, mechPick),
+        bg: 'bg-purple',
+        text: 'text-white'
     }
 ]);
 
@@ -264,7 +284,8 @@ const cards = computed(() => [
 
 onMounted(() => {
     displayUserInfo();
-    console.log(shData);
+    console.log(mechData);
+    console.log(mechStore);
 });
 
 //  callPdfSign,
@@ -295,14 +316,6 @@ invoke(async () => {
     padding: 3rem 2.5rem;
 }
 
-.swiper-card {
-    background: var(--c-bg-card-dark);
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 3rem 2.5rem;
-    color: var(--c-text-light);
-}
 .swiper {
     height: 350px;
 }

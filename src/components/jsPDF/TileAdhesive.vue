@@ -188,6 +188,7 @@ const generatePDF = () => {
         let startY = 50; // Y position
         // Set starting position second data
         // Set font size
+        doc.setFont('DejaVuSans');
         doc.setFontSize(12);
         // Loop through data and add category and value in two columns
         data.forEach((item, index) => {
@@ -628,16 +629,16 @@ const generatePDF = () => {
         // Data for each row
 
         doc.setFontSize(12);
-        doc.setFont('DejaVuSans');
-        const lambdaSymbol = new Image();
-        lambdaSymbol.src = '/demo/images/lambda.png';
+
+        // const lambdaSymbol = new Image();
+        // lambdaSymbol.src = '/demo/images/lambda.png';
 
         console.log(doc.getFont());
         console.log(currentX.value, current_y);
         const tableData = [
-            ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
-            ['Zone 2:', `${zonetwo.value}`, 'x', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
-            ['Zone 3:', `${zonethree.value}`, 'x', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr2:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
         ];
         console.log(tableData);
 
@@ -656,9 +657,9 @@ const generatePDF = () => {
                 doc.text(String(cell), x, startYY);
                 x += 18; // Space between columns
             });
-            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
-            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
-            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
             startYY += 5; // Move to next row
             console.log(x, startYY);
         });
