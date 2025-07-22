@@ -32,6 +32,40 @@ const etileStore = usetilesysEStore();
 const dripmechTileStore = usedripMStore();
 // const folio = ref(permitStore.$state.permitapp[0].formdt.folio);
 
+const height = ref(mechStore.tilemech.value[0]?.height || 'N/A');
+const slope = ref(mechStore.tilemech.value[0]?.slope || 'N/A');
+const deckType = ref(mechStore.tilemech.value[0]?.decktype || 'N/A');
+const perimeter = ref(mechStore.tilemech.value[0]?.perimeter || 'N/A');
+const udlPrescriptive = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.prescriptiveSelection);
+
+const prescriptive = ref(mechStore.tilemech.value[0]?.prescriptiveSelection || 'N/A');
+// isUDLValidPresc === true ? udlPrescriptive :
+const area = ref(mechStore.tilemech.value[0]?.area || '');
+const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
+const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
+const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
+const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
+
+const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[5]?.dripMTileMaterial || '');
+const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[7]?.dripMTileMaterial || '');
+const Prescriptive = 'Prescriptive: ';
+
+const mf1 = ref(mechStore.tilemech.value[0]?.mf1 || '');
+const lambda1 = ref(mechStore.tilemech.value[0]?.lambda1 || '');
+const mg1 = ref(mechStore.tilemech.value[0]?.mg1 || '');
+const mr1 = ref(mechStore.tilemech.value[0]?.mr1 || '');
+const zoneone = ref(mechStore.tilemech.value[0]?.zoneone || '');
+const mf2 = ref(mechStore.tilemech.value[0]?.mf2 || '');
+const lambda2 = ref(mechStore.tilemech.value[0]?.lambda2 || '');
+const mg2 = ref(mechStore.tilemech.value[0]?.mg2 || '');
+const mr2 = ref(mechStore.tilemech.value[0]?.mr2 || '');
+const zonetwo = ref(mechStore.tilemech.value[0]?.zonetwo || '');
+const mf3 = ref(mechStore.tilemech.value[0]?.mf3 || '');
+const lambda3 = ref(mechStore.tilemech.value[0]?.lambda3 || '');
+const mg3 = ref(mechStore.tilemech.value[0]?.mg3 || '');
+const mr3 = ref(mechStore.tilemech.value[0].mr3 || '');
+const zonethree = ref(mechStore.tilemech.value[0]?.zonethree || '');
+
 const callState = tryOnMounted(() => {
     if (roofType.value.length === 0) {
         return '';
@@ -79,7 +113,7 @@ const generatePDF = () => {
             format: 'a4', // Smaller page size
             compress: true
         });
-        console.log(mechStore.tilemech.value[0]?.Table2);
+
         const factor = 1;
         const initialYValue = 90;
         const max_width = 179;
@@ -98,53 +132,9 @@ const generatePDF = () => {
         currentY.value = current_y;
         // Initialize jsPDF instance
         doc.setFont('DejaVuSans');
-        console.log(permitStore.$state.permitapp);
-        console.log(mechStore.tilemech.value[0]);
-        const height = ref(mechStore.tilemech.value[0]?.height || 'N/A');
-        const slope = ref(mechStore.tilemech.value[0]?.slope || 'N/A');
-        const deckType = ref(mechStore.tilemech.value[0]?.decktype || 'N/A');
-        const perimeter = ref(mechStore.tilemech.value[0]?.perimeter || 'N/A');
-        const udlPrescriptive = ref(etileStore.$state.tilesysEinput[0]?.systemDataE?.prescriptiveSelection);
-        console.log(mechStore.tilemech.value[0].prescriptiveSelection);
-        const prescriptive = ref(mechStore.tilemech.value[0]?.prescriptiveSelection || 'N/A');
-        // isUDLValidPresc === true ? udlPrescriptive :
-        const area = ref(mechStore.tilemech.value[0]?.area || '');
-        const address = ref(permitStore.$state.permitapp[0]?.formdt?.address || '');
-        const municipality = ref(permitStore.$state.permitapp[0]?.formdt?.muni || '');
-        const processNumber = ref(permitStore.$state.permitapp[0]?.formdt?.processNumber || '');
-        const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
-
-        // const muniNum = ref(permitStore.$state.permitapp[0]?.muniNum || '');
-        // console.log(dripmechTileStore.$state, muniNum.value);
-        const dripedgeMaterials = ref(dripmechTileStore.$state.dripinputmecht[5]?.dripMTileMaterial || '');
-        const dripedgeSize = ref(dripmechTileStore.$state.dripinputmecht[7]?.dripMTileMaterial || '');
-        console.log(mechStore.tilemech.value);
-        current_y = current_y + 10;
-        const mf1 = ref(mechStore.tilemech.value[0]?.mf1 || '');
-        const lambda1 = ref(mechStore.tilemech.value[0]?.lambda1 || '');
-        const mg1 = ref(mechStore.tilemech.value[0]?.mg1 || '');
-        const mr1 = ref(mechStore.tilemech.value[0]?.mr1 || '');
-        const zoneone = ref(mechStore.tilemech.value[0]?.zoneone || '');
-        const mf2 = ref(mechStore.tilemech.value[0]?.mf2 || '');
-        const lambda2 = ref(mechStore.tilemech.value[0]?.lambda2 || '');
-        const mg2 = ref(mechStore.tilemech.value[0]?.mg2 || '');
-        const mr2 = ref(mechStore.tilemech.value[0]?.mr2 || '');
-        const zonetwo = ref(mechStore.tilemech.value[0]?.zonetwo || '');
-        const mf3 = ref(mechStore.tilemech.value[0]?.mf3 || '');
-        const lambda3 = ref(mechStore.tilemech.value[0]?.lambda3 || '');
-        const mg3 = ref(mechStore.tilemech.value[0]?.mg3 || '');
-        const mr3 = ref(mechStore.tilemech.value[0].mr3 || '');
-        const zonethree = ref(mechStore.tilemech.value[0]?.zonethree || '');
 
         const uploadUrl = ref('');
         const dba = ref(getUser.value[0].dba);
-
-        // const doc = new jsPDF({
-        //     orientation: 'portrait',
-        //     unit: 'mm',
-        //     format: 'a4', // Smaller page size
-        //     compress: true
-        // });
 
         // Load an image (example with Base64)
         doc.setGState(new doc.GState({ opacity: 0.8 })); // Adjust opacity
@@ -163,10 +153,10 @@ const generatePDF = () => {
         });
         const image = new Image();
         const logoImage = new Image();
-        const lambdaImage = new Image();
+        // const lambdaImage = new Image();
         image.src = '/demo/images/officepaper.jpeg';
         logoImage.src = '/demo/images/logo.jpeg';
-        lambdaImage.src = '/demo/images/lambda.png';
+        // lambdaImage.src = '/demo/images/lambda.png';
         doc.addImage(logoImage, 'JPEG', 10, 0, 50, 30);
 
         // Set background image for the entire PDF
@@ -256,7 +246,8 @@ const generatePDF = () => {
         });
 
         doc.setFontSize(12);
-        console.log(current_y);
+
+        console.log(current_y, initialYValue);
         const tArea = 'Roof Area: ';
         const tDeck = 'Deck Type: ';
         const tHeight = 'Mean Roof Height: ';
@@ -265,56 +256,62 @@ const generatePDF = () => {
 
         const areaLabelWidth = doc.getTextWidth(tArea);
         const areaValueWidth = doc.getTextWidth(`${area.value}`);
-        doc.text(tArea, LeftStart, initialYValue);
+        doc.text(tArea, LeftStart, current_y);
         const systemAreaValueWidth = areaLabelWidth + 10;
-        doc.text(`${area.value}`, systemAreaValueWidth, initialYValue);
-        doc.line(systemAreaValueWidth, initialYValue + factor, systemAreaValueWidth + areaValueWidth, initialYValue + factor);
+        doc.text(`${area.value}`, systemAreaValueWidth, current_y);
+        doc.line(systemAreaValueWidth, current_y + factor, systemAreaValueWidth + areaValueWidth, current_y + factor);
         currentX.value = areaLabelWidth + areaValueWidth;
         console.log(currentX.value);
 
-        const valueTextWidth1 = doc.getTextWidth(tHeight);
+        const heightTextWidth = doc.getTextWidth(tHeight);
         const heightValueText = doc.getTextWidth(`${height.value}`);
         const heightStartXValue = currentX.value + 15;
-        doc.text(tHeight, heightStartXValue, initialYValue);
-        const roofHeightWidthValue = valueTextWidth1 + 50;
-        doc.text(`${height.value}`, roofHeightWidthValue, initialYValue);
-        doc.line(roofHeightWidthValue, initialYValue + factor, roofHeightWidthValue + heightValueText, initialYValue + factor); // Get text width
-        currentX.value = valueTextWidth1 + roofHeightWidthValue;
+        doc.text(tHeight, heightStartXValue, current_y);
+        const roofHeightWidthValue = heightTextWidth + heightStartXValue;
+        doc.text(`${height.value}`, roofHeightWidthValue, current_y);
+        doc.line(roofHeightWidthValue, current_y + factor, roofHeightWidthValue + heightValueText, current_y + factor); // Get text width
+        currentX.value = roofHeightWidthValue + 5;
         console.log(currentX.value);
 
         const slopeTextWidth1 = doc.getTextWidth(tSlope);
         const valueTextWidth2 = doc.getTextWidth(`${slope.value}`);
-        const slopeStartX = currentX.value + 50;
-        doc.text(tSlope, slopeStartX, initialYValue);
-        // Get the currentX value and add the text width
+        const slopeStartX = currentX.value + 5;
+        doc.text(tSlope, slopeStartX, current_y);
         const slopeStartXValue = slopeStartX + slopeTextWidth1;
-        doc.text(`${slope.value}`, slopeStartXValue, initialYValue);
-
-        doc.line(slopeStartXValue, initialYValue + factor, slopeStartXValue + valueTextWidth2, initialYValue + factor); // Get text width
-        currentX.value = currentX.value + slopeStartXValue;
-        // console.log(current_y);
-        // doc.setFontSize(12);
-        // currentX.value = currentX.value + 5;
+        doc.text(`${slope.value}`, slopeStartXValue, current_y);
+        doc.line(slopeStartXValue, current_y + factor, slopeStartXValue + valueTextWidth2, current_y + factor); // Get text width
+        currentX.value = slopeStartXValue + 5;
+        console.log(currentX.value);
 
         const tPermTextWidth = doc.getTextWidth(tPerimeter);
         const PermTextWidth = doc.getTextWidth(`${perimeter.value}`);
-        const permStartXValue = currentX.value - 30;
-        doc.text(tPerimeter, permStartXValue, initialYValue);
-        const perimeterValue = tPermTextWidth + permStartXValue + 2;
-        doc.text(`${perimeter.value}`, perimeterValue, initialYValue);
-        doc.line(perimeterValue, initialYValue + factor, perimeterValue + PermTextWidth, initialYValue + factor);
+        const permStartXValue = currentX.value + 5;
+        doc.text(tPerimeter, permStartXValue, current_y);
+        const perimeterValue = permStartXValue + tPermTextWidth;
+        doc.text(`${perimeter.value}`, perimeterValue, current_y);
+        doc.line(perimeterValue, current_y + factor, perimeterValue + PermTextWidth, current_y + factor);
+        current_y = current_y + 10;
 
-        current_y = initialYValue + 30;
-        const valueTextWidthDeck = doc.getTextWidth(tDeck);
-        const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`);
-        currentX.value = currentX.value + valueTextWidthDeck - 55;
-        doc.text(tDeck, currentX.value, current_y);
-        const decktypeStartXValue = currentX.value + 20;
+        // const [prescriptiveSplit] = (() => {
+        //     const parts = prescriptive.value.split(/:(.+)/); // split only on first colon
+        //     console.log(parts);
+        //     return [parts[0].trim(), parts[1]?.trim() ?? ''];
+        // })();
+        // const wrappedText = doc.splitTextToSize(paragraphText, 200);
+        // doc.text(wrappedText, 10, 60);
+        const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
+        const prescriptiveTextWidth = doc.getTextWidth(`${prescriptive.value}`);
+        const prescriptiveStartXValue = LeftStart;
+        doc.text(Prescriptive, prescriptiveStartXValue, current_y);
+        // const prescriptiveStartValue = valueTextWidth_0 + prescriptiveStartXValue;
+        current_y = current_y + 8;
+        const prescriptiveValue = LeftStart;
+        doc.setFontSize(11);
+        // const wrappedPrescriptive = doc.splitTextToSize(`${prescriptive.value}`, 200);
+        doc.text(`${prescriptive.value}`, prescriptiveValue, current_y);
+        doc.line(prescriptiveValue, current_y + factor, prescriptiveValue + prescriptiveTextWidth, current_y + factor);
 
-        doc.text(`${deckType.value}`, decktypeStartXValue, current_y);
-        doc.line(decktypeStartXValue, current_y + factor, decktypeStartXValue + valueTextWidth5, current_y + factor); // Get text width
-        currentX.value = decktypeStartXValue + valueTextWidth5;
-
+        doc.setFontSize(12);
         const noaText = 'Tile NOA Number: ';
         const applicantText = 'Tile Applicant: ';
         const materialText = 'Tile Material: ';
@@ -328,7 +325,6 @@ const generatePDF = () => {
         const designPSFText = 'Design psf: ';
         const anchordescriptionText = 'Anchor Base Sheet: ';
         const udldescriptionText = '(UDL) Description: ';
-        const Prescriptive = 'Prescriptive: ';
 
         const dripEdgeMaterial = 'Drip Edge Material: ';
 
@@ -345,21 +341,6 @@ const generatePDF = () => {
         const tileFastener = multiContent === true ? ref(mechStore.tilemech.value[0]?.savedfastener) : ref(mechStore.tilemech.value[0]?.description);
         console.log(mechStore.tilemech.value[0]?.description, mechStore.tilemech.value[0]?.savedfastener);
 
-        const [prescriptiveSplit] = (() => {
-            const parts = prescriptive.value.split(/:(.+)/); // split only on first colon
-            console.log(parts);
-            return [parts[0].trim(), parts[1]?.trim() ?? ''];
-        })();
-
-        const valueTextWidth_0 = doc.getTextWidth(Prescriptive);
-        const prescriptiveTextWidth = doc.getTextWidth(prescriptiveSplit);
-        const prescriptiveStartXValue = LeftStart;
-        doc.text(Prescriptive, prescriptiveStartXValue, current_y - 15);
-        const prescriptiveStartValue = valueTextWidth_0 + prescriptiveStartXValue;
-        const perscriptiveValue = LeftStart;
-        current_y = current_y - 9;
-        doc.text(prescriptiveSplit, perscriptiveValue, current_y);
-        doc.line(perscriptiveValue, current_y + factor, perscriptiveValue + prescriptiveTextWidth, current_y + factor);
         current_y = current_y + 10;
 
         const dripMaterialTextWidth = doc.getTextWidth(dripEdgeMaterial);
@@ -368,9 +349,17 @@ const generatePDF = () => {
         doc.text(dripEdgeMaterial, dMaterialStartXValue, current_y);
         const dripMaterialStartValue = dripMaterialTextWidth + dMaterialStartXValue;
         doc.text(`${dripedgeMaterials.value}`, dripMaterialStartValue, current_y);
-
         doc.line(dripMaterialStartValue, current_y + factor, dripMaterialStartValue + materialTextWidth, current_y + factor);
+        currentX.value = dripMaterialStartValue + materialTextWidth;
 
+        const valueTextWidthDeck = doc.getTextWidth(tDeck);
+        const valueTextWidth5 = doc.getTextWidth(`${deckType.value}`);
+        const deckStartXValue = currentX.value + 10;
+        doc.text(tDeck, deckStartXValue, current_y);
+        const decktypeStartXValue = deckStartXValue + 28;
+        doc.text(`${deckType.value}`, decktypeStartXValue, current_y);
+        doc.line(decktypeStartXValue, current_y + factor, decktypeStartXValue + valueTextWidth5, current_y + factor); // Get text width
+        // currentX.value = decktypeStartXValue + valueTextWidth5;
         current_y = current_y + 8;
 
         const dripEdgeSizeTextWidth = doc.getTextWidth(dripEdgeSize);
@@ -421,10 +410,9 @@ const generatePDF = () => {
             doc.line(udlmaterialValue, current_y + factor, udlmaterialValue + valueTextWidth_2, current_y + factor);
             currentX.value = udlmaterialValue + valueTextWidth_2;
             console.log(currentX.value);
-            if (currentX.value > max_width) current_y = current_y + 10;
 
             // console.log(currentX.value);
-            current_y = current_y + 10;
+            current_y = current_y + 8;
             const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(udlDescription);
             const udldescStartXValue = LeftStart;
@@ -512,13 +500,36 @@ const generatePDF = () => {
             doc.text(anchordescriptionText, udlanchorStartXValue, current_y);
             current_y = current_y + 10;
             const udlanchorValue = LeftStart;
+            const x = 10;
+            let y = current_y;
+            const maxWidth = 200;
+            const lines = doc.splitTextToSize(`${anchorDescription.value}`, maxWidth);
 
-            doc.text(`${anchorDescription.value}`, udlanchorValue, current_y);
-            doc.line(udlanchorValue, current_y + factor, udlanchorValue + valueTextWidthAnchor, current_y + factor);
-            currentX.value = udlanchorValue + valueTextWidthAnchor;
+            // 2) determine a line‐height (you can tweak the multiplier)
+            const fontSize = doc.getFontSize(); // e.g. 12
+            const lineHeight = fontSize * 1.15;
+            // doc.text(`${anchorDescription.value}`, udlanchorValue, current_y);
+            // 3) draw each line + underline
+            lines.forEach((line) => {
+                // draw the text
+                doc.text(line, x, y);
+
+                // measure how long the line is in PDF units
+                const textWidth = doc.getTextWidth(line);
+
+                // draw the underline just a hair below the text baseline
+                const underlineY = y + 1; // tweak this to sit under your font
+                doc.setLineWidth(0.3);
+                doc.line(x, underlineY, x + textWidth, underlineY);
+
+                // advance y for next line
+                y += lineHeight;
+            });
+            // doc.line(udlanchorValue, current_y + factor, udlanchorValue + valueTextWidthAnchor, current_y + factor);
+            // currentX.value = udlanchorValue + valueTextWidthAnchor;
             current_y = current_y + 10;
             //     console.log(currentX.value);
-
+            doc.setFontSize(12);
             const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(`${udlDescription.value}`);
             const udldescStartXValue = LeftStart;
@@ -668,13 +679,13 @@ const generatePDF = () => {
         doc.text(`${applicant.value}`, applicantValue, current_y);
         doc.line(applicantValue, current_y + factor, applicantValue + valueTextWidth0, current_y + factor);
 
-        currentX.value = applicantValue + valueTextWidthApp + 10;
+        currentX.value = applicantValue + valueTextWidth0;
 
         const noaValueTextWidth = doc.getTextWidth(noaText);
         const valueTextWidth3 = doc.getTextWidth(`${noa.value}`);
-        const noaStartXValue = currentX.value + noaValueTextWidth;
+        const noaStartXValue = currentX.value + 10;
         doc.text(noaText, noaStartXValue, current_y);
-        const noaXValue = noaStartXValue + 38;
+        const noaXValue = noaStartXValue + noaValueTextWidth;
         doc.text(`${noa.value}`, noaXValue, current_y);
         doc.line(noaXValue, current_y + factor, noaXValue + valueTextWidth3, current_y + factor);
         currentX.value = noaXValue + valueTextWidth3;
@@ -718,14 +729,13 @@ const generatePDF = () => {
             const materialValue = materialStartXValue + valueTextWidthMaterialDesc;
             doc.text(`${material.value}`, materialValue, fourthYCoordinate);
             doc.line(materialValue, fourthYCoordinate + factor, materialValue + valueTextWidthMaterial, fourthYCoordinate + factor);
-            currentX.value = valueTextWidthMaterialDesc + valueTextWidthMaterial + 20;
+            currentX.value = valueTextWidthMaterialDesc + valueTextWidthMaterial;
             console.log(currentX.value);
             // current_y = current_y + 10;
             const valueTextWidthDesc = doc.getTextWidth(descriptionText);
             const valueTextWidthDescription = doc.getTextWidth(`${description.value}`);
 
-            // current_y = current_y + 10;
-            const descStartXValue = currentX.value + 10;
+            const descStartXValue = currentX.value + 15;
             doc.text(descriptionText, descStartXValue, current_y);
 
             // if (currentX.value > max_width) current_y = current_y + 10;
@@ -738,18 +748,19 @@ const generatePDF = () => {
         current_y = current_y + 10;
 
         // doc.setFont('DejaVuSans');
-        const lambdaSymbol = new Image();
-        lambdaSymbol.src = '/demo/images/lambda.png';
+        // const lambdaSymbol = new Image();
+        // lambdaSymbol.src = '/demo/images/lambda.png';
+        //  `${lambda1.value}`, `${lambda2.value}` `${lambda3.value}` 'λ',
         const tableData = [
             // Zone 1
-            ['Zone 1:', `${zoneone.value}`, 'x', `${lambda1.value}`, '- Mg:', `${mg1.value}`, '= Mr1:', `${mr1.value}`, 'NOA Mf:', `${mf1.value}`],
-            ['Zone 2:', `${zonetwo.value}`, 'x', `${lambda2.value}`, '- Mg:', `${mg2.value}`, '= Mr2:', `${mr2.value}`, 'NOA Mf:', `${mf2.value}`],
-            ['Zone 3:', `${zonethree.value}`, 'x', `${lambda3.value}`, '- Mg:', `${mg3.value}`, '= Mr3:', `${mr3.value}`, 'NOA Mf:', `${mf3.value}`]
+            ['Zone 1:', `${zoneone.value}`, 'x λ', `${lambda1.value}`, '- Mg:', `${mg1.value}`, ' = Mr1: ', `${mr1.value}`, 'NOA Mf: ', `${mf1.value}`],
+            ['Zone 2:', `${zonetwo.value}`, 'x λ', `${lambda2.value}`, '- Mg:', `${mg2.value}`, ' = Mr2: ', `${mr2.value}`, 'NOA Mf: ', `${mf2.value}`],
+            ['Zone 3:', `${zonethree.value}`, 'x λ', `${lambda3.value}`, '- Mg:', `${mg3.value}`, ' = Mr3: ', `${mr3.value}`, 'NOA Mf: ', `${mf3.value}`]
         ];
         console.log(tableData);
         // doc.setFont('times', 'normal');
         // Top-left corner where we start drawing the table
-        let startX = LeftStart - 1;
+        let startX = LeftStart;
         let startYY = current_y;
 
         tableData.forEach((row) => {
@@ -763,13 +774,13 @@ const generatePDF = () => {
                 doc.text(String(cell), x, startYY);
                 x += 18; // Space between columns
             });
-            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
-            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
-            doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
             startYY += 5; // Move to next row
             startYY += 5; // Move to next row
         });
-        current_y = current_y + 20;
+        current_y = current_y + 18;
         // console.log(doc.getFontList());
         // doc.setFont('GreekSymbol');
         // doc.text('αβγδεζηθλ   - Greek sample', 10, current_y);
