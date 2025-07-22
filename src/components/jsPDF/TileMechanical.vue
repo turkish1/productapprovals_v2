@@ -166,13 +166,13 @@ const generatePDF = () => {
 
         var currentDate = new Date();
         var formattedDate = currentDate.toLocaleDateString();
-        doc.text(approved, 10, 270, { align: 'left' });
+        doc.text(approved, 10, 285, { align: 'left' });
         const approvedWidth = doc.getTextWidth(approved);
-        doc.text('on: ' + formattedDate, approvedWidth + 15, 270);
+        doc.text('on: ' + formattedDate, approvedWidth + 15, 285);
 
-        doc.text(`${muniProcessNumber.value}`, 10, 280, { align: 'left' });
+        doc.text(`${muniProcessNumber.value}`, 10, 292, { align: 'left' });
         const procWidth = doc.getTextWidth(`${muniProcessNumber.value}`);
-        doc.text(`${municipality.value}`, procWidth + 15, 280);
+        doc.text(`${municipality.value}`, procWidth + 15, 292);
 
         // Add a paragraph of text
         // const paragraphText = "This PDF contains a watermark that says 'CONFIDENTIAL' across the center of the page. You can adjust the size, rotation, and opacity of the watermark.";
@@ -498,16 +498,16 @@ const generatePDF = () => {
             const valueTextWidthAnchor = doc.getTextWidth(`${anchorDescription.value}`);
             const udlanchorStartXValue = LeftStart;
             doc.text(anchordescriptionText, udlanchorStartXValue, current_y);
-            current_y = current_y + 10;
+            current_y = current_y + 5;
             const udlanchorValue = LeftStart;
             const x = 10;
             let y = current_y;
-            const maxWidth = 200;
+            const maxWidth = 180;
             const lines = doc.splitTextToSize(`${anchorDescription.value}`, maxWidth);
 
             // 2) determine a line‐height (you can tweak the multiplier)
             const fontSize = doc.getFontSize(); // e.g. 12
-            const lineHeight = fontSize * 1.15;
+            const lineHeight = fontSize * 0.9;
             // doc.text(`${anchorDescription.value}`, udlanchorValue, current_y);
             // 3) draw each line + underline
             lines.forEach((line) => {
@@ -527,9 +527,11 @@ const generatePDF = () => {
             });
             // doc.line(udlanchorValue, current_y + factor, udlanchorValue + valueTextWidthAnchor, current_y + factor);
             // currentX.value = udlanchorValue + valueTextWidthAnchor;
-            current_y = current_y + 10;
+
             //     console.log(currentX.value);
             doc.setFontSize(12);
+            current_y = y;
+            console.log(current_y);
             const valueTextWidthpolyDesc = doc.getTextWidth(udldescriptionText);
             const valueTextWidth_3 = doc.getTextWidth(`${udlDescription.value}`);
             const udldescStartXValue = LeftStart;
@@ -541,9 +543,9 @@ const generatePDF = () => {
             doc.text(`${udlDescription.value}`, udldescriptionValue, current_y);
             doc.line(udldescriptionValue, current_y + factor, udldescriptionValue + valueTextWidth_3, current_y + factor);
             currentX.value = udldescriptionValue + valueTextWidth_3;
-            console.log(currentX.value);
-            current_y = current_y + 10;
+            // console.log(currentX.value);
         }
+        current_y = current_y + 10;
         const sbsnoaText = 'Self Adhered NOA: ';
         const sbsapplicantText = 'S/A NOA Applicant: ';
         const sbsSystemFText = 'S/A System F: ';
