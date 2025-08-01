@@ -35,7 +35,7 @@ export default function usePostBurLambda() {
 
     const dripEdge = async (dripedge) => {
         drippayload.value = dripedge;
-        console.log(payload.value);
+        console.log(drippayload.value);
         loading.value = true;
         error.value = null;
         try {

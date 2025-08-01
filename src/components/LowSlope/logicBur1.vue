@@ -118,7 +118,7 @@ function validateHeight() {
     validateHeightInput();
     isHeightValid.value = true;
     addCheckmarks();
-    burpdfStore.addpdfData(dims);
+    // burpdfStore.addpdfData(dims);
 }
 function addCheckmarks() {
     if (isHeightValid.value || isDisabledslope.value) {

@@ -142,7 +142,7 @@ const license = ref(permitStore.$state.permitapp[0]?.formdt?.license || '');
 const tileNoaInfo = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]);
 const mechtileNoaInfo = ref(mechStore.tilemech.value[0]);
 
-const burInfo = ref(burpdfStore.$state.burpdfinput[1]);
+const burInfo = ref(burpdfStore.$state.burpdfinput[0]?.burpdfData);
 const isPaddySingle = ref(false);
 const burInfoData = ref(burInfo.value?.burpdfData || '');
 const singlePaddyData = ref(tileNoaInfo.value?.singlepaddyData || '');
@@ -198,7 +198,7 @@ function pick(field) {
 }
 
 function burpick(burfield) {
-    return isRoofLowslopeValid.value ? burInfoData.value[burfield] : '';
+    return isRoofLowslopeValid.value ? burInfo.value[burfield] : '';
 }
 function shinglePick(shfield) {
     return isRoofShingleValid.value ? shData.value[shfield] : '';
@@ -285,6 +285,7 @@ onMounted(() => {
     displayUserInfo();
     console.log(mechData);
     console.log(mechStore);
+    console.log(burpdfStore.$state.burpdfinput[0]);
 });
 
 //  callPdfSign,

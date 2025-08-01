@@ -187,7 +187,7 @@ async function load() {
 
         formData.muniProc = muniProcess.value;
         formData.address = inputAddress.value;
-
+        store.addSystem(formData);
         // commented because of the onSubmit
         await procReceive(formData);
         await callPermitdata(formData);

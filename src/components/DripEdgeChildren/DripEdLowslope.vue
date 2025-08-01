@@ -104,6 +104,9 @@ function getdripSize(event) {
         console.log('The element not mounted yet');
     }
     console.log(typeSizes.value);
+    dripStagedata.DripEdgeMaterial = selectDripEdge.value;
+    dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
+    dripEdge(dripStagedata);
     checkRoof();
 }
 
@@ -129,11 +132,6 @@ const storeDripEdgeSize = async (event) => {
         console.log(dripStore.$state.dripinput);
         // isRoofLowslopeValid.value = false;
     }
-
-    dripStagedata.DripEdgeMaterial = selectDripEdge.value;
-    dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-
-    await stageDripedge();
 };
 
 const stageDripedge = async () => {
