@@ -6,14 +6,14 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 // import { invoke, until } from '@vueuse/core';
-import { usePostGeneralpageLambda } from '@/composables/Postdata/usePostGeneralpageLambda';
+// import { usePostGeneralpageLambda } from '@/composables/Postdata/usePostGeneralpageLambda';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import Divider from 'primevue/divider';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const { postGeneral } = usePostGeneralpageLambda();
+// const { postGeneral } = usePostGeneralpageLambda();
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
 const store = useRoofListStore();
@@ -126,7 +126,7 @@ function roofArea() {
     dataGeneral.roofCheck = checked;
     console.log(dataGeneral);
     generalpageStore.addgeneralpdfData(dataGeneral);
-    postGeneral(generalpageStore);
+    // postGeneral(generalpageStore);
     isGenaralPageValid.value = true;
 }
 
