@@ -1,5 +1,6 @@
 <script setup>
 // ---- imports -------------------------------------------------------------
+import usePermitData from '@/composables/Postdata/usePermitappData';
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 import useLast from '@/composables/lastNumber.js';
 import { useprocStore } from '@/stores/processStore';
@@ -28,7 +29,7 @@ const { procData, procReceive } = useCreateProcessNumber();
 // getUser, addUser these two go after accountUsers but are not being used - marked for removal
 const { accountUsers } = useGlobalState();
 const store = usePermitappStore();
-
+const { callPermitdata } = usePermitData();
 // static options
 const type = ref([
     { name: 'Roofing Permit', code: 'RP' },
@@ -92,6 +93,7 @@ const cellPhn = computed(() => {
     if (accountUsers.value[0]?.bphone !== '') {
         isPhoneValid.value = true;
         phone.value = accountUsers.value[0].bphone;
+        console.log(phone.value);
     }
     return isPhoneValid.value === true ? phone.value : accountUsers.value[0]?.bphone;
 });
@@ -104,7 +106,6 @@ watchOnce(setProperties, cellPhn, () => {
 async function setProperties() {
     googleAccount.value = await accountUsers.value[0];
 
-    // phone.value = googleAccount.value?.bphone || '';
     name.value = googleAccount.value?.name || '';
     email.value = googleAccount.value?.email || '';
     licenseStat.value = googleAccount.value?.secondary_status || '';
@@ -113,7 +114,6 @@ async function setProperties() {
     // address.value = procStore.$state.processinput[0]?.procData?.address;
     // console.log(address.value);
     phone.value = accountUsers.value[0]?.bphone;
-    // processN.value = procStore.$state.processinput[0]?.procData?.processNumber;
 }
 invoke(async () => {
     await until(isPhoneValid).toBe(true);
@@ -144,6 +144,9 @@ async function fetchData(url) {
 
         data.value = datas.value.body.MinimumPropertyInfos[0];
 
+        console.log(data.value);
+        formData.contractor = data.value.dba;
+        formData.license = data.value.secondary_status;
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
         isHistoric.value = await datas.value.body.isHistoric;
@@ -151,6 +154,7 @@ async function fetchData(url) {
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
     } catch (err) {
+        alert('No data found or enter correct address!');
         error.value = err.message;
     } finally {
         loading.value = false;
@@ -164,7 +168,6 @@ async function load() {
 
         muniProcessdata.value = muniProcess.value;
         const addr = inputAddress.value;
-        // https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
         await fetchData(url);
@@ -185,18 +188,24 @@ async function load() {
         formData.muniProc = muniProcess.value;
         formData.address = inputAddress.value;
 
-        procReceive(formData);
+        // commented because of the onSubmit
+        await procReceive(formData);
+        await callPermitdata(formData);
     } catch (err) {
         alert(err);
     }
 }
 
-function onSubmit() {
-    procReceive(formData);
+async function onSubmit() {
+    // await procReceive(formData);
+
+    store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, inputAddress.value);
 }
 
 function addItemAndClear() {
     console.log(inputAddress.value);
+    // post(formData);
+
     store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, inputAddress.value);
 
     console.log(store);
@@ -235,6 +244,10 @@ function addItemAndClear() {
                         <!-- blinking label -->
 
                         <Button type="button" icon="pi pi-search" :loading="loading" @click="load" />
+                        <!--
+  <note>Loading: {{ isLoading.toString() }}</note>
+  <note>Finished: {{ isFinished.toString() }}</note>
+  <note>Aborted: {{ isAborted.toString() }}</note> -->
                     </div>
                 </div>
                 <div class="field">
@@ -296,7 +309,8 @@ function addItemAndClear() {
 
                 <!-- submit -->
                 <div class="span-2 submit-row">
-                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear" />
+                    <!-- @click="addItemAndClear"  -->
+                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" />
                 </div>
             </form>
         </div>

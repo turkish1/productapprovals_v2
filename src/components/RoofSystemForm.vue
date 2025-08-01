@@ -1,101 +1,88 @@
 <script setup>
 import useGeneral from '@/composables/GeneralPage/use-Generalpage.js';
-import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useroofCheckStore } from '@/stores/roofCheckStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
 import { reactive, ref } from 'vue';
 import RoofSystemList from './RoofSystemList.vue';
 
-const generalpageStore = useGeneralpdfStore();
-const roofCheck = useroofCheckStore();
+// PrimeVue Components
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
 
-const store = useRoofListStore();
+// Store references
 const permitStore = usePermitappStore();
+const roofCheck = useroofCheckStore();
+const roofStore = useRoofListStore();
 
-// Add general page data to create pdf later
+// Roof system options
+const roofTypesDefault = [{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }];
+const roofTypesMiamiBeach = roofTypesDefault.slice(1); // all except the empty one
 
-// Assume that permitStore.$state.permitapp is an array and that the first item
-// has a property "miamibeach" that can be converted to a number.
-const MB = ref(permitStore.$state.permitapp[0]?.miamibeach);
-
+// Form state
 const area = ref('');
 const selectedItem = ref(null);
-const type = ref([{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
-const types = ref([{ name: ' ' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }]);
+const checked = ref(false);
 
+// Validation flags
 const isMiamiBeachValid = ref(false);
-const mbVal = ref(2);
-// Use MB.value (not MB._value) to access the reactive value.
-const convertMB = useToNumber(MB.value);
+const mbExpectedValue = 2;
 
+// Permit logic
+const MB = ref(permitStore.$state.permitapp[0]?.miamibeach);
+const convertMB = useToNumber(MB.value);
 tryOnMounted(() => {
-    console.log(MB.value);
-    console.log(permitStore.$state);
-    if (convertMB.value === mbVal.value) {
-        console.log('Entry');
-        isMiamiBeachValid.value = true;
-        console.log(isMiamiBeachValid.value);
-    }
+    isMiamiBeachValid.value = convertMB.value === mbExpectedValue;
 });
 
-// Add general page data to create pdf later
-const { addRoof } = useGeneral();
-const showGeneralPage = ref('');
-// Reset the roof list store.
-function clearSelected() {
-    store.$reset();
-}
-const checked = ref(false);
+// General page logic
+const { addRoof, roofArea } = useGeneral();
 const dataGeneral = reactive({ roofCheck: '' });
-// When the user changes the selection, add the item based on the entered area.
-function addItemAndClear() {
-    // Get the selected item name (if any)
-    const item = selectedItem.value ? selectedItem.value.name : '';
-    if (!item || item.trim() === '') {
-        return;
-    }
-    // Check the item name and call the appropriate store method.
-    if (item === 'Asphalt Shingle') {
-        const dim1 = area.value;
-        store.addSystemShingle(item, dim1);
-        console.log(item, dim1);
-    } else if (item === 'Low Slope') {
-        const dim2 = area.value;
-        store.addSystemBur(item, dim2);
-    } else if (item === 'Mechanical Fastened Tile') {
-        const dim3 = area.value;
-        store.addSystemMTile(item, dim3);
-    } else if (item === 'Adhesive Set Tile') {
-        const dim4 = area.value;
-        store.addSystemATile(item, dim4);
-    } else if (item === 'Metal Panel') {
-        const dim5 = area.value;
-        store.addSystemMetal(item, dim5);
-    }
-    // showGeneralPage.value = 'show';
-    // generalpageStore.addgeneralpdfData(showGeneralPage);
-    dataGeneral.roofCheck = checked;
-    console.log(dataGeneral.roofCheck);
-    roofCheck.addCheck(dataGeneral);
+const showGeneralPage = ref('');
 
-    console.log(roofCheck);
-    clear();
+// Add selected roof item to store and clear inputs
+async function addItemAndClear() {
+    const itemName = selectedItem.value?.name?.trim();
+    if (!itemName) return;
+
+    const dim = area.value;
+
+    const systemMap = {
+        'Asphalt Shingle': () => roofStore.addSystemShingle(itemName, dim),
+        'Low Slope': () => roofStore.addSystemBur(itemName, dim),
+        'Mechanical Fastened Tile': () => roofStore.addSystemMTile(itemName, dim),
+        'Adhesive Set Tile': () => roofStore.addSystemATile(itemName, dim),
+        'Metal Panel': () => roofStore.addSystemMetal(itemName, dim)
+    };
+
+    systemMap[itemName]?.();
+    console.log(checked.value);
+    dataGeneral.roofCheck = checked.value;
+    roofCheck.addCheck(dataGeneral);
+    // roofArea(roofStore);
+    clearInputs();
 }
-const addGeneralpageData = () => {
+
+// Submit full general page data
+function addGeneralpageData() {
     addRoof(checked);
-    clear();
-};
-// Clear the input fields.
-function clear() {
+    clearInputs();
+}
+
+// Reset roof system inputs
+function clearInputs() {
     area.value = '';
     selectedItem.value = null;
 }
+
+// Reset full roof list
+function clearSelected() {
+    roofStore.$reset();
+}
 </script>
+
 <!-- ───────────────────────── template (modern) ────────────────────────── -->
 <!-- RoofUploadView.vue  ─────────────────────────────────────────────── -->
 
@@ -122,7 +109,7 @@ function clear() {
 
                 <div class="field">
                     <label for="system">Roof System</label>
-                    <Select id="system" v-model="selectedItem" :options="isMiamiBeachValid ? types : type" optionLabel="name" placeholder="Select roof system" class="w-full" @change="addItemAndClear" />
+                    <Select id="system" v-model="selectedItem" :options="isMiamiBeachValid ? roofTypesMiamiBeach : roofTypesDefault" optionLabel="name" placeholder="Select roof system" class="w-full" @change="addItemAndClear" />
                 </div>
                 <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-8">
                     <div class="flex items-center mt-4 space-y-6">

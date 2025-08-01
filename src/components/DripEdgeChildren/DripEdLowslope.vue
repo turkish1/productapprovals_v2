@@ -1,7 +1,7 @@
 <script setup>
 import useLowslopeDrip from '@/composables/DripEdge/use-LowslopeDrip';
-
 import useDripedge from '@/composables/DripEdge/useDripedge';
+import usePostBurLambda from '@/composables/Postdata/usePostBurLambda';
 
 import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { useRoofListStore } from '@/stores/roofList';
@@ -12,10 +12,10 @@ const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
 const { resetState } = usedripedgeStore();
 // const { type, holdSize, hold } = usedripAxios();
 // const selectDripEdge = ref('');
-
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
+const { dripEdge } = usePostBurLambda();
 
 const typesLw = ref();
 const { typeSize, ltype } = useLowslopeDrip();
@@ -46,6 +46,10 @@ const callState = tryOnMounted(() => {
 });
 
 const dripData = reactive({
+    DripEdgeMaterial: '',
+    DripEdgeSize: ''
+});
+const dripStagedata = reactive({
     DripEdgeMaterial: '',
     DripEdgeSize: ''
 });
@@ -115,18 +119,28 @@ function lowslope() {
     // storeDripEdgeSize(selectDripEdgeSize.value);
 }
 
-const storeDripEdgeSize = (event) => {
+const storeDripEdgeSize = async (event) => {
     console.log(dripData.DripEdgeSize);
     if (isRoofLowslopeValid.value === true) {
         console.log(selectDripEdgeSize.value);
         dripData.DripEdgeSize = selectDripEdgeSize.value;
-        console.log(dripData.DripEdgeSize);
         dripStore.insertDripAtIndex(0, dripData.DripEdgeMaterial);
         dripStore.insertDripAtIndex(2, dripData.DripEdgeSize);
         console.log(dripStore.$state.dripinput);
         // isRoofLowslopeValid.value = false;
     }
+
+    dripStagedata.DripEdgeMaterial = selectDripEdge.value;
+    dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
+
+    await stageDripedge();
 };
+
+const stageDripedge = async () => {
+    console.log(dripStagedata);
+    await dripEdge(dripStagedata);
+};
+
 const resetButton = () => {
     dripStore.$reset();
 };

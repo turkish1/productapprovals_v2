@@ -76,10 +76,9 @@ export default function useMech() {
                 mechanicalData.two_number_eight_screw = noaNum.value[0].two_number_eight_screw;
                 mechanicalData.mechanicaltilefastener = noaNum.value[0].mechanicaltilefastener;
                 mechanicalData.fastenerValues = noaNum.value[0].fastenerValues;
+                console.log(mechanicalData, 'System added');
 
                 mechStore.addNoa(mechanicalData);
-
-                console.log(mechanicalData, 'System added');
             }
         } catch (error) {
             console.log('Error, fectching data', error);

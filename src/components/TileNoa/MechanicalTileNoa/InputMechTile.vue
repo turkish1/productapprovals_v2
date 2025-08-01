@@ -6,11 +6,12 @@ import { useExposureD } from '@/stores/exposuredStore';
 
 import useMechNumber from '@/composables/fetchTech/use-systemMechNumber';
 
-import useMech from '@/composables/fetchTech/use-tileMechanical';
+import usePostMechanicalToLambda from '@/composables/Postdata/usePostMechanicalLambda';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
 import { useHeightValidation } from '@/composables/Validation/use-mechHeight';
 import { useNumberValidation } from '@/composables/Validation/use-mechSlope';
+import useMech from '@/composables/fetchTech/use-tileMechanical';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
@@ -35,6 +36,7 @@ const suggestions = ref([]);
 const showSuggestions = ref(false);
 // This calls the NOAs
 const { callNumber, mechanicalStore } = useMechNumber();
+const { postMech, postUDLMech, postSAMech } = usePostMechanicalToLambda();
 
 const { takeMechInput, mechanicalData, mechStore } = useMech();
 console.log(mechStore);
@@ -42,6 +44,7 @@ const { Edatamounted, etileStore } = useUDL();
 
 const { zones } = useGlobalState();
 const tilenoas = reactive({
+    mechIdentifier: 'mechanicaltile',
     manufacturer: '',
     noa: '',
     material: '',
@@ -49,20 +52,20 @@ const tilenoas = reactive({
     Table2: [],
     Table3: [],
     expiration_date: '',
-    resistance: [],
+    resistance: '',
     selection: '',
-    select_tile: [],
+    select_tile: '',
     tile_map: [],
     table2_map: [],
     two_ten_d_RS_Nails: null,
     one_number_eight_screw: null,
     two_number_eight_screw: null,
-    mechanicaltilefastener: [],
-    fastenerValues: [],
+    mechanicaltilefastener: '',
+    fastenerValues: '',
     slope: '',
     height: '',
-    dripEdgeMaterial: [],
-    dripEdgeSize: [],
+    dripEdgeMaterial: '',
+    dripEdgeSize: '',
     deckType: '',
     expiration_date: '',
     prescriptiveSelection: '',
@@ -131,8 +134,7 @@ onMounted(() => {
 let datamechnoas = ref(mechanicalData);
 function grabInput() {
     console.log(query.value);
-    console.log(datamechnoas);
-    console.log(mechanicalData);
+
     datamechnoas.value = query.value;
 
     if (datamechnoas.value !== null) {
@@ -152,7 +154,6 @@ const filteredSuggestions = computed(() => {
     newArray.value = mechanical.value.tileMechInput[0]?.tileMechNumber?.noa;
     console.log(newArray.value);
     iterateItem.value = newArray.value.body ?? [];
-    console.log(iterateItem.value);
     const stringyfied1 = JSON.stringify(iterateItem.value).split('[').join();
 
     const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
@@ -161,13 +162,14 @@ const filteredSuggestions = computed(() => {
     return splitItem.value.filter((item) => item.toString().includes(query.value));
 });
 const saTiles = reactive({
+    noa: '',
     manufacturer: '',
     material: '',
-    system: [],
-    designpressure: [],
+    system: '',
+    designpressure: '',
     pressure: '',
     prescriptiveSelection: '',
-    description: [],
+    description: '',
     Description_F1: '',
     Description_F2: '',
     Description_F3: '',
@@ -180,17 +182,18 @@ const saTiles = reactive({
     Description_F10: '',
     Description_F11: '',
     Description_F12: '',
-    arrDesignPressure: []
+    arrDesignPressure: [],
+    saIdentifier: 'sa'
 });
 
 const udlTile = reactive({
     noa: '',
     manufacturer: '',
     material: '',
-    system: [],
-    designPressure: [],
-    Anchor_Base_Sheet: [],
-    TileCap_Sheet_Description: [],
+    system: '',
+    designPressure: '',
+    Anchor_Base_Sheet: '',
+    TileCap_Sheet_Description: '',
     Anchor_Base_Sheet_E1: '',
     Anchor_Base_Sheet_E2: '',
     Anchor_Base_Sheet_E3: '',
@@ -219,7 +222,7 @@ const udlTile = reactive({
     TileCap_Sheet_Description_E12: '',
     TileCap_Sheet_Description_E13: '',
     arrDesignPressure: [],
-
+    udlIdentifier: 'udl',
     tileCap: '',
     Anchor_Base: '',
     systemSelected: '',
@@ -297,26 +300,19 @@ function checkTile() {
         tilenoas.select_tile = multiTiles.select_tile;
         console.log(tilenoas);
     }
-
-    //   if (datamountedMech.value[0].Table2.content === 'multiple' ) {
-    //         isTileSelectionValid = true;
-    //         showMaterialValid = true;
-    //     } else {
-    //         showMaterialValid = true;
-    //         isTileValid = true;
-    //     }
+    mechStaging();
 }
 
 watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
 
 const dt = ref('');
 function getdeckType(event) {
-    console.log(selectedDeck._value.name, event.value.name);
+    // console.log(selectedDeck._value.name, event.value.name);
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
         tilenoas.deckType = dt.value;
         isDisabledslope.value = false;
-        console.log(dt.value);
+        // console.log(dt.value);
     }
 }
 
@@ -341,9 +337,9 @@ function updateTile(event) {
             zonetwo.lambda2 = tileSel.values;
             zonethree.lambda3 = tileSel.values;
             console.log(zoneone.lambda1);
-            mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
-            mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
-            mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
+            // mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
+            // mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
+            // mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
         }
     });
     let types = multiTiles.tile_map;
@@ -401,22 +397,17 @@ function updateTile(event) {
         zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
         zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
         console.log(zoneone.mr1);
-        mechStore.tilemech.value[0].mg1 = zoneone.mg1;
-        mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
-        mechStore.tilemech.value[0].mg3 = zonethree.mg3;
-
-        mechStore.tilemech.value[0].mr1 = zoneone.mr1;
-        mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
-        mechStore.tilemech.value[0].mr3 = zonethree.mr3;
     });
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
-
-    // checkMaterial();
+    console.log(tilenoas.fastenerValues);
+    // mechStaging();
 }
 function sysEcheckInput() {
     if (Edatamounted.value.length !== null) {
         Edatamounted.value.forEach((item, index) => {
+            console.log(item);
+            udlTile.noa = item.systemDataE.noa;
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;
@@ -460,20 +451,20 @@ const underlaymentType = ref([
 
 watch(selectedUnderlayment, () => {
     save.value = selectedUnderlayment.value.key;
-    saved_value.value = selectedUnderlayment.value.selectedBasesheet;
-    console.log(saved_value.value);
+    // saved_value.value = selectedUnderlayment.value.selectedBasesheet;
+    console.log(save.value);
     if (save.value === 1) {
-        isTileValid.value = true;
+        isTileValid = true;
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = false;
     } else if (save.value === 2) {
-        isTileValid.value = true;
+        isTileValid = true;
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = true;
     } else if (save.value === 3) {
-        isTileValid.value = true;
+        isTileValid = true;
         isUDLValid.value = true;
         isUDLNOAValid.value = true;
         isSAValid.value = false;
@@ -481,7 +472,7 @@ watch(selectedUnderlayment, () => {
         isUDLValid.value = false;
         isUDLNOAValid.value = false;
         isSAValid.value = false;
-        isTileValid.value = false;
+        isTileValid = false;
     }
 });
 
@@ -519,27 +510,56 @@ function checkData() {
     }
 }
 
+const saPressure = ref(null);
 const visible = ref(false);
-
 function checkInputSystem() {
-    datamounted.value.forEach((item, index) => {
-        saTiles.Description_F1 = item.systemData.Description_F1;
-        saTiles.Description_F2 = item.systemData.Description_F2;
-        saTiles.Description_F3 = item.systemData.Description_F3;
-        saTiles.Description_F4 = item.systemData.Description_F4;
-        saTiles.Description_F5 = item.systemData.Description_F5;
-        saTiles.Description_F6 = item.systemData.Description_F6;
-        saTiles.Description_F7 = item.systemData.Description_F7;
-        saTiles.Description_F8 = item.systemData.Description_F8;
-        saTiles.Description_F9 = item.systemData.Description_F9;
-        saTiles.arrDesignPressure = item.systemData.designPressure;
-        if (item.systemData.system.length > 1) {
+    datamounted.value.forEach(({ systemData }) => {
+        if (!systemData) return;
+
+        // Dynamically assign Description_F1 to Description_F9
+        for (let i = 1; i <= 9; i++) {
+            const key = `Description_F${i}`;
+            if (systemData[key]) {
+                saTiles[key] = systemData[key];
+            }
+        }
+        console.log(systemData);
+        // Set design pressure
+        saPressure.value = systemData.designPressure[0];
+        // saTiles.designpressure = systemData.designPressure[0];
+        // saTiles.system = systemData.system[0];
+
+        console.log(saPressure.value);
+        // Check system value
+        if (Array.isArray(systemData.system) && systemData.system.length > 1) {
             addFSystem();
         } else {
-            saTiles.system = item.systemData.system;
+            saTiles.system = systemData.system;
         }
     });
 }
+
+// function checkInputSystem() {
+//     datamounted.value.forEach((item, index) => {
+//         console.log(item.systemData);
+//         saTiles.Description_F1 = item.systemData.Description_F1;
+//         saTiles.Description_F2 = item.systemData.Description_F2;
+//         saTiles.Description_F3 = item.systemData.Description_F3;
+//         saTiles.Description_F4 = item.systemData.Description_F4;
+//         saTiles.Description_F5 = item.systemData.Description_F5;
+//         saTiles.Description_F6 = item.systemData.Description_F6;
+//         saTiles.Description_F7 = item.systemData.Description_F7;
+//         saTiles.Description_F8 = item.systemData.Description_F8;
+//         saTiles.Description_F9 = item.systemData.Description_F9;
+//         saTiles.pressure = item.systemData.designPressure;
+//         // if the systemData.system is greater than 1 we jump to another function
+//         if (item.systemData.system.length > 1) {
+//             addFSystem();
+//         } else {
+//             saTiles.system = item.systemData.system;
+//         }
+//     });
+// }
 const Anchor_Base = reactive({
     Anchor_Base_Sheet_E1: '',
     Anchor_Base_Sheet_E2: '',
@@ -556,6 +576,7 @@ const Anchor_Base = reactive({
     Anchor_Base_Sheet_E13: ''
 });
 function EcheckInputSystem() {
+    console.log(datamountedsystemE.value);
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
 
@@ -672,25 +693,30 @@ function setRoofInputs() {
     tilenoas.area = dims.area;
     console.log(tilenoas.area, dims.slope);
 
-    console.log(mechStore);
+    // console.log(mechStore);
     addCheckmarks();
 }
 
-function checkInputSA() {
+async function checkInputSA() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
-            console.log(item);
+            console.log(item, item.systemData.designPressure[0]);
             saTiles.manufacturer = item.systemData.manufacturer;
             saTiles.material = item.systemData.material;
-            saTiles.system = item.systemData.system;
+            saTiles.system = item.systemData.system[0];
+            saTiles.description = item.systemData.description[0];
+            saTiles.noa = item.systemData.noa;
+            // saTiles.designpressure = item.systemData.designPressure[0];
         });
     }
 }
+
 let isTileSelectionValid = ref(false);
 let showMaterialValid = ref(false);
 function checkInput() {
     if (datamountedMech.value.length !== null) {
         console.log(datamountedMech.value);
+        tilenoas.noa = datamountedMech.value[0].noa;
         tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
         tilenoas.description = datamountedMech.value[0].description;
         tilenoas.material = datamountedMech.value[0].material;
@@ -706,14 +732,7 @@ function checkInput() {
             isMultiTileValid = false;
         }
     }
-    console.log(tilenoas.height);
 
-    mechStore.tilemech.value[0].slope = dims.slope;
-    mechStore.tilemech.value[0].height = dims.height;
-    console.log(mechStore.tilemech.value[0]);
-    mechStore.tilemech.value[0].area = dims.area;
-    mechStore.tilemech.value[0].perimeter = dims.per;
-    mechStore.tilemech.value[0].decktype = dt.value;
     selectedExposure();
     checkTile();
 }
@@ -821,20 +840,6 @@ function checkMaterial() {
     zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
     zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
     zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
-
-    console.log(dims);
-
-    mechStore.tilemech.value[0].mf1 = zoneone.mf1;
-    mechStore.tilemech.value[0].mf2 = zonetwo.mf2;
-    mechStore.tilemech.value[0].mf3 = zonethree.mf3;
-    // console.log(selectedUnderlayment.value, mechStore.tilemech.value[0]);
-    mechStore.tilemech.value[0].height = dims.height;
-    mechStore.tilemech.value[0].slope = dims.slope;
-    console.log(mechStore.tilemech.value[0].slope);
-    mechStore.tilemech.value[0].area = tilenoas.area;
-    mechStore.tilemech.value[0].perimeter = tilenoas.perimeter;
-    mechStore.tilemech.value[0].decktype = tilenoas.deckType;
-    // console.log(selectedUnderlayment.value);
 }
 
 const maps = ref([]);
@@ -842,11 +847,64 @@ const vals = ref([]);
 const v0 = ref(null);
 const mfupdate = ref();
 
+// function updateMF(event) {
+//     console.log('Selected fastener:', event);
+
+//     const mat = tilenoas.fastenerValues;
+//     const selectedExposure = exposureChoosen.value;
+
+//     // Set zone data
+//     const zoneData = selectedExposure === 'c' ? zones.value : zoned.value;
+//     [zoneone.zone, zonetwo.zone, zonethree.zone] = zoneData;
+
+//     if (selectedExposure === 'c') {
+//         tilenoas.savedfastener = event;
+//     } else {
+//         console.log('D exposure data:', tbd, zoned, useExposured());
+//     }
+
+//     // Map fastener values
+//     const entries = Object.entries(mat);
+//     maps.value = entries.map(([key]) => key);
+//     vals.value = entries.map(([_, val]) => val);
+
+//     // Assign matching mf values to zones
+//     entries.forEach(([key, value]) => {
+//         mfupdate.value = value;
+
+//         if (key === event.value) {
+//             zoneone.mf1 = value;
+//             zonetwo.mf2 = value;
+//             zonethree.mf3 = value;
+//         }
+//     });
+
+//     Validation function
+//     const validateMF = (mf, mr, setValid, setInvalid, checkFunc, label) => {
+//         const mfVal = useToNumber(mf).value;
+//         const mrVal = useToNumber(mr).value;
+
+//         console.log(`${label}:`, { mfVal, mrVal, type: typeof mfVal });
+
+//         if (mrVal < mfVal) {
+//             console.log(`Valid: MR < MF for ${label}`);
+//             setValid.value = true;
+//             setInvalid.value = false;
+//         } else {
+//             console.log(`Invalid: MR >= MF for ${label}`);
+//             checkFunc();
+//         }
+//     };
+
+//     validateMF(zoneone.mf1, zoneone.mr1, ismrValidMR1, ismrInvalid1, checkMR1, 'MF1');
+//     validateMF(zonetwo.mf2, zonetwo.mr2, ismrValidMR2, ismrInvalid2, checkMR2, 'MF2');
+//     validateMF(zonethree.mf3, zonethree.mr3, ismrValidMR3, ismrInvalid3, checkMR3, 'MF3');
+// }
+// Validation function
+
 function updateMF(event) {
-    console.log(event.value);
-
     let mat = tilenoas.fastenerValues;
-
+    console.log(event);
     console.log(mat, tilenoas.savedfastener);
     if (exposureChoosen.value === 'c') {
         console.log('Else C exposure');
@@ -855,27 +913,9 @@ function updateMF(event) {
             zoneone.zone = item[0];
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
-            mechStore.tilemech.value[0].zoneone = zoneone.zone;
-            mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
-            mechStore.tilemech.value[0].zonethree = zonethree.zone;
-            console.log(mechStore.tilemech.value[0].zoneone);
         });
         tilenoas.savedfastener = event.value;
-        mechStore.tilemech.value[0].savedfastener = tilenoas.savedfastener;
-        mechStore.tilemech.value[0].tiletype = tilenoas.tiletype;
-        mechStore.tilemech.value[0].prescriptiveSelection = saved_value.value;
-        mechStore.tilemech.value[0].lambda1 = zoneone.lambda1;
-        mechStore.tilemech.value[0].lambda2 = zonetwo.lambda2;
-        mechStore.tilemech.value[0].lambda3 = zonethree.lambda3;
-        mechStore.tilemech.value[0].mg1 = zoneone.mg1;
-        mechStore.tilemech.value[0].mg2 = zonetwo.mg2;
-        mechStore.tilemech.value[0].mg3 = zonethree.mg3;
-
-        mechStore.tilemech.value[0].mr1 = zoneone.mr1;
-        mechStore.tilemech.value[0].mr2 = zonetwo.mr2;
-        mechStore.tilemech.value[0].mr3 = zonethree.mr3;
-        console.log(mechStore.tilemech.value[0]);
-        console.log(mechStore);
+        console.log(tilenoas.savedfastener);
     } else {
         console.log('D exposure');
         console.log(tbd, zoned);
@@ -892,21 +932,17 @@ function updateMF(event) {
 
         maps.value.push(k);
         vals.value.push(v);
-        console.log(v, k);
+        // console.log(v, k);
 
-        console.log(vals.value[0], vals.value[1]);
+        // console.log(vals.value[0], vals.value[1]);
     });
     for (let i = 0; i < maps.value.length; i++) {
-        console.log(vals.value[i]);
+        // console.log(vals.value[i]);
         mfupdate.value = vals.value[i];
         if (maps.value[i] === event.value) {
             zoneone.mf1 = vals.value[i];
             zonetwo.mf2 = vals.value[i];
             zonethree.mf3 = vals.value[i];
-            mechStore.tilemech.value[0].mf1 = zoneone.mf1;
-            mechStore.tilemech.value[0].mf2 = zonetwo.mf2;
-            mechStore.tilemech.value[0].mf3 = zonethree.mf3;
-            console.log(mechStore.tilemech.value[0].mf1);
         }
 
         const mfcheck1 = zoneone.mf1;
@@ -948,7 +984,26 @@ function updateMF(event) {
             checkMR2();
         }
     }
+    mechStaging();
 }
+
+const postMetrictable = reactive({
+    noa: '',
+    applicant: '',
+    description: '',
+    material: '',
+    decktype: '',
+    prescriptive: '',
+    height: '',
+    slope: '',
+    perimeter: '',
+    area: '',
+    fastenervalues: '',
+    zoneone: [],
+    zonetwo: [],
+    zonethree: [],
+    mechIdentifier: 'mechanicalTile'
+});
 
 function checkMR1() {
     const mfcheck1 = zoneone.mf1;
@@ -963,6 +1018,22 @@ function checkMR1() {
         ismrValidMR1 = false;
     }
 }
+// function checkMR1() {
+//     const mfc1 = useToNumber(zoneone.mf1).value;
+//     const mr1 = useToNumber(zoneone.mr1).value;
+
+//     console.log('MF1:', mfc1, 'MR1:', mr1);
+
+//     if (mr1 > mfc1) {
+//         console.log('MR1 is greater than MF1 — Invalid');
+//         ismrInvalid1.value = true;
+//         ismrValidMR1.value = false;
+//     } else {
+//         console.log('MR1 is not greater than MF1 — Valid');
+//         ismrInvalid1.value = false;
+//         ismrValidMR1.value = true;
+//     }
+// }
 
 function checkMR2() {
     const mfcheck2 = zonetwo.mf2;
@@ -990,253 +1061,211 @@ function checkMR3() {
 }
 const keyValueSystemFPairsValues = ref({});
 const keyValueSystemFPairsKeys = ref({});
+
 function updateselectSystem(selectedsystemf) {
-    let sys = saTiles.system;
-    let dp = saTiles.arrDesignPressure;
-    let key = sys;
-    sys.forEach((key, index) => {
-        keyValueSystemFPairsValues.value[key] = dp[index];
-    });
-    key.forEach((key, index) => {
-        keyValueSystemFPairsKeys.value[key] = sys[index];
-    });
-    console.log(sys, key, dp);
-    if (keyValueSystemFPairsValues.value.F1 !== null && selectedsystemf.value !== null) {
-        udlDescPressure();
+    const systemArray = saTiles.system;
+    const pressureArray = saTiles.designpressure;
+
+    console.log(systemArray, pressureArray);
+
+    if (Array.isArray(systemArray) && Array.isArray(pressureArray)) {
+        systemArray.forEach((key, index) => {
+            keyValueSystemFPairsValues.value[key] = pressureArray[index];
+            keyValueSystemFPairsKeys.value[key] = systemArray[index];
+        });
     }
-    if (keyValueSystemFPairsValues.value.F2 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
+
+    if (selectedsystemf.value !== null) {
+        for (let i = 1; i <= 12; i++) {
+            const field = `F${i}`;
+            if (keyValueSystemFPairsValues.value[field] !== null) {
+                saDescPressure();
+                break; // Optional: stop after first match if only one call needed
+            }
+        }
     }
-    if (keyValueSystemFPairsValues.value.F3 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F4 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F5 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F6 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F7 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F8 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F9 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F10 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F11 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F12 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
+    mechSAStaging();
 }
+
 const keyValueSystemEPairsValues = ref({});
 const keyValueSystemEPairsKeys = ref({});
+
+// Assuming udlTile and Anchor_Base are imported or declared above
 function updateselectSystemE(selectedsystemE) {
-    let sys = udlTile.system;
-    let dp = udlTile.arrDesignPressure;
-    let key = sys;
-    sys.forEach((key, index) => {
-        keyValueSystemEPairsValues.value[key] = dp[index];
-    });
-    key.forEach((key, index) => {
-        keyValueSystemEPairsKeys.value[key] = sys[index];
-    });
-    if (keyValueSystemEPairsValues.value.E1 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E2 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E3 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E4 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E5 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E6 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E7 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E8 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E9 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E10 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E11 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E12 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
-    }
-    if (keyValueSystemEPairsValues.value.E13 !== null && selectedsystemE.value !== null) {
-        udlDescPressure();
+    const sys = udlTile.system;
+    const dp = udlTile.arrDesignPressure;
+
+    // Map system values to design pressures
+    keyValueSystemEPairsValues.value = Object.fromEntries(sys.map((key, i) => [key, dp[i]]));
+
+    // Optionally map keys (not clearly used)
+    keyValueSystemEPairsKeys.value = Object.fromEntries(sys.map((key, i) => [key, sys[i]]));
+
+    // Run description update only once if the selected value exists in mapping
+    if (selectedsystemE.value && keyValueSystemEPairsValues.value[selectedsystemE.value] !== null) {
+        udlDescPressure(selectedsystemE);
     }
 }
-function udlDescPressure() {
-    if (selectedsystemE.value === 'E1') {
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E1;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E1;
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E1;
-    }
-    if (selectedsystemE.value === 'E2') {
-        console.log(selectedsystemE.value, typeof selectedsystemE);
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E2;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E2;
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E2;
-        console.log(udlTile.TileCap_Sheet_Description_E2, keyValueSystemEPairsValues.value.E2, Anchor_Base.Anchor_Base_Sheet_E2);
-        console.log(udlTile.TileCap_Sheet_Description);
-        console.log(udlTile.designPressure);
-        console.log(udlTile.Anchor_Base_Sheet);
-    }
-    if (selectedsystemE.value === 'E3') {
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E3;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E3;
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E3;
-    }
-    if (selectedsystemE.value === 'E4') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E4;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E4;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E4;
-    }
-    if (selectedsystemE.value === 'E5') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E5;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E5;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E5;
+
+function udlDescPressure(selectedsystemE) {
+    const key = selectedsystemE.value;
+
+    // Dynamically resolve property names
+    const descriptionKey = `TileCap_Sheet_Description_${key}`;
+    const anchorKey = `Anchor_Base_Sheet_${key}`;
+
+    // Set tile properties dynamically
+    udlTile.TileCap_Sheet_Description = udlTile[descriptionKey];
+    udlTile.Anchor_Base_Sheet = Anchor_Base[anchorKey];
+    udlTile.designPressure = keyValueSystemEPairsValues.value[key];
+
+    console.log('Updated UDL Tile:', udlTile);
+
+    // Sync with store if available
+    if (etileStore.$state.tilesysEinput.length > 0) {
+        const input = etileStore.$state.tilesysEinput[0].systemDataE;
+
+        input.Anchor_Base = udlTile.Anchor_Base_Sheet;
+        input.tileCap = udlTile.TileCap_Sheet_Description;
+        input.dP = udlTile.designPressure;
+        input.systemSelected = key;
+        input.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
+
+        console.log('Updated Store:', etileStore.$state.tilesysEinput[0]);
     }
 
-    if (selectedsystemE.value === 'E6') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E6;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E6;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E6;
-    }
-    if (selectedsystemE.value === 'E7') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E7;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E7;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E7;
-    }
-    if (selectedsystemE.value === 'E8') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E8;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E8;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E8;
-    }
-    if (selectedsystemE.value === 'E9') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E9;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E9;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E9;
-    }
-    if (selectedsystemE.value === 'E10') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E10;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E10;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E10;
-    }
-    if (selectedsystemE.value === 'E11') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E11;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E11;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E11;
-    }
-    if (selectedsystemE.value === 'E12') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E12;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E12;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E12;
-    }
-    if (selectedsystemE.value === 'E13') {
-        udlTile.Anchor_Base_Sheet = Anchor_Base.Anchor_Base_Sheet_E13;
-        udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E13;
-        udlTile.designPressure = keyValueSystemEPairsValues.value.E13;
-    }
-    if (etileStore.$state.tilesysEinput.length !== 0) {
-        etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base = udlTile.Anchor_Base_Sheet;
-        etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
-        etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
-        etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
-        etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
-        console.log(etileStore.$state.tilesysEinput[0]);
-    }
+    // Call staging logic
+    mechUdlStaging();
 }
+
+const mechUdlStaging = async () => {
+    console.log(udlTile);
+    udlTile.Anchor_Base = etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base;
+    udlTile.systemSelected = selectedsystemE.value;
+    udlTile.prescriptiveSelection = etileStore.$state.tilesysEinput[0].systemDataE.prescriptiveSelection;
+    console.log(udlTile);
+
+    await postUDLMech(udlTile);
+};
 function saDescPressure() {
-    if (selectedsystemf.value === 'F1') {
-        saTiles.description = saTiles.Description_F1;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F1;
-    }
-    if (selectedsystemf.value === 'F2') {
-        saTiles.description = saTiles.Description_F2;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F2;
-    }
-    if (selectedsystemf.value === 'F3') {
-        saTiles.description = saTiles.Description_F3;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F3;
+    const selectedKey = selectedsystemf.value;
+
+    if (!selectedKey) return;
+
+    const descriptionKey = `Description_${selectedKey}`;
+    const pressureKey = keyValueSystemFPairsValues.value?.[selectedKey];
+
+    const description = saTiles?.[descriptionKey]?.[0] || '';
+    const designpressure = Array.isArray(pressureKey) ? pressureKey[0] : pressureKey || '';
+    console.log(keyValueSystemFPairsValues.value?.[selectedKey]);
+    saTiles.description = description;
+    saTiles.designpressure = saPressure.value;
+
+    if (selectedKey === 'F3') {
         console.log(saTiles.arrDesignPressure);
-    }
-    if (selectedsystemf.value === 'F4') {
-        saTiles.description = saTiles.Description_F4;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F4;
-    }
-    if (selectedsystemf.value === 'F5') {
-        saTiles.description = saTiles.Description_F5;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F5;
-    }
-    if (selectedsystemf.value === 'F6') {
-        saTiles.description = saTiles.Description_F6;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F6;
+    } else if (selectedKey === 'F4') {
+        console.log(saTiles);
     }
 
-    if (selectedsystemf.value === 'F7') {
-        saTiles.description = saTiles.Description_F7;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F7;
-    }
-    if (selectedsystemf.value === 'F8') {
-        saTiles.description = saTiles.Description_F8;
-
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F8;
-    }
-    if (selectedsystemf.value === 'F9') {
-        saTiles.description = saTiles.Description_F9;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F9;
-    }
-
-    if (selectedsystemf.value === 'F10') {
-        saTiles.description = saTiles.Description_F10;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F10;
-    }
-    if (selectedsystemf.value === 'F11') {
-        saTiles.description = saTiles.Description_F11;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F11;
-    }
-    if (selectedsystemf.value === 'F12') {
-        saTiles.description = saTiles.Description_F12;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F12;
-    }
-
-    if (ftileStore.$state.tilefinput.length !== 0) {
-        ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
-        ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
-        ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
-        console.log(saTiles.description, ftileStore.$state.tilefinput[0]);
+    if (ftileStore.$state.tilefinput.length > 0) {
+        const tileInput = ftileStore.$state.tilefinput[0].systemData;
+        tileInput.description = saTiles.description;
+        tileInput.pressure = saTiles.designpressure;
+        tileInput.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
     }
 }
+
+// function saDescPressure() {
+//     if (selectedsystemf.value === 'F1') {
+//         saTiles.description = saTiles.Description_F1[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F1;
+//     }
+//     if (selectedsystemf.value === 'F2') {
+//         saTiles.description = saTiles.Description_F2[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F2[0];
+//     }
+//     if (selectedsystemf.value === 'F3') {
+//         saTiles.description = saTiles.Description_F3[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F3[0];
+//         console.log(saTiles.arrDesignPressure);
+//     }
+//     if (selectedsystemf.value === 'F4') {
+//         saTiles.description = saTiles.Description_F4[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F4[0];
+//         console.log(saTiles);
+//     }
+//     if (selectedsystemf.value === 'F5') {
+//         saTiles.description = saTiles.Description_F5[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F5[0];
+//     }
+//     if (selectedsystemf.value === 'F6') {
+//         saTiles.description = saTiles.Description_F6[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F6[0];
+//     }
+
+//     if (selectedsystemf.value === 'F7') {
+//         saTiles.description = saTiles.Description_F7[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F7[0];
+//     }
+//     if (selectedsystemf.value === 'F8') {
+//         saTiles.description = saTiles.Description_F8[0];
+
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F8[0];
+//     }
+//     if (selectedsystemf.value === 'F9') {
+//         saTiles.description = saTiles.Description_F9[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F9[0];
+//     }
+
+//     if (selectedsystemf.value === 'F10') {
+//         saTiles.description = saTiles.Description_F10[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F10[0];
+//     }
+//     if (selectedsystemf.value === 'F11') {
+//         saTiles.description = saTiles.Description_F11[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F11[0];
+//     }
+//     if (selectedsystemf.value === 'F12') {
+//         saTiles.description = saTiles.Description_F12[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F12[0];
+//     }
+
+//     if (ftileStore.$state.tilefinput.length !== 0) {
+//         ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
+//         ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
+//         ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
+//     }
+// }
 function callReset() {
     resetSingle();
 }
 
-watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, dims, () => {});
+const mechStaging = async () => {
+    postMetrictable.noa = tilenoas.noa;
+    postMetrictable.applicant = tilenoas.manufacturer;
+    postMetrictable.description = tilenoas.description;
+    postMetrictable.material = tilenoas.material;
+    postMetrictable.area = dims.area;
+    postMetrictable.height = dims.height;
+    postMetrictable.slope = dims.slope;
+    postMetrictable.perimeter = dims.per;
+    postMetrictable.decktype = tilenoas.deckType;
+    postMetrictable.prescriptive = selectedUnderlayment.value.selectedBasesheet;
+    postMetrictable.fastenervalues = tilenoas.savedfastener;
+    postMetrictable.zoneone = zoneone;
+    postMetrictable.zonetwo = zonetwo;
+    postMetrictable.zonethree = zonethree;
+
+    await postMech(postMetrictable);
+};
+
+const mechSAStaging = async () => {
+    saTiles.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
+
+    await postSAMech(saTiles);
+};
+// checkInputSystem
+watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, dims, () => {});
 </script>
 <template>
     <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
@@ -1341,7 +1370,6 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
 
                 <div class="w-56 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: red">Select System E *</label>
-                    <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
                 </div>
                 <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -1364,7 +1392,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
             </div>
         </div>
 
-        <div class="gap-4 mt-10 space-x-10 space-y-6">
+        <div class="card-system gap-4 mt-10 space-x-10 space-y-6">
             <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20">
                 <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="saapplicant">S/A Applicant</label>
@@ -1420,7 +1448,7 @@ watch(checkInputSystem, MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrV
                 <label style="color: #122620" for="selecttile">Tile Type</label>
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
             </div>
-            <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 30px">
                 <label style="color: red">Select Mechanical Tile Fastnener *</label>
                 <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="updateMF" />
             </div>

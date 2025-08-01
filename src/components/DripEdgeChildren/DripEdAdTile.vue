@@ -1,6 +1,7 @@
 <script setup>
 import useADTileDrip from '@/composables/DripEdge/use-ADTileDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
+import usePostToLambda from '@/composables/Postdata/usePostToLambda';
 
 import { usedripADStore } from '@/stores/dripEdgeADTileStore';
 import { useRoofListStore } from '@/stores/roofList';
@@ -8,6 +9,7 @@ import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
+const { dripEdge } = usePostToLambda();
 
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
@@ -18,6 +20,7 @@ const { typeSize, ttype, holdSizes } = useADTileDrip();
 
 // Ref for the <select> element
 const selectSizeRef = ref(null);
+const loading = ref(false);
 
 const tileStore = usedripADStore();
 
@@ -47,6 +50,10 @@ const dripTileData = reactive({
     DripEdgeSize: ''
 });
 
+const dripStagedata = reactive({
+    DripEdgeMaterial: '',
+    DripEdgeSize: ''
+});
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
     dripTileData.DripEdgeSize = selectDripEdgeSize.value;
@@ -78,23 +85,38 @@ function getdripSize() {
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
+            isdripMaterialValid.value = true;
+            isdripsizeValid.value = true;
+            console.log(isdripMaterialValid.value);
             checkRoof();
         }
         if (selectDripEdge.value === 'Stainless Steel Metal ²') {
             typeSizes.value = holdSize.value.size2;
+            isdripMaterialValid.value = true;
+            isdripsizeValid.value = true;
+            console.log(isdripMaterialValid.value);
             checkRoof();
         }
         if (selectDripEdge.value === 'Aluminum Metal ³') {
             typeSizes.value = holdSize.value.size3;
+            isdripMaterialValid.value = true;
+            isdripsizeValid.value = true;
+            console.log(isdripMaterialValid.value);
             checkRoof();
         }
         if (selectDripEdge.value === 'Copper Metal ⁴') {
             typeSizes.value = holdSize.value.size4;
+            isdripMaterialValid.value = true;
+            isdripsizeValid.value = true;
+            console.log(isdripMaterialValid.value);
             checkRoof();
         }
     } else {
         console.log('The element not mounted yet');
     }
+    dripStagedata.DripEdgeMaterial = selectDripEdge.value;
+    dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
+    dripEdge(dripStagedata);
     checkRoof();
 }
 
@@ -103,6 +125,8 @@ function tile() {
 
     storeDripEdgeSize();
 }
+const isdripMaterialValid = ref(false);
+const isdripsizeValid = ref(false);
 
 const storeDripEdgeSize = (value) => {
     if (isRoofTileADValid.value === true) {
@@ -112,7 +136,24 @@ const storeDripEdgeSize = (value) => {
         tileStore.insertDripAtIndex(6, dripTileData.DripEdgeSize);
     }
 };
+const stageDripedge = async () => {
+    console.log(dripStagedata);
 
+    try {
+        if (isdripMaterialValid.value === true && isdripsizeValid.value == true) {
+            console.log(dripStagedata);
+            return await dripEdge(dripStagedata);
+        } else {
+            console.log('The if statemeant failed');
+
+            return [];
+        }
+    } catch (err) {
+        console.error('Lambda post failed:', err);
+    } finally {
+        loading.value = false;
+    }
+};
 watch(types, typeSizes, type, checkRoof, () => {});
 watchEffect(checkValue, getdripSize, () => {});
 invoke(async () => {

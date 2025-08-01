@@ -6,12 +6,14 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 // import { invoke, until } from '@vueuse/core';
+import { usePostGeneralpageLambda } from '@/composables/Postdata/usePostGeneralpageLambda';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import Divider from 'primevue/divider';
-// defineAsyncComponent,
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+
+const { postGeneral } = usePostGeneralpageLambda();
 const permitstore = usePermitappStore();
 const { permitapp } = storeToRefs(permitstore);
 const store = useRoofListStore();
@@ -122,8 +124,9 @@ function roofArea() {
     dataGeneral.steepData = steep.value;
     dataGeneral.totalData = Number(total.value);
     dataGeneral.roofCheck = checked;
-    // console.log(dataGeneral.roofCheck);
+    console.log(dataGeneral);
     generalpageStore.addgeneralpdfData(dataGeneral);
+    postGeneral(generalpageStore);
     isGenaralPageValid.value = true;
 }
 
@@ -245,6 +248,17 @@ const navigateNext = () => {
 </template>
 
 <style scoped>
+/* .container {
+    padding-bottom: 25px;
+    padding-top: 50px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 4px 4px 16px rgb(22, 183, 183);
+    position: center;
+    min-height: 1090px;
+    min-width: 900px;
+    top: 10vh;
+} */
 .container {
     /* padding-bottom: 25px; */
     padding-top: 80px;

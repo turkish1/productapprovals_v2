@@ -33,21 +33,18 @@
             <div class="card flex flex-wrap justify-left gap-12">
                 <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-96 rounded-2xl p-8 gap-4" data-aos="fade-left" data-aos-duration="1000">
                     <div class="rounded-full bg-secondary text-secondary-contrast w-48 h-24 flex items-center justify-center">
-                        <i class="pi pi-info-circle !text-2xl"></i>
+                        <i class="pi pi-fw pi-question-circle !text-2xl"></i>
                     </div>
-                    <span class="text-2xl font-bold">More Info</span>
-                    <span class="text-muted-color text-center">To Come</span>
-
-                    <!-- <span class="text-2xl font-bold">Selection</span>
-                    <span v-for="(item, i) in infoItems" :key="i" class="text-muted-color text-center"> {{ item.label }}{{ item.value }} </span> -->
+                    <span class="text-2xl font-bold">Support</span>
+                    <span class="text-muted-color text-center">Click here for support</span>
                 </div>
 
                 <div class="flex flex-col border border-surface shadow-lg justify-left items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-up" data-aos-duration="1000">
                     <div class="rounded-full bg-secondary text-secondary-contrast w-48 h-24 flex items-center justify-center">
-                        <i class="pi pi-spin pi-cog !text-2xl"></i>
+                        <i class="pi pi-paperclip !text-2xl"></i>
                     </div>
-                    <span class="text-2xl font-bold">More Info</span>
-                    <span class="text-muted-color text-center">To Come</span>
+                    <span class="text-2xl font-bold">Documents</span>
+                    <span class="text-muted-color text-center">Attached documents</span>
                     <!-- <span class="text-2xl font-bold">Bur Selection</span>
                     <span v-for="(item, i) in infoItemsbur" :key="i" class="text-muted-color text-center"> {{ item.label }}{{ item.value }} </span> -->
                 </div>
@@ -64,7 +61,7 @@
     </div>
 
     <!-- <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"> -->
-    <div v-show="isGenaralPageValid">
+    <!-- <div v-show="isGenaralPageValid">
         <GeneralPage />
     </div>
     <div v-show="isRoofShingleValid">
@@ -79,7 +76,7 @@
     </div>
     <div v-show="isRoofLowslopeValid">
         <LowSlope />
-    </div>
+    </div> -->
     <!-- </div> -->
 </template>
 
@@ -112,11 +109,11 @@ import useMech from '@/composables/InputLogic/use-tileMechanical';
 import 'swiper/css/pagination';
 import { computed, onMounted, reactive, ref } from 'vue';
 import Pagination from '../../../node_modules/swiper/modules/pagination';
-import GeneralPage from '../jsPDF/Generalpagepdf.vue';
-import LowSlope from '../jsPDF/LowSlopepdf.vue';
-import Shingle from '../jsPDF/Shingle.vue';
-import TileAdhesive from '../jsPDF/TileAdhesive.vue';
-import TileMechanical from '../jsPDF/TileMechanical.vue';
+// import GeneralPage from '../jsPDF/Generalpagepdf.vue';
+// import LowSlope from '../jsPDF/LowSlopepdf.vue';
+// import Shingle from '../jsPDF/Shingle.vue';
+// import TileAdhesive from '../jsPDF/TileAdhesive.vue';
+// import TileMechanical from '../jsPDF/TileMechanical.vue';
 const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 
@@ -176,6 +173,7 @@ const callState = tryOnMounted(() => {
                 displayInfo.item = roofType.value[i].item;
             } else if (roofType.value[i].item === 'Low Slope') {
                 isRoofLowslopeValid.value = true;
+                console.log(isRoofLowslopeValid);
             } else if (roofType.value[i].item === 'Adhesive Set Tile') {
                 console.log(roofType.value[i].item);
                 isRoofTileADValid.value = true;
@@ -189,7 +187,8 @@ const callState = tryOnMounted(() => {
             } else if (generalType.value.length !== 1) {
                 isGenaralPageValid.value = true;
             }
-            console.log(roofType.value);
+
+            console.log(roofType.value, burpdfStore);
         }
     }
 });

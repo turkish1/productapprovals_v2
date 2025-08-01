@@ -1,14 +1,14 @@
 <script setup>
 import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-
+import usePostMechanicalLambda from '@/composables/Postdata/usePostMechanicalLambda';
 import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
-
+const { dripEdge } = usePostMechanicalLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
@@ -28,6 +28,10 @@ let isRoofTileMechanicalValid = ref(false);
 
 const typeSizes = ref();
 
+const dripStagedata = reactive({
+    DripEdgeMaterial: '',
+    DripEdgeSize: ''
+});
 const callState = tryOnMounted(() => {
     console.log(roofType.value);
     if (roofType.value.length === 0) {
@@ -102,6 +106,10 @@ function getdripSize() {
     } else {
         console.log('The element not mounted yet');
     }
+    dripStagedata.DripEdgeMaterial = selectDripEdge.value;
+    dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
+
+    dripEdge(dripStagedata);
     checkRoof();
 }
 
@@ -114,7 +122,7 @@ function mtile() {
     storeDripEdgeSize();
 }
 
-const storeDripEdgeSize = (value) => {
+const storeDripEdgeSize = async (value) => {
     console.log(dripMTileData.DripEdgeSize);
     if (isRoofTileMechanicalValid.value === true) {
         dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
@@ -123,6 +131,15 @@ const storeDripEdgeSize = (value) => {
         mechtileStore.insertDripAtIndex(7, dripMTileData.DripEdgeSize);
         console.log(mechtileStore);
     }
+
+    // await stageDripedge();
+};
+
+const stageDripedge = async () => {
+    dripStagedata.DripEdgeMaterial = selectDripEdge.value;
+    dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
+
+    await dripEdge(dripStagedata);
 };
 
 watch(types, typeSizes, type, checkRoof, () => {});

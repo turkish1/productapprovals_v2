@@ -7,6 +7,7 @@ import { useExpiry } from '@/composables/ExpirationCheck/useExpiry';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 
+import usePostToLambda from '@/composables/Postdata/usePostToLambda';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
 import useExposured from '@/composables/Tiletables/exposure_d';
@@ -41,7 +42,7 @@ const store = usevalueStore();
 
 const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
-
+// const { postData, response, error, loading } = usePostToMongo();
 const { multiAdinput } = storeToRefs(multipleStore);
 const { addSystemvalues, tileInputvalues } = usevalueStore();
 const resetStore = useSavedStore();
@@ -52,6 +53,8 @@ const { tileData } = usetileInputdouble();
 const { tileDatas } = usetileInputsingle();
 const { zones } = useGlobalState();
 const { zoned } = useExposureD();
+
+const { post, postUDL, postSATile } = usePostToLambda();
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const childQueryRef = ref();
@@ -72,7 +75,7 @@ const zoneone = reactive({ zone: '', lambda1: '', mg1: '', mr1: '', mf1: '' });
 const zonetwo = reactive({ zone: '', lambda2: '', mg2: '', mr2: '', mf2: '' });
 const zonethree = reactive({ zone: '', lambda3: '', mg3: '', mr3: '', mf3: '' });
 const selectedDeck = ref();
-const type = ref([{ name: 'Select Deck Type' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
+const type = ref([{ name: 'Select Deck Type' }, { name: '5/8" Plywood' }, { name: '3/4" Plywood' }, { name: '1" x 6" T & G' }, { name: '1" x 8" T & G' }, { name: 'Existing 1/2" Plywood' }]);
 const save = ref([]);
 let selectedUnderlayment = ref('');
 const underlaymentType = ref([
@@ -103,8 +106,9 @@ const tileSel = reactive({
     values: ''
 });
 const tilenoas = reactive({
+    noa: 0,
     manufacturer: '',
-    material: [],
+    material: '',
     description: '',
     resistance: [],
     Table2: [],
@@ -121,7 +125,8 @@ const tilenoas = reactive({
     deckType: '',
     expiration_date: '',
     prescriptiveSelection: '',
-    perimeter: ''
+    perimeter: '',
+    tileIdentifier: 'tile'
 });
 const visible = ref(false);
 const selectedExposures = ref('');
@@ -304,7 +309,7 @@ const updateTick = () => {
     // isPaddySingle.value = true;
     dtMounted.value = paddySelectedSingle.value?.[0];
     manufacturerData.value = dtMounted.value?.singlepaddyData ?? [];
-    console.log(dtMounted.value, manufacturerData.value);
+    // console.log(dtMounted.value, manufacturerData.value);
     nextTick(() => {
         if (manufacturerData.value.content === 'multiple') {
             isMultiTileValid = true;
@@ -314,7 +319,7 @@ const updateTick = () => {
             tilenoas.manufacturer = manufacturerData.value.applicant;
             tilenoas.select_tile = manufacturerData.value.select_tile;
             tilenoas.expiration_date = manufacturerData.value.expiration_date;
-            console.log(tilenoas.expiration_date);
+            tilenoas.noa = manufacturerData.value.noa;
             licenseEnd.value = tilenoas.expiration_date;
             const { isExpired } = useExpiry(licenseEnd);
             console.log(isExpired);
@@ -325,16 +330,20 @@ const updateTick = () => {
             isTileData.value = true;
             isTileValid = true;
             isMultiTileValid = false;
+            tilenoas.noa = manufacturerData.value.noa;
             tilenoas.manufacturer = manufacturerData.value.applicant;
             tilenoas.description = manufacturerData.value.description;
-            console.log(tilenoas.description);
+
             tilenoas.material = manufacturerData.value.material;
             tilenoas.expiration_date = manufacturerData.value.expiration_date;
-            console.log(tilenoas.expiration_date);
+
             licenseEnd.value = tilenoas.expiration_date;
             const { isExpired } = useExpiry(licenseEnd);
             console.log(isExpired);
         }
+        console.log(tilenoas);
+        // postData(tilenoas);
+
         addSystemvalues(tilenoas);
         checkZones();
     });
@@ -353,6 +362,7 @@ const updateDoubletick = () => {
             isTileValid = true;
 
             isTileData.value = true;
+            tilenoas.noa = manufacturerDoubleData.value.noa;
             tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
             tilenoas.select_tile = manufacturerDoubleData.value.select_tile;
             tilenoas.expiration_date = manufacturerDoubleData.value.expiration_date;
@@ -362,6 +372,7 @@ const updateDoubletick = () => {
         } else {
             isTileData.value = true;
             isTileValid = true;
+            tilenoas.noa = manufacturerDoubleData.value.noa;
             tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
             tilenoas.description = manufacturerDoubleData.value.description;
             console.log(tilenoas.description);
@@ -372,6 +383,9 @@ const updateDoubletick = () => {
             console.log(isExpired);
             isMultiTileValid = false;
         }
+        console.log(tilenoas);
+
+        // postData(tilenoas);
         addSystemvalues(tilenoas);
         checkZones();
     });
@@ -389,15 +403,11 @@ function clearData() {
 
     tilenoas.manufacturer = '';
     tilenoas.description = '';
-    tilenoas.material = [];
-    tilenoas.select_tile = [];
+    tilenoas.material = '';
+    tilenoas.select_tile = '';
     tilenoas.expiration_date = '';
     resetStore.$reset();
-    // reset()
-    // saveTileData.reset()
-    // {
-    //         this.savedTileinput = [];
-    //     }
+
     zoneone.lambda1 = '';
     zonetwo.lambda2 = '';
     zonethree.lambda3 = '';
@@ -539,10 +549,10 @@ const saTiles = reactive({
     noa: '',
     manufacturer: '',
     material: '',
-    system: [],
+    system: '',
     prescriptiveSelection: '',
-    designpressure: [],
-    description: [],
+    designpressure: '',
+    description: '',
     Description_F1: '',
     Description_F2: '',
     Description_F3: '',
@@ -557,21 +567,22 @@ const saTiles = reactive({
     Description_F12: '',
     arrDesignPressure: [],
     pressure: '',
-    expiration_date: ''
+    expiration_date: '',
+    saIdentifier: 'sa'
 });
 
 const udlTile = reactive({
     noa: '',
     manufacturer: '',
     material: '',
-    system: [],
-    designPressure: [],
-    Anchor_Base_Sheet: [],
+    system: '',
+    designPressure: '',
+    Anchor_Base_Sheet: '',
     dP: '',
     tileCap: '',
     Anchor_Base: '',
     systemSelected: '',
-    TileCap_Sheet_Description: [],
+    TileCap_Sheet_Description: '',
     prescriptiveSelection: '',
     Anchor_Base_Sheet_E1: '',
     Anchor_Base_Sheet_E2: '',
@@ -586,7 +597,7 @@ const udlTile = reactive({
     Anchor_Base_Sheet_E11: '',
     Anchor_Base_Sheet_E12: '',
     Anchor_Base_Sheet_E13: '',
-    TileCap_Sheet_Description: [],
+    TileCap_Sheet_Description: '',
     TileCap_Sheet_Description_E1: '',
     TileCap_Sheet_Description_E2: '',
     TileCap_Sheet_Description_E3: '',
@@ -603,16 +614,18 @@ const udlTile = reactive({
     arrDesignPressure: [],
     syst: '',
     pressure: '',
-    expiration_date: ''
+    expiration_date: '',
+    udlIdentifier: 'udl'
 });
 
 watch(zoneone, zonetwo, zonethree, dimensions, dims, () => {});
 
-function sysEcheckInput() {
+async function sysEcheckInput() {
     console.log(Edatamounted.value[0]);
     if (Edatamounted.value.length !== null) {
         Edatamounted.value.forEach((item, index) => {
             console.log(item);
+            udlTile.noa = item.systemDataE.noa;
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;
@@ -697,11 +710,7 @@ function checkDatas() {
     }
 }
 
-// const visible = ref(false);
-
 function checkInputSystem() {
-    // 23061202 23070604
-
     datamounted_f.value.forEach((item, index) => {
         saTiles.Description_F1 = item.systemData.Description_F1;
         saTiles.Description_F2 = item.systemData.Description_F2;
@@ -714,7 +723,7 @@ function checkInputSystem() {
         saTiles.Description_F9 = item.systemData.Description_F9;
         saTiles.arrDesignPressure = item.systemData.designPressure;
         saTiles.expiration_date = item.systemData.expiration_date;
-        console.log(saTiles.expiration_date);
+
         licenseEnd.value = saTiles.expiration_date;
         const { isExpired } = useExpiry(licenseEnd);
         console.log(isExpired);
@@ -741,8 +750,6 @@ const Anchor_Base = reactive({
     Anchor_Base_Sheet_E13: ''
 });
 function EcheckInputSystem() {
-    // 23111506
-
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
         console.log(Anchor_Base.Anchor_Base_Sheet_E2);
@@ -827,7 +834,7 @@ const factor = ref(0.4);
 const tileData2 = reactive({
     noa: '',
     manufacturerData: '',
-    material: [],
+    material: '',
     description: '',
     Table2: [],
     Table3: [],
@@ -842,6 +849,7 @@ const tileData2 = reactive({
     slope: '',
     Decktype: '',
     perimeter: '',
+    tileIdentifier: 'tile',
     zoneone: {
         zone1: '',
         lambda1: '',
@@ -865,15 +873,22 @@ const tileData2 = reactive({
     }
 });
 
-function checkInputSA() {
+async function checkInputSA() {
     if (datamounted_f.value.length !== null) {
         datamounted_f.value.forEach((item, index) => {
             console.log(item);
             saTiles.manufacturer = item.systemData.manufacturer;
             saTiles.material = item.systemData.material;
-            saTiles.system = item.systemData.system;
+            saTiles.system = item.systemData.system[0];
+            saTiles.description = item.systemData.description[0];
+            saTiles.noa = item.systemData.noa;
+            saTiles.pressure = item.systemData.pressure;
+            console.log(item.systemData);
         });
+
+        // await postSATile(saTiles);
     }
+    tileSAStaging();
 }
 
 const showMaterialValid = ref(false);
@@ -934,6 +949,7 @@ function checkMaterial() {
         console.log(zonethree.mg3);
     } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
         console.log('Is Less');
+        console.log(slopeRange);
         zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
         zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
         zonethree.mg3 = isPaddySingle.value === true ? manufacturerData.value.Table3.four.Direct_Deck : manufacturerDoubleData.value.Table3.four;
@@ -1139,11 +1155,35 @@ function checkMR3() {
 //     store.$reset();
 //     console.log(store, reset);
 // }
+
+const postMetrictable = reactive({
+    noa: '',
+    applicant: '',
+    description: '',
+    material: '',
+    height: '',
+    slope: '',
+    perimeter: '',
+    area: '',
+    decktype: '',
+    prescriptive: '',
+    zoneone: [],
+    zonetwo: [],
+    zonethree: [],
+    tileIdentifier: 'tile'
+});
+
 const saveTileData = async () => {
+    // tileData2.noa =
     tileData2.slope = dims.slope;
     tileData2.height = dims.height;
     tileData2.area = dims.area;
     tileData2.perimeter = dims.per;
+    tileData2.noa = tilenoas.noa;
+
+    tileData2.Decktype = dt.value;
+    tileData2.prescriptiveSelection = selectedUnderlayment.value;
+
     tileData2.zoneone.zone1 = zoneone.zone;
     tileData2.zoneone.lambda1 = zoneone.lambda1;
     tileData2.zoneone.mg1 = zoneone.mg1;
@@ -1155,11 +1195,6 @@ const saveTileData = async () => {
     tileData2.paddySelection = selectedOption.value;
     tileData2.applicant = tilenoas.manufacturer;
     tileData2.description = tilenoas.description;
-    console.log(tileData2.description);
-    // tileData2.material = tilenoas.material;
-
-    tileData2.Decktype = dt.value;
-    tileData2.prescriptiveSelection = selectedUnderlayment.value;
 
     tileData2.zonethree.zone3 = zonethree.zone;
     tileData2.zonethree.lambda3 = zonethree.lambda3;
@@ -1170,11 +1205,30 @@ const saveTileData = async () => {
     tileData2.zonetwo.mf2 = zonetwo.mf2;
     tileData2.zonethree.mf3 = zonethree.mf3;
     addSavedvalues(tileData2);
-    // addtileData(tileData2);
-    console.log(tileData2);
+    sendDataMongo();
 
     // }
 };
+
+const sendDataMongo = async () => {
+    postMetrictable.noa = tileData2.noa;
+    postMetrictable.applicant = tileData2.applicant;
+    postMetrictable.description = tileData2.description;
+    postMetrictable.material = tileData2.material;
+    // await post(tileManufacturerInfo);
+    postMetrictable.zoneone = tileData2.zoneone;
+    postMetrictable.zonetwo = tileData2.zonetwo;
+    postMetrictable.zonethree = tileData2.zonethree;
+    postMetrictable.decktype = tileData2.Decktype;
+    postMetrictable.prescriptive = tileData2.prescriptiveSelection.selectedBasesheet;
+    postMetrictable.tileIdentifier = tilenoas.tileIdentifier;
+    postMetrictable.slope = dims.slope;
+    postMetrictable.height = dims.height;
+    postMetrictable.area = dims.area;
+    postMetrictable.perimeter = dims.per;
+    await post(postMetrictable);
+};
+
 const keyValueSystemFPairsValues = ref({});
 const keyValueSystemFPairsKeys = ref({});
 function updateselectSystem(selectedsystemf) {
@@ -1189,7 +1243,8 @@ function updateselectSystem(selectedsystemf) {
     });
     console.log(sys, key, dp);
     if (keyValueSystemFPairsValues.value.F1 !== null && selectedsystemf.value !== null) {
-        udlDescPressure();
+        saDescPressure();
+        // udlDescPressure(); changed 7/24/2025
     }
     if (keyValueSystemFPairsValues.value.F2 !== null && selectedsystemf.value !== null) {
         saDescPressure();
@@ -1224,6 +1279,7 @@ function updateselectSystem(selectedsystemf) {
     if (keyValueSystemFPairsValues.value.F12 !== null && selectedsystemf.value !== null) {
         saDescPressure();
     }
+    tileSAStaging();
 }
 const keyValueSystemEPairsValues = ref({});
 const keyValueSystemEPairsKeys = ref({});
@@ -1277,7 +1333,7 @@ function updateselectSystemE(selectedsystemE) {
         udlDescPressure();
     }
 }
-function udlDescPressure() {
+async function udlDescPressure() {
     if (selectedsystemE.value === 'E1') {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E1;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E1;
@@ -1346,13 +1402,24 @@ function udlDescPressure() {
         udlTile.TileCap_Sheet_Description = udlTile.TileCap_Sheet_Description_E13;
         udlTile.designPressure = keyValueSystemEPairsValues.value.E13;
     }
+
     if (etileStore.$state.tilesysEinput.length !== 0) {
         etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base = udlTile.Anchor_Base_Sheet;
         etileStore.$state.tilesysEinput[0].systemDataE.tileCap = udlTile.TileCap_Sheet_Description;
         etileStore.$state.tilesysEinput[0].systemDataE.dP = udlTile.designPressure;
         etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
     }
+
+    etilStore();
 }
+
+async function etilStore() {
+    console.log(udlTile);
+    udlTile.Anchor_Base = etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base;
+    udlTile.systemSelected = selectedsystemE.value;
+    await postUDL(udlTile);
+}
+
 function saDescPressure() {
     if (selectedsystemf.value === 'F1') {
         saTiles.description = saTiles.Description_F1;
@@ -1412,7 +1479,15 @@ function saDescPressure() {
         ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
         ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
     }
+    // console.log(saTiles);
+    // post(saTiles);
+    // tileSAStaging();
 }
+
+const tileSAStaging = async () => {
+    console.log(saTiles);
+    await postSATile(saTiles);
+};
 
 //  processMFValue,
 watch(
@@ -1555,9 +1630,9 @@ watch(
             <label style="color: #122620" for="material">NOA Expiration Date</label>
             <InputText v-model="tilenoas.expiration_date" />
         </div>
-        <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
+        <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px; margin-top: 5px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
-                <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
                     <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
                     <InputText id="manufacturer" v-model="udlTile.manufacturer" />
                 </div>
@@ -1576,7 +1651,7 @@ watch(
             </div>
         </div>
         <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
-            <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 2px">
+            <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 20px">
                 <div class="min-w-[680px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" class="mt-3" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
