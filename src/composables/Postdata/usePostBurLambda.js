@@ -35,7 +35,7 @@ export default function usePostBurLambda() {
 
     const dripEdge = async (dripedge) => {
         drippayload.value = dripedge;
-        console.log(payload.value);
+        console.log(drippayload.value);
         loading.value = true;
         error.value = null;
         try {
@@ -47,19 +47,6 @@ export default function usePostBurLambda() {
             loading.value = false;
         }
     };
-
-    // async function dripEdge(dripedge) {
-    //     try {
-    //         drippayload.value = dripedge;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', drippayload.value);
-
-    //         await execute({ data: drippayload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
 
     const postBur = async (value) => {
         payload.value = value;
