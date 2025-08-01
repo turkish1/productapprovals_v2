@@ -23,6 +23,10 @@
                 <Button label="Back" severity="contrast" raised @click="prevStep" :disabled="isFirstStep"></Button>
                 <BUtton label="Next" severity="contrast" raised @click="nextStep" :disabled="isLastStep"></BUtton>
             </div>
+
+            <!-- <note>Loading: {{ isLoading.toString() }}</note>
+            <note>Finished: {{ isFinished.toString() }}</note>
+            <note>Aborted: {{ isAborted.toString() }}</note> -->
         </div>
     </div>
 </template>

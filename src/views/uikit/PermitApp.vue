@@ -1,8 +1,6 @@
 <script setup>
 // ---- imports -------------------------------------------------------------
-// import usePostToMongo from '@/composables/Postdata/TileADpdf';
-// import usePostToLambda from '@/composables/Postdata/usePostToLambda';
-
+import usePermitData from '@/composables/Postdata/usePermitappData';
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 import useLast from '@/composables/lastNumber.js';
 import { useprocStore } from '@/stores/processStore';
@@ -14,8 +12,7 @@ import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 
 import { useGlobalState } from '@/stores/accountsStore';
 import { usePermitappStore } from '@/stores/permitapp';
-// const { pushData } = usePostToMongo();
-// const { post } = usePostToLambda();
+
 // ---- state ----------------------------------------------------------------
 const loading = ref(false);
 const responseMessage = ref('');
@@ -32,7 +29,7 @@ const { procData, procReceive } = useCreateProcessNumber();
 // getUser, addUser these two go after accountUsers but are not being used - marked for removal
 const { accountUsers } = useGlobalState();
 const store = usePermitappStore();
-
+const { callPermitdata } = usePermitData();
 // static options
 const type = ref([
     { name: 'Roofing Permit', code: 'RP' },
@@ -109,7 +106,6 @@ watchOnce(setProperties, cellPhn, () => {
 async function setProperties() {
     googleAccount.value = await accountUsers.value[0];
 
-    // phone.value = googleAccount.value?.bphone || '';
     name.value = googleAccount.value?.name || '';
     email.value = googleAccount.value?.email || '';
     licenseStat.value = googleAccount.value?.secondary_status || '';
@@ -118,7 +114,6 @@ async function setProperties() {
     // address.value = procStore.$state.processinput[0]?.procData?.address;
     // console.log(address.value);
     phone.value = accountUsers.value[0]?.bphone;
-    // processN.value = procStore.$state.processinput[0]?.procData?.processNumber;
 }
 invoke(async () => {
     await until(isPhoneValid).toBe(true);
@@ -150,6 +145,8 @@ async function fetchData(url) {
         data.value = datas.value.body.MinimumPropertyInfos[0];
 
         console.log(data.value);
+        formData.contractor = data.value.dba;
+        formData.license = data.value.secondary_status;
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
         isHistoric.value = await datas.value.body.isHistoric;
@@ -157,6 +154,7 @@ async function fetchData(url) {
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
     } catch (err) {
+        alert('No data found or enter correct address!');
         error.value = err.message;
     } finally {
         loading.value = false;
@@ -170,7 +168,6 @@ async function load() {
 
         muniProcessdata.value = muniProcess.value;
         const addr = inputAddress.value;
-        // https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
         await fetchData(url);
@@ -191,51 +188,18 @@ async function load() {
         formData.muniProc = muniProcess.value;
         formData.address = inputAddress.value;
 
-        procReceive(formData);
+        // commented because of the onSubmit
+        await procReceive(formData);
+        await callPermitdata(formData);
     } catch (err) {
         alert(err);
     }
 }
 
-// const uploadfiles = async () => {
-//     try {
+async function onSubmit() {
+    // await procReceive(formData);
 
-//    if(muniProcessNumber){
-//         console.log('Uploading file:', muniProcessNumber.value);
-
-//         // Build the object key using the file's name (or any naming logic you like)
-//         const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}`;
-
-//         // If the File is already a PDF, you can just pass it directly in the body
-//         // and set the Content-Type header appropriately.
-//         // If you need to ensure it's recognized as a Blob,
-//         // you can do: const pdfBlob = new Blob([fileItem], { type: 'application/pdf' });
-
-//         const response = await fetch(s3Url, {
-//             method: 'PUT',
-//             headers: {
-//                 'Content-Type': 'application/pdf'
-//             },
-//             // Body should be a Blob/File, NOT the filename string
-//             body: muniProcessNumber
-//         });
-
-//         if (!response.ok) {
-//             console.error(`Failed to created Folder : ${response.status}`);
-
-//         }
-
-//         console.log(`Successfully created Folder ${fileItem.name} to S3.`);
-//     }
-
-//     } catch (error) {
-//         console.error('Error uploading to S3:', error);
-//         alert('Failed to upload file.');
-//     }
-// };
-
-function onSubmit() {
-    procReceive(formData);
+    store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, inputAddress.value);
 }
 
 function addItemAndClear() {
@@ -280,6 +244,10 @@ function addItemAndClear() {
                         <!-- blinking label -->
 
                         <Button type="button" icon="pi pi-search" :loading="loading" @click="load" />
+                        <!--
+  <note>Loading: {{ isLoading.toString() }}</note>
+  <note>Finished: {{ isFinished.toString() }}</note>
+  <note>Aborted: {{ isAborted.toString() }}</note> -->
                     </div>
                 </div>
                 <div class="field">
@@ -341,7 +309,8 @@ function addItemAndClear() {
 
                 <!-- submit -->
                 <div class="span-2 submit-row">
-                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" @click="addItemAndClear" />
+                    <!-- @click="addItemAndClear"  -->
+                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" />
                 </div>
             </form>
         </div>

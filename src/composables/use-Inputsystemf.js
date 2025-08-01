@@ -20,7 +20,7 @@ export default function useSystemf() {
         noa: '',
         manufacturer: '',
         material: '',
-        system: [],
+        system: '',
         description: '',
         expiration_date: '',
         Description_F1: '',
@@ -61,6 +61,7 @@ export default function useSystemf() {
                 systemData.noa = noaNum.value[0].NOA;
                 systemData.manufacturer = noaNum.value[0].Manufacturer;
                 systemData.material = noaNum.value[0].Material;
+
                 systemData.Description_F1 = noaNum.value[0].Description_F1;
                 systemData.Description_F2 = noaNum.value[0].Description_F2;
                 systemData.Description_F3 = noaNum.value[0].Description_F3;
@@ -84,7 +85,7 @@ export default function useSystemf() {
                     }
                 } else {
                     systemData.system = noaNum.value[0].System;
-                    systemData.description = noaNum.value[0].Description;
+                    systemData.Description_F1 = noaNum.value[0].Description;
                 }
 
                 store.addData(systemData);

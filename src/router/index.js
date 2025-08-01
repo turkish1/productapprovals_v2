@@ -130,6 +130,7 @@ const router = createRouter({
                     name: 'mechanical',
                     component: () => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue')
                 },
+
                 {
                     path: '/permitapp',
                     name: 'permitapp',

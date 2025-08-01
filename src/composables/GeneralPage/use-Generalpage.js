@@ -1,100 +1,108 @@
+import usePostGeneralpageLambda from '@/composables/Postdata/usePostGeneralpageLambda';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
 
 export default function useGeneral() {
-    const store = useRoofListStore();
-    const { roofList } = storeToRefs(store);
-    const generalpageStore = useGeneralpdfStore();
-    const checked = ref(false);
-    const isGenaralPageValid = ref(false);
+    const roofStore = useRoofListStore();
+    const { roofList } = storeToRefs(roofStore);
+
+    const generalStore = useGeneralpdfStore();
+    const { postGeneral } = usePostGeneralpageLambda();
+    const roofType = ref(null);
+    const generalType = ref(generalStore.$state.generalpdfinput);
+    const isGeneralPageValid = ref(false);
+
+    const checkedTypes = reactive({
+        mtile: false,
+        adtile: false,
+        shingle: false,
+        metal: false,
+        slope: false
+    });
+
+    const dims = reactive({
+        steep1: 0,
+        steep2: 0,
+        steep3: 0,
+        steep4: 0,
+        low1: 0
+    });
+
+    const totals = reactive({
+        steep: 0,
+        lowslope: 0,
+        total: 0
+    });
+
     const dataGeneral = reactive({
         steepData: '',
         slopeData: '',
         totalData: '',
-        mtileChk: '',
-        adtileChk: '',
-        shingleChk: '',
-        slopeChk: '',
-        metalChk: ''
-        // roofCheck: ''
+        mtileChk: false,
+        adtileChk: false,
+        shingleChk: false,
+        slopeChk: false,
+        metalChk: false,
+        roofCheck: '',
+        area: ''
     });
+    // roofs
+    function addRoof(typeOfroof) {
+        roofType.value = typeOfroof.value[0];
+        console.log(typeOfroof);
+        const typeMapping = {
+            'Asphalt Shingle': { dim: 'dim1', flag: 'shingle' },
+            'Low Slope': { dim: 'dim2', flag: 'slope' },
+            'Mechanical Fastened Tile': { dim: 'dim3', flag: 'mtile' },
+            'Adhesive Set Tile': { dim: 'dim4', flag: 'adtile' },
+            'Metal Panel': { dim: 'dim5', flag: 'metal' }
+        };
 
-    const steep = ref('');
-    const total = ref('');
-    const low1 = ref('');
-    const steep1 = ref('');
+        roofList.value.forEach((item) => {
+            console.log(item);
+            const config = typeMapping[item.item];
+            console.log(config);
 
-    const lowslope = ref('');
-    const steep2 = ref('');
-    const steep3 = ref('');
-    const steep4 = ref('');
-    const checkedmtile = ref(false);
-    const checkedadtile = ref(false);
-    const checkedshingle = ref(false);
-    const checkedmetal = ref(false);
-    const checkedslp = ref(false);
+            if (config) {
+                const dimValue = Number(item[config.dim]) || 0;
+                checkedTypes[config.flag] = true;
+                console.log(dimValue);
+                if (config.flag === 'slope') {
+                    dims.low1 = dimValue;
+                } else {
+                    dims[`steep${Object.keys(checkedTypes).indexOf(config.flag)}`] = dimValue;
+                }
 
-    function addRoof() {
-        console.log();
-        roofList.value.forEach((item, index) => {
-            console.log(item.item, index);
-            if (item.item === 'Asphalt Shingle') {
-                console.log(item.dim1);
-                steep1.value = item.dim1;
-                checkedshingle.value = true;
-                dataGeneral.shingleChk = checkedshingle.value;
-            }
-
-            if (item.item === 'Low Slope') {
-                low1.value = item.dim2;
-
-                checkedslp.value = true;
-                dataGeneral.slopeChk = checkedslp.value;
-            }
-
-            if (item.item === 'Mechanical Fastened Tile') {
-                steep1.value = item.dim3;
-                checkedmtile.value = true;
-                dataGeneral.mtileChk = checkedmtile.value;
-            }
-
-            if (item.item === 'Adhesive Set Tile') {
-                steep2.value = item.dim4;
-                checkedadtile.value = true;
-                dataGeneral.adtileChk = checkedadtile.value;
-            }
-            if (item.item === 'Metal Panel') {
-                steep3.value = item.dim5;
-                checkedmetal.value = true;
-                dataGeneral.metalChk = checkedmetal.value;
+                dataGeneral[`${config.flag}Chk`] = true;
             }
         });
+
         roofArea();
     }
 
-    function roofArea() {
-        let l1 = Number(low1.value);
-        let st1 = Number(steep1.value);
-        let st2 = Number(steep2.value);
-        let st3 = Number(steep3.value);
-        let st4 = Number(steep4.value);
-        steep.value = st1 + st2 + st3 + st4;
+    async function roofArea() {
+        totals.steep = dims.steep1 + dims.steep2 + dims.steep3 + dims.steep4;
+        totals.lowslope = dims.low1;
+        totals.total = totals.steep + totals.lowslope;
+        dataGeneral.area = totals.total;
+        console.log(dataGeneral, totals);
+        dataGeneral.steepData = totals.steep;
+        dataGeneral.slopeData = totals.lowslope;
+        dataGeneral.totalData = totals.total;
+        dataGeneral.roofCheck = roofType.value;
 
-        lowslope.value = l1;
-
-        total.value = lowslope.value + steep.value;
-        dataGeneral.slopeData = lowslope.value;
-        dataGeneral.steepData = steep.value;
-        dataGeneral.totalData = Number(total.value);
-        // dataGeneral.roofCheck = checked;
-        // console.log(dataGeneral.roofCheck);
-        generalpageStore.addgeneralpdfData(dataGeneral);
-
-        console.log(generalpageStore, generalType);
-        isGenaralPageValid.value = true;
+        generalStore.addgeneralpdfData(dataGeneral);
+        await postGeneral(dataGeneral);
+        isGeneralPageValid.value = true;
     }
-    const generalType = ref(generalpageStore.$state.generalpdfinput);
-    return { addRoof, roofArea, dataGeneral, generalType };
+
+    return {
+        addRoof,
+        roofArea,
+        dataGeneral,
+        generalType,
+        isGeneralPageValid
+    };
 }

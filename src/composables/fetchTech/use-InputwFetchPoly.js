@@ -29,8 +29,6 @@ export default function useInputPoly() {
 
         polyNoaNumber.noa = data;
 
-        console.log(polyNoaNumber.noa);
-
         polyStores.addData(polyNoaNumber);
 
         console.log('System added');

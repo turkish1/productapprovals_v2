@@ -1,4 +1,5 @@
 import { useGlobalState } from '@/stores/accountsStore';
+import { useStorage } from '@vueuse/core';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { onMounted, reactive, ref } from 'vue';
 
@@ -55,7 +56,6 @@ export function useGoogleAuth() {
             for (const [key, value] of Object.entries(Data)) {
                 localData.value.push(value);
             }
-            console.log(localData.value);
         });
     }
     // { credential }
@@ -64,6 +64,7 @@ export function useGoogleAuth() {
     async function handleCredentialResponse(resp) {
         if (resp.error) return console.error(resp);
         accessToken.value = resp.access_token;
+        const id = useStorage('sessionTokenId', accessToken.value, sessionStorage); // returns Ref<string>
 
         /* 2. Get the e‑mail that the user just picked on the Google screen */
         const profile = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -71,7 +72,7 @@ export function useGoogleAuth() {
         }).then((r) => r.json());
 
         userEmail.value = profile.email;
-        checkEmail(userEmail);
+        await checkEmail(userEmail);
     }
 
     async function checkEmail(userEmail) {
@@ -81,7 +82,6 @@ export function useGoogleAuth() {
             if ((await localData.value[0][i]?.email) === uEmail) {
                 acctUser.email = await localData.value[0][i].email;
                 acctUser.name = await localData.value[0][i].name;
-                console.log(localData.value[0][0].secondary_status);
                 acctUser.dba = await localData.value[0][i].dba;
                 acctUser.cphone = await localData.value[0][i].cphone;
                 acctUser.bphone = await localData.value[0][i].bphone;
@@ -91,8 +91,7 @@ export function useGoogleAuth() {
                 acctUser.secondary_status = await localData.value[0][0].secondary_status;
 
                 acctUser.license = await localData.value[0][i].license;
-                console.log(acctUser);
-                addUser(acctUser);
+                await addUser(acctUser);
             }
         }
     }

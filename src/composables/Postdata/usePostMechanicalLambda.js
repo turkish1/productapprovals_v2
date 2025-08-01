@@ -1,18 +1,17 @@
-// composables/usePostToLambda.js
 import { useAxios } from '@vueuse/integrations/useAxios';
 import axios from 'axios';
 import { ref } from 'vue';
 
-const lambdaUrl = 'https://neiyrwtsedlm7brkgmzer3w4xe0shdfl.lambda-url.us-east-1.on.aws/';
+const lambdaUrl = 'https://myfawca4fj3ewpg5usmepe6toi0wuvlw.lambda-url.us-east-1.on.aws/';
 
-export default function usePostToLambda() {
+export default function usePostMechanicalLambda() {
+    // const data = ref(null);
     const errors = ref(null);
     const loading = ref(false);
-
-    var payload = ref(null);
     var udlpayload = ref(null);
     var sapayload = ref(null);
-    // var dimpayload = ref(null);
+    var dimpayload = ref(null);
+    var payload = ref(null);
     var drippayload = ref(null);
 
     const { data, error, isFetching, execute } = useAxios(
@@ -34,14 +33,40 @@ export default function usePostToLambda() {
      * post an object to the Lambda
      * @param {Object} obj — any JSON‐serializable object
      */
-
-    // async function dripEdge(dripedge) {
+    const postMech = async (value) => {
+        payload.value = value;
+        console.log(payload.value);
+        loading.value = true;
+        error.value = null;
+        try {
+            return await execute({ data: payload.value });
+        } catch (err) {
+            error.value = err.massage;
+            console.error('Lambda post failed:', err);
+        } finally {
+            loading.value = false;
+        }
+    };
+    // async function postMech(value) {
     //     try {
-    //         drippayload.value = dripedge;
+    //         payload.value = value;
     //         // testOptionsPreflight();
-    //         console.log('Payload:', drippayload.value);
+    //         console.log('Payload:', payload.value);
 
-    //         await execute({ data: drippayload.value });
+    //         await execute({ data: payload.value });
+    //     } catch (e) {
+    //         // prevents uncaught promise — you can also forward this to your UI
+    //         console.error('Lambda post failed:', e);
+    //     }
+    // }
+
+    // async function mechDimentions(dim) {
+    //     try {
+    //         dimpayload.value = dim;
+    //         // testOptionsPreflight();
+    //         console.log('Payload:', dimpayload.value);
+
+    //         await execute({ data: dimpayload.value });
     //     } catch (e) {
     //         // prevents uncaught promise — you can also forward this to your UI
     //         console.error('Lambda post failed:', e);
@@ -63,46 +88,31 @@ export default function usePostToLambda() {
         }
     };
 
-    // async function tileDimentions(dim) {
+    // async function dripEdge(dripedge) {
     //     try {
-    //         dimpayload.value = dim;
+    //         drippayload.value = dripedge;
     //         // testOptionsPreflight();
-    //         console.log('Payload:', dimpayload.value);
+    //         console.log('Payload:', drippayload.value);
 
-    //         await execute({ data: dimpayload.value });
+    //         await execute({ data: drippayload.value });
     //     } catch (e) {
     //         // prevents uncaught promise — you can also forward this to your UI
     //         console.error('Lambda post failed:', e);
     //     }
     // }
-    const post = async (value) => {
-        payload.value = value;
-        console.log(payload.value);
-        loading.value = true;
-        error.value = null;
-        try {
-            return await execute({ data: payload.value });
-        } catch (err) {
-            error.value = err.massage;
-            console.error('Lambda post failed:', err);
-        } finally {
-            loading.value = false;
-        }
-    };
-
-    // async function post(value) {
+    // async function postUDLMech(udlValue) {
     //     try {
-    //         payload.value = value;
+    //         udlpayload.value = udlValue;
     //         // testOptionsPreflight();
-    //         console.log('Payload:', payload.value);
+    //         console.log('Payload:', udlpayload.value);
 
-    //         await execute({ data: payload.value });
+    //         await execute({ data: udlpayload.value });
     //     } catch (e) {
     //         // prevents uncaught promise — you can also forward this to your UI
     //         console.error('Lambda post failed:', e);
     //     }
     // }
-    const postUDL = async (udlValue) => {
+    const postUDLMech = async (udlValue) => {
         udlpayload.value = udlValue;
         console.log(udlpayload.value);
         loading.value = true;
@@ -116,19 +126,7 @@ export default function usePostToLambda() {
             loading.value = false;
         }
     };
-    // async function postUDL(udlValue) {
-    //     try {
-    //         udlpayload.value = udlValue;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', udlpayload.value);
-
-    //         await execute({ data: udlpayload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
-    const postSATile = async (saValue) => {
+    const postSAMech = async (saValue) => {
         sapayload.value = saValue;
         console.log(sapayload.value);
         loading.value = true;
@@ -142,7 +140,7 @@ export default function usePostToLambda() {
             loading.value = false;
         }
     };
-    // async function postSATile(saValue) {
+    // async function postSAMech(saValue) {
     //     try {
     //         sapayload.value = saValue;
     //         // testOptionsPreflight();
@@ -154,6 +152,5 @@ export default function usePostToLambda() {
     //         console.error('Lambda post failed:', e);
     //     }
     // }
-
-    return { data, errors, isFetching, loading, post, postUDL, postSATile, dripEdge };
+    return { data, errors, isFetching, loading, postMech, postUDLMech, postSAMech, dripEdge };
 }

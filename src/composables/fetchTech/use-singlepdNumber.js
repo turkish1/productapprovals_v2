@@ -30,7 +30,7 @@ export default function useSingle() {
             return;
         } else {
             pdNumber.noa = data;
-            console.log(data);
+            // console.log(data);
             singleStore.addNoas(pdNumber);
         }
     };

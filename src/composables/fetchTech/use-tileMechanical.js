@@ -42,7 +42,7 @@ export default function useMech() {
     });
     function takeMechInput(inputMech) {
         input.value = inputMech;
-
+        // console.log(input.value);
         num.value = Number(input.value);
         fetchData();
     }

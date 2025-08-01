@@ -9,7 +9,7 @@ export const useGlobalState = createGlobalState(() => {
     const getUser = computed(() => accountUsers.value);
 
     // actions
-    function addUser(account) {
+    async function addUser(account) {
         accountUsers.value.push(account);
     }
     class reset {

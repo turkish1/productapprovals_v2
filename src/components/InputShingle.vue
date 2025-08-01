@@ -1,5 +1,6 @@
 <script setup>
 import DripEdShingle from '@/components/DripEdgeChildren/DripEdShingle.vue';
+import usePostShingleToLambda from '@/composables/Postdata/usePostShingleLambda';
 import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import useInputs from '@/composables/use-Inputs';
@@ -19,7 +20,7 @@ import AutoCompleteSA from './roofSystems/AutoCompleteSA.vue';
 import { useMagicKeys } from '@vueuse/core';
 
 const { tab /* keys you want to monitor */ } = useMagicKeys();
-
+const { postShingle, postUDLshingle, postSAshingle } = usePostShingleToLambda();
 watch(tab, (v) => {
     if (v) checkInput();
     console.log('tab has been pressed');
@@ -48,20 +49,24 @@ const shingles = reactive({
     description: '',
     slope: 0,
     height: 0,
-    dripEdgeMaterial: [],
-    dripEdgeSize: [],
     deckType: '',
     expiration_date: '',
-    prescriptiveSelection: ''
+    prescriptiveSelection: '',
+    shingleIdentifier: 'shingle'
 });
+//     dripEdgeMaterial: '',
+// dripEdgeSize: '',
 
 const underlayment = reactive({
-    umanufacturer: '',
-    umaterial: '',
-    udescription: ''
+    udlnoa: '',
+    udlmanufacturer: '',
+    udlmaterial: '',
+    udldescription: '',
+    udlIdentifier: 'udl'
 });
 
 const selfadhered = reactive({
+    sanoa: '',
     samanufacturer: '',
     samaterial: '',
     sadescription: '',
@@ -76,10 +81,11 @@ const selfadhered = reactive({
     Description_F9: '',
     Description_F10: '',
     Description_F11: '',
-    system: [],
+    system: '',
+    selfadIdentifier: 'sa',
+    systemCheck: '',
     maps: [],
-    arrSystem: [],
-    pdfSystemValue: ''
+    arrSystem: []
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
@@ -105,7 +111,9 @@ let noaInput = ref(null);
 
 const dims = reactive({
     area: '',
-    height: ''
+    height: '',
+    slope: '',
+    decktype: ''
 });
 const dt = ref('');
 
@@ -148,14 +156,18 @@ const whatChanged = computed(() => {
 function checkInputPoly() {
     if (polydatamt.value.length !== null) {
         polydatamt.value.forEach((item, index) => {
-            underlayment.umanufacturer = item.polyData.applicant;
-            underlayment.umaterial = item.polyData.material;
-            underlayment.udescription = item.polyData.description;
+            underlayment.udlnoa = item.polyData.noa;
+            underlayment.udlmanufacturer = item.polyData.applicant;
+            underlayment.udlmaterial = item.polyData.material;
+            underlayment.udldescription = item.polyData.description;
         });
     }
+    shingleUdlStaging();
 }
 function checkInputSystem() {
     systemdatamt.value.forEach((item, index) => {
+        // console.log(item.systemData);
+        selfadhered.sanoa = item.systemData.noa;
         selfadhered.samanufacturer = item.systemData.manufacturer;
         selfadhered.samaterial = item.systemData.material;
         selfadhered.Description_F1 = item.systemData.Description_F1;
@@ -175,10 +187,10 @@ function checkInputSystem() {
 }
 
 function updateselectSystem(selectedsystemf) {
-    console.log(typeof selectedsystemf.value);
+    console.log(selectedsystemf.value);
     console.log(usesystemfStore.store.$state.systeminput);
     if (selectedsystemf.value === 'F1') {
-        selfadhered.sadescription = selfadhered.Description_F1;
+        selfadhered.sadescription = selfadhered.Description_F1[0];
     }
     if (selectedsystemf.value === 'F2') {
         selfadhered.sadescription = selfadhered.Description_F2;
@@ -211,11 +223,13 @@ function updateselectSystem(selectedsystemf) {
     if (selectedsystemf.value === 'F11') {
         selfadhered.sadescription = selfadhered.Description_F11;
     }
+
     console.log(usesystemfStore.store.$state.systeminput.pdfSystemValue, selectedsystemf.value);
     usesystemfStore.store.$state.systeminput.pdfSystemValue = selectedsystemf.value;
     usesystemfStore.store.$state.systeminput.description = selfadhered.sadescription;
     console.log(usesystemfStore.store.$state.systeminput.systemData);
-    // });
+
+    shingleSAStaging();
 }
 
 function checkInput() {
@@ -243,9 +257,43 @@ onMounted(() => {
     });
 });
 
-const dimensions = onMounted(() => {
-    // setRoofInputs();
+const udlData = reactive({
+    udlmanufacturer: '',
+    udlnoa: '',
+    udlmaterial: '',
+    udldescription: '',
+    udlIdentifier: 'udl'
 });
+
+const shingleUdlStaging = async () => {
+    udlData.udlmanufacturer = underlayment.udlmanufacturer;
+    udlData.udlnoa = underlayment.udlnoa;
+    udlData.udlmaterial = underlayment.udlmaterial;
+    udlData.udldescription = underlayment.udldescription;
+    // shingles.prescriptiveSelection = inputshingle.value[0]?.shingleData?.prescriptiveSelection;
+
+    await postUDLshingle(udlData);
+};
+
+const saData = reactive({
+    samanufacturer: '',
+    sanoa: '',
+    samaterial: '',
+    sadescription: '',
+    sasystem: '',
+    saIdentifier: 'sa'
+});
+const shingleSAStaging = async () => {
+    console.log(selfadhered.sadescription);
+    saData.samanufacturer = selfadhered.samanufacturer;
+    saData.sanoa = selfadhered.sanoa;
+    saData.samaterial = selfadhered.samaterial;
+    saData.sasystem = usesystemfStore.store.$state.systeminput.pdfSystemValue;
+    saData.sadescription = selfadhered.sadescription;
+
+    await postSAshingle(saData);
+};
+
 watch(slope, (newVal, oldVal) => {
     console.log('Slope change from', oldVal, 'to', typeof newVal);
     validateInput(newVal);
@@ -290,8 +338,6 @@ const validateshHeightInput = () => {
 function validateHeight() {
     validateshHeightInput();
     addCheckmarks();
-
-    // getDims(dims.height, slope.value);
 }
 // function addCheckmarks() {
 //     if (errorshingleMessage.value === null || errorshHeightMessage.value === null) {
@@ -308,6 +354,18 @@ function addCheckmarks() {
         isvalueValid.value = false;
     }
 }
+const postMetrics = reactive({
+    slope: '',
+    height: '',
+    area: '',
+    decktype: '',
+    prescriptiveSelection: '',
+    manufacturer: '',
+    noa: '',
+    material: '',
+    description: ''
+});
+const isPrescriptivehigh = ref(false);
 
 // work on this logic
 function getIndexs() {
@@ -319,8 +377,6 @@ function getIndexs() {
         isShingleValid = true;
     }
     if (selectedSlopelow.value === '2 Plies Poly with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c' || selectedSlopehigh.value === '1 Ply Poly with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c') {
-        //  '1 Ply Polypropylene with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c'
-        //   1 Ply Poly with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c
         isUDLNOAValid = true;
         isSAValid = false;
         isShingleValid = true;
@@ -336,25 +392,48 @@ function getIndexs() {
         console.log('Not Mounted');
     }
 }
-const showSuggestions = ref(false);
-
-// Method to update the input field with selected suggestion
-const selectSuggestion = (suggestion) => {
-    query.value = suggestion;
-    showSuggestions.value = false;
+const stageShingle = async () => {
+    console.log(inputshingle);
+    // shingles.slope = await inputshingle.value[0]?.shingleData?.slope;
+    // shingles.height = await inputshingle.value[0]?.shingleData?.height;
+    // shingles.deckType = await inputshingle.value[0]?.shingleData?.deckType;
+    await shingleMetrics();
+    // await shingleMetrics();
 };
-
-// Method to handle input change
-const onInput = () => {
-    showSuggestions.value = true;
+const shingleMetrics = async () => {
+    console.log(dims, slope.value);
+    postMetrics.noa = shingles.noa;
+    postMetrics.manufacturer = shingles.manufacturer;
+    postMetrics.material = shingles.material;
+    postMetrics.description = shingles.description;
+    postMetrics.slope = slope.value;
+    postMetrics.height = dims.height;
+    postMetrics.area = dims.area;
+    postMetrics.decktype = dt.value;
+    postMetrics.prescriptiveSelection = isPrescriptivehigh === true ? selectedSlopehigh.value : selectedSlopelow.value;
+    // inputshingle.value[0]?.shingleData?.prescriptiveSelection;
+    console.log(postMetrics);
+    await postShingle(postMetrics);
 };
+// const showSuggestions = ref(false);
 
-// Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
-const hideSuggestions = () => {
-    setTimeout(() => {
-        showSuggestions.value = false;
-    }, 200);
-};
+// // Method to update the input field with selected suggestion
+// const selectSuggestion = (suggestion) => {
+//     query.value = suggestion;
+//     showSuggestions.value = false;
+// };
+
+// // Method to handle input change
+// const onInput = () => {
+//     showSuggestions.value = true;
+// };
+
+// // Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
+// const hideSuggestions = () => {
+//     setTimeout(() => {
+//         showSuggestions.value = false;
+//     }, 200);
+// };
 function valueEntered() {
     if (slope.value) {
         let slopeNumber = Number(slope.value);
@@ -374,6 +453,7 @@ function valueEntered() {
             isSlopeValid = true;
             isSlopeMoreFour.value = true;
             isSelectVisible2 = true;
+            isPrescriptivehigh = true;
             isSelectVisible1 = false;
         }
 
@@ -391,24 +471,18 @@ watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChan
 
 watch(
     checkInputSystem,
-
     updateselectSystem,
     valueEntered,
     noaInput,
     whatChanged,
     udlInput,
-
-    dimensions,
-
     useInputs,
-
     inputshingle,
     inputsystem,
     datamounted,
     data,
     datasbs,
     datapoly,
-
     checkInputPoly,
     checkInput,
 
@@ -416,7 +490,8 @@ watch(
 );
 </script>
 <template>
-    <div id="shingle" class="flex flex-col w-full gap-1 shadow-lg shadow-cyan-800" style="margin-left: 5px">
+    <!-- md:w-1/2 mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6 flex flex-col w-full gap-1 shadow-lg shadow-cyan-800-->
+    <div id="shingle" class="md:w-1/2 mx-auto p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6" style="margin-left: 500px; border-radius: 5px">
         <label for="slope" style="color: #122620; margin-left: 650px">Shingle Roof</label>
 
         <div class="w-64 gap-1" style="margin-left: 20px">
@@ -435,7 +510,7 @@ watch(
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
         <div class="w-64 mt-1 space-y-2" style="margin-left: 20px">
-            <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
+            <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
         </div>
@@ -451,40 +526,40 @@ watch(
         </div>
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <!-- @click.stop.prevent -->
                 <AutoComplete @keydown.tab.exact.stop="checkInput" />
             </div>
         </div>
 
-        <div v-show="isSelectVisible2" class="md:w-1/3 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px; margin-top: 2px">
+        <div v-show="isSelectVisible2" class="md:w-1/2 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px; margin-top: 2px">
             <label style="color: red">Select Underlayment (S/A) *</label>
             <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
         </div>
 
-        <div v-show="isSelectVisible1" class="md:w-1/3 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px">
+        <div v-show="isSelectVisible1" class="md:w-3/4 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px">
             <label style="color: red">Select Underlayment (UDL) *</label>
             <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>
+        <br />
         <DripEdShingle />
     </div>
 
     <Divider />
     <Divider />
     <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
-        <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800" style="margin-left: 5px">
-            <div class="flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
+        <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800">
+            <div class="flex flex-row space-x-20 space-y-12">
                 <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                     <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                         <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
-                        <InputText id="manufacturer" v-model="underlayment.umanufacturer" />
+                        <InputText id="manufacturer" v-model="underlayment.udlmanufacturer" />
                     </div>
                     <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                         <label style="color: #122620" for="material">(UDL) Material</label>
-                        <InputText id="material" v-model="underlayment.umaterial" />
+                        <InputText id="material" v-model="underlayment.udlmaterial" />
                     </div>
                     <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                         <label style="color: #122620" for="description">(UDL) Description</label>
-                        <InputText id="description" v-model="underlayment.udescription" />
+                        <InputText id="description" v-model="underlayment.udldescription" />
                     </div>
                 </div>
             </div>

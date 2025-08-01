@@ -7,6 +7,104 @@
     // const noaArray = paddyCategory.value === 'double' ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa.value.body ?? []);
     // isPaddyvaluesingle.value == false ? (paddyInputSelected?.pdNumbers?.noa ?? []) : (paddyInputSelected?.pdNumber?.noa ?? []);
 
+// composables/usePermitData.ts
+// import { usePermitappStore } from '@/stores/permitapp';
+// import { computed } from 'vue';
+
+// import { useAxios } from '@vueuse/integrations/useAxios';
+// import axios from 'axios';
+// import { onMounted, reactive, ref } from 'vue';
+
+// const lambdaUrl = 'https://mg7y3qizyjvkkwd7ynpoc2r2yi0gerzh.lambda-url.us-east-1.on.aws/';
+
+// export default function usePermitData() {
+//     const errors = ref(null);
+//     const loading = ref(false);
+//     var dimpayload = ref(null);
+//     const permitStore = usePermitappStore();
+
+//     const formdt = computed(() => permitStore.$state.permitapp[0]?.formdt || {});
+
+//     console.log('formdt data: ', formdt);
+//     const permitData = computed(() => ({
+//         address: formdt.value.address || '',
+//         masterPermit: formdt.value.permit || 'N|A',
+//         processNumber: formdt.value.processNumber || '',
+//         muniProcessNumber: formdt.value.muniProc || '',
+//         municipality: formdt.value.muni || '',
+//         dba: formdt.value.contractor || '',
+//         license: formdt.value.license || '',
+//         permitappIdentifier: 'Permitapp'
+//     }));
+//     onMounted(async () => {
+//         const checkContent = permitData.value;
+//         console.log(checkContent);
+//         if (!checkContent) return; // guard
+//         prepData();
+//     });
+//     const permitDatapost = reactive({
+//         address: '',
+//         masterpermit: '',
+//         processnumber: '',
+//         muniprocessnumber: '',
+//         municipality: '',
+//         dba: '',
+//         license: '',
+//         permitappIdentifier: ''
+//     });
+
+//     const { data, error, isFetching, execute } = useAxios(
+//         // ① give the URL up front
+//         lambdaUrl,
+//         // ② options object
+//         {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' }
+//             // you can omit `data` here
+//         },
+//         // ③ axios instance
+//         axios,
+//         // ④ don't fire immediately
+//         { immediate: false }
+//     );
+
+//     /**
+//      * post an object to the Lambda
+//      * @param {Object} obj — any JSON‐serializable object
+//      */
+//     async function prepData() {
+//         try {
+//             permitDatapost.address = permitData.value.address || '';
+//             permitDatapost.masterpermit = permitData.value.masterPermit || '';
+//             permitDatapost.processnumber = permitData.value.processNumber || '';
+//             permitDatapost.muniprocessnumber = permitData.value.muniProcessNumber || '';
+//             permitDatapost.municipality = permitData.value.municipality || '';
+//             permitDatapost.dba = permitData.value.dba || '';
+//             permitDatapost.license = permitData.value.license || '';
+//             permitDatapost.permitappIdentifier = permitData.value.permitappIdentifier || '';
+
+//             genData(permitDatapost);
+//         } catch (e) {
+//             // prevents uncaught promise — you can also forward this to your UI
+//             console.error('Lambda post failed:', e);
+//         }
+//     }
+
+//     async function genData(dim) {
+//         try {
+//             dimpayload.value = dim;
+//             // testOptionsPreflight();
+//             console.log('Payload:', dimpayload.value);
+
+//             await execute({ data: dimpayload.value });
+//         } catch (e) {
+//             // prevents uncaught promise — you can also forward this to your UI
+//             console.error('Lambda post failed:', e);
+//         }
+//     }
+
+//     return { data, errors, isFetching, loading, prepData, genData };
+// }
 
  for (const [key, value] of Object.entries(selfadhered.maps)) {
                 console.log(`${key}: ${value}`);

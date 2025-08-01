@@ -3,13 +3,10 @@ import useS3download from '@/composables/fetchTech/use-S3download';
 import useS3upload from '@/composables/fetchTech/use-S3upload';
 import useBurDetails from '@/composables/fetchTech/use-burdetailsdocs';
 import useburAxios from '@/composables/use-burAxios';
-import useCreateProcessNumber from '@/composables/use-createProcessnumber';
-import { useBurpdfStore } from '@/stores/burpdfStore';
-import { usePermitappStore } from '@/stores/permitapp';
-import { storeToRefs } from 'pinia';
-import { reactive, ref } from 'vue';
 
-const { procData, procReceive } = useCreateProcessNumber();
+import usePostBurLambda from '@/composables/Postdata/usePostBurLambda';
+import { usePermitappStore } from '@/stores/permitapp';
+import { reactive, ref } from 'vue';
 
 // Composable & store setup
 //
@@ -18,9 +15,8 @@ const { removeBeforeSlash } = useS3upload();
 const { downloadFile, fileUrl } = useS3download();
 const fileName = ref('downloaded-file.pdf');
 const { bMaters, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
+const { postBur } = usePostBurLambda();
 
-const burpdfStore = useBurpdfStore();
-const { burpdfinput, addpdfData } = storeToRefs(burpdfStore);
 const muniProcessNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
 //
 // Reactive state
@@ -131,7 +127,6 @@ function updateselectSystem(event) {
     }
 
     selectedBurItems.burSystem = value;
-    console.log('Selected system:', value, selectedBurItems.burSystem);
 
     // Get the first part of the system string
     const getFirstPart = (str) => {
@@ -165,9 +160,27 @@ function prescriptiveThree(event) {
     console.log(event.value);
     selectedBurItems.p3 = event.value;
     // Call the store method to add the PDF data. (Assuming addpdfData is a function)
-    burpdfStore.addpdfData(selectedBurItems);
+    // burpdfStore.addpdfData(selectedBurItems);
+    burStaging();
 }
 
+const burPrep = reactive({
+    p1: '',
+    p3: '',
+    bursystem: '',
+    burmaterial: '',
+    decktype: '',
+    burIdentifier: 'lowslope'
+});
+
+async function burStaging() {
+    burPrep.p1 = selectedBurItems.p1;
+    burPrep.p3 = selectedBurItems.p3;
+    burPrep.bursystem = selectedBurItems.burSystem;
+    burPrep.burmaterial = selectedBurItems.burMaterial;
+    console.log(burPrep);
+    await postBur(burPrep);
+}
 //
 // File upload / download functionality
 //
@@ -219,16 +232,6 @@ const handleDownload = async () => {
 </script>
 
 <template>
-    <!-- <div class="md:w-1/2 grid grid-cols-1 gap-2 border-2 border-gray-700 focus:border-orange-600 shadow-md shadow-cyan-800" style="margin-left: 450px; border-radius: 5px">
-        <label for="material" style="color: red">Type of Low Slope BUR Material: *</label>
-        <Select v-model="selectedBur" :options="mat" placeholder="make selection" @click="findSelected" @change="updateselection" />
-        <label for="system" style="color: red">Type of Low Slope BUR System: *</label>
-        <Select v-model="selectedSystem" :options="syst" placeholder="make selection" @click="selectSystem" @change="updateselectSystem" />
-        <label for="fieldPresc1" style="color: red"> Attach P(1') Prime using P(1) Field Prescriptive Basesheet: * </label>
-        <Select v-model="selectedPrimeone" :options="primeone" placeholder="make selection" @change="prescriptiveOne" />
-        <label for="fieldPresc3" style="color: red"> Attach P(2) Perimeter using P(3) Corner Prescriptive: * </label>
-        <Select v-model="selectedPrimethree" :options="primethree" placeholder="make selection" @change="prescriptiveThree" />
-    </div> -->
     <div class="md:w-1/2 mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6" style="margin-left: 450px; border-radius: 5px">
         <div>
             <label for="material" class="block text-sm font-medium text-red-600 mb-1"> Type of Low‑Slope BUR Material <span class="text-red-500">*</span> </label>

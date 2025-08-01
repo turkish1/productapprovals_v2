@@ -270,7 +270,7 @@ function hideSuggestions() {
     // Delay hiding so click on the suggestion list is registered
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 50);
+    }, 500);
 }
 </script>
 

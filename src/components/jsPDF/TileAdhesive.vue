@@ -173,7 +173,7 @@ const generatePDF = () => {
         // Add content below the header
         doc.setFontSize(12);
         // Add a title
-        doc.setFontSize(12);
+
         // doc.text('Tile Output', 10, 50);
         // Example data for categories and values
         const data = [
@@ -204,7 +204,7 @@ const generatePDF = () => {
             const valueTextWidth = doc.getTextWidth(item.value) * 2; // Get text width
             doc.line(startXValue, currentY + 2, startXValue + valueTextWidth, currentY + 2);
         });
-        doc.setFontSize(12);
+        // doc.setFontSize(12);
         const factor = 2;
         const initialYValue = 90;
         const param_y = initialYValue;
@@ -255,9 +255,7 @@ const generatePDF = () => {
         doc.text(tDeck, deckStartXValue, current_y);
         const decktypeStartValue = tDeckTextWidth + deckStartXValue;
         doc.text(`${deckType.value}`, decktypeStartValue, current_y);
-        doc.line(decktypeStartValue, current_y + factor, decktypeStartValue + DeckTextWidth, current_y + factor); // Get text width
 
-        current_y = current_y + 10;
         const noaText = 'Tile NOA Number: ';
         const applicantText = 'Tile Applicant: ';
         const materialText = 'Tile Material: ';
@@ -657,9 +655,7 @@ const generatePDF = () => {
                 doc.text(String(cell), x, startYY);
                 x += 18; // Space between columns
             });
-            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
-            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
-            // doc.addImage(lambdaSymbol, 'png', 50, startYY - 4, 5, 5);
+
             startYY += 5; // Move to next row
             console.log(x, startYY);
         });
