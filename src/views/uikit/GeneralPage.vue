@@ -6,7 +6,7 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 // import { invoke, until } from '@vueuse/core';
-import { usePostGeneralpageLambda } from '@/composables/Postdata/usePostGeneralpageLambda';
+import usePostGeneralpageLambda from '@/composables/Postdata/usePostGeneralpageLambda';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import Divider from 'primevue/divider';
