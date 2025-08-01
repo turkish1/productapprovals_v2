@@ -129,7 +129,6 @@ const storeDripEdgeSize = async (value) => {
         console.log(dripMTileData.DripEdgeSize);
         mechtileStore.insertDripAtIndex(5, dripMTileData.DripEdgeMaterial);
         mechtileStore.insertDripAtIndex(7, dripMTileData.DripEdgeSize);
-        console.log(mechtileStore);
     }
 
     // await stageDripedge();
