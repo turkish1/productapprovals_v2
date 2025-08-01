@@ -64,6 +64,8 @@ const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
     shingleData.value = suggestions.value[0]?.shingleNoaNumber?.noa;
+
+    console.log(shingleData.value);
     shingleIterate.value = shingleData.value.body ?? [];
     const stringyfied1 = JSON.stringify(shingleIterate.value).split('[').join();
     const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();

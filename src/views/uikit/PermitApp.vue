@@ -189,7 +189,7 @@ async function load() {
         formData.address = inputAddress.value;
 
         // commented because of the onSubmit
-        await procReceive(formData);
+        procReceive(formData);
         await callPermitdata(formData);
     } catch (err) {
         alert(err);
