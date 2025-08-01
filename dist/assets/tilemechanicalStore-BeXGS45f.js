@@ -1,1 +1,0 @@
-import{aA as s,e as u,I as r}from"./index-B4ipf8sK.js";const l=s(()=>{const e=u([]),t=r(()=>e.value);function a(o){e.value.push(o)}return{tilemech:e,getNumber:t,addNoa:a}});export{l as u};

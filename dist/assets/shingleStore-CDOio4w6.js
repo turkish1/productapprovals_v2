@@ -1,0 +1,1 @@
+import{s as t}from"./reset-store-B2sBouXv.js";import{E as o,aq as i}from"./index-BFaLa_mt.js";const l=o("inputshingle",{state:()=>({inputshingle:[],id:0}),actions:{addShingle(e){console.log(e),this.inputshingle.push({shingleData:e,completed:!1})}},getters:{shingleData:e=>e.shingleData}}),s=i();s.use(t);console.log(s);export{l as u};
