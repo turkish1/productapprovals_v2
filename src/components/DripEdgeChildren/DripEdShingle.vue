@@ -138,7 +138,6 @@ function shingles() {
     typeSizeSh.value = holdSizeshingle.value;
 
     dripShinData.DripEdgeMaterial = selectDripEdge.value;
-    console.log(dripShinData.DripEdgeMaterial);
 
     storeDripEdgeSize();
 }
@@ -155,8 +154,6 @@ const storeDripEdgeSize = async (value) => {
 };
 
 const stageDripedge = async () => {
-    console.log(dripStagedata);
-
     try {
         if (isdripMaterialValid.value === true && isdripsizeValid.value == true) {
             console.log(dripStagedata);

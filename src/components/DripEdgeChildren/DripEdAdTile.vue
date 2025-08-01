@@ -137,12 +137,10 @@ const storeDripEdgeSize = (value) => {
     }
 };
 const stageDripedge = async () => {
-    console.log(dripStagedata);
-
     try {
         if (isdripMaterialValid.value === true && isdripsizeValid.value == true) {
-            console.log(dripStagedata);
-            return await dripEdge(dripStagedata);
+            // console.log(dripStagedata);
+            // return await dripEdge(dripStagedata);
         } else {
             console.log('The if statemeant failed');
 

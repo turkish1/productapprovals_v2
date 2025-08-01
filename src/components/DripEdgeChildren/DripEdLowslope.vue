@@ -136,7 +136,7 @@ const storeDripEdgeSize = async (event) => {
 
 const stageDripedge = async () => {
     console.log(dripStagedata);
-    await dripEdge(dripStagedata);
+    // await dripEdge(dripStagedata);
 };
 
 const resetButton = () => {
