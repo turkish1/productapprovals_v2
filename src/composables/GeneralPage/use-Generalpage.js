@@ -48,7 +48,6 @@ export default function useGeneral() {
         roofCheck: '',
         area: ''
     });
-    // roofs
 
     function addRoof(typeOfroof) {
         roofType.value = typeOfroof.value[0];
