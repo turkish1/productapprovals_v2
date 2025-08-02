@@ -597,3 +597,49 @@ lines.forEach(line => {
 //         ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
 //     }
 // }
+
+// function updateselectSystem(selectedsystemf) {
+//     console.log(selectedsystemf.value);
+//     console.log(usesystemfStore.store.$state.systeminput);
+//     if (selectedsystemf.value === 'F1') {
+//         selfadhered.sadescription = selfadhered.Description_F1[0];
+//     }
+//     if (selectedsystemf.value === 'F2') {
+//         selfadhered.sadescription = selfadhered.Description_F2;
+//     }
+
+//     if (selectedsystemf.value === 'F3') {
+//         selfadhered.sadescription = selfadhered.Description_F3;
+//     }
+//     if (selectedsystemf.value === 'F4' || selectedsystemf.value === 'E4') {
+//         selfadhered.sadescription = selfadhered.Description_F4;
+//     }
+//     if (selectedsystemf.value === 'F5' || selectedsystemf.value === 'E5') {
+//         selfadhered.sadescription = selfadhered.Description_F5;
+//     }
+//     if (selectedsystemf.value === 'F6' || selectedsystemf.value === 'E6') {
+//         selfadhered.sadescription = selfadhered.Description_F6;
+//     }
+//     if (selectedsystemf.value === 'F7') {
+//         selfadhered.sadescription = selfadhered.Description_F7;
+//     }
+//     if (selectedsystemf.value === 'F8') {
+//         selfadhered.sadescription = selfadhered.Description_F8;
+//     }
+//     if (selectedsystemf.value === 'F9') {
+//         selfadhered.sadescription = selfadhered.Description_F9;
+//     }
+//     if (selectedsystemf.value === 'F10') {
+//         selfadhered.sadescription = selfadhered.Description_F10;
+//     }
+//     if (selectedsystemf.value === 'F11') {
+//         selfadhered.sadescription = selfadhered.Description_F11;
+//     }
+
+//     console.log(usesystemfStore.store.$state.systeminput.pdfSystemValue, selectedsystemf.value);
+//     usesystemfStore.store.$state.systeminput.pdfSystemValue = selectedsystemf.value;
+//     usesystemfStore.store.$state.systeminput.description = selfadhered.sadescription;
+//     console.log(usesystemfStore.store.$state.systeminput.systemData);
+
+// }
+// shingleSAStaging();

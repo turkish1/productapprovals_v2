@@ -164,6 +164,30 @@ function checkInputPoly() {
     }
     shingleUdlStaging();
 }
+
+// function checkInputSystem() {
+//     systemdatamt.value.forEach(({ systemData }) => {
+//         Object.assign(selfadhered, {
+//             sanoa: systemData.noa,
+//             samanufacturer: systemData.manufacturer,
+//             samaterial: systemData.material,
+//             Description_F1: systemData.Description_F1,
+//             Description_F2: systemData.Description_F2,
+//             Description_F3: systemData.Description_F3,
+//             Description_F4: systemData.Description_F4,
+//             Description_F5: systemData.Description_F5,
+//             Description_F6: systemData.Description_F6,
+//             Description_F7: systemData.Description_F7,
+//             Description_F8: systemData.Description_F8,
+//             Description_F9: systemData.Description_F9,
+//             Description_F10: systemData.Description_F10,
+//             Description_F11: systemData.Description_F11,
+//             arrSystem: systemData.arraySystem,
+//             system: systemData.system
+//         });
+//     });
+// }
+
 function checkInputSystem() {
     systemdatamt.value.forEach((item, index) => {
         // console.log(item.systemData);
@@ -185,50 +209,37 @@ function checkInputSystem() {
         selfadhered.system = item.systemData.system;
     });
 }
-
 function updateselectSystem(selectedsystemf) {
-    console.log(selectedsystemf.value);
+    const value = selectedsystemf.value;
+    console.log(value);
     console.log(usesystemfStore.store.$state.systeminput);
-    if (selectedsystemf.value === 'F1') {
-        selfadhered.sadescription = selfadhered.Description_F1[0];
-    }
-    if (selectedsystemf.value === 'F2') {
-        selfadhered.sadescription = selfadhered.Description_F2;
-    }
 
-    if (selectedsystemf.value === 'F3') {
-        selfadhered.sadescription = selfadhered.Description_F3;
-    }
-    if (selectedsystemf.value === 'F4' || selectedsystemf.value === 'E4') {
-        selfadhered.sadescription = selfadhered.Description_F4;
-    }
-    if (selectedsystemf.value === 'F5' || selectedsystemf.value === 'E5') {
-        selfadhered.sadescription = selfadhered.Description_F5;
-    }
-    if (selectedsystemf.value === 'F6' || selectedsystemf.value === 'E6') {
-        selfadhered.sadescription = selfadhered.Description_F6;
-    }
-    if (selectedsystemf.value === 'F7') {
-        selfadhered.sadescription = selfadhered.Description_F7;
-    }
-    if (selectedsystemf.value === 'F8') {
-        selfadhered.sadescription = selfadhered.Description_F8;
-    }
-    if (selectedsystemf.value === 'F9') {
-        selfadhered.sadescription = selfadhered.Description_F9;
-    }
-    if (selectedsystemf.value === 'F10') {
-        selfadhered.sadescription = selfadhered.Description_F10;
-    }
-    if (selectedsystemf.value === 'F11') {
-        selfadhered.sadescription = selfadhered.Description_F11;
-    }
+    const descriptionMap = {
+        F1: selfadhered.Description_F1,
+        F2: selfadhered.Description_F2,
+        F3: selfadhered.Description_F3,
+        F4: selfadhered.Description_F4,
+        F5: selfadhered.Description_F5,
+        F6: selfadhered.Description_F6,
+        F7: selfadhered.Description_F7,
+        F8: selfadhered.Description_F8,
+        F9: selfadhered.Description_F9,
+        F10: selfadhered.Description_F10,
+        F11: selfadhered.Description_F11,
+        E4: selfadhered.Description_F4,
+        E5: selfadhered.Description_F5,
+        E6: selfadhered.Description_F6
+    };
+    console.log();
+    const description = descriptionMap[value] ?? '';
+    selfadhered.sadescription = description;
 
-    console.log(usesystemfStore.store.$state.systeminput.pdfSystemValue, selectedsystemf.value);
-    usesystemfStore.store.$state.systeminput.pdfSystemValue = selectedsystemf.value;
-    usesystemfStore.store.$state.systeminput.description = selfadhered.sadescription;
-    console.log(usesystemfStore.store.$state.systeminput.systemData);
+    const systemInput = usesystemfStore.store.$state.systeminput;
+    systemInput.pdfSystemValue = value;
+    systemInput.description = description;
 
+    console.log(systemInput.pdfSystemValue, value);
+    console.log(systemInput.systemData);
     shingleSAStaging();
 }
 
@@ -415,25 +426,7 @@ const shingleMetrics = async () => {
     console.log(postMetrics);
     await postShingle(postMetrics);
 };
-// const showSuggestions = ref(false);
 
-// // Method to update the input field with selected suggestion
-// const selectSuggestion = (suggestion) => {
-//     query.value = suggestion;
-//     showSuggestions.value = false;
-// };
-
-// // Method to handle input change
-// const onInput = () => {
-//     showSuggestions.value = true;
-// };
-
-// // Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
-// const hideSuggestions = () => {
-//     setTimeout(() => {
-//         showSuggestions.value = false;
-//     }, 200);
-// };
 function valueEntered() {
     if (slope.value) {
         let slopeNumber = Number(slope.value);
@@ -453,7 +446,7 @@ function valueEntered() {
             isSlopeValid = true;
             isSlopeMoreFour.value = true;
             isSelectVisible2 = true;
-            isPrescriptivehigh = true;
+            isPrescriptivehigh.value = true;
             isSelectVisible1 = false;
         }
 

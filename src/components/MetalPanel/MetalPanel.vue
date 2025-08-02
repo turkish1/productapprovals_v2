@@ -33,6 +33,13 @@
                     <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
                     <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
                 </div>
+                <br />
+                <div class="md:w-1/2 flex flex-col w-96 mb-4 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
+                    <label style="color: #122620" for="underlaymentType">Select Required Fire Barrier: </label>
+                    <Select v-model="selectedBarrier" :options="barrierType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
+                </div>
+                <DripEdMetal />
+
                 <div class="flex justify-center mt-6 gap-4">
                     <button type="reset" class="btn">Reset</button>
                     <button type="submit" class="btn btn-primary">Confirm</button>
@@ -43,6 +50,7 @@
 </template>
 
 <script setup>
+import DripEdMetal from '@/components/DripEdgeChildren/DripEdMetal.vue';
 import { reactive } from 'vue';
 
 const form = reactive({
