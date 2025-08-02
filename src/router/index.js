@@ -111,7 +111,7 @@ const router = createRouter({
                 {
                     path: '/metalpanel',
                     name: 'metalpanel',
-                    component: () => import('@/components/MetalPanel.vue')
+                    component: () => import('@/components/MetalPanel/MetalPanel.vue')
                 },
                 {
                     path: '/summary',
@@ -130,6 +130,7 @@ const router = createRouter({
                     name: 'mechanical',
                     component: () => import('@/components/TileNoa/MechanicalTileNoa/TileMech.vue')
                 },
+
                 {
                     path: '/permitapp',
                     name: 'permitapp',
