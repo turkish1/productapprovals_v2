@@ -536,3 +536,64 @@ lines.forEach(line => {
         //     { label: 'P1: ', value: burpick('p1') },
         //     { label: 'P3: ', value: burpick('p3') }
         // ],
+// function saDescPressure() {
+//     if (selectedsystemf.value === 'F1') {
+//         saTiles.description = saTiles.Description_F1[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F1;
+//     }
+//     if (selectedsystemf.value === 'F2') {
+//         saTiles.description = saTiles.Description_F2[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F2[0];
+//     }
+//     if (selectedsystemf.value === 'F3') {
+//         saTiles.description = saTiles.Description_F3[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F3[0];
+//         console.log(saTiles.arrDesignPressure);
+//     }
+//     if (selectedsystemf.value === 'F4') {
+//         saTiles.description = saTiles.Description_F4[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F4[0];
+//         console.log(saTiles);
+//     }
+//     if (selectedsystemf.value === 'F5') {
+//         saTiles.description = saTiles.Description_F5[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F5[0];
+//     }
+//     if (selectedsystemf.value === 'F6') {
+//         saTiles.description = saTiles.Description_F6[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F6[0];
+//     }
+
+//     if (selectedsystemf.value === 'F7') {
+//         saTiles.description = saTiles.Description_F7[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F7[0];
+//     }
+//     if (selectedsystemf.value === 'F8') {
+//         saTiles.description = saTiles.Description_F8[0];
+
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F8[0];
+//     }
+//     if (selectedsystemf.value === 'F9') {
+//         saTiles.description = saTiles.Description_F9[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F9[0];
+//     }
+
+//     if (selectedsystemf.value === 'F10') {
+//         saTiles.description = saTiles.Description_F10[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F10[0];
+//     }
+//     if (selectedsystemf.value === 'F11') {
+//         saTiles.description = saTiles.Description_F11[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F11[0];
+//     }
+//     if (selectedsystemf.value === 'F12') {
+//         saTiles.description = saTiles.Description_F12[0];
+//         saTiles.designpressure = keyValueSystemFPairsValues.value.F12[0];
+//     }
+
+//     if (ftileStore.$state.tilefinput.length !== 0) {
+//         ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
+//         ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
+//         ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
+//     }
+// }

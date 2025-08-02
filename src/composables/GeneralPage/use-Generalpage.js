@@ -49,33 +49,66 @@ export default function useGeneral() {
         area: ''
     });
     // roofs
+    // function addRoof(typeOfroof) {
+    //     roofType.value = typeOfroof.value[0];
+    //     console.log(typeOfroof);
+    //     const typeMapping = {
+    //         'Asphalt Shingle': { dim: 'dim1', flag: 'shingle' },
+    //         'Low Slope': { dim: 'dim2', flag: 'slope' },
+    //         'Mechanical Fastened Tile': { dim: 'dim3', flag: 'mtile' },
+    //         'Adhesive Set Tile': { dim: 'dim4', flag: 'adtile' },
+    //         'Metal Panel': { dim: 'dim5', flag: 'metal' }
+    //     };
+
+    //     roofList.value.forEach((item) => {
+    //         console.log(item);
+    //         const config = typeMapping[item.item];
+    //         console.log(config);
+
+    //         if (config) {
+    //             console.log(config.dim);
+    //             const dimValue = Number(item[config.dim]) || 0;
+    //             checkedTypes[config.flag] = true;
+    //             console.log(dimValue);
+    //             if (config.flag === 'slope') {
+    //                 dims.low1 = dimValue;
+    //             } else {
+    //                 dims[`steep${Object.keys(checkedTypes).indexOf(config.flag)}`] = dimValue;
+    //             }
+
+    //             dataGeneral[`${config.flag}Chk`] = true;
+    //         }
+    //     });
+
+    //     roofArea();
+    // }
     function addRoof(typeOfroof) {
         roofType.value = typeOfroof.value[0];
-        console.log(typeOfroof);
+
         const typeMapping = {
-            'Asphalt Shingle': { dim: 'dim1', flag: 'shingle' },
-            'Low Slope': { dim: 'dim2', flag: 'slope' },
-            'Mechanical Fastened Tile': { dim: 'dim3', flag: 'mtile' },
-            'Adhesive Set Tile': { dim: 'dim4', flag: 'adtile' },
-            'Metal Panel': { dim: 'dim5', flag: 'metal' }
+            'Asphalt Shingle': { dim: 'dim1', flag: 'shingle', steepKey: 'steep1' },
+            'Adhesive Set Tile': { dim: 'dim4', flag: 'adtile', steepKey: 'steep2' },
+            'Mechanical Fastened Tile': { dim: 'dim3', flag: 'mtile', steepKey: 'steep3' },
+            'Metal Panel': { dim: 'dim5', flag: 'metal', steepKey: 'steep4' },
+            'Low Slope': { dim: 'dim2', flag: 'slope' }
         };
 
-        roofList.value.forEach((item) => {
-            console.log(item);
-            const config = typeMapping[item.item];
-            console.log(config);
+        // Reset previous state
+        Object.keys(checkedTypes).forEach((key) => (checkedTypes[key] = false));
+        Object.keys(dims).forEach((key) => (dims[key] = 0));
 
+        roofList.value.forEach((item) => {
+            const config = typeMapping[item.item];
             if (config) {
                 const dimValue = Number(item[config.dim]) || 0;
                 checkedTypes[config.flag] = true;
-                console.log(dimValue);
+                dataGeneral[`${config.flag}Chk`] = true;
+
                 if (config.flag === 'slope') {
                     dims.low1 = dimValue;
                 } else {
-                    dims[`steep${Object.keys(checkedTypes).indexOf(config.flag)}`] = dimValue;
+                    dims[config.steepKey] = dimValue;
                 }
-
-                dataGeneral[`${config.flag}Chk`] = true;
             }
         });
 

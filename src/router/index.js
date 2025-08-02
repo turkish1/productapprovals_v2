@@ -111,7 +111,7 @@ const router = createRouter({
                 {
                     path: '/metalpanel',
                     name: 'metalpanel',
-                    component: () => import('@/components/MetalPanel.vue')
+                    component: () => import('@/components/MetalPanel/MetalPanel.vue')
                 },
                 {
                     path: '/summary',
