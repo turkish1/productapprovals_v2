@@ -79,9 +79,9 @@ function checkRoof() {
         }
     }
 }
-function checkValue() {
+function checkValue(value) {
     types.value = type.value;
-    console.log(types.value);
+    console.log(types.value, value);
 }
 
 function getdripSize() {
@@ -108,8 +108,8 @@ function getdripSize() {
     }
     dripStagedata.DripEdgeMaterial = selectDripEdge.value;
     dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-
-    dripEdge(dripStagedata);
+    stageDripedge();
+    // dripEdge(dripStagedata);
     checkRoof();
 }
 
@@ -136,8 +136,8 @@ const storeDripEdgeSize = async (value) => {
 };
 
 const stageDripedge = async () => {
-    dripStagedata.DripEdgeMaterial = selectDripEdge.value;
-    dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
+    // dripStagedata.DripEdgeMaterial = selectDripEdge.value;
+    // dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
 
     await dripEdge(dripStagedata);
 };
@@ -155,7 +155,7 @@ invoke(async () => {
         <!-- <Button label="Reset" severity="danger" @click="resetState"></Button> -->
         <label style="color: #122620">Drip Edge Material</label>
         <!--  ref="selectRef"    selectDripMaterial,  @change="emitValue" @update-value="selectDripMaterial"    " -->
-        <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @click="checkValue" />
+        <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @update:modelValue="checkValue" />
         <!-- @change="emitValuesize" @update-valuesize="storeDripEdgeSize" ref="selectSizeRef"-->
 
         <label style="color: #122620">Drip Edge Size</label>

@@ -32,11 +32,8 @@ export default function useTileSystemF() {
         Description_F11: '',
         Description_F12: '',
         Description_F13: '',
-
         arraySystem: [],
-        // maps: [],
         systemCheck: [],
-
         expiration_date: '',
         prescriptiveSelection: ''
     });
@@ -55,7 +52,7 @@ export default function useTileSystemF() {
 
             const fetchedData = data.value;
             noaNum.value = fetchedData;
-
+            console.log(fetchedData);
             if (!Array.isArray(fetchedData) || fetchedData.length === 0) {
                 alert('No data found!');
                 return;
@@ -73,7 +70,7 @@ export default function useTileSystemF() {
             });
 
             // Dynamically assign Description_F1 to F9
-            for (let i = 1; i <= 9; i++) {
+            for (let i = 1; i <= 15; i++) {
                 const key = `Description_F${i}`;
                 const sourceKey = `TileCap_Sheet_${key}`;
                 if (entry[sourceKey]) {

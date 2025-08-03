@@ -165,7 +165,7 @@ const saTiles = reactive({
     noa: '',
     manufacturer: '',
     material: '',
-    system: '',
+    system: [],
     designpressure: '',
     pressure: '',
     prescriptiveSelection: '',
@@ -182,6 +182,9 @@ const saTiles = reactive({
     Description_F10: '',
     Description_F11: '',
     Description_F12: '',
+    Description_F13: '',
+    Description_F14: '',
+    Description_F15: '',
     arrDesignPressure: [],
     saIdentifier: 'sa'
 });
@@ -297,6 +300,7 @@ function checkTile() {
         workoutData(datamountedMech, multiTiles.select_tile);
         isMultiTileValid = true;
         tilenoas.select_tile = multiTiles.select_tile;
+
         console.log(tilenoas);
     }
     // mechStaging();
@@ -319,7 +323,7 @@ function updateTile(event) {
     console.log(event.value);
     console.log(multiTiles.table2_map);
     console.log(multiTiles.tile_map);
-
+    // tilenoas.description = event.value;
     let type = multiTiles.table2_map;
 
     const valMulti = Object.entries(type).map((obj) => {
@@ -395,6 +399,7 @@ function updateTile(event) {
     });
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+    console.log(tilenoas.mechanicaltilefastener, tilenoas.fastenerValues);
     // mechStaging();
 }
 function sysEcheckInput() {
@@ -425,11 +430,11 @@ const whatChanged = computed(() => {
 });
 const selectedsystemf = ref(null);
 const selectedMechanical = ref(null);
-const selectedsysNoa = ref(null);
+// const selectedsysNoa = ref(null);
 
 const selectedsystemE = ref(null);
 let isMultiTileValid = ref(false);
-let isTileTypeValid = ref(false);
+// let isTileTypeValid = ref(false);
 let isUDLValid = ref(false);
 let isUDLNOAValid = ref(false);
 let isSAValid = ref(false);
@@ -511,24 +516,25 @@ function checkInputSystem() {
         if (!systemData) return;
 
         // Dynamically assign Description_F1 to Description_F9
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 1; i <= 15; i++) {
             const key = `Description_F${i}`;
+            console.log(key);
             if (systemData[key]) {
                 saTiles[key] = systemData[key];
+                console.log(saTiles[key]);
             }
         }
-        console.log(systemData);
         // Set design pressure
-        saPressure.value = systemData.designPressure[0];
-        // saTiles.designpressure = systemData.designPressure[0];
-        // saTiles.system = systemData.system[0];
+        saTiles.arrDesignPressure = systemData.designPressure;
+        saTiles.system = systemData.system;
+        console.log(saTiles.system, saTiles.designpressure);
 
-        console.log(saPressure.value);
         // Check system value
         if (Array.isArray(systemData.system) && systemData.system.length > 1) {
             addFSystem();
         } else {
             saTiles.system = systemData.system;
+            saPressure.value = systemData.designPressure;
         }
     });
 }
@@ -595,7 +601,7 @@ function addFSystem() {
     console.log(saTiles.system);
 }
 
-const resistanceCheck = ref();
+// const resistanceCheck = ref();
 
 const MF = computed(updateMF, () => {
     zoneone.mf1 = mfupdate.value;
@@ -659,12 +665,10 @@ const { getDatas } = useExposured();
 function setRoofInputs() {
     dims.height = heightModel.value;
     dims.per = (dims.height * factor.value).toFixed(2);
-    console.log(dims);
     tilenoas.height = dims.height;
     tilenoas.perimeter = dims.per;
     // tilenoas.slope = dims.slope;
     tilenoas.area = dims.area;
-    console.log(tilenoas.area, dims.slope);
 
     // console.log(mechStore);
     addCheckmarks();
@@ -676,8 +680,9 @@ async function checkInputSA() {
             console.log(item, item.systemData.designPressure[0]);
             saTiles.manufacturer = item.systemData.manufacturer;
             saTiles.material = item.systemData.material;
-            saTiles.system = item.systemData.system[0];
-            saTiles.description = item.systemData.description[0];
+            saTiles.system = item.systemData.system;
+            saTiles.description = item.systemData.description;
+
             saTiles.noa = item.systemData.noa;
             // saTiles.designpressure = item.systemData.designPressure[0];
         });
@@ -689,20 +694,29 @@ let showMaterialValid = ref(false);
 function checkInput() {
     if (datamountedMech.value.length !== null) {
         console.log(datamountedMech.value);
-        tilenoas.noa = datamountedMech.value[0].noa;
-        tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
-        tilenoas.description = datamountedMech.value[0].description;
-        tilenoas.material = datamountedMech.value[0].material;
+        // tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
+        // tilenoas.description = datamountedMech.value[0].description;
+        // tilenoas.material = datamountedMech.value[0].material;
         console.log(datamountedMech.value[0].description);
         if (datamountedMech.value[0].Table2.content === 'multiple') {
             isTileSelectionValid = false;
             isMultiTileValid = true;
             showMaterialValid = true;
+            tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
+            tilenoas.material = datamountedMech.value[0].material;
+
+            tilenoas.description = datamountedMech.value[0].description;
         } else {
             showMaterialValid = true;
             isTileValid = true;
             isTileSelectionValid = true;
             isMultiTileValid = false;
+            tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
+
+            tilenoas.noa = datamountedMech.value[0].noa;
+            tilenoas.material = datamountedMech.value[0].material;
+
+            tilenoas.description = datamountedMech.value[0].description;
         }
     }
 
@@ -970,7 +984,7 @@ const keyValueSystemFPairsKeys = ref({});
 
 function updateselectSystem(selectedsystemf) {
     const systemArray = saTiles.system;
-    const pressureArray = saTiles.designpressure;
+    const pressureArray = saTiles.arrDesignPressure;
 
     console.log(systemArray, pressureArray);
 
@@ -1061,10 +1075,11 @@ function saDescPressure() {
     const descriptionKey = `Description_${selectedKey}`;
     const pressureKey = keyValueSystemFPairsValues.value?.[selectedKey];
 
-    const description = saTiles?.[descriptionKey]?.[0] || '';
-    const designpressure = Array.isArray(pressureKey) ? pressureKey[0] : pressureKey || '';
+    const description = saTiles?.[descriptionKey] || '';
+    const designpressure = Array.isArray(pressureKey) ? pressureKey : pressureKey || '';
     saTiles.description = description;
-    saTiles.designpressure = saPressure.value;
+    saTiles.designpressure = designpressure;
+    // saPressure.value;
 
     if (selectedKey === 'F3') {
         console.log(saTiles.arrDesignPressure);
@@ -1113,7 +1128,7 @@ const mechSAStaging = async () => {
 watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, dims, () => {});
 </script>
 <template>
-    <div id="tile" class="flex flex-col md:w-1/2 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 500px">
+    <div id="tile" class="flex flex-col md:w-1/2 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 450px">
         <label for="title" style="color: #122620; margin-left: 650px">Mechanical Tile Roof</label>
 
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px; margin-top: 30px">
@@ -1141,7 +1156,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
         <div></div>
-        <div class="md:w-1/2 flex flex-col w-96 mb-4 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
+        <div class="md:w-1/2 flex flex-col w-128 mb-4 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
             <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
@@ -1201,7 +1216,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
     <Divider />
     <Divider />
 
-    <div class="md:w-3/4 gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 500px">
+    <div class="md:w-3/4 gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 400px">
         <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px">
             <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                 <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -1279,6 +1294,10 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                 <label style="color: #122620" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
+            <!-- <div v-show="isTileValid" class="min-w-[300px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="description">Tile Description</label>
+                <InputText id="description" v-model="tilenoas.description" />
+            </div> -->
         </div>
         <div v-show="isTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 30px">
             <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -1291,11 +1310,11 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
         <div v-show="isMultiTileValid" class="w-full flex flex-row mt-8 space-x-10" style="margin-left: 30px">
             <div class="min-w-[500px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="selecttile">Tile Type</label>
-                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkTile" @change="updateTile" />
+                <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @update:modelValue="checkTile" @change="updateTile" />
             </div>
             <div v-show="isMultiTileValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 30px">
                 <label style="color: red">Select Mechanical Tiles Fastnener *</label>
-                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="updateMF" />
+                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @update:modelValue="updateMF" />
             </div>
         </div>
 

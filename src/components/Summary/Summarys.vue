@@ -234,8 +234,8 @@ const tileDefs = [
 const mechtileDefs = [
     ['noa', 'Noa: '],
     ['manufacturer', 'Applicant: '],
-    ['description', 'Description: '],
-    ['savedfastener', 'Fastener: ']
+    ['description', 'Description: ']
+    // ['fastenervalues', 'Fastener: ']
 ];
 
 const shingleDefs = [
@@ -285,7 +285,6 @@ onMounted(() => {
     displayUserInfo();
     console.log(mechData);
     console.log(mechStore);
-    console.log(burpdfStore.$state.burpdfinput[0]);
 });
 
 //  callPdfSign,
