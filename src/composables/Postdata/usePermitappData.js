@@ -43,20 +43,6 @@ export default function usePermitData() {
             loading.value = false;
         }
     };
-    // const callPermitdata = async (formdataSent) => {
-    //     payload.value = formdataSent;
-    //     console.log(payload.value);
-    //     loading.value = true;
-    //     error.value = null;
-    //     try {
-    //         return await execute({ data: payload.value });
-    //     } catch (err) {
-    //         error.value = err.massage;
-    //         console.error('Lambda post failed:', err);
-    //     } finally {
-    //         loading.value = false;
-    //     }
-    // };
 
     return {
         data,
