@@ -3,10 +3,21 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
+import { usePermitappStore } from '@/stores/permitapp';
+// import useInsertData from '@/composables/Postdata/useInsertSystems';
 
 export default function useGeneral() {
     const roofStore = useRoofListStore();
     const { roofList } = storeToRefs(roofStore);
+    // const permitStore = usePermitappStore();
+
+    // const { createSystemPost } = useInsertData();
+
+    // const createDocument = reactive({
+    //     roofSystem: [],
+    //     muniNumber: ''
+    // });
+    const loading = ref(false);
 
     const generalStore = useGeneralpdfStore();
     const { postGeneral } = usePostGeneralpageLambda();
@@ -70,7 +81,8 @@ export default function useGeneral() {
                 const dimValue = Number(item[config.dim]) || 0;
                 checkedTypes[config.flag] = true;
                 dataGeneral[`${config.flag}Chk`] = true;
-
+                console.log(config.flag);
+                // createDocument.roofSystem.push(config.flag);
                 if (config.flag === 'slope') {
                     dims.low1 = dimValue;
                 } else {
@@ -78,7 +90,9 @@ export default function useGeneral() {
                 }
             }
         });
+        // createDocument.muniNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc);
 
+        // createInsertDoc(createDocument);
         roofArea();
     }
 
@@ -87,7 +101,6 @@ export default function useGeneral() {
         totals.lowslope = dims.low1;
         totals.total = totals.steep + totals.lowslope;
         dataGeneral.area = totals.total;
-        console.log(dataGeneral, totals);
         dataGeneral.steepData = totals.steep;
         dataGeneral.slopeData = totals.lowslope;
         dataGeneral.totalData = totals.total;
@@ -97,6 +110,22 @@ export default function useGeneral() {
         await postGeneral(dataGeneral);
         isGeneralPageValid.value = true;
     }
+    // const createInsertDoc = async (doc) => {
+    //     // payload.value = formdataSent;
+    //     loading.value = true;
+
+    //     // console.log(payload.value);
+    //     console.log(doc);
+    //     try {
+    //         await createSystemPost(doc);
+    //         // return await execute({ data: payload.value });
+    //     } catch (err) {
+    //         error.value = err.massage;
+    //         console.error('Lambda post failed:', err);
+    //     } finally {
+    //         loading.value = false;
+    //     }
+    // };
 
     return {
         addRoof,

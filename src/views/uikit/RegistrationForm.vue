@@ -79,7 +79,8 @@ function onSubmit() {
         bphone: '',
         email: '',
         insurance: '',
-        carrier: ''
+        carrier: '',
+        zipcode: ''
     });
     navigateNext();
 }
@@ -87,13 +88,14 @@ function onSubmit() {
 function retriveContractor() {
     retrieveAccount(formDatas.license);
     events.value = cccAccounts;
-
+    console.log(formDatas);
     const e = events.value;
     formDatas.dba = e.dba;
     formDatas.name = e.name;
     formDatas.expiration_date = e.expiration_date;
     formDatas.address = e.address;
     formDatas.city = e.city;
+    formDatas.zipcode = e.zipcode;
     formDatas.license_status = e.license_status;
     license_stat.value = e.license_status;
 

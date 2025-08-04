@@ -35,19 +35,6 @@ export default function usePostToLambda() {
      * @param {Object} obj — any JSON‐serializable object
      */
 
-    // async function dripEdge(dripedge) {
-    //     try {
-    //         drippayload.value = dripedge;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', drippayload.value);
-
-    //         await execute({ data: drippayload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
-
     const dripEdge = async (dripedge) => {
         drippayload.value = dripedge;
         console.log(drippayload.value);
@@ -63,18 +50,6 @@ export default function usePostToLambda() {
         }
     };
 
-    // async function tileDimentions(dim) {
-    //     try {
-    //         dimpayload.value = dim;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', dimpayload.value);
-
-    //         await execute({ data: dimpayload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
     const post = async (value) => {
         payload.value = value;
         console.log(payload.value);
@@ -90,18 +65,6 @@ export default function usePostToLambda() {
         }
     };
 
-    // async function post(value) {
-    //     try {
-    //         payload.value = value;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', payload.value);
-
-    //         await execute({ data: payload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
     const postUDL = async (udlValue) => {
         udlpayload.value = udlValue;
         console.log(udlpayload.value);
@@ -116,18 +79,7 @@ export default function usePostToLambda() {
             loading.value = false;
         }
     };
-    // async function postUDL(udlValue) {
-    //     try {
-    //         udlpayload.value = udlValue;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', udlpayload.value);
 
-    //         await execute({ data: udlpayload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
     const postSATile = async (saValue) => {
         sapayload.value = saValue;
         console.log(sapayload.value);
@@ -142,18 +94,6 @@ export default function usePostToLambda() {
             loading.value = false;
         }
     };
-    // async function postSATile(saValue) {
-    //     try {
-    //         sapayload.value = saValue;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', sapayload.value);
-
-    //         await execute({ data: sapayload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
 
     return { data, errors, isFetching, loading, post, postUDL, postSATile, dripEdge };
 }

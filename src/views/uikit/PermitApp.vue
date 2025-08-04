@@ -134,6 +134,39 @@ const data = ref('');
 const error = ref(null);
 const convMB = ref('');
 // ---- helpers --------------------------------------------------------------
+// async function fetchData(url) {
+//     loading.value = true;
+//     error.value = null;
+
+//     try {
+//         const response = await fetch(url);
+//         const json = await response.json();
+//         const body = json.body;
+
+//         datas.value = json;
+//         const minInfo = body.MinimumPropertyInfos?.[0];
+
+//         if (!minInfo) throw new Error('Missing property info');
+
+//         data.value = minInfo;
+
+//         // Destructure once and assign
+//         const { dba: contractor, secondary_status: license, Municipality: muni, Strap: folio } = minInfo;
+//         Object.assign(formData, { contractor, license, muni, folio });
+
+//         // Directly assign values
+//         isHistoric.value = body.isHistoric;
+//         checkV.value = folio;
+//         convMB.value = folio.substring(1, 2);
+//         checkMB.value = useToNumber(convMB);
+//     } catch (err) {
+//         error.value = err.message;
+//         alert('No data found or enter correct address!');
+//     } finally {
+//         loading.value = false;
+//     }
+// }
+const miamibeach = ref(null);
 async function fetchData(url) {
     loading.value = true;
     error.value = null;
@@ -153,6 +186,11 @@ async function fetchData(url) {
         checkV.value = formData.folio;
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
+        console.log(convMB.value);
+        if (convMB.value === '2') {
+            miamibeach.value = convMB.value;
+            console.log(miamibeach.value);
+        }
     } catch (err) {
         alert('No data found or enter correct address!');
         error.value = err.message;
@@ -195,6 +233,43 @@ async function load() {
         alert(err);
     }
 }
+// async function load() {
+//     loading.value = true;
+
+//     try {
+//         const addr = inputAddress.value;
+//         muniProcessdata.value = muniProcess.value;
+
+//         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
+
+//         // Await only critical blocking call
+//         await fetchData(url);
+
+//         // Efficiently assign values from refs
+//         const newNumber = String(resNum.value).substring(3, 19);
+//         const nextNum = useToNumber(newNumber).value + 1;
+//         formData.processNumber = prefix.value.concat(String(nextNum));
+
+//         Object.assign(formData, {
+//             license: licenseStat.value,
+//             contractor: dba.value,
+//             emails: email.value,
+//             muniProc: muniProcess.value,
+//             phNumber: phone.value,
+//             processNumber: newProcessNumber,
+//             address: addr
+//         });
+
+//         store.addSystem(formData);
+
+//         // Run these two in parallel if they are not dependent
+//         await Promise.all([procReceive(formData), callPermitdata(formData)]);
+//     } catch (err) {
+//         alert(err);
+//     } finally {
+//         loading.value = false;
+//     }
+// }
 
 async function onSubmit() {
     // await procReceive(formData);
@@ -310,7 +385,7 @@ function addItemAndClear() {
                 <!-- submit -->
                 <div class="span-2 submit-row">
                     <!-- @click="addItemAndClear"  -->
-                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" />
+                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" @update="addItemAndClear" />
                 </div>
             </form>
         </div>

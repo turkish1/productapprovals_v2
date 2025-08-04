@@ -1,12 +1,12 @@
 <script setup>
 import useGeneral from '@/composables/GeneralPage/use-Generalpage.js';
+// import useInsertData from '@/composables/Postdata/useInsertSystems';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useroofCheckStore } from '@/stores/roofCheckStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { tryOnMounted, useToNumber } from '@vueuse/core';
 import { reactive, ref } from 'vue';
 import RoofSystemList from './RoofSystemList.vue';
-
 // PrimeVue Components
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -16,7 +16,7 @@ import Select from 'primevue/select';
 const permitStore = usePermitappStore();
 const roofCheck = useroofCheckStore();
 const roofStore = useRoofListStore();
-
+// const { createSystemPost } = useInsertData();
 // Roof system options
 const roofTypesDefault = [{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }];
 const roofTypesMiamiBeach = roofTypesDefault.slice(1); // all except the empty one
@@ -31,9 +31,12 @@ const isMiamiBeachValid = ref(false);
 const mbExpectedValue = 2;
 
 // Permit logic
-const MB = ref(permitStore.$state.permitapp[0]?.miamibeach);
+// permitStore.$state.permitapp[0]?.formdt?.muni
+const MB = ref(permitStore.$state.permitapp[0]?.formdt?.muni);
 const convertMB = useToNumber(MB.value);
+
 tryOnMounted(() => {
+    console.log(permitStore.$state);
     isMiamiBeachValid.value = convertMB.value === mbExpectedValue;
 });
 
@@ -58,7 +61,7 @@ async function addItemAndClear() {
     };
 
     systemMap[itemName]?.();
-    console.log(checked.value);
+    console.log(checked.value, systemMap);
     dataGeneral.roofCheck = checked.value;
     roofCheck.addCheck(dataGeneral);
     // roofArea(roofStore);
