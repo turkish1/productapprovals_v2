@@ -6,7 +6,6 @@ import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
 import { useExpiry } from '@/composables/ExpirationCheck/useExpiry';
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
-
 import usePostToLambda from '@/composables/Postdata/usePostToLambda';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
@@ -42,7 +41,7 @@ const store = usevalueStore();
 
 const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
-// const { postData, response, error, loading } = usePostToMongo();
+
 const { multiAdinput } = storeToRefs(multipleStore);
 const { addSystemvalues, tileInputvalues } = usevalueStore();
 const resetStore = useSavedStore();
@@ -342,7 +341,6 @@ const updateTick = () => {
             console.log(isExpired);
         }
         console.log(tilenoas);
-        // postData(tilenoas);
 
         addSystemvalues(tilenoas);
         checkZones();
@@ -385,7 +383,6 @@ const updateDoubletick = () => {
         }
         console.log(tilenoas);
 
-        // postData(tilenoas);
         addSystemvalues(tilenoas);
         checkZones();
     });
@@ -565,6 +562,9 @@ const saTiles = reactive({
     Description_F10: '',
     Description_F11: '',
     Description_F12: '',
+    Description_F13: '',
+    Description_F14: '',
+    Description_F15: '',
     arrDesignPressure: [],
     pressure: '',
     expiration_date: '',
@@ -709,31 +709,57 @@ function checkDatas() {
         isDataValid.value = false;
     }
 }
-
+const saPressure = ref(null);
 function checkInputSystem() {
-    datamounted_f.value.forEach((item, index) => {
-        saTiles.Description_F1 = item.systemData.Description_F1;
-        saTiles.Description_F2 = item.systemData.Description_F2;
-        saTiles.Description_F3 = item.systemData.Description_F3;
-        saTiles.Description_F4 = item.systemData.Description_F4;
-        saTiles.Description_F5 = item.systemData.Description_F5;
-        saTiles.Description_F6 = item.systemData.Description_F6;
-        saTiles.Description_F7 = item.systemData.Description_F7;
-        saTiles.Description_F8 = item.systemData.Description_F8;
-        saTiles.Description_F9 = item.systemData.Description_F9;
-        saTiles.arrDesignPressure = item.systemData.designPressure;
-        saTiles.expiration_date = item.systemData.expiration_date;
+    datamounted_f.value.forEach(({ systemData }) => {
+        if (!systemData) return;
 
-        licenseEnd.value = saTiles.expiration_date;
-        const { isExpired } = useExpiry(licenseEnd);
-        console.log(isExpired);
-        if (item.systemData.system.length > 1) {
+        // Dynamically assign Description_F1 to Description_F9
+        for (let i = 1; i <= 15; i++) {
+            const key = `Description_F${i}`;
+            if (systemData[key]) {
+                saTiles[key] = systemData[key];
+                console.log(saTiles[key]);
+            }
+        }
+        // Set design pressure
+        saTiles.arrDesignPressure = systemData.designPressure;
+        saTiles.system = systemData.system[0];
+        console.log(saTiles.system, saTiles.designpressure);
+
+        // Check system value
+        if (Array.isArray(systemData.system) && systemData.system.length > 1) {
             addFSystem();
         } else {
-            saTiles.system = item.systemData.system;
+            saTiles.system = systemData.system;
+            saPressure.value = systemData.designPressure;
         }
     });
 }
+// function checkInputSystem() {
+//     datamounted_f.value.forEach((item, index) => {
+//         saTiles.Description_F1 = item.systemData.Description_F1;
+//         saTiles.Description_F2 = item.systemData.Description_F2;
+//         saTiles.Description_F3 = item.systemData.Description_F3;
+//         saTiles.Description_F4 = item.systemData.Description_F4;
+//         saTiles.Description_F5 = item.systemData.Description_F5;
+//         saTiles.Description_F6 = item.systemData.Description_F6;
+//         saTiles.Description_F7 = item.systemData.Description_F7;
+//         saTiles.Description_F8 = item.systemData.Description_F8;
+//         saTiles.Description_F9 = item.systemData.Description_F9;
+//         saTiles.arrDesignPressure = item.systemData.designPressure;
+//         saTiles.expiration_date = item.systemData.expiration_date;
+
+//         licenseEnd.value = saTiles.expiration_date;
+//         const { isExpired } = useExpiry(licenseEnd);
+//         console.log(isExpired);
+//         if (item.systemData.system.length > 1) {
+//             addFSystem();
+//         } else {
+//             saTiles.system = item.systemData.system;
+//         }
+//     });
+// }
 const Anchor_Base = reactive({
     Anchor_Base_Sheet_E1: '',
     Anchor_Base_Sheet_E2: '',
@@ -885,8 +911,6 @@ async function checkInputSA() {
             saTiles.pressure = item.systemData.pressure;
             console.log(item.systemData);
         });
-
-        // await postSATile(saTiles);
     }
     tileSAStaging();
 }
@@ -984,7 +1008,7 @@ function checkMaterial() {
     zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
     zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
 
-    saveTileData();
+    // saveTileData();
 }
 
 const savedKey = ref([]);
@@ -1204,7 +1228,6 @@ const saveTileData = async () => {
     tileData2.zoneone.mf1 = zoneone.mf1;
     tileData2.zonetwo.mf2 = zonetwo.mf2;
     tileData2.zonethree.mf3 = zonethree.mf3;
-    addSavedvalues(tileData2);
     sendDataMongo();
 
     // }
@@ -1226,61 +1249,108 @@ const sendDataMongo = async () => {
     postMetrictable.height = dims.height;
     postMetrictable.area = dims.area;
     postMetrictable.perimeter = dims.per;
+    addSavedvalues(tileData2);
+
     await post(postMetrictable);
 };
-
-const keyValueSystemFPairsValues = ref({});
-const keyValueSystemFPairsKeys = ref({});
 function updateselectSystem(selectedsystemf) {
-    let sys = saTiles.system;
-    let dp = saTiles.arrDesignPressure;
-    let key = sys;
-    sys.forEach((key, index) => {
-        keyValueSystemFPairsValues.value[key] = dp[index];
-    });
-    key.forEach((key, index) => {
-        keyValueSystemFPairsKeys.value[key] = sys[index];
-    });
-    console.log(sys, key, dp);
-    if (keyValueSystemFPairsValues.value.F1 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-        // udlDescPressure(); changed 7/24/2025
+    const systemArray = saTiles.system;
+    const pressureArray = saTiles.arrDesignPressure;
+
+    console.log(systemArray, pressureArray);
+
+    if (Array.isArray(systemArray) && Array.isArray(pressureArray)) {
+        systemArray.forEach((key, index) => {
+            keyValueSystemFPairsValues.value[key] = pressureArray[index];
+            keyValueSystemFPairsKeys.value[key] = systemArray[index];
+        });
     }
-    if (keyValueSystemFPairsValues.value.F2 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F3 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F4 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F5 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F6 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F7 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F8 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F9 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F10 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F11 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
-    }
-    if (keyValueSystemFPairsValues.value.F12 !== null && selectedsystemf.value !== null) {
-        saDescPressure();
+
+    if (selectedsystemf.value !== null) {
+        for (let i = 1; i <= 12; i++) {
+            const field = `F${i}`;
+            if (keyValueSystemFPairsValues.value[field] !== null) {
+                saDescPressure();
+                break; // Optional: stop after first match if only one call needed
+            }
+        }
     }
     tileSAStaging();
 }
+
+const keyValueSystemFPairsValues = ref({});
+const keyValueSystemFPairsKeys = ref({});
+function saDescPressure() {
+    const selectedKey = selectedsystemf.value;
+
+    if (!selectedKey) return;
+
+    const descriptionKey = `Description_${selectedKey}`;
+    const pressureKey = keyValueSystemFPairsValues.value?.[selectedKey];
+
+    const description = saTiles?.[descriptionKey] || '';
+    const designpressure = Array.isArray(pressureKey) ? pressureKey : pressureKey || '';
+    saTiles.description = description;
+    saTiles.designpressure = designpressure;
+    // saPressure.value;
+
+    if (selectedKey === 'F3') {
+        console.log(saTiles.arrDesignPressure);
+    } else if (selectedKey === 'F4') {
+        console.log(saTiles);
+    }
+}
+
+// function updateselectSystem(selectedsystemf) {
+//     let sys = saTiles.system;
+//     let dp = saTiles.arrDesignPressure;
+//     let key = sys;
+//     sys.forEach((key, index) => {
+//         keyValueSystemFPairsValues.value[key] = dp[index];
+//     });
+//     key.forEach((key, index) => {
+//         keyValueSystemFPairsKeys.value[key] = sys[index];
+//     });
+//     console.log(sys, key, dp);
+//     if (keyValueSystemFPairsValues.value.F1 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//         // udlDescPressure(); changed 7/24/2025
+//     }
+//     if (keyValueSystemFPairsValues.value.F2 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F3 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F4 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F5 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F6 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F7 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F8 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F9 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F10 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F11 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     if (keyValueSystemFPairsValues.value.F12 !== null && selectedsystemf.value !== null) {
+//         saDescPressure();
+//     }
+//     tileSAStaging();
+// }
 const keyValueSystemEPairsValues = ref({});
 const keyValueSystemEPairsKeys = ref({});
 function updateselectSystemE(selectedsystemE) {
@@ -1417,75 +1487,14 @@ async function etilStore() {
     console.log(udlTile);
     udlTile.Anchor_Base = etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base;
     udlTile.systemSelected = selectedsystemE.value;
+    // udlTile.prescriptiveSelection = tileData2.prescriptiveSelection;
+
     await postUDL(udlTile);
-}
-
-function saDescPressure() {
-    if (selectedsystemf.value === 'F1') {
-        saTiles.description = saTiles.Description_F1;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F1;
-    }
-    if (selectedsystemf.value === 'F2') {
-        saTiles.description = saTiles.Description_F2;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F2;
-    }
-    if (selectedsystemf.value === 'F3') {
-        saTiles.description = saTiles.Description_F3;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F3;
-        console.log(saTiles.arrDesignPressure);
-    }
-    if (selectedsystemf.value === 'F4') {
-        saTiles.description = saTiles.Description_F4;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F4;
-    }
-    if (selectedsystemf.value === 'F5') {
-        saTiles.description = saTiles.Description_F5;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F5;
-    }
-    if (selectedsystemf.value === 'F6') {
-        saTiles.description = saTiles.Description_F6;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F6;
-    }
-
-    if (selectedsystemf.value === 'F7') {
-        saTiles.description = saTiles.Description_F7;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F7;
-    }
-    if (selectedsystemf.value === 'F8') {
-        saTiles.description = saTiles.Description_F8;
-
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F8;
-    }
-    if (selectedsystemf.value === 'F9') {
-        saTiles.description = saTiles.Description_F9;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F9;
-    }
-
-    if (selectedsystemf.value === 'F10') {
-        saTiles.description = saTiles.Description_F10;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F10;
-    }
-    if (selectedsystemf.value === 'F11') {
-        saTiles.description = saTiles.Description_F11;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F11;
-    }
-    if (selectedsystemf.value === 'F12') {
-        saTiles.description = saTiles.Description_F12;
-        saTiles.designpressure = keyValueSystemFPairsValues.value.F12;
-    }
-    console.log(ftileStore.$state.tilefinput.length);
-    if (ftileStore.$state.tilefinput.length !== 0) {
-        ftileStore.$state.tilefinput[0].systemData.description = saTiles.description;
-        ftileStore.$state.tilefinput[0].systemData.pressure = saTiles.designpressure;
-        ftileStore.$state.tilefinput[0].systemData.prescriptiveSelection = selectedUnderlayment.value;
-    }
-    // console.log(saTiles);
-    // post(saTiles);
-    // tileSAStaging();
 }
 
 const tileSAStaging = async () => {
     console.log(saTiles);
+    // saTiles.prescriptiveSelection = tileData2.prescriptiveSelection;
     await postSATile(saTiles);
 };
 
@@ -1503,7 +1512,6 @@ watch(
     ismrInvalid3,
     ismrInvalid1,
     checkMaterial,
-    updateselectSystem,
     EcheckInputSystem,
     updateselectSystemE,
 
@@ -1571,10 +1579,10 @@ watch(
         </div>
         <div v-show="isSAValid" class="columns-2 flex flex-row w-64" style="margin-left: 2px">
             <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
-            <div class="w-128 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 100px">
+            <!-- <div class="w-128 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 100px">
                 <label style="color: #122620" for="material">S/A Expiration Date</label>
                 <InputText v-model="saTiles.expiration_date" />
-            </div>
+            </div> -->
         </div>
 
         <div v-show="isPaddyCategoryValid" class="w-56 flex flex-col gap-2" style="margin-left: 50px">

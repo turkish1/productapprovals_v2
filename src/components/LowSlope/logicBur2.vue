@@ -145,6 +145,7 @@ async function handleDownload() {
     if (!firstName || !muniProcessNumber.value) {
         return;
     }
+    console.log(firstName);
     const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${muniProcessNumber.value}/${firstName}`;
     try {
         const response = await fetch(s3Url, {

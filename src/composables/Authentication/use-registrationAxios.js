@@ -18,7 +18,8 @@ export default function useRegAxios() {
         city: '',
         license_status: '',
         expiration_date: '',
-        address: ''
+        address: '',
+        zipcode: ''
     });
     const result = execute().then((res) => {
         contractors.value = data.value;
@@ -44,14 +45,16 @@ export default function useRegAxios() {
                 foundContractor.value.push(contractors.value[i]);
             }
         }
+        console.log(foundContractor.value);
         (cccAccounts.license = foundContractor.value[0].alt_license),
-            (cccAccounts.dba = foundContractor.value[0].DBA),
+            (cccAccounts.dba = foundContractor.value[0].dba),
             (cccAccounts.name = foundContractor.value[0].name),
             (cccAccounts.license_status = foundContractor.value[0].secondary_status),
             (cccAccounts.city = foundContractor.value[0].city),
             (cccAccounts.expiration_date = foundContractor.value[0].expiration_date),
             (cccAccounts.effective_date = foundContractor.value[0].effective_date),
-            (cccAccounts.address = foundContractor.value[0].address1);
+            (cccAccounts.address = foundContractor.value[0].address1),
+            (cccAccounts.zipcode = foundContractor.value[0].zip);
     }
 
     const cccstore = usecccStore();
