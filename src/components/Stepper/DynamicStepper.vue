@@ -280,6 +280,7 @@ button {
     display: flex;
     flex-direction: row;
     /* width: 100%; */
+    margin-left: 100px;
     margin-top: 16px;
 }
 
@@ -327,12 +328,12 @@ button {
     height: 4.5px;
     background-color: #6c6a68;
     margin-top: 38px;
-    margin-left: 5px;
+    margin-left: 45px;
 }
 
 .step-content {
     margin-top: 18px;
-    margin-left: -20px;
+    margin-left: 25px;
     font-size: 14px;
 }
 

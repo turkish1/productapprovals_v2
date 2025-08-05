@@ -170,7 +170,7 @@ const stageDripedge = async () => {
     }
 };
 
-watch(types, typeSizes, type, checkRoof, resetButton, stageDripedge, () => {});
+watch(types, typeSizes, type, checkRoof, resetButton, () => {});
 watchEffect(checkValue, getdripSize, () => {});
 invoke(async () => {
     await until(callState).toBe(true);
