@@ -1,5 +1,6 @@
 <script setup>
 import DripEdShingle from '@/components/DripEdgeChildren/DripEdShingle.vue';
+import ModalWindow from '@/components/Modal/ModalWindow.vue';
 import usePostShingleToLambda from '@/composables/Postdata/usePostShingleLambda';
 import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
@@ -10,7 +11,6 @@ import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
 import { storeToRefs } from 'pinia';
-
 import Divider from 'primevue/divider';
 import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import AutoComplete from './roofSystems/AutoComplete.vue';
@@ -21,18 +21,20 @@ import { useMagicKeys } from '@vueuse/core';
 
 const { tab /* keys you want to monitor */ } = useMagicKeys();
 const { postShingle, postUDLshingle, postSAshingle } = usePostShingleToLambda();
-watch(tab, (v) => {
-    if (v) checkInput();
-    console.log('tab has been pressed');
-});
+// watch(tab, (v) => {
+//     if (v) checkInput();
+//     console.log('tab has been pressed');
+// });
 
-watchEffect(() => {
-    if (tab.value) console.log('Tab  have been pressed');
-});
+// watchEffect(() => {
+//     if (tab.value) console.log('Tab  have been pressed');
+// });
 
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
+let modalSAIsActive = ref(false);
+let modalUDLIsActive = ref(false);
 
 const polyStore = usePolyStore();
 const store = useShingleStore();
@@ -54,8 +56,6 @@ const shingles = reactive({
     prescriptiveSelection: '',
     shingleIdentifier: 'shingle'
 });
-//     dripEdgeMaterial: '',
-// dripEdgeSize: '',
 
 const underlayment = reactive({
     udlnoa: '',
@@ -143,7 +143,7 @@ const { inputsystem } = useSystemf();
 const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 
 const whatChanged = computed(() => {
-    checkInput();
+    // checkInput();
     clearSelected();
     validateRoofSlope();
     addCheckmarks();
@@ -162,31 +162,7 @@ function checkInputPoly() {
             underlayment.udldescription = item.polyData.description;
         });
     }
-    shingleUdlStaging();
 }
-
-// function checkInputSystem() {
-//     systemdatamt.value.forEach(({ systemData }) => {
-//         Object.assign(selfadhered, {
-//             sanoa: systemData.noa,
-//             samanufacturer: systemData.manufacturer,
-//             samaterial: systemData.material,
-//             Description_F1: systemData.Description_F1,
-//             Description_F2: systemData.Description_F2,
-//             Description_F3: systemData.Description_F3,
-//             Description_F4: systemData.Description_F4,
-//             Description_F5: systemData.Description_F5,
-//             Description_F6: systemData.Description_F6,
-//             Description_F7: systemData.Description_F7,
-//             Description_F8: systemData.Description_F8,
-//             Description_F9: systemData.Description_F9,
-//             Description_F10: systemData.Description_F10,
-//             Description_F11: systemData.Description_F11,
-//             arrSystem: systemData.arraySystem,
-//             system: systemData.system
-//         });
-//     });
-// }
 
 function checkInputSystem() {
     systemdatamt.value.forEach((item, index) => {
@@ -244,6 +220,7 @@ function updateselectSystem(selectedsystemf) {
 }
 
 function checkInput() {
+    console.log('Entered CheckInput');
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
             shingles.noa = item.shingleData.noa;
@@ -255,6 +232,7 @@ function checkInput() {
             inputshingle.value[0].shingleData.height = dims.height;
             inputshingle.value[0].shingleData.deckType = dt.value;
             inputshingle.value[0].shingleData.prescriptiveSelection = selectedSlopelow.value;
+            console.log();
         });
     }
 }
@@ -374,45 +352,74 @@ const postMetrics = reactive({
     manufacturer: '',
     noa: '',
     material: '',
-    description: ''
+    description: '',
+    shingleIdentifier: 'shingle'
 });
-const isPrescriptivehigh = ref(false);
+let isPrescriptivehigh = ref(false);
 
-// work on this logic
 function getIndexs() {
-    console.log(selectedSlopelow);
-
-    if (selectedSlopelow.value === '2 Plies # 30 with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c' || selectedSlopehigh.value === '1 Ply # 30 with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c') {
-        isUDLNOAValid = false;
-        isSAValid = false;
-        isShingleValid = true;
-    }
-    if (selectedSlopelow.value === '2 Plies Poly with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c' || selectedSlopehigh.value === '1 Ply Poly with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c') {
-        isUDLNOAValid = true;
-        isSAValid = false;
-        isShingleValid = true;
-    }
-
-    if (selectedSlopelow.value === '(S/A) membrane adhered directly to a wood deck, per the NOA system F' || selectedSlopehigh.value === '(S/A) membrane adhered directly to a wood deck, per the NOA system F') {
-        isUDLNOAValid = false;
-        isSAValid = true;
-        isShingleValid = true;
-    }
+    const low = selectedSlopelow.value;
+    const high = selectedSlopehigh.value;
 
     if (selectedSlopelow._rawValue === null) {
         console.log('Not Mounted');
+        return;
     }
+
+    const conditions = [
+        {
+            match: ['2 Plies # 30 with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c', '1 Ply # 30 with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c'],
+            set: {
+                isUDLNOAValid: false,
+                isSAValid: false,
+                isShingleValid: true
+            }
+        },
+        {
+            match: ['2 Plies Poly with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c', '1 Ply Poly with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c'],
+            set: {
+                isUDLNOAValid: true,
+                isSAValid: false,
+                isShingleValid: true
+            }
+        },
+        {
+            match: ['(S/A) membrane adhered directly to a wood deck, per the NOA system F'],
+            set: {
+                isUDLNOAValid: false,
+                isSAValid: true,
+                isShingleValid: true
+            }
+        }
+    ];
+
+    for (const { match, set } of conditions) {
+        if (match.includes(low) || match.includes(high)) {
+            console.log(match.includes(low), match.includes(high));
+            isUDLNOAValid = set.isUDLNOAValid;
+            isSAValid = set.isSAValid;
+            isShingleValid = set.isShingleValid;
+            break;
+        }
+    }
+
+    console.log(selectedSlopelow.value, selectedSlopehigh.value);
 }
-const stageShingle = async () => {
-    console.log(inputshingle);
-    // shingles.slope = await inputshingle.value[0]?.shingleData?.slope;
-    // shingles.height = await inputshingle.value[0]?.shingleData?.height;
-    // shingles.deckType = await inputshingle.value[0]?.shingleData?.deckType;
-    await shingleMetrics();
-    // await shingleMetrics();
-};
+
+let modalIsActive = ref(false);
+
+const checkModal = computed(async () => {
+    console.log('Entered Modal check', modalIsActive);
+    switch (modalIsActive) {
+        case 'true':
+            break;
+        case 'false':
+            return shingleMetrics();
+        default:
+            break;
+    }
+});
 const shingleMetrics = async () => {
-    console.log(dims, slope.value);
     postMetrics.noa = shingles.noa;
     postMetrics.manufacturer = shingles.manufacturer;
     postMetrics.material = shingles.material;
@@ -421,17 +428,14 @@ const shingleMetrics = async () => {
     postMetrics.height = dims.height;
     postMetrics.area = dims.area;
     postMetrics.decktype = dt.value;
+    postMetrics.shingleIdentifier = shingles.shingleIdentifier;
     postMetrics.prescriptiveSelection = isPrescriptivehigh === true ? selectedSlopehigh.value : selectedSlopelow.value;
-    // inputshingle.value[0]?.shingleData?.prescriptiveSelection;
-    console.log(postMetrics);
     await postShingle(postMetrics);
 };
 
 function valueEntered() {
     if (slope.value) {
         let slopeNumber = Number(slope.value);
-        console.log(slopeNumber);
-
         if (slopeNumber < 2) {
             isSlopeValid = false;
         }
@@ -446,7 +450,7 @@ function valueEntered() {
             isSlopeValid = true;
             isSlopeMoreFour.value = true;
             isSelectVisible2 = true;
-            isPrescriptivehigh.value = true;
+            isPrescriptivehigh = true;
             isSelectVisible1 = false;
         }
 
@@ -477,21 +481,20 @@ watch(
     datasbs,
     datapoly,
     checkInputPoly,
-    checkInput,
 
     () => {}
 );
 </script>
 <template>
-    <!-- md:w-1/2 mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6 flex flex-col w-full gap-1 shadow-lg shadow-cyan-800-->
-    <div id="shingle" class="md:w-1/2 mx-auto p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6" style="margin-left: 500px; border-radius: 5px">
-        <label for="slope" style="color: #122620; margin-left: 650px">Shingle Roof</label>
+    <!-- mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg
+         grid grid-cols-1 md:grid-cols-2 gap-6    md:w-1/2 mx-auto p-6 dark:bg-gray-800 rounded-2xl shadow-lg md:grid-cols-2 gap-6-->
+    <div id="shingle" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6" style="margin-left: 300px; border-radius: 5px">
+        <!-- <label for="slope" style="color: #122620; margin-left: 350px">Shingle Roof</label> -->
 
-        <div class="w-64 gap-1" style="margin-left: 20px">
-            <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" />
+        <div class="w-64 flex flex-col gap-1">
+            <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" style="margin-left: 20px" />
             <!-- <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 220px" @click="store.$reset()"></i></Button> -->
         </div>
-
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Roof Slope *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
 
@@ -509,37 +512,46 @@ watch(
         </div>
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <AutoCompletePoly @keydown.tab.exact.enter="checkInputPoly"></AutoCompletePoly>
+                <AutoCompletePoly>
+                    <!-- @keydown.tab.exact.enter="checkInputPoly" -->
+                </AutoCompletePoly>
+                <Button class="w-96" label="Submit" severity="contrast" raised @click="(modalUDLIsActive = true), checkInputPoly()" @change="checkInputSystem" style="margin-left: 15px" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <AutoCompleteSA @keydown.tab.exact.stop="checkInputSystem" />
+                <AutoCompleteSA />
+                <!-- @keydown.tab.exact.stop="checkInputSystem" -->
+                <Button class="w-96" label="Submit" severity="contrast" size="small" raised @click="(modalSAIsActive = true), checkInputSystem()" @change="checkInputSystem" style="margin-left: 15px" />
             </div>
         </div>
+
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <AutoComplete @keydown.tab.exact.stop="checkInput" />
+                <AutoComplete />
+                <!--  @keydown.tab.exact.stop="checkInput" -->
+                <Button label="Submit" severity="contrast" @click="(modalIsActive = true), checkInput()" @change="checkInput" style="margin-left: 15px" />
             </div>
         </div>
-
-        <div v-show="isSelectVisible2" class="md:w-1/2 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px; margin-top: 2px">
-            <label style="color: red">Select Underlayment (S/A) *</label>
-            <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
-        </div>
-
-        <div v-show="isSelectVisible1" class="md:w-3/4 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 20px">
-            <label style="color: red">Select Underlayment (UDL) *</label>
-            <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
-        </div>
-        <br />
-        <DripEdShingle />
     </div>
+
+    <div v-show="isSelectVisible2" class="md:w-1/2 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 300px; margin-top: 20px">
+        <label style="color: red">Select Underlayment (S/A) *</label>
+        <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
+    </div>
+
+    <div v-show="isSelectVisible1" class="md:w-1/2 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 300px; margin-top: 20px">
+        <label style="color: red">Select Underlayment (UDL) *</label>
+        <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
+    </div>
+    <br />
+    <DripEdShingle style="margin-left: 300px; margin-top: 20px" />
 
     <Divider />
     <Divider />
     <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
-        <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800">
+        <ModalWindow @closePopup="(modalUDLIsActive = false), shingleUdlStaging()" v-if="modalUDLIsActive">
+            <!-- <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800"> -->
             <div class="flex flex-row space-x-20 space-y-12">
                 <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
                     <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -556,8 +568,9 @@ watch(
                     </div>
                 </div>
             </div>
-
-            <div v-show="isSAValid" class="card-system gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
+        </ModalWindow>
+        <ModalWindow @closePopup="(modalSAIsActive = false), shingleSAStaging()" v-if="modalSAIsActive">
+            <div v-show="isSAValid" class="gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
                 <div class="flex flex-row space-x-20">
                     <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                         <label style="color: #122620" for="saapplicant">S/A Applicant</label>
@@ -578,21 +591,24 @@ watch(
                     <InputText id="sadescription" v-model="selfadhered.sadescription" />
                 </div>
             </div>
-            <div class="max-w-screen-xl flex flex-row mt-8 space-x-10">
-                <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" for="manufacturer">Applicant</label>
-                    <InputText id="manufacturer" v-model="shingles.manufacturer" />
-                </div>
-                <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" for="material"> Material</label>
-                    <InputText id="material" v-model="shingles.material" />
-                </div>
+        </ModalWindow>
+    </div>
+    <ModalWindow @closePopup="(modalIsActive = false), shingleMetrics()" v-if="modalIsActive" @update="checkModal">
+        <div class="max-w-screen-xl flex flex-row mt-8 space-x-10">
+            <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="manufacturer">Applicant</label>
+                <InputText id="manufacturer" v-model="shingles.manufacturer" />
             </div>
-            <div class="w-196 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="material"> Material</label>
+                <InputText id="material" v-model="shingles.material" />
+            </div>
+            <br />
+            <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Description</label>
                 <InputText id="description" v-model="shingles.description" />
             </div>
         </div>
-    </div>
+    </ModalWindow>
 </template>
-<style scoped></style>
+<style></style>
