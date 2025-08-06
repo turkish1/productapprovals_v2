@@ -1,6 +1,6 @@
 <template>
-    <div class="card-system">
-        <!-- <i class="pi pi-home" style="font-size: 2rem" @click="navigateNext"></i> -->
+    <!-- <div class="card-system">
+        <i class="pi pi-home" style="font-size: 2rem" @click="navigateNext"></i>
         <Button icon="pi pi-home" severity="info" style="font-size: 2rem" @click="navigateNext" />
 
         <div class="flex flex-col w-1/3 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 550px; margin-top: 440px">
@@ -11,6 +11,72 @@
             <div v-if="submitted" class="confirmation">
                 <p>Thank you, {{ Name }}! Your payment of ${{ 107.0 }} was processed.</p>
             </div>
+        </div>
+    </div> -->
+
+    <div class="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-xl mt-10">
+        <h2 class="text-2xl font-bold mb-6 text-center">Checkout</h2>
+
+        <form @submit.prevent="handleCheckout" class="grid gap-4">
+            <!-- Customer Info -->
+            <div>
+                <label class="text-sm font-medium">Full Name</label>
+                <input v-model="form.name" type="text" required class="input" />
+            </div>
+            <div>
+                <label class="text-sm font-medium">Email</label>
+                <input v-model="form.email" type="email" required class="input" />
+            </div>
+            <div>
+                <label class="text-sm font-medium">Phone Number</label>
+                <input v-model="form.phone" type="tel" class="input" />
+            </div>
+
+            <!-- Address -->
+            <div>
+                <label class="text-sm font-medium">Billing Address</label>
+                <input v-model="form.address" type="text" required class="input" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-medium">City</label>
+                    <input v-model="form.city" type="text" required class="input" />
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Zip Code</label>
+                    <input v-model="form.zip" type="text" required class="input" />
+                </div>
+            </div>
+            <div class="payment-widget">
+                <h2 style="color: black">Download Link</h2>
+                <Button v-show="isUrldownloadValid" icon="pi pi-arrow-circle-down" severity="info" aria-label="User" @click="startDownload" />
+            </div>
+            <div v-if="submitted" class="confirmation">
+                <p>Thank you, {{ Name }}! Your payment of ${{ 107.0 }} was processed.</p>
+            </div>
+            <!-- Payment Info (for demo only, should use secure tokenization like Stripe Elements in production) -->
+            <!-- <div>
+        <label class="text-sm font-medium">Card Number</label>
+        <input v-model="form.cardNumber" type="text" maxlength="16" class="input" />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-sm font-medium">Expiry</label>
+          <input v-model="form.expiry" type="text" placeholder="MM/YY" class="input" />
+        </div>
+        <div>
+          <label class="text-sm font-medium">CVC</label>
+          <input v-model="form.cvc" type="text" maxlength="4" class="input" />
+        </div>
+      </div>
+
+      <button type="submit" class="mt-6 bg-blue-600 text-white rounded-xl py-3 font-semibold hover:bg-blue-700 transition">
+        Pay $99.00
+      </button> -->
+        </form>
+
+        <div v-if="successMessage" class="mt-6 text-green-600 text-center font-medium">
+            {{ successMessage }}
         </div>
     </div>
 </template>
@@ -90,14 +156,14 @@ function startDownload() {
     downloadFile();
 }
 
-const setOffdownload = tryOnMounted(() => {
-    setTimeout(() => {
-        timedOut.value = true;
-    }, 1000);
-    secondFetch(store.value.processNumber);
+// const setOffdownload = tryOnMounted(() => {
+//     setTimeout(() => {
+//         timedOut = true;
+//     }, 1000);
+//     secondFetch(store.value.processNumber);
 
-    downloadFile();
-});
+//     downloadFile();
+// });
 
 const navigateNext = () => {
     router.push('/');
@@ -132,17 +198,16 @@ const downloadFile = async () => {
     // OR isUrldownloadValid.value = true;
     // localStorage.clear();
 };
-
-watchOnce(setOffdownload, startDownload, () => {});
+// setOffdownload,
+watchOnce(startDownload, () => {});
 invoke(async () => {
-    await until(setOffdownload).toBe(true);
+    // setOffdownload,
+    await until().toBe(true);
 });
 </script>
 
 <style>
 .card {
-    background-image: url('/demo/images/blurredHouse.jpeg');
-
     background-repeat: no-repeat;
     background-size: cover;
     /* the attachment addresses shiftting of the image */

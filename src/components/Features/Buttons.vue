@@ -17,6 +17,6 @@ defineProps({
 .p-button {
     background-color: black;
     font-style: normal;
-    size: 20px;
+    size: 30px;
 }
 </style>

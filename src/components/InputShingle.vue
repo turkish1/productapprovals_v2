@@ -17,9 +17,7 @@ import AutoComplete from './roofSystems/AutoComplete.vue';
 import AutoCompletePoly from './roofSystems/AutoCompletePoly.vue';
 import AutoCompleteSA from './roofSystems/AutoCompleteSA.vue';
 
-import { useMagicKeys } from '@vueuse/core';
-
-const { tab /* keys you want to monitor */ } = useMagicKeys();
+// const { tab /* keys you want to monitor */ } = useMagicKeys();
 const { postShingle, postUDLshingle, postSAshingle } = usePostShingleToLambda();
 // watch(tab, (v) => {
 //     if (v) checkInput();
@@ -33,8 +31,6 @@ const { postShingle, postUDLshingle, postSAshingle } = usePostShingleToLambda();
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
-let modalSAIsActive = ref(false);
-let modalUDLIsActive = ref(false);
 
 const polyStore = usePolyStore();
 const store = useShingleStore();
@@ -89,6 +85,9 @@ const selfadhered = reactive({
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
+let modalSAIsActive = ref(false);
+let modalUDLIsActive = ref(false);
+let modalIsActive = ref(false);
 
 let polydatamt = ref(polyinput._object.polyinput);
 let systemdatamt = ref(usesystemfStore.store.$state.systeminput);
@@ -150,10 +149,11 @@ const whatChanged = computed(() => {
 
     onKeydown();
     validateHeight();
-    checkInputPoly();
+    // checkInputPoly();
 });
 
 function checkInputPoly() {
+    console.log(polydatamt.value);
     if (polydatamt.value.length !== null) {
         polydatamt.value.forEach((item, index) => {
             underlayment.udlnoa = item.polyData.noa;
@@ -232,7 +232,7 @@ function checkInput() {
             inputshingle.value[0].shingleData.height = dims.height;
             inputshingle.value[0].shingleData.deckType = dt.value;
             inputshingle.value[0].shingleData.prescriptiveSelection = selectedSlopelow.value;
-            console.log();
+            console.log(datamounted.value);
         });
     }
 }
@@ -406,19 +406,17 @@ function getIndexs() {
     console.log(selectedSlopelow.value, selectedSlopehigh.value);
 }
 
-let modalIsActive = ref(false);
-
-const checkModal = computed(async () => {
-    console.log('Entered Modal check', modalIsActive);
-    switch (modalIsActive) {
-        case 'true':
-            break;
-        case 'false':
-            return shingleMetrics();
-        default:
-            break;
-    }
-});
+// const checkModal = computed(async () => {
+//     console.log('Entered Modal check', modalIsActive);
+//     switch (modalIsActive) {
+//         case 'true':
+//             break;
+//         case 'false':
+//             return shingleMetrics();
+//         default:
+//             break;
+//     }
+// });
 const shingleMetrics = async () => {
     postMetrics.noa = shingles.noa;
     postMetrics.manufacturer = shingles.manufacturer;
@@ -512,25 +510,24 @@ watch(
         </div>
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <AutoCompletePoly>
-                    <!-- @keydown.tab.exact.enter="checkInputPoly" -->
-                </AutoCompletePoly>
-                <Button class="w-96" label="Submit" severity="contrast" raised @click="(modalUDLIsActive = true), checkInputPoly()" @change="checkInputSystem" style="margin-left: 15px" />
+                <AutoCompletePoly />
+                <!-- @keydown.tab.exact.enter="checkInputPoly" -->
+                <Button class="w-96" label="Submit" severity="contrast" raised @click="(modalUDLIsActive = true), checkInputPoly()" style="margin-left: 15px" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <AutoCompleteSA />
                 <!-- @keydown.tab.exact.stop="checkInputSystem" -->
-                <Button class="w-96" label="Submit" severity="contrast" size="small" raised @click="(modalSAIsActive = true), checkInputSystem()" @change="checkInputSystem" style="margin-left: 15px" />
+                <Button class="w-96" label="Submit" severity="contrast" size="small" raised @click="(modalSAIsActive = true), checkInputSystem()" @change="updateselectSystem" style="margin-left: 15px" />
             </div>
         </div>
 
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <AutoComplete />
-                <!--  @keydown.tab.exact.stop="checkInput" -->
-                <Button label="Submit" severity="contrast" @click="(modalIsActive = true), checkInput()" @change="checkInput" style="margin-left: 15px" />
+                <!--  @keydown.tab.exact.stop="checkInput" @change="checkInput"-->
+                <Button label="Submit" severity="contrast" @click="(modalIsActive = true), checkInput()" style="margin-left: 15px" />
             </div>
         </div>
     </div>
@@ -551,18 +548,21 @@ watch(
     <Divider />
     <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
         <ModalWindow @closePopup="(modalUDLIsActive = false), shingleUdlStaging()" v-if="modalUDLIsActive">
-            <!-- <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800"> -->
-            <div class="flex flex-row space-x-20 space-y-12">
-                <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
-                    <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <!--   <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800"> flex flex-row space-x-20 space-y-12 -->
+            <div class="flex flex-row space-x-10 space-y-12" style="margin-left: 20px">
+                <div v-show="isUDLNOAValid" class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                    <!-- basis-2/3 gap-2 border-2 border-gray-700 focus:border-orange-600-->
+                    <div class="basis-2/3 space-x-10 space-y-12 gap-2 border-2">
                         <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
                         <InputText id="manufacturer" v-model="underlayment.udlmanufacturer" />
                     </div>
-                    <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                    <!-- flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600 -->
+                    <div class="basis-2/3 space-x-20 space-y-12 gap-2 border-2">
                         <label style="color: #122620" for="material">(UDL) Material</label>
                         <InputText id="material" v-model="underlayment.udlmaterial" />
                     </div>
-                    <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                    <!-- <Divider /> basis-2/3 space-x-10 space-y-12 gap-2 border-2-->
+                    <div class="md:w-196 space-x-15 space-y-12 gap-2 border-2">
                         <label style="color: #122620" for="description">(UDL) Description</label>
                         <InputText id="description" v-model="underlayment.udldescription" />
                     </div>
@@ -583,7 +583,8 @@ watch(
 
                     <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                         <label style="color: red">Select System *</label>
-                        <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
+                        <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" />
+                        <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                     </div>
                 </div>
                 <div class="w-196 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 1px">
@@ -593,7 +594,7 @@ watch(
             </div>
         </ModalWindow>
     </div>
-    <ModalWindow @closePopup="(modalIsActive = false), shingleMetrics()" v-if="modalIsActive" @update="checkModal">
+    <ModalWindow @closePopup="(modalIsActive = false), shingleMetrics()" v-if="modalIsActive">
         <div class="max-w-screen-xl flex flex-row mt-8 space-x-10">
             <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Applicant</label>
