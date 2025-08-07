@@ -64,15 +64,18 @@ const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
     shingleData.value = suggestions.value[0]?.shingleNoaNumber?.noa;
-
-    console.log(shingleData.value);
-    shingleIterate.value = shingleData.value.body ?? [];
+    console.log(shingleData.value.body);
+    shingleIterate.value = shingleData.value.body;
+    // console.log('line 69', shingleIterate.value);
     const stringyfied1 = JSON.stringify(shingleIterate.value).split('[').join();
+
     const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
     const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
     console.log(newArray.value);
 
     return newArray.value.filter((item) => item.toString().includes(query.value));
+
+    // return suggestions.value[0].shingleNoaNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
