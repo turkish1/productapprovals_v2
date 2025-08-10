@@ -6,7 +6,7 @@
           1) We trigger 'grabInput()' on Enter, Tab, or when user leaves the input,
              ensuring 'query' is used properly.
         -->
-                <InputText id="tilenoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" @update="checkPaddCategory" />
+                <InputText id="tilenoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" @update="checkPaddyCategory" />
 
                 <label for="ac">Tile NOA: 00000000</label>
             </FloatLabel>
@@ -84,7 +84,7 @@ onMounted(() => {
 const copiedRef = ref({ ...singlePaddydata.value });
 const doubleRef = ref({ ...doublePaddydata.value });
 
-async function checkPaddCategory() {
+async function checkPaddyCategory() {
     paddyCategory.value = paddyCat.$state.paddycatInput[0].paddyValues;
 
     if (paddyCategory.value === 'double') {
@@ -103,7 +103,7 @@ async function checkPaddCategory() {
     return suggestions.value;
 }
 const noaArray = ref([]);
-watch(checkPaddCategory, () => {});
+watch(checkPaddyCategory, () => {});
 
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
@@ -277,14 +277,14 @@ function hideSuggestions() {
 <style scoped>
 .autocomplete {
     position: relative;
-    width: 300px;
+    width: 200px;
 }
 
-input {
+/* input {
     width: 100%;
     padding: 8px;
     font-size: 16px;
-}
+} */
 
 .suggestions {
     color: black;
@@ -308,4 +308,23 @@ input {
 .suggestions li:hover {
     background-color: #f0f0f0;
 }
+/* @keyframes slidedown-icon {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(20px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.slidedown-icon {
+    animation: slidedown-icon;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+} */
 </style>

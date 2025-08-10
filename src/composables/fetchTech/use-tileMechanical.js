@@ -40,7 +40,7 @@ export default function useMech() {
         savedfastener: '',
         tiletype: ''
     });
-    function takeMechInput(inputMech) {
+    async function takeMechInput(inputMech) {
         input.value = inputMech;
         // console.log(input.value);
         num.value = Number(input.value);

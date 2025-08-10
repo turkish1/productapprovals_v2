@@ -56,21 +56,28 @@
                         </SwiperSlide>
                     </Swiper>
                 </div>
-                <!-- <div class="flex flex-wrap justify-left gap-12"> -->
-                <!-- <Swiper :modules="[EffectCards, Navigation, Pagination]" effect="cards" grab-cursor="true" navigation pagination class="w-md max-w-md mx-auto"> -->
-                <!-- class="flex justify-center items-center" -->
-                <!-- <DeckSwiper :slides-per-view="1" :space-between="10" @slideChangeTransitionEnd="onSlideChange" class="w-full max-w-md mx-auto">
-                        <SwiperSlide v-for="(card, index) in cards" :key="index">
-                            <StackCard :icon="card.icon" :title="card.title" :items="card.items" :bgClass="card.bg" :textClass="card.text" />
-                        </SwiperSlide> -->
-                <!-- <SwiperSlide v-for="(card, i) in cards" :key="i">
-                            <StackCard :icon="card.icon" :title="card.title" :items="card.items" :bgClass="card.bg" :textClass="card.text" />
-                        </SwiperSlide> -->
-                <!-- </DeckSwiper> -->
-                <!-- </div> -->
             </div>
         </div>
     </div>
+
+    <!-- <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"> -->
+    <!-- <div v-show="isGenaralPageValid">
+        <GeneralPage />
+    </div>
+    <div v-show="isRoofShingleValid">
+        <Shingle />
+    </div>
+
+    <div v-show="isRoofTileADValid">
+        <TileAdhesive />
+    </div>
+    <div v-show="isRoofTileMechanicalValid">
+        <TileMechanical />
+    </div>
+    <div v-show="isRoofLowslopeValid">
+        <LowSlope />
+    </div> -->
+    <!-- </div> -->
 </template>
 
 <script setup>
@@ -84,21 +91,29 @@ import { useRoofListStore } from '@/stores/roofList';
 import { useSavedStore } from '@/stores/savedTiledataStore';
 import { useShingleStore } from '@/stores/shingleStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
-
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
+
+import { Swiper, SwiperSlide } from 'swiper/vue';
 
 // Core CSS
 import 'swiper/css';
 
 // individual module imports + CSS
 import 'swiper/css/effect-cards';
+import EffectCards from '../../../node_modules/swiper/modules/effect-cards';
 
 import 'swiper/css/navigation';
+import Navigation from '../../../node_modules/swiper/modules/navigation';
 
 import useMech from '@/composables/InputLogic/use-tileMechanical';
 import 'swiper/css/pagination';
 import { computed, onMounted, reactive, ref } from 'vue';
-
+import Pagination from '../../../node_modules/swiper/modules/pagination';
+// import GeneralPage from '../jsPDF/Generalpagepdf.vue';
+// import LowSlope from '../jsPDF/LowSlopepdf.vue';
+// import Shingle from '../jsPDF/Shingle.vue';
+// import TileAdhesive from '../jsPDF/TileAdhesive.vue';
+// import TileMechanical from '../jsPDF/TileMechanical.vue';
 const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 

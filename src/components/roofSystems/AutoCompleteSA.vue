@@ -1,10 +1,10 @@
 <template>
-    <div class="autocomplete">
-        <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+    <div class="autocompletesa">
+        <div class="w-56 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
                 <InputText id="sanoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputSA" />
-                <label for="ac">S/A Membrane NOA: 00000000</label>
+                <label for="ac">S/A NOA: 00000000</label>
             </FloatLabel>
         </div>
         <!-- Suggestions list -->
@@ -146,9 +146,9 @@ const hideSuggestions = () => {
 </script>
 
 <style scoped>
-.autocomplete {
+.autocompletesa {
     position: relative;
-    width: 300px;
+    width: 200px;
 }
 
 input {

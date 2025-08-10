@@ -1,5 +1,5 @@
 <template>
-    <Button class="p-button" size="large" @click="$emit('click')">
+    <Button class="p-button hover:bg-fuchsia-600" size="medium" @click="$emit('click')">
         {{ label }}
     </Button>
 </template>
@@ -17,6 +17,8 @@ defineProps({
 .p-button {
     background-color: black;
     font-style: normal;
-    size: 30px;
+    size: 20px;
+    max-height: 30px;
+    margin-top: 10px;
 }
 </style>

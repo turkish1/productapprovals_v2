@@ -1,6 +1,8 @@
 <script setup>
 import DripEdShingle from '@/components/DripEdgeChildren/DripEdShingle.vue';
+import Buttons from '@/components/Features/Buttons.vue';
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
+import AutoComplete from '@/components/roofSystems/AutoComplete.vue';
 import usePostShingleToLambda from '@/composables/Postdata/usePostShingleLambda';
 import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
@@ -12,12 +14,10 @@ import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
-import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-import AutoComplete from './roofSystems/AutoComplete.vue';
+import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, watch, watchEffect } from 'vue';
 import AutoCompletePoly from './roofSystems/AutoCompletePoly.vue';
 import AutoCompleteSA from './roofSystems/AutoCompleteSA.vue';
 
-// const { tab /* keys you want to monitor */ } = useMagicKeys();
 const { postShingle, postUDLshingle, postSAshingle } = usePostShingleToLambda();
 // watch(tab, (v) => {
 //     if (v) checkInput();
@@ -85,9 +85,9 @@ const selfadhered = reactive({
 });
 
 let datamounted = ref(inputshingle._object.inputshingle);
-let modalSAIsActive = ref(false);
-let modalUDLIsActive = ref(false);
-let modalIsActive = ref(false);
+const modalSAIsActive = ref(false);
+const modalUDLIsActive = ref(false);
+const modalIsActive = ref(false);
 
 let polydatamt = ref(polyinput._object.polyinput);
 let systemdatamt = ref(usesystemfStore.store.$state.systeminput);
@@ -142,7 +142,7 @@ const { inputsystem } = useSystemf();
 const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 
 const whatChanged = computed(() => {
-    // checkInput();
+    checkInput();
     clearSelected();
     validateRoofSlope();
     addCheckmarks();
@@ -152,19 +152,19 @@ const whatChanged = computed(() => {
     // checkInputPoly();
 });
 
-function checkInputPoly() {
+async function checkInputPoly() {
     console.log(polydatamt.value);
-    if (polydatamt.value.length !== null) {
-        polydatamt.value.forEach((item, index) => {
-            underlayment.udlnoa = item.polyData.noa;
-            underlayment.udlmanufacturer = item.polyData.applicant;
-            underlayment.udlmaterial = item.polyData.material;
-            underlayment.udldescription = item.polyData.description;
-        });
-    }
+    // if (polydatamt.value.length !== null) {
+    polydatamt.value.forEach((item, index) => {
+        underlayment.udlnoa = item.polyData.noa;
+        underlayment.udlmanufacturer = item.polyData.applicant;
+        underlayment.udlmaterial = item.polyData.material;
+        underlayment.udldescription = item.polyData.description;
+    });
+    // }
 }
 
-function checkInputSystem() {
+async function checkInputSystem() {
     systemdatamt.value.forEach((item, index) => {
         // console.log(item.systemData);
         selfadhered.sanoa = item.systemData.noa;
@@ -214,12 +214,10 @@ function updateselectSystem(selectedsystemf) {
     systemInput.pdfSystemValue = value;
     systemInput.description = description;
 
-    console.log(systemInput.pdfSystemValue, value);
-    console.log(systemInput.systemData);
-    shingleSAStaging();
+    // shingleSAStaging();
 }
 
-function checkInput() {
+async function checkInput() {
     console.log('Entered CheckInput');
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
@@ -406,17 +404,6 @@ function getIndexs() {
     console.log(selectedSlopelow.value, selectedSlopehigh.value);
 }
 
-// const checkModal = computed(async () => {
-//     console.log('Entered Modal check', modalIsActive);
-//     switch (modalIsActive) {
-//         case 'true':
-//             break;
-//         case 'false':
-//             return shingleMetrics();
-//         default:
-//             break;
-//     }
-// });
 const shingleMetrics = async () => {
     postMetrics.noa = shingles.noa;
     postMetrics.manufacturer = shingles.manufacturer;
@@ -462,11 +449,120 @@ function valueEntered() {
     }
 }
 
+const showModalUDL = ref(false);
+const modalKeyUDL = ref(0);
+const currentShingleUDl = ref(null);
+
+const showModal = ref(false);
+const modalKey = ref(0);
+const showModalSA = ref(false);
+const modalKeySA = ref(0);
+const currentShingle = ref(null);
+
+const currentShingleSA = ref(null);
+// optional: your reactive parent form state
+// const shingles = reactive({ manufacturer:'', material:'', description:'' })
+
+function toPlain(v) {
+    const x = unref(v);
+    console.log(x);
+    return isProxy(x) ? toRaw(x) : x;
+}
+function toPlainUDL(v) {
+    const x = unref(v);
+    console.log(x);
+
+    return isProxy(x) ? toRaw(x) : x;
+}
+
+function toPlainSA(v) {
+    const x = unref(v);
+    console.log(x);
+
+    return isProxy(x) ? toRaw(x) : x;
+}
+
+async function onOpenShingleClick() {
+    // If you have a selected row/object, pass it here:
+    // const selected = mySelectedRow.value
+    // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
+
+    // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
+    await checkInput();
+
+    // 2) build a plain POJO snapshot with just the fields you need
+    const src = toPlain(/* selected or shingles or wherever your data lives */ shingles);
+    console.log(src);
+    currentShingle.value = {
+        manufacturer: src?.manufacturer ?? '',
+        material: src?.material ?? '',
+        description: src?.description ?? ''
+    };
+
+    // 3) bump key BEFORE show if you want a hard reset
+    modalKey.value++;
+
+    // 4) wait a tick so Vue sees the new props, THEN show the modal
+    await nextTick();
+    modalIsActive.value = true;
+}
+
+async function onOpenShingleUDLClick() {
+    // If you have a selected row/object, pass it here:
+    // const selected = mySelectedRow.value
+    // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
+
+    // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
+    await checkInputPoly();
+
+    // 2) build a plain POJO snapshot with just the fields you need
+    const src = toPlainUDL(/* selected or shingles or wherever your data lives */ udlData);
+    currentShingleUDl.value = {
+        udlmanufacturer: src?.udlmanufacturer ?? '',
+        udlmaterial: src?.udlmaterial ?? '',
+        udldescription: src?.udldescription ?? ''
+    };
+
+    // 3) bump key BEFORE show if you want a hard reset
+    modalKeyUDL.value++;
+
+    // 4) wait a tick so Vue sees the new props, THEN show the modal
+    await nextTick();
+    modalKeyUDL.value++; // optional: bump key to force remount
+    modalUDLIsActive.value = true;
+}
+
+async function onOpenShingleSAClick() {
+    // If you have a selected row/object, pass it here:
+    // const selected = mySelectedRow.value
+    // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
+
+    // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
+    await checkInputSystem();
+
+    // 2) build a plain POJO snapshot with just the fields you need
+    const src = toPlainSA(/* selected or shingles or wherever your data lives */ selfadhered);
+    currentShingleSA.value = {
+        samanufacturer: src?.samanufacturer ?? '',
+        samaterial: src?.samaterial ?? '',
+        sasystem: src?.sasystem ?? ''
+    };
+
+    modalKeySA.value++;
+
+    // 4) wait a tick so Vue sees the new props, THEN show the modal
+    await nextTick();
+    modalSAIsActive.value = true;
+}
+
 watchEffect(selectedsystemf, errorshHeightMessage, errorshingleMessage, whatChanged, slopetypeless, slopetypemore, udlInput, getIndexs, selectedSlopelow, selectedSlopehigh, () => {});
 
 watch(
     checkInputSystem,
-    updateselectSystem,
+    // updateselectSystem,
     valueEntered,
     noaInput,
     whatChanged,
@@ -484,14 +580,9 @@ watch(
 );
 </script>
 <template>
-    <!-- mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg
-         grid grid-cols-1 md:grid-cols-2 gap-6    md:w-1/2 mx-auto p-6 dark:bg-gray-800 rounded-2xl shadow-lg md:grid-cols-2 gap-6-->
     <div id="shingle" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6" style="margin-left: 300px; border-radius: 5px">
-        <!-- <label for="slope" style="color: #122620; margin-left: 350px">Shingle Roof</label> -->
-
         <div class="w-64 flex flex-col gap-1">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" style="margin-left: 20px" />
-            <!-- <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 220px" @click="store.$reset()"></i></Button> -->
         </div>
         <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
             <label for="slope" style="color: red">Roof Slope *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
@@ -508,26 +599,23 @@ watch(
             <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
         </div>
+
+        <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
+            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
+                <AutoComplete />
+                <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px" />
+            </div>
+        </div>
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <AutoCompletePoly />
-                <!-- @keydown.tab.exact.enter="checkInputPoly" -->
-                <Button class="w-96" label="Submit" severity="contrast" raised @click="(modalUDLIsActive = true), checkInputPoly()" style="margin-left: 15px" />
+                <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleUDLClick" style="margin-left: 15px" />
             </div>
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <AutoCompleteSA />
-                <!-- @keydown.tab.exact.stop="checkInputSystem" -->
-                <Button class="w-96" label="Submit" severity="contrast" size="small" raised @click="(modalSAIsActive = true), checkInputSystem()" @change="updateselectSystem" style="margin-left: 15px" />
-            </div>
-        </div>
-
-        <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
-            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <AutoComplete />
-                <!--  @keydown.tab.exact.stop="checkInput" @change="checkInput"-->
-                <Button label="Submit" severity="contrast" @click="(modalIsActive = true), checkInput()" style="margin-left: 15px" />
+                <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleSAClick" style="margin-left: 30px" />
             </div>
         </div>
     </div>
@@ -546,68 +634,61 @@ watch(
 
     <Divider />
     <Divider />
-    <div v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }" class="flex shadow-lg justify-center items-center animate-duration-1000">
-        <ModalWindow @closePopup="(modalUDLIsActive = false), shingleUdlStaging()" v-if="modalUDLIsActive">
-            <!--   <div class="card-system gap-2 mt-2 shadow-lg shadow-cyan-800"> flex flex-row space-x-20 space-y-12 -->
-            <div class="flex flex-row space-x-10 space-y-12" style="margin-left: 20px">
-                <div v-show="isUDLNOAValid" class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <!-- basis-2/3 gap-2 border-2 border-gray-700 focus:border-orange-600-->
-                    <div class="basis-2/3 space-x-10 space-y-12 gap-2 border-2">
-                        <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
-                        <InputText id="manufacturer" v-model="underlayment.udlmanufacturer" />
-                    </div>
-                    <!-- flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600 -->
-                    <div class="basis-2/3 space-x-20 space-y-12 gap-2 border-2">
-                        <label style="color: #122620" for="material">(UDL) Material</label>
-                        <InputText id="material" v-model="underlayment.udlmaterial" />
-                    </div>
-                    <!-- <Divider /> basis-2/3 space-x-10 space-y-12 gap-2 border-2-->
-                    <div class="md:w-196 space-x-15 space-y-12 gap-2 border-2">
-                        <label style="color: #122620" for="description">(UDL) Description</label>
-                        <InputText id="description" v-model="underlayment.udldescription" />
-                    </div>
-                </div>
-            </div>
-        </ModalWindow>
-        <ModalWindow @closePopup="(modalSAIsActive = false), shingleSAStaging()" v-if="modalSAIsActive">
-            <div v-show="isSAValid" class="gap-2 mt-5 space-x-1 space-y-6" style="margin-left: 1px">
-                <div class="flex flex-row space-x-20">
-                    <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                        <label style="color: #122620" for="saapplicant">S/A Applicant</label>
-                        <InputText id="saapplicant" v-model="selfadhered.samanufacturer" />
-                    </div>
-                    <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                        <label style="color: #122620" for="samaterial">S/A Material Type</label>
-                        <InputText id="saaterial" v-model="selfadhered.samaterial" />
-                    </div>
 
-                    <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                        <label style="color: red">Select System *</label>
-                        <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" />
-                        <!-- @click="checkInputSystem" @change="updateselectSystem" -->
-                    </div>
-                </div>
-                <div class="w-196 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 1px">
-                    <label style="color: #122620" for="sadescription">S/A Description</label>
-                    <InputText id="sadescription" v-model="selfadhered.sadescription" />
-                </div>
+    <ModalWindow v-if="modalUDLIsActive" :key="modalKey" :initialData="currentShingle" @closePopup="(modalUDLIsActive = false), shingleUdlStaging()">
+        <div v-show="isUDLNOAValid" class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
+                <InputText id="manufacturer" v-model="underlayment.udlmanufacturer" />
             </div>
-        </ModalWindow>
-    </div>
-    <ModalWindow @closePopup="(modalIsActive = false), shingleMetrics()" v-if="modalIsActive">
-        <div class="max-w-screen-xl flex flex-row mt-8 space-x-10">
-            <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="material">(UDL) Material</label>
+                <InputText id="material" v-model="underlayment.udlmaterial" />
+            </div>
+            <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="description">(UDL) Description</label>
+                <InputText id="description" v-model="underlayment.udldescription" />
+            </div>
+        </div>
+    </ModalWindow>
+
+    <ModalWindow @closePopup="(modalSAIsActive = false), shingleSAStaging()" :key="modalKeySA" :initialData="currentShingleSA" v-if="modalSAIsActive">
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="saapplicant">S/A Applicant</label>
+                <InputText id="saapplicant" v-model="selfadhered.samanufacturer" />
+            </div>
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="samaterial">S/A Material Type</label>
+                <InputText id="saaterial" v-model="selfadhered.samaterial" />
+            </div>
+
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label style="color: red">Select System * </label>
+                <Select v-model="selectedsystemf" :options="selfadhered.system" placeholder="" @change="updateselectSystem" />
+            </div>
+            <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620; margin-top: 15px" for="sadescription">S/A Description Chosen</label>
+                <InputText id="sadescription" v-model="selfadhered.sadescription" />
+            </div>
+        </div>
+    </ModalWindow>
+
+    <ModalWindow v-if="modalIsActive" :key="modalKey" :initialData="currentShingle" @closePopup="(modalIsActive = false), shingleMetrics()">
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Applicant</label>
-                <InputText id="manufacturer" v-model="shingles.manufacturer" />
+                <InputText id="manufacturer" v-model="shingles.manufacturer" class="w-full" />
             </div>
-            <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="material"> Material</label>
-                <InputText id="material" v-model="shingles.material" />
+
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="material">Material</label>
+                <InputText id="material" v-model="shingles.material" class="w-full" />
             </div>
-            <br />
-            <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+
+            <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Description</label>
-                <InputText id="description" v-model="shingles.description" />
+                <InputText id="description" v-model="shingles.description" class="w-full" />
             </div>
         </div>
     </ModalWindow>
