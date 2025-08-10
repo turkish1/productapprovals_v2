@@ -581,13 +581,10 @@ watch(
 </script>
 <template>
     <div id="shingle" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6" style="margin-left: 300px; border-radius: 5px">
-        <!-- <label for="slope" style="color: #122620; margin-left: 350px">Shingle Roof</label> -->
-
-        <div class="w-64 flex flex-col gap-1">
+        <div class="w-64 flex flex-col gap-2">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full mt-5 md:w-56" @change="getdeckType" style="margin-left: 20px" />
-            <!-- <Button plain text class="min-w-1 min-h-0"><i class="pi pi-refresh" style="font-size: 1.3rem; color: black; margin-left: 220px" @click="store.$reset()"></i></Button> -->
         </div>
-        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+        <div class="w-64 mt-1 space-y-1" style="margin-left: 10px">
             <label for="slope" style="color: red">Roof Slope *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
 
             <InputText id="slope" v-model.number="slope" type="text" placeholder="slope" :invalid="slope === null" :disabled="isDisabledslope" @input="valueEntered" @change="validateRoofSlope" />
@@ -597,7 +594,7 @@ watch(
             <label style="color: #122620" for="area">Area</label>
             <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
-        <div class="w-64 mt-1 space-y-2" style="margin-left: 20px">
+        <div class="w-64 mt-1 space-y-1" style="margin-left: 10px">
             <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
@@ -606,14 +603,12 @@ watch(
         <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <AutoComplete />
-                <!--   @click="(modalIsActive = true), checkInput(), openShingleModal()"   @keydown.tab.exact.stop="checkInput" @change="checkInput" -->
                 <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px" />
             </div>
         </div>
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
             <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                 <AutoCompletePoly />
-                <!-- @keydown.tab.exact.enter="checkInputPoly" "(modalUDLIsActive = true), checkInputPoly(), openShingleModalUDL()"-->
                 <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleUDLClick" style="margin-left: 15px" />
             </div>
         </div>
@@ -646,12 +641,10 @@ watch(
                 <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
                 <InputText id="manufacturer" v-model="underlayment.udlmanufacturer" />
             </div>
-
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">(UDL) Material</label>
                 <InputText id="material" v-model="underlayment.udlmaterial" />
             </div>
-
             <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">(UDL) Description</label>
                 <InputText id="description" v-model="underlayment.udldescription" />
