@@ -1,5 +1,5 @@
 <template>
-    <Button severity=" " variant=" " @click="$emit('click')">
+    <Button class="p-button hover:bg-fuchsia-600" size="medium" @click="$emit('click')">
         {{ label }}
     </Button>
 </template>
@@ -13,3 +13,12 @@ defineProps({
     severity: String
 });
 </script>
+<style scoped>
+.p-button {
+    background-color: black;
+    font-style: normal;
+    size: 20px;
+    max-height: 30px;
+    margin-top: 10px;
+}
+</style>

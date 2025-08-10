@@ -7,3 +7,21 @@
         </svg>
     </button>
 </template>
+<style lang="scss">
+.close-btn {
+    display: inline-flex; /* shrink to fit icon */
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    padding: 4px; /* small clickable area */
+    background: transparent; /* no background */
+    border: none; /* remove default button border */
+    cursor: pointer;
+
+    /* optional: position in top-right corner of modal */
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+</style>

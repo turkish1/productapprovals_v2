@@ -1,5 +1,5 @@
 <template>
-    <div class="autocomplete">
+    <div class="autocompletepoly">
         <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
@@ -35,8 +35,8 @@ const props = defineProps({
 });
 const { inp, takp } = useInputpoly();
 // Define the emit event to send data to parent
-const emit = defineEmits(['update']);
-const inputData = ref(props.manufacturer, props.material, props.description);
+const emit = defineEmits(['updatedPoly']);
+const inputPolyData = ref(props.manufacturer, props.material, props.description);
 const { callFunction, polyStores } = useInputwFetchPoly();
 const polyStore = usePolyStore();
 const { polyinput } = storeToRefs(polyStore);
@@ -67,6 +67,7 @@ const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
     polyData.value = suggestions.value?.noapoly[0]?.polyNoaNumber?.noa;
+    console.log(polyData.value);
     polyIterate.value = polyData.value.body ?? [];
     const stringyfied1 = JSON.stringify(polyIterate.value).split('[').join();
 
@@ -95,13 +96,14 @@ function checkInputPoly() {
             underlayment.udescription = item.polyData.description;
         });
     }
+    sendPolyDataToParent();
 }
 
 // Method to send data back to parent
-// const sendDataToParent = () => {
-//     // Emitting the 'update' event with data
-//     emit('updated', inputData.value);
-// };
+const sendPolyDataToParent = () => {
+    // Emitting the 'update' event with data
+    emit('updatedPoly', inputPolyData.value);
+};
 // Method to update the input field with selected suggestion
 const selectSuggestion = (suggestion) => {
     query.value = suggestion;
@@ -122,7 +124,7 @@ const hideSuggestions = () => {
 </script>
 
 <style scoped>
-.autocomplete {
+.autocompletepoly {
     position: relative;
     width: 300px;
 }

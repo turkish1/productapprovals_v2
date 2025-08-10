@@ -1,6 +1,7 @@
 <script setup>
 import DripEdAdTile from '@/components/DripEdgeChildren/DripEdAdTile.vue';
-// import Buttons from '@/components/Features/Buttons.vue';
+import Buttons from '@/components/Features/Buttons.vue';
+import ModalWindow from '@/components/Modal/ModalWindow.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
 import { useExpiry } from '@/composables/ExpirationCheck/useExpiry';
@@ -28,7 +29,7 @@ import { useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
-import { computed, nextTick, onMounted, reactive, ref, watch, watchEffect } from 'vue';
+import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, watch, watchEffect } from 'vue';
 
 const { addPaddyCatval } = usePaddyoptionStore();
 const paddyStore = usePaddyStore();
@@ -76,6 +77,7 @@ const zonethree = reactive({ zone: '', lambda3: '', mg3: '', mr3: '', mf3: '' })
 const selectedDeck = ref();
 const type = ref([{ name: 'Select Deck Type' }, { name: '5/8" Plywood' }, { name: '3/4" Plywood' }, { name: '1" x 6" T & G' }, { name: '1" x 8" T & G' }, { name: 'Existing 1/2" Plywood' }]);
 const save = ref([]);
+const UnderlaymentSelection = ref('');
 let selectedUnderlayment = ref('');
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
@@ -84,13 +86,13 @@ const underlaymentType = ref([
     { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
 ]);
 const licenseEnd = ref('');
-let isUDLValid = ref(false);
-let isUDLNOAValid = ref(false);
-let isSAValid = ref(false);
-let isTileValid = ref(false);
-let isTileData = ref(false);
+const isUDLValid = ref(false);
+const isUDLNOAValid = ref(false);
+const isSAValid = ref(false);
+const isTileValid = ref(false);
+const isTileData = ref(false);
 let isMultiTileValid = ref(false);
-let isPaddyCategoryValid = ref(false);
+const isPaddyCategoryValid = ref(false);
 let ismrValidMR1 = ref(false);
 let ismrValidMR2 = ref(false);
 let ismrValidMR3 = ref(false);
@@ -149,14 +151,14 @@ const selectPaddy = computed(() => {
 
         addPaddyCatval(selectedOption);
         isMultiTileValid = false;
-        isTileValid = true;
+        isTileValid.value = true;
         console.log(isPaddySingle.value);
         clearData();
     } else {
         isPaddySingle.value = true;
         addPaddyCatval(selectedOption);
         isMultiTileValid = false;
-        isTileValid = true;
+        isTileValid.value = true;
 
         clearData();
     }
@@ -229,43 +231,39 @@ function selectedExposure() {
         checkZones();
     }
 }
-
-// 2. Underlayment is picked and we reviel the respective components. Then zones are checked
 function pickUnderlayment(event) {
-    save.value = selectedUnderlayment.value.key;
-    if (save.value === 1) {
-        isPaddyCategoryValid.value = true;
-        isTileValid = false;
-        isTileData.value = false;
+    // Normalize the selected key from (event.value.key | event.key | selectedUnderlayment.value.key)
+    const key = event?.value?.key ?? event?.key ?? selectedUnderlayment?.value?.key ?? 0;
+    console.log(key, event?.value?.selectedBasesheet);
+    save.value = Number.isFinite(+key) ? +key : 0;
+    UnderlaymentSelection.value = event?.value?.selectedBasesheet;
+    console.log(UnderlaymentSelection.value);
 
-        isUDLValid.value = false;
-        isUDLNOAValid.value = false;
-        isSAValid.value = false;
-    } else if (save.value === 2) {
-        isPaddyCategoryValid.value = true;
+    // Desired flag states per selection
+    const states = {
+        0: { isPaddyCategoryValid: false, isTileValid: false, isTileData: false, isUDLValid: false, isUDLNOAValid: false, isSAValid: false },
+        1: { isPaddyCategoryValid: true, isTileValid: false, isTileData: false, isUDLValid: false, isUDLNOAValid: false, isSAValid: false },
+        2: { isPaddyCategoryValid: true, isTileValid: true, isTileData: true, isUDLValid: false, isUDLNOAValid: false, isSAValid: true },
+        3: { isPaddyCategoryValid: true, isTileValid: true, isTileData: true, isUDLValid: true, isUDLNOAValid: true, isSAValid: false }
+    };
 
-        isTileValid = true;
-        isTileData.value = true;
-        isUDLValid.value = false;
-        isUDLNOAValid.value = false;
-        isSAValid.value = true;
-    } else if (save.value === 3) {
-        isPaddyCategoryValid.value = true;
+    const next = states[save.value] ?? states[0];
+    console.log(next);
+    // Map of refs so we can assign dynamically
+    const refs = {
+        isPaddyCategoryValid,
+        isTileValid,
+        isTileData,
+        isUDLValid,
+        isUDLNOAValid,
+        isSAValid
+    };
 
-        isTileValid = true;
-        isUDLValid.value = true;
-        isTileData.value = true;
-        isUDLNOAValid.value = true;
-        isSAValid.value = false;
-    } else if (save.value === 0) {
-        isPaddyCategoryValid.value = false;
-
-        isTileData.value = false;
-        isUDLValid.value = false;
-        isUDLNOAValid.value = false;
-        isSAValid.value = false;
-        isTileValid.value = false;
-    }
+    // Apply all flags in one pass
+    Object.entries(next).forEach(([k, v]) => {
+        refs[k].value = v;
+        console.log(refs[k].value);
+    });
 }
 
 const paddySelectedSingle = ref(inputdata);
@@ -306,86 +304,87 @@ const manufacturerDoubleData = ref('');
 
 const updateTick = () => {
     // isPaddySingle.value = true;
+    console.log('updatick: double paddy');
     dtMounted.value = paddySelectedSingle.value?.[0];
     manufacturerData.value = dtMounted.value?.singlepaddyData ?? [];
     // console.log(dtMounted.value, manufacturerData.value);
-    nextTick(() => {
-        if (manufacturerData.value.content === 'multiple') {
-            isMultiTileValid = true;
-            isTileValid = true;
+    // nextTick(() => {
+    if (manufacturerData.value.content === 'multiple') {
+        isMultiTileValid = true;
+        isTileValid.value = true;
 
-            isTileData.value = true;
-            tilenoas.manufacturer = manufacturerData.value.applicant;
-            tilenoas.select_tile = manufacturerData.value.select_tile;
-            tilenoas.expiration_date = manufacturerData.value.expiration_date;
-            tilenoas.noa = manufacturerData.value.noa;
-            licenseEnd.value = tilenoas.expiration_date;
-            const { isExpired } = useExpiry(licenseEnd);
-            console.log(isExpired);
-        } else {
-            // This is for the rest of the NOAs
+        isTileData.value = true;
+        tilenoas.manufacturer = manufacturerData.value.applicant;
+        tilenoas.select_tile = manufacturerData.value.select_tile;
+        tilenoas.expiration_date = manufacturerData.value.expiration_date;
+        tilenoas.noa = manufacturerData.value.noa;
+        licenseEnd.value = tilenoas.expiration_date;
+        const { isExpired } = useExpiry(licenseEnd);
+        console.log(isExpired);
+    } else {
+        // This is for the rest of the NOAs
 
-            console.log(manufacturerData.value);
-            isTileData.value = true;
-            isTileValid = true;
-            isMultiTileValid = false;
-            tilenoas.noa = manufacturerData.value.noa;
-            tilenoas.manufacturer = manufacturerData.value.applicant;
-            tilenoas.description = manufacturerData.value.description;
+        console.log(manufacturerData.value);
+        isTileData.value = true;
+        isTileValid.value = true;
+        isMultiTileValid = false;
+        tilenoas.noa = manufacturerData.value.noa;
+        tilenoas.manufacturer = manufacturerData.value.applicant;
+        tilenoas.description = manufacturerData.value.description;
 
-            tilenoas.material = manufacturerData.value.material;
-            tilenoas.expiration_date = manufacturerData.value.expiration_date;
+        tilenoas.material = manufacturerData.value.material;
+        tilenoas.expiration_date = manufacturerData.value.expiration_date;
 
-            licenseEnd.value = tilenoas.expiration_date;
-            const { isExpired } = useExpiry(licenseEnd);
-            console.log(isExpired);
-        }
-        console.log(tilenoas);
+        licenseEnd.value = tilenoas.expiration_date;
+        const { isExpired } = useExpiry(licenseEnd);
+        console.log(isExpired);
+    }
+    console.log(tilenoas);
 
-        addSystemvalues(tilenoas);
-        checkZones();
-    });
+    addSystemvalues(tilenoas);
+    checkZones();
+    // });
 };
 
 const updateDoubletick = () => {
     dtMounteds.value = paddySelectedDouble.value?.[0];
-    console.log(dtMounteds.value);
+    console.log(dtMounteds.value, 'double paddy');
     manufacturerDoubleData.value = dtMounteds.value?.doublepaddyData ?? [];
     console.log(manufacturerDoubleData.value);
-    nextTick(() => {
-        // manufacturerDoubleData.value.content === 'multiple'
-        console.log(manufacturerDoubleData.value.content);
-        if (manufacturerDoubleData.value.content === 'multiple') {
-            isMultiTileValid = true;
-            isTileValid = true;
+    // nextTick(() => {
+    // manufacturerDoubleData.value.content === 'multiple'
+    console.log(manufacturerDoubleData.value.content);
+    if (manufacturerDoubleData.value.content === 'multiple') {
+        isMultiTileValid = true;
+        isTileValid.value = true;
 
-            isTileData.value = true;
-            tilenoas.noa = manufacturerDoubleData.value.noa;
-            tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
-            tilenoas.select_tile = manufacturerDoubleData.value.select_tile;
-            tilenoas.expiration_date = manufacturerDoubleData.value.expiration_date;
-            licenseEnd.value = tilenoas.expiration_date;
-            const { isExpired } = useExpiry(licenseEnd);
-            console.log(isExpired);
-        } else {
-            isTileData.value = true;
-            isTileValid = true;
-            tilenoas.noa = manufacturerDoubleData.value.noa;
-            tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
-            tilenoas.description = manufacturerDoubleData.value.description;
-            console.log(tilenoas.description);
-            tilenoas.material = manufacturerDoubleData.value.material;
-            tilenoas.expiration_date = manufacturerDoubleData.value.expiration_date;
-            licenseEnd.value = tilenoas.expiration_date;
-            const { isExpired } = useExpiry(licenseEnd);
-            console.log(isExpired);
-            isMultiTileValid = false;
-        }
-        console.log(tilenoas);
+        isTileData.value = true;
+        tilenoas.noa = manufacturerDoubleData.value.noa;
+        tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
+        tilenoas.select_tile = manufacturerDoubleData.value.select_tile;
+        tilenoas.expiration_date = manufacturerDoubleData.value.expiration_date;
+        licenseEnd.value = tilenoas.expiration_date;
+        const { isExpired } = useExpiry(licenseEnd);
+        console.log(isExpired);
+    } else {
+        isTileData.value = true;
+        isTileValid.value = true;
+        tilenoas.noa = manufacturerDoubleData.value.noa;
+        tilenoas.manufacturer = manufacturerDoubleData.value.applicant;
+        tilenoas.description = manufacturerDoubleData.value.description;
+        console.log(tilenoas.description);
+        tilenoas.material = manufacturerDoubleData.value.material;
+        tilenoas.expiration_date = manufacturerDoubleData.value.expiration_date;
+        licenseEnd.value = tilenoas.expiration_date;
+        const { isExpired } = useExpiry(licenseEnd);
+        console.log(isExpired);
+        isMultiTileValid = false;
+    }
+    console.log(tilenoas);
 
-        addSystemvalues(tilenoas);
-        checkZones();
-    });
+    addSystemvalues(tilenoas);
+    checkZones();
+    // });
 };
 
 // This could clear the data: Now
@@ -660,7 +659,7 @@ const slopeOptions = {
     seven: 7
 };
 
-watchEffect(isTileValid, isTileData, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, underlaymentType, () => {});
+watchEffect(isTileValid, isTileData, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, checkDatas, () => {});
 
 function checkData() {
     if (tileData.Table3.two === 'N/A') {
@@ -736,30 +735,7 @@ function checkInputSystem() {
         }
     });
 }
-// function checkInputSystem() {
-//     datamounted_f.value.forEach((item, index) => {
-//         saTiles.Description_F1 = item.systemData.Description_F1;
-//         saTiles.Description_F2 = item.systemData.Description_F2;
-//         saTiles.Description_F3 = item.systemData.Description_F3;
-//         saTiles.Description_F4 = item.systemData.Description_F4;
-//         saTiles.Description_F5 = item.systemData.Description_F5;
-//         saTiles.Description_F6 = item.systemData.Description_F6;
-//         saTiles.Description_F7 = item.systemData.Description_F7;
-//         saTiles.Description_F8 = item.systemData.Description_F8;
-//         saTiles.Description_F9 = item.systemData.Description_F9;
-//         saTiles.arrDesignPressure = item.systemData.designPressure;
-//         saTiles.expiration_date = item.systemData.expiration_date;
 
-//         licenseEnd.value = saTiles.expiration_date;
-//         const { isExpired } = useExpiry(licenseEnd);
-//         console.log(isExpired);
-//         if (item.systemData.system.length > 1) {
-//             addFSystem();
-//         } else {
-//             saTiles.system = item.systemData.system;
-//         }
-//     });
-// }
 const Anchor_Base = reactive({
     Anchor_Base_Sheet_E1: '',
     Anchor_Base_Sheet_E2: '',
@@ -912,7 +888,7 @@ async function checkInputSA() {
             console.log(item.systemData);
         });
     }
-    tileSAStaging();
+    // tileSAStaging();
 }
 
 const showMaterialValid = ref(false);
@@ -959,7 +935,7 @@ function checkTile() {
 function checkMaterial() {
     const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
     const slopeRange = clampNumber1(2, Number(dims.slope), 12);
-    console.log(slopeRange);
+    console.log(slopeRange, manufacturerData, manufacturerDoubleData);
     if (slopeRange <= slopeOptions.three) {
         zoneone.mg1 = isPaddySingle.value === true ? manufacturerData.value.Table3.two.Direct_Deck : manufacturerDoubleData.value.Table3.two;
         zonetwo.mg2 = isPaddySingle.value === true ? manufacturerData.value.Table3.two.Direct_Deck : manufacturerDoubleData.value.Table3.two;
@@ -1015,6 +991,7 @@ const savedKey = ref([]);
 const savedValue = ref([]);
 
 function updateMF(event) {
+    console.log(manufacturerData, manufacturerDoubleData);
     let mat = isPaddySingle.value === true ? manufacturerData.value.resistance : manufacturerDoubleData.value.resistance;
     console.log(mat, tilenoas.material[0]);
     // almost there fix this section by changing SelectionKey, start with
@@ -1198,7 +1175,6 @@ const postMetrictable = reactive({
 });
 
 const saveTileData = async () => {
-    // tileData2.noa =
     tileData2.slope = dims.slope;
     tileData2.height = dims.height;
     tileData2.area = dims.area;
@@ -1206,7 +1182,7 @@ const saveTileData = async () => {
     tileData2.noa = tilenoas.noa;
 
     tileData2.Decktype = dt.value;
-    tileData2.prescriptiveSelection = selectedUnderlayment.value;
+    tileData2.prescriptiveSelection = UnderlaymentSelection.value;
 
     tileData2.zoneone.zone1 = zoneone.zone;
     tileData2.zoneone.lambda1 = zoneone.lambda1;
@@ -1234,6 +1210,7 @@ const saveTileData = async () => {
 };
 
 const sendDataMongo = async () => {
+    console.log(tileData2.prescriptiveSelection);
     postMetrictable.noa = tileData2.noa;
     postMetrictable.applicant = tileData2.applicant;
     postMetrictable.description = tileData2.description;
@@ -1243,7 +1220,7 @@ const sendDataMongo = async () => {
     postMetrictable.zonetwo = tileData2.zonetwo;
     postMetrictable.zonethree = tileData2.zonethree;
     postMetrictable.decktype = tileData2.Decktype;
-    postMetrictable.prescriptive = tileData2.prescriptiveSelection.selectedBasesheet;
+    postMetrictable.prescriptive = tileData2.prescriptiveSelection;
     postMetrictable.tileIdentifier = tilenoas.tileIdentifier;
     postMetrictable.slope = dims.slope;
     postMetrictable.height = dims.height;
@@ -1275,7 +1252,7 @@ function updateselectSystem(selectedsystemf) {
             }
         }
     }
-    tileSAStaging();
+    // tileSAStaging();
 }
 
 const keyValueSystemFPairsValues = ref({});
@@ -1301,56 +1278,6 @@ function saDescPressure() {
     }
 }
 
-// function updateselectSystem(selectedsystemf) {
-//     let sys = saTiles.system;
-//     let dp = saTiles.arrDesignPressure;
-//     let key = sys;
-//     sys.forEach((key, index) => {
-//         keyValueSystemFPairsValues.value[key] = dp[index];
-//     });
-//     key.forEach((key, index) => {
-//         keyValueSystemFPairsKeys.value[key] = sys[index];
-//     });
-//     console.log(sys, key, dp);
-//     if (keyValueSystemFPairsValues.value.F1 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//         // udlDescPressure(); changed 7/24/2025
-//     }
-//     if (keyValueSystemFPairsValues.value.F2 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F3 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F4 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F5 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F6 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F7 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F8 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F9 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F10 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F11 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     if (keyValueSystemFPairsValues.value.F12 !== null && selectedsystemf.value !== null) {
-//         saDescPressure();
-//     }
-//     tileSAStaging();
-// }
 const keyValueSystemEPairsValues = ref({});
 const keyValueSystemEPairsKeys = ref({});
 function updateselectSystemE(selectedsystemE) {
@@ -1480,16 +1407,130 @@ async function udlDescPressure() {
         etileStore.$state.tilesysEinput[0].systemDataE.systemSelected = selectedsystemE.value;
     }
 
-    etilStore();
+    postUDLStaging();
 }
 
-async function etilStore() {
+async function postUDLStaging() {
     console.log(udlTile);
     udlTile.Anchor_Base = etileStore.$state.tilesysEinput[0].systemDataE.Anchor_Base;
     udlTile.systemSelected = selectedsystemE.value;
     // udlTile.prescriptiveSelection = tileData2.prescriptiveSelection;
 
     await postUDL(udlTile);
+}
+const modalSAIsActive = ref(false);
+const modalUDLIsActive = ref(false);
+const modalIsActive = ref(false);
+// const showModalUDL = ref(false);
+const modalKeyUDL = ref(0);
+const currentTileUDl = ref(null);
+
+// const showModal = ref(false);
+const modalKey = ref(0);
+// const showModalSA = ref(false);
+const modalKeySA = ref(0);
+const currentTile = ref(null);
+
+const currentTileSA = ref(null);
+
+function toPlain(v) {
+    const x = unref(v);
+    console.log(x);
+    return isProxy(x) ? toRaw(x) : x;
+}
+function toPlainUDL(v) {
+    const x = unref(v);
+    console.log(x);
+
+    return isProxy(x) ? toRaw(x) : x;
+}
+
+function toPlainSA(v) {
+    const x = unref(v);
+    console.log(x);
+
+    return isProxy(x) ? toRaw(x) : x;
+}
+
+async function onOpenTileClick() {
+    // If you have a selected row/object, pass it here:
+    // const selected = mySelectedRow.value
+    // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
+
+    // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
+    await grabInput();
+
+    // 2) build a plain POJO snapshot with just the fields you need
+    const src = toPlain(/* selected or shingles or wherever your data lives */ tilenoas);
+    console.log(src);
+    currentTile.value = {
+        manufacturer: src?.manufacturer ?? '',
+        material: src?.material ?? '',
+        description: src?.description ?? ''
+    };
+
+    // 3) bump key BEFORE show if you want a hard reset
+    modalKey.value++;
+
+    // 4) wait a tick so Vue sees the new props, THEN show the modal
+    await nextTick();
+    modalKey.value++;
+
+    modalIsActive.value = true;
+}
+async function onOpenTileUDLClick() {
+    // If you have a selected row/object, pass it here:
+    // const selected = mySelectedRow.value
+    // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
+
+    // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
+    await sysEcheckInput();
+
+    // 2) build a plain POJO snapshot with just the fields you need
+    const src = toPlainUDL(/* selected or shingles or wherever your data lives */ udlTile);
+    currentTileUDl.value = {
+        udlmanufacturer: src?.manufacturer ?? '',
+        udlmaterial: src?.material ?? '',
+        udldescription: src?.description ?? '',
+        udlsystem: src?.system ?? ''
+    };
+
+    // 3) bump key BEFORE show if you want a hard reset
+    modalKeyUDL.value++;
+
+    // 4) wait a tick so Vue sees the new props, THEN show the modal
+    await nextTick();
+    modalKeyUDL.value++; // optional: bump key to force remount
+    modalUDLIsActive.value = true;
+}
+
+async function onOpenTileSAClick() {
+    // If you have a selected row/object, pass it here:
+    // const selected = mySelectedRow.value
+    // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
+
+    // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
+    await checkInputSA();
+
+    // 2) build a plain POJO snapshot with just the fields you need
+    const src = toPlainSA(/* selected or shingles or wherever your data lives */ saTiles);
+    currentTileSA.value = {
+        samanufacturer: src?.manufacturer ?? '',
+        samaterial: src?.material ?? '',
+        sasystem: src?.system ?? ''
+    };
+
+    // 3) bump key BEFORE show if you want a hard reset
+    modalKeySA.value++;
+
+    // 4) wait a tick so Vue sees the new props, THEN show the modal
+    await nextTick();
+    modalKeySA.value++;
+
+    modalSAIsActive.value = true;
 }
 
 const tileSAStaging = async () => {
@@ -1519,15 +1560,14 @@ watch(
     () => {}
 );
 </script>
-<template>
-    <div id="tile" class="flex flex-col w-full gap-2 shadow-lg shadow-cyan-800" style="margin-left: 10px">
-        <label for="title" style="color: #122620; margin-left: 650px">Tile Adhesive Roof</label>
 
-        <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
+<template>
+    <div id="tile" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-2 md:grid-cols-3 gap-3" style="margin-left: 10px; margin-top: 100px">
+        <div class="w-64 gap-2 mt-5 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
         </div>
 
-        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 space-y-2" style="margin-left: 20px">
             <label for="slope" style="color: #122620">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" :disabled="isDisabledslope" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
@@ -1549,260 +1589,201 @@ watch(
             <label style="color: #122620" for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
         </div>
+        <div class="grid grid-cols-3 gap-2">
+            <div class="min-w-[580px] flex flex-col" style="margin-left: 50px">
+                <label style="color: red">Select Exposure</label>
+                <div class="flex items-center space-x-2 mt-5">
+                    <div class="field-radiobutton space-x-4 space-y-4 gap-6">
+                        <RadioButton inputId="option3" name="option" value="c" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 5px" />
+                        <label style="color: #122620; margin-left: 10px" for="option3">C</label>
+                    </div>
+                    <div class="field-radiobutton space-x-4 space-y-4 gap-6">
+                        <!-- variant="filled" -->
+                        <RadioButton inputId="option4" name="option" value="d" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 20px" />
 
-        <div class="w-56 flex flex-col gap-2" style="margin-left: 50px">
-            <label style="color: red">Select Exposure</label>
-            <div class="flex items-center space-x-2">
-                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
-                    <!-- variant="filled"  -->
-                    <RadioButton inputId="option3" name="option" value="c" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 5px" />
-                    <label style="color: #122620; margin-left: 10px" for="option3">C</label>
+                        <label style="color: #122620; margin-left: 20px" for="option4">D</label>
+                    </div>
                 </div>
-                <div class="field-radiobutton space-x-4 space-y-4 gap-6">
-                    <!-- variant="filled" -->
-                    <RadioButton inputId="option4" name="option" value="d" v-model="selectedExposures" @change="selectedExposure" style="margin-left: 20px" />
-
-                    <label style="color: #122620; margin-left: 20px" for="option4">D</label>
+                <div v-show="isPaddyCategoryValid" class="min-w-[580px] flex flex-col mt-5">
+                    <label style="color: red">Select a Paddy Category</label>
+                    <div class="flex items-center mt-10">
+                        <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
+                            <RadioButton inputId="option1" name="options" value="single" variant="filled" v-model="selectedOption" @update="selectPaddy" />
+                            <label style="color: #122620" for="option1">Single</label>
+                        </div>
+                        <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
+                            <RadioButton inputId="option2" style="margin-left: 5px" name="options" value="double" variant="filled" v-model="selectedOption" @update="selectPaddy" />
+                            <label style="color: #122620" for="option2">Double</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <Divider />
-
-        <div class="md:w-1/2 flex flex-col w-72 mb-4 mt-6 gap-3 space-y-2" style="margin-left: 20px">
-            <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
-            <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="pickUnderlayment" />
-        </div>
-        <!-- <Button label="Reset" severity="danger" @click="clearSelected" size="small"></Button> -->
-        <DripEdAdTile />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
-            <systemENumber @keydown.tab.exact.stop="sysEcheckInput" />
+            <systemENumber />
+            <Buttons label="Submit" severity="contrast" @click="onOpenTileUDLClick" style="margin-left: 15px" />
         </div>
-        <div v-show="isSAValid" class="columns-2 flex flex-row w-64" style="margin-left: 2px">
-            <systemFNumber @keydown.tab.exact.stop="checkInputSA" />
-            <!-- <div class="w-128 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 100px">
-                <label style="color: #122620" for="material">S/A Expiration Date</label>
-                <InputText v-model="saTiles.expiration_date" />
-            </div> -->
+        <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
+            <systemFNumber />
+            <Buttons label="Submit" severity="contrast" @click="onOpenTileSAClick" style="margin-left: 15px" />
         </div>
 
-        <div v-show="isPaddyCategoryValid" class="w-56 flex flex-col gap-2" style="margin-left: 50px">
-            <label style="color: red">Select a Paddy Category</label>
-            <div class="flex items-center">
-                <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <RadioButton inputId="option1" name="options" value="single" variant="filled" v-model="selectedOption" @update="selectPaddy" />
-                    <label style="color: #122620" for="option1">Single</label>
-                </div>
-                <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <RadioButton inputId="option2" style="margin-left: 5px" name="options" value="double" variant="filled" v-model="selectedOption" @update="selectPaddy" />
-                    <label style="color: #122620" for="option2">Double</label>
-                </div>
-            </div>
-        </div>
-        <Divider />
         <div v-show="isPaddyCategoryValid" class="w-96" style="margin-left: 3px">
-            <tileNoaNumber ref="childQueryRef" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" @keydown.tab.exact.stop="grabInput" @change="grabInput" />
+            <tileNoaNumber ref="childQueryRef" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" />
+            <Buttons label="Submit" severity="contrast" @click="onOpenTileClick" style="margin-left: 15px" />
         </div>
     </div>
-
+    <div class="md:w-1/2 flex flex-col w-72 mb-4 mt-6 gap-3 space-y-2" style="margin-left: 20px">
+        <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
+        <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="pickUnderlayment" />
+    </div>
+    <DripEdAdTile />
     <Divider />
     <Divider />
 
-    <div class="md:w-full gap-4 mt-10 shadow-lg shadow-cyan-800" style="margin-left: 1px">
-        <div v-show="isTileData" class="w-full flex flex-row space-x-10 space-y-1" style="margin-left: 20px">
-            <div class="min-w-[450px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+    <ModalWindow :key="modalKey" :initialData="currentTile" @closePopup="(modalIsActive = false), sendDataMongo()" v-if="modalIsActive">
+        <div v-show="isTileData" class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
+            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
 
-            <div v-show="isMultiTileValid" class="min-w-[550px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div v-show="isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Type</label>
 
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @click="checkInput" @change="updateTile" />
             </div>
 
-            <div v-show="!isMultiTileValid" class="min-w-[770px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="description">Tile Description</label>
-                <InputText id="description" v-model="tilenoas.description" />
-            </div>
-            <div v-show="isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <div v-show="isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @change="updateMF" />
             </div>
-            <div v-show="!isMultiTileValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+            <Divider />
+            <div v-show="!isMultiTileValid" class="w-2/3 flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="material">Tile Material</label>
                 <Select v-model="selectedsysNoa" :options="tilenoas.material" placeholder="make a selection" @click="checkMaterial" @change="updateMF" />
             </div>
-        </div>
-        <!-- !isMultiTileValid -->
-        <div v-show="isTileData" class="w-64 flex flex-col mt-8 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
-            <label style="color: #122620" for="material">NOA Expiration Date</label>
-            <InputText v-model="tilenoas.expiration_date" />
-        </div>
-        <div class="columns-3 flex flex-row space-x-20 space-y-12" style="margin-left: 2px; margin-top: 5px">
-            <div v-show="isUDLNOAValid" class="flex flex-row space-x-20">
-                <div class="w-96 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
-                    <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
-                    <InputText id="manufacturer" v-model="udlTile.manufacturer" />
-                </div>
-                <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" for="material">(UDL) Material</label>
-                    <InputText id="material" v-model="udlTile.material" />
-                </div>
-                <div class="w-56 flex flex-col gap-1">
-                    <label style="color: red">Select System E *</label>
-                    <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
-                </div>
-                <div class="flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" for="designPressure">Design psf:</label>
-                    <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
-                </div>
+
+            <div v-show="!isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="description">Tile Description</label>
+                <InputText id="description" v-model="tilenoas.description" />
             </div>
         </div>
-        <div class="w-full flex flex-row space-x-36 space-y-8" style="margin-left: 2px">
-            <div v-show="isUDLNOAValid" class="break-after-column flex flex-row space-x-12 space-y-4" style="margin-left: 20px">
-                <div class="min-w-[680px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" class="mt-3" for="anchor">Anchor Base Sheet</label>
+    </ModalWindow>
+
+    <ModalWindow :key="modalKeyUDL" :initialData="currentTileUDl" @closePopup="(modalUDLIsActive = false), postUDLStaging()" v-if="modalUDLIsActive">
+        <div v-show="isUDLNOAValid" class="grid grid-cols-2 gap-2" style="margin-left: 10px">
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="manufacturer">(UDL) NOA Applicant</label>
+                <InputText id="manufacturer" v-model="udlTile.manufacturer" />
+            </div>
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="material">(UDL) Material</label>
+                <InputText id="material" v-model="udlTile.material" />
+            </div>
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: red">Select System E *</label>
+                <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
+            </div>
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="designPressure">Design psf:</label>
+                <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
+            </div>
+            <div class="grid grid-cols-1 gap-2 border-gray-700 focus:border-orange-600">
+                <div class="min-w-[580px] flex flex-col">
+                    <label style="color: #122620" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
                 </div>
-                <div class="min-w-[480px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <div class="min-w-[280px] flex flex-col">
                     <label style="color: #122620" for="description">(UDL) Description</label>
                     <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" @change="updateselectSystemE" />
                 </div>
             </div>
         </div>
-
-        <div class="gap-4 mt-10 space-x-10 space-y-6">
-            <div v-show="isSAValid" class="flex flex-row gap-3 space-x-20" style="margin-left: 25px">
-                <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" for="saapplicant">S/A Applicant</label>
-                    <InputText id="saapplicant" v-model="saTiles.manufacturer" />
-                </div>
-                <div class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" for="samaterial">S/A Material Type</label>
-                    <InputText id="saaterial" v-model="saTiles.material" />
-                </div>
-
-                <div class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: red">Select System F *</label>
-                    <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
-                </div>
-
-                <div class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <label style="color: #122620" for="designpressure">Design psf:</label>
-                    <InputText id="designpressure" v-model="saTiles.designpressure" />
-                </div>
+    </ModalWindow>
+    <ModalWindow :key="modalKeySA" :initialData="currentTileSA" @closePopup="(modalSAIsActive = false), tileSAStaging()" v-if="modalSAIsActive">
+        <div v-show="isSAValid" class="grid grid-cols-1 gap-4" style="margin-left: 10px">
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="saapplicant">S/A Applicant</label>
+                <InputText id="saapplicant" v-model="saTiles.manufacturer" />
             </div>
-            <div v-show="isSAValid" class="max-w-screen-lg flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 25px">
-                <label style="color: #122620" for="sadescription">S/A Description</label>
-                <InputText id="capsheetdescription" v-model="saTiles.description" />
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="samaterial">S/A Material Type</label>
+                <InputText id="saaterial" v-model="saTiles.material" />
+            </div>
+
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: red">Select System F *</label>
+                <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
+            </div>
+
+            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <label style="color: #122620" for="designpressure">Design psf:</label>
+                <InputText id="designpressure" v-model="saTiles.designpressure" />
+            </div>
+            <div v-show="isSAValid" class="grid grid-cols-2 gap-2">
+                <div class="w-1/2 flex flex-col border-gray-700 focus:border-orange-600">
+                    <label style="color: #122620" for="sadescription">S/A Description</label>
+                    <InputText id="capsheetdescription" v-model="saTiles.description" />
+                </div>
             </div>
         </div>
+    </ModalWindow>
+    <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
+        <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
+            <table width="100%" align="left">
+                <tbody>
+                    <tr>
+                        <td valign="middle">
+                            <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
+                                <tbody>
+                                    <tr>
+                                        <td style="color: #122620">Zone 1:</td>
+                                        <td style="color: #122620"><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
+                                        <i class="pi pi-check" v-show="ismrValidMR1" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                        >&nbsp;
+                                        <i class="pi pi-times" v-show="ismrInvalid1" style="color: red; font-size: 1.5rem" @change="checkMR1"></i
+                                        >&nbsp;
+                                    </tr>
 
-        <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
-            <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
-                <table width="100%" align="left">
-                    <tbody>
-                        <tr>
-                            <td valign="middle">
-                                <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
-                                    <tbody>
-                                        <tr>
-                                            <td style="color: #122620">Zone 1:</td>
-                                            <td style="color: #122620"><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zoneone.mf1" readonly="false" size="6" name="mf1" value="" @change="updateMF" /> &nbsp;</td>
-                                            <i class="pi pi-check" v-show="ismrValidMR1" style="color: green; font-size: 1.5rem" @change="updateMF"></i
-                                            >&nbsp;
-                                            <i class="pi pi-times" v-show="ismrInvalid1" style="color: red; font-size: 1.5rem" @change="checkMR1"></i
-                                            >&nbsp;
-                                        </tr>
+                                    <tr>
+                                        <td style="color: #122620">Zone 2:</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
+                                        <i class="pi pi-check" v-show="ismrValidMR2" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                        >&nbsp;
+                                        <i class="pi pi-times" v-show="ismrInvalid2" style="color: red; font-size: 1.5rem" @change="checkMR2"></i
+                                        >&nbsp;
+                                    </tr>
 
-                                        <tr>
-                                            <td style="color: #122620">Zone 2:</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonetwo.mf2" readonly="false" size="6" name="mf2" value="" @change="updateMF" />&nbsp;</td>
-                                            <i class="pi pi-check" v-show="ismrValidMR2" style="color: green; font-size: 1.5rem" @change="updateMF"></i
-                                            >&nbsp;
-                                            <i class="pi pi-times" v-show="ismrInvalid2" style="color: red; font-size: 1.5rem" @change="checkMR2"></i
-                                            >&nbsp;
-                                        </tr>
-
-                                        <tr>
-                                            <td style="color: #122620">Zone 3:</td>
-                                            <td style="color: #122620"><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
-                                            <td style="color: #122620"><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
-                                            <td style="color: #122620"><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
-                                            <i class="pi pi-check" v-show="ismrValidMR3" style="color: green; font-size: 1.5rem" @change="updateMF"></i
-                                            >&nbsp;
-                                            <i class="pi pi-times" v-show="ismrInvalid3" style="color: red; font-size: 1.5rem" @change="checkMR3"></i
-                                            >&nbsp;
-                                        </tr>
-                                        <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                                    <tr>
+                                        <td style="color: #122620">Zone 3:</td>
+                                        <td style="color: #122620"><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                        <td style="color: #122620"><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
+                                        <td style="color: #122620"><input v-model="zonethree.mf3" readonly="false" size="6" name="mf3" value="" @change="updateMF" />&nbsp;</td>
+                                        <i class="pi pi-check" v-show="ismrValidMR3" style="color: green; font-size: 1.5rem" @change="updateMF"></i
+                                        >&nbsp;
+                                        <i class="pi pi-times" v-show="ismrInvalid3" style="color: red; font-size: 1.5rem" @change="checkMR3"></i
+                                        >&nbsp;
+                                    </tr>
+                                    <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
-<style scoped>
-.autocomplete {
-    position: relative;
-    width: 200px;
-}
-
-.suggestions {
-    color: black;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    border: 1px solid #ccc;
-    position: absolute;
-    width: 100%;
-    max-height: 150px;
-    overflow-y: auto;
-    background: white;
-    z-index: 1000;
-}
-
-.suggestions li {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.suggestions li:hover {
-    background-color: #f0f0f0;
-}
-@keyframes slidedown-icon {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(20px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
-}
-
-.slidedown-icon {
-    animation: slidedown-icon;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-}
-.p-inputtext {
-    color: black;
-}
-</style>
+<style scoped></style>

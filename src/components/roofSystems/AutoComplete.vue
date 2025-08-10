@@ -119,7 +119,7 @@ const onInput = () => {
 const hideSuggestions = () => {
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 200);
+    }, 300);
 };
 </script>
 

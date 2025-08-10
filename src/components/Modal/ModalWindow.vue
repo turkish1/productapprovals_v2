@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-wrapper">
+    <div class="modal-wrapper shadow-xl">
         <slot></slot>
 
         <ModalClose @click="$emit('closePopup')" />
@@ -14,16 +14,16 @@ const visible = ref(false);
 <style lang="scss">
 .modal-wrapper {
     position: fixed;
-    left: 150px;
-    top: 150px;
+    left: 250px;
+    top: 100px;
     z-index: 500;
-    width: 60vw;
+    width: 40vw;
     height: 50vh;
     background: #eae7e2;
     // background: rgba(20, 7, 207, 0.2);
 
     display: grid;
-    place-items: center;
+    place-items: left;
     color: var(--black-color);
 
     .inner {
@@ -33,8 +33,8 @@ const visible = ref(false);
         display: center;
         flex-direction: column;
         position: relative;
-        max-width: 400px;
-        width: 90%;
+        max-width: 200px;
+        width: 100%;
 
         h3 {
             font-size: 16px;
@@ -43,24 +43,16 @@ const visible = ref(false);
             margin-bottom: 20px;
         }
 
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            cursor: pointer;
-            background-color: var(--white-color);
-        }
-
         .form {
             display: flex;
             flex-direction: column;
-            max-width: 100%;
+            max-width: 80%;
 
             label {
                 font-size: 12px;
                 font-weight: 500;
                 line-height: 16px;
-                letter-spacing: 0em;
+                letter-spacing: 1em;
                 text-align: left;
             }
 
@@ -70,7 +62,7 @@ const visible = ref(false);
                 font-size: 12px;
                 font-weight: 400;
                 line-height: 16px;
-                letter-spacing: 0em;
+                letter-spacing: 0.25em;
                 text-align: left;
                 border: 1px solid #c2c2c2;
                 border-radius: 4px;
@@ -83,8 +75,8 @@ const visible = ref(false);
             }
 
             .btn {
-                width: fit-content;
-                padding-inline: 23px;
+                width: 5px;
+                padding-inline: 10px;
             }
         }
     }
