@@ -643,3 +643,9 @@ lines.forEach(line => {
 
 // }
 // shingleSAStaging();
+
+
+<!--
+  <note>Loading: {{ isLoading.toString() }}</note>
+  <note>Finished: {{ isFinished.toString() }}</note>
+  <note>Aborted: {{ isAborted.toString() }}</note> -->
