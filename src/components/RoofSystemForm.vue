@@ -16,10 +16,9 @@ import Select from 'primevue/select';
 const permitStore = usePermitappStore();
 const roofCheck = useroofCheckStore();
 const roofStore = useRoofListStore();
-// const { createSystemPost } = useInsertData();
 // Roof system options
 const roofTypesDefault = [{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }];
-const roofTypesMiamiBeach = roofTypesDefault.slice(1); // all except the empty one
+const roofTypesMiamiBeach = roofTypesDefault.slice(2); // all except the empty one
 
 // Form state
 const area = ref('');
@@ -31,19 +30,19 @@ const isMiamiBeachValid = ref(false);
 const mbExpectedValue = 2;
 
 // Permit logic
-// permitStore.$state.permitapp[0]?.formdt?.muni
-const MB = ref(permitStore.$state.permitapp[0]?.formdt?.muni);
+const MB = ref(permitStore.$state.permitapp[0]?.formdt?.checkIfBeach);
 const convertMB = useToNumber(MB.value);
 
 tryOnMounted(() => {
-    console.log(permitStore.$state);
-    isMiamiBeachValid.value = convertMB.value === mbExpectedValue;
+    console.log(permitStore.$state, MB.value, convertMB.value);
+    isMiamiBeachValid.value = MB.value === mbExpectedValue;
+    console.log(isMiamiBeachValid.value, roofTypesMiamiBeach);
 });
 
 // General page logic
 const { addRoof, roofArea } = useGeneral();
 const dataGeneral = reactive({ roofCheck: '' });
-const showGeneralPage = ref('');
+// const showGeneralPage = ref('');
 
 // Add selected roof item to store and clear inputs
 async function addItemAndClear() {

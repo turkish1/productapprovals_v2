@@ -17,6 +17,7 @@ import { usePermitappStore } from '@/stores/permitapp';
 const loading = ref(false);
 const responseMessage = ref('');
 const isDialog = ref(false);
+const isLoading = ref(false);
 // const content = ref();
 
 // add this ref; your logic will set this to true/false
@@ -25,7 +26,7 @@ const isHistoric = ref(false);
 const router = useRouter();
 const procStore = useprocStore();
 // composables & stores
-const { procData, procReceive } = useCreateProcessNumber();
+const { procReceive } = useCreateProcessNumber();
 // getUser, addUser these two go after accountUsers but are not being used - marked for removal
 const { accountUsers } = useGlobalState();
 const store = usePermitappStore();
@@ -56,7 +57,8 @@ const formData = reactive({
     emails: '',
     muniProc: '',
     historic: Boolean,
-    date: new Date()
+    date: new Date(),
+    checkIfBeach: 0
 });
 
 // misc refs
@@ -111,8 +113,6 @@ async function setProperties() {
     licenseStat.value = googleAccount.value?.secondary_status || '';
     console.log(licenseStat.value);
     dba.value = googleAccount.value?.dba || '';
-    // address.value = procStore.$state.processinput[0]?.procData?.address;
-    // console.log(address.value);
     phone.value = accountUsers.value[0]?.bphone;
 }
 invoke(async () => {
@@ -127,46 +127,14 @@ const selectedApplication = computed(() => (cccValid.value ? type.value[0] : '')
 const { resNum } = useLast();
 
 // other refs for api
-const checkMB = ref('');
 const checkV = ref('');
 const datas = ref(null);
 const data = ref('');
 const error = ref(null);
 const convMB = ref('');
 // ---- helpers --------------------------------------------------------------
-// async function fetchData(url) {
-//     loading.value = true;
-//     error.value = null;
 
-//     try {
-//         const response = await fetch(url);
-//         const json = await response.json();
-//         const body = json.body;
-
-//         datas.value = json;
-//         const minInfo = body.MinimumPropertyInfos?.[0];
-
-//         if (!minInfo) throw new Error('Missing property info');
-
-//         data.value = minInfo;
-
-//         // Destructure once and assign
-//         const { dba: contractor, secondary_status: license, Municipality: muni, Strap: folio } = minInfo;
-//         Object.assign(formData, { contractor, license, muni, folio });
-
-//         // Directly assign values
-//         isHistoric.value = body.isHistoric;
-//         checkV.value = folio;
-//         convMB.value = folio.substring(1, 2);
-//         checkMB.value = useToNumber(convMB);
-//     } catch (err) {
-//         error.value = err.message;
-//         alert('No data found or enter correct address!');
-//     } finally {
-//         loading.value = false;
-//     }
-// }
-const miamibeach = ref(null);
+const checkMB = ref(null);
 async function fetchData(url) {
     loading.value = true;
     error.value = null;
@@ -177,20 +145,16 @@ async function fetchData(url) {
 
         data.value = datas.value.body.MinimumPropertyInfos[0];
 
-        console.log(data.value);
         formData.contractor = data.value.dba;
         formData.license = data.value.secondary_status;
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
+        console.log(datas.value);
+        // It seems that I need to add the address in all caps for the historic function work properly.
+        // Further investigation pending 08112025
         isHistoric.value = await datas.value.body.isHistoric;
+        console.log(isHistoric.value);
         checkV.value = formData.folio;
-        convMB.value = checkV.value.substring(1, 2);
-        checkMB.value = useToNumber(convMB);
-        console.log(convMB.value);
-        if (convMB.value === '2') {
-            miamibeach.value = convMB.value;
-            console.log(miamibeach.value);
-        }
     } catch (err) {
         alert('No data found or enter correct address!');
         error.value = err.message;
@@ -199,10 +163,20 @@ async function fetchData(url) {
     }
 }
 
+async function convertFolio(folios) {
+    const miamibeach = folios.value;
+
+    console.log(folios.value, miamibeach);
+
+    if (folios.value === 2) {
+        formData.checkIfBeach = folios.value;
+        console.log('Updated mbId:', formData.checkIfBeach);
+    }
+}
+
 async function load() {
     try {
         loading.value = true;
-        setTimeout(() => (loading.value = false), 1000);
 
         muniProcessdata.value = muniProcess.value;
         const addr = inputAddress.value;
@@ -225,6 +199,11 @@ async function load() {
 
         formData.muniProc = muniProcess.value;
         formData.address = inputAddress.value;
+
+        convMB.value = checkV.value.substring(1, 2);
+        checkMB.value = useToNumber(convMB);
+        convertFolio(checkMB.value);
+
         store.addSystem(formData);
         // commented because of the onSubmit
         await procReceive(formData);
@@ -233,55 +212,17 @@ async function load() {
         alert(err);
     }
 }
-// async function load() {
-//     loading.value = true;
-
-//     try {
-//         const addr = inputAddress.value;
-//         muniProcessdata.value = muniProcess.value;
-
-//         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
-
-//         // Await only critical blocking call
-//         await fetchData(url);
-
-//         // Efficiently assign values from refs
-//         const newNumber = String(resNum.value).substring(3, 19);
-//         const nextNum = useToNumber(newNumber).value + 1;
-//         formData.processNumber = prefix.value.concat(String(nextNum));
-
-//         Object.assign(formData, {
-//             license: licenseStat.value,
-//             contractor: dba.value,
-//             emails: email.value,
-//             muniProc: muniProcess.value,
-//             phNumber: phone.value,
-//             processNumber: newProcessNumber,
-//             address: addr
-//         });
-
-//         store.addSystem(formData);
-
-//         // Run these two in parallel if they are not dependent
-//         await Promise.all([procReceive(formData), callPermitdata(formData)]);
-//     } catch (err) {
-//         alert(err);
-//     } finally {
-//         loading.value = false;
-//     }
-// }
 
 async function onSubmit() {
     // await procReceive(formData);
 
-    store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, inputAddress.value);
+    store.addSystem(formData, mbId);
 }
 
 function addItemAndClear() {
-    console.log(inputAddress.value);
     // post(formData);
 
-    store.addSystem(formData, selectedApplication.value, checkMB.value, muniProcess.value, muniProcessdata.value, inputAddress.value);
+    store.addSystem(formData, mbId);
 
     console.log(store);
 }
@@ -319,10 +260,6 @@ function addItemAndClear() {
                         <!-- blinking label -->
 
                         <Button type="button" icon="pi pi-search" :loading="loading" @click="load" />
-                        <!--
-  <note>Loading: {{ isLoading.toString() }}</note>
-  <note>Finished: {{ isFinished.toString() }}</note>
-  <note>Aborted: {{ isAborted.toString() }}</note> -->
                     </div>
                 </div>
                 <div class="field">
