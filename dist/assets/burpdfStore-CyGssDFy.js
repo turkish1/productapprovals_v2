@@ -1,0 +1,1 @@
+import{E as p}from"./index-BctPUBY6.js";const d=p("burpdfinput",{state:()=>({burpdfinput:[],id:0}),actions:{addpdfData(t){this.burpdfinput.push({burpdfData:t,completed:!1})}},getters:{burpdfData:t=>t.burpdfData}});export{d as u};
