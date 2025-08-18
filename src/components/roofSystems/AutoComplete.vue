@@ -9,7 +9,7 @@
         </div>
         <!-- Suggestions list -->
         <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
+            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @pointerdown.prevent="selectSuggestion(suggestion)">
                 {{ suggestion }}
             </li>
         </ul>
@@ -57,7 +57,7 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = noaStore.$state.noashingle;
-    console.log(suggestions.value);
+    // console.log(suggestions.value);
 });
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
@@ -90,7 +90,7 @@ function grabInput() {
 function checkInput() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
-            console.log(item.shingleData, index);
+            // console.log(item.shingleData, index);
             shingles.manufacturer = item.shingleData.applicant;
             shingles.material = item.shingleData.material;
             shingles.description = item.shingleData.description;
@@ -119,7 +119,7 @@ const onInput = () => {
 const hideSuggestions = () => {
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 300);
+    }, 100);
 };
 </script>
 

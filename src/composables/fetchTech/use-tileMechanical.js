@@ -40,50 +40,92 @@ export default function useMech() {
         savedfastener: '',
         tiletype: ''
     });
-    function takeMechInput(inputMech) {
+    async function takeMechInput(inputMech) {
         input.value = inputMech;
-
+        console.log(input.value);
         num.value = Number(input.value);
-        fetchData();
+        await fetchData();
     }
+    // Assumes `execute` is from useAxios/useFetch w/ manual execute()
+    // and `num` is a ref, `mechStore.addNoa` accepts a plain object.
+    const toArray = (resp) => {
+        let data = resp?.data ?? resp;
+
+        // If whole payload is a string, parse it
+        if (typeof data === 'string') {
+            try {
+                data = JSON.parse(data);
+            } catch {
+                return [];
+            }
+        }
+
+        // Lambda-style: { statusCode, body }
+        if (data && typeof data === 'object' && 'body' in data) {
+            let b = data.body;
+            if (typeof b === 'string') {
+                try {
+                    b = JSON.parse(b);
+                } catch {
+                    return [];
+                }
+            }
+            console.log(Array.isArray(b) ? b : b ? [b] : []);
+            return Array.isArray(b) ? b : b ? [b] : [];
+        }
+
+        return Array.isArray(data) ? data : data ? [data] : [];
+    };
     const fetchData = async () => {
         try {
-            const response = await execute({ params: { NOA: num.value } }).then((response) => {
-                noaNum.value = data.value;
+            // 1) Call the endpoint
+            const resp = await execute({ params: { NOA: num.value } });
+            const payload = toArray(resp);
 
-                return noaNum.value;
-            });
-            console.log(response.length);
-            if (response.length === 0) {
-                // alert('No data found!');
-            } else {
-                console.log(noaNum.value);
-                mechanicalData.noa = noaNum.value[0].NOA;
-                mechanicalData.manufacturer = noaNum.value[0].applicant;
-                mechanicalData.material = noaNum.value[0].material;
-                mechanicalData.selection = noaNum.value[0].AdhesiveMaterials;
-                mechanicalData.description = noaNum.value[0].description;
-                mechanicalData.select_tile = noaNum.value[0].Select_Tile;
-                mechanicalData.tile_map = noaNum.value[0].Tile_Map;
-                mechanicalData.table2_map = noaNum.value[0].Table2_Map;
+            console.log(JSON.parse(payload[0].value.body));
+            // 2) Normalize payload:
 
-                mechanicalData.Table2 = noaNum.value[0].Table2;
-                mechanicalData.Table3 = noaNum.value[0].Table3;
-                mechanicalData.resistance = noaNum.value[0].Resistance;
-                mechanicalData.expiration_date = noaNum.value[0].expiration_date;
-                mechanicalData.two_ten_d_RS_Nails = noaNum.value[0].two_ten_d_RS_Nails;
-                mechanicalData.one_number_eight_screw = noaNum.value[0].one_number_eight_screw;
-                mechanicalData.two_number_eight_screw = noaNum.value[0].two_number_eight_screw;
-                mechanicalData.mechanicaltilefastener = noaNum.value[0].mechanicaltilefastener;
-                mechanicalData.fastenerValues = noaNum.value[0].fastenerValues;
-
-                mechStore.addNoa(mechanicalData);
+            // const payload = Array.isArray(raw) ? raw : typeof raw?.body === 'string' ? JSON.parse(raw.body) : Array.isArray(raw?.body) ? raw.body : [];
+            // console.log(payload);
+            if (!payload.length) {
+                // No results — bail early
+                return [];
             }
-        } catch (error) {
-            console.log('Error, fectching data', error);
-            // alert('An error occurred while fetching data.');
+
+            // 3) Take the first record and map exactly what you need
+            const r = JSON.parse(payload[0].value.body);
+            console.log(r[0]);
+            const mechanical = {
+                noa: r[0].NOA,
+                manufacturer: typeof r[0].applicant === 'string' ? r[0].applicant.trim() : r[0].applicant,
+                material: r[0].material,
+                selection: r[0].AdhesiveMaterials ?? r[0].AdhesiveMaterial, // handle both keys
+                description: r[0].description,
+                select_tile: r[0].Select_Tile,
+                tile_map: r[0].Tile_Map,
+                table2_map: r[0].Table2_Map,
+
+                Table2: r[0].Table2,
+                Table3: r[0].Table3,
+                resistance: r[0].Resistance,
+                expiration_date: r[0].expiration_date,
+
+                two_ten_d_RS_Nails: r[0].two_ten_d_RS_Nails,
+                one_number_eight_screw: r[0].one_number_eight_screw,
+                two_number_eight_screw: r[0].two_number_eight_screw,
+                mechanicaltilefastener: r[0].mechanicaltilefastener,
+                fastenerValues: r[0].fastenerValues
+            };
+            console.log(mechanical);
+            // 4) Persist once
+            mechStore.addNoa(mechanical);
+
+            // 5) Return something useful to the caller
+            return mechanical;
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            return null;
         }
-        return results;
     };
 
     return { input, fetchData, takeMechInput, noaNum, error, results, ...toRefs(mechanicalData), mechStore };

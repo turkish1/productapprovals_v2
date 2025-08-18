@@ -1,7 +1,7 @@
 <template>
     <div class="modal-wrapper shadow-xl">
+        <!-- <slot :local="local" /> -->
         <slot></slot>
-
         <ModalClose @click="$emit('closePopup')" />
     </div>
 </template>
@@ -9,6 +9,25 @@
 <script setup>
 import ModalClose from '@/components/Modal/ModalClose.vue';
 import { ref } from 'vue';
+
+// const props = defineProps({ initialData: { type: Object, default: () => ({}) } });
+// const emit = defineEmits(['update:modelValue', 'closePopup']);
+
+// const local = ref({});
+
+// function resetLocal() {
+//     // every mount/re-mount gets a fresh copy
+//     local.value = structuredClone(toRaw(props.initialData || {}));
+// }
+
+// onMounted(resetLocal);
+// watch(() => props.initialData, resetLocal, { deep: true });
+
+// // when the modal is confirmed/closed, emit the local back (if you want)
+// function closeAndEmit() {
+//     emit('update:modelValue', local.value);
+//     emit('closePopup');
+// }
 const visible = ref(false);
 </script>
 <style lang="scss">
@@ -17,7 +36,7 @@ const visible = ref(false);
     left: 250px;
     top: 100px;
     z-index: 500;
-    width: 40vw;
+    width: 50vw;
     height: 50vh;
     background: #eae7e2;
     // background: rgba(20, 7, 207, 0.2);
@@ -33,7 +52,7 @@ const visible = ref(false);
         display: center;
         flex-direction: column;
         position: relative;
-        max-width: 200px;
+        max-width: 250px;
         width: 100%;
 
         h3 {

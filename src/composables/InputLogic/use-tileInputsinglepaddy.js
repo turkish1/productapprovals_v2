@@ -35,10 +35,32 @@ export default function useTileInputSingle() {
         area: '',
         slope: '',
         Decktype: '',
+        mfMap: [],
         perimeter: ''
     });
 
-    function getTilenoas(number) {
+    const parseJSON = (s, fallback = null) => {
+        try {
+            return JSON.parse(s);
+        } catch {
+            return fallback;
+        }
+    };
+    const toArray = (resp) => {
+        let data = resp?.data ?? resp;
+        if (typeof data === 'string') data = parseJSON(data, []);
+        if (Array.isArray(data)) return data;
+
+        if (data && typeof data === 'object') {
+            if ('body' in data) {
+                const b = typeof data.body === 'string' ? parseJSON(data.body, []) : data.body;
+                return Array.isArray(b) ? b : b ? [b] : [];
+            }
+            return [data];
+        }
+        return [];
+    };
+    async function getTilenoa(number) {
         input.value = number;
         num.value = Number(input.value);
         console.log('Fetching NOA for number:', num.value);
@@ -51,60 +73,68 @@ export default function useTileInputSingle() {
 
     const fetchData = async () => {
         try {
-            const response = await execute({ params: { NOA: num.value } }).then((res) => {
-                noaNum.value = data.value[0];
+            // 1) Call the endpoint and normalize the top-level payload
+            const resp = await execute({ params: { NOA: num.value } });
+            const hits = toArray(resp); // e.g. [{ value: { body: "[...]" } }, ...]
+            console.log(resp, hits);
+            if (!hits.length) return [];
 
-                return noaNum.value;
-            });
-            // .get()
-            // .json();
-            console.log(data.value);
-            // && data.value[0].Table2.content) || data.value[0].Table3.content
-            if (data.value.length > 0 && data.value[0].Table2.content === 'multiple') {
-                console.log('Entered due to Table2 and Table3 content multiple');
-                // using the data.value[0] to make use of the async await.
-                const multiTile = await data.value[0];
-                console.log(multiTile);
-                tileDatas.noa = await multiTile.NOA;
-                tileDatas.content = await multiTile.Table2.content;
-                tileDatas.applicant = await multiTile.applicant;
-                tileDatas.material = await multiTile.AdhesiveMaterial;
-                tileDatas.selection = await multiTile.AdhesiveMaterials;
-                tileDatas.description = await multiTile.description;
-                tileDatas.select_tile = await multiTile.Select_Tile;
-                tileDatas.Table3_obj_map = await multiTile.Tile_Map;
-                tileDatas.Table2_obj_map = await multiTile.Table2_Map;
-                tileDatas.resistance = await multiTile.Resistance;
-                tileDatas.paddy_cat = await multiTile.paddy_category;
-                tileDatas.expiration_date = await multiTile.expiration_date;
-                console.log('Tile data fetched:', tileDatas);
+            // 2) Extract the first hit's body (stringified array) and parse it
+            const rawBody = hits[0]?.value?.body ?? hits[0]?.body ?? hits[0];
+            const arr = typeof rawBody === 'string' ? parseJSON(rawBody, []) : Array.isArray(rawBody) ? rawBody : rawBody ? [rawBody] : [];
+            console.log(rawBody, arr);
+            if (!arr.length) return [];
+
+            // 3) Use the first entry
+            const entryMultiTile = arr[0];
+            console.log(entryMultiTile);
+            // 4) Map fields (handle alternate key names defensively)
+            if (entryMultiTile.Table2.content === 'multiple') {
+                console.log(entryMultiTile.Table2.content);
+                const tileDatas = {
+                    noa: entryMultiTile.NOA ?? entryMultiTile.noa,
+                    manufacturer: (entryMultiTile.Manufacturer ?? entryMultiTile.applicant)?.trim?.(),
+                    material: entryMultiTile.AdhesiveMaterial ?? '',
+                    description: entryMultiTile.description,
+                    Table2: entryMultiTile.Table2,
+                    Table3: entryMultiTile.Table3,
+                    content: entryMultiTile.content,
+                    mfMap: entryMultiTile.AdhesiveMaterials ?? '',
+                    select_tile: entryMultiTile.Select_Tile,
+                    tile_map: entryMultiTile.Tile_Map,
+                    Table2_Map: entryMultiTile.Table2_Map,
+                    resistance: entryMultiTile.Resistance,
+                    paddy_cat: entryMultiTile.paddy_category
+                };
+                console.log(tileDatas);
                 paddyStore.addtileData(tileDatas);
-            } else if (data.value.length > 0) {
-                const fetched = await data.value[0];
-                tileDatas.noa = await fetched.NOA;
-                tileDatas.applicant = await fetched.applicant;
-                tileDatas.material = await fetched.AdhesiveMaterial;
-                tileDatas.selection = await fetched.AdhesiveMaterials;
-                tileDatas.description = await fetched.description;
-                tileDatas.Table2 = await fetched.Table2;
-                tileDatas.Table3 = await fetched.Table3;
-                tileDatas.select_tile = await fetched.Select_Tile;
-                // Tile.Map is for table three conversion change this later
-                tileDatas.tile_map = await fetched.Tile_Map;
-                tileDatas.table2_map = await fetched.Table2_Map;
-                tileDatas.resistance = await fetched.Resistance;
-                tileDatas.expiration_date = await fetched.expiration_date;
-                tileDatas.paddy_cat = await fetched.paddy_category;
-
-                console.log('Tile data fetched:', tileDatas);
+            } else {
+                const entrySingleTile = arr[0];
+                console.log(entrySingleTile);
+                const tileDatas = await {
+                    noa: entrySingleTile.NOA ?? entrySingleTile.noa,
+                    manufacturer: (entrySingleTile.applicant ?? entrySingleTile.Manufacturer)?.trim?.(),
+                    material: entrySingleTile.material ?? entrySingleTile.Material,
+                    description: entrySingleTile.description,
+                    Table2: entrySingleTile.Table2,
+                    Table3: entrySingleTile.Table3,
+                    select_tile: entrySingleTile.Select_Tile,
+                    tile_map: entrySingleTile.Tile_Map,
+                    Table2_Map: entrySingleTile.Table2_Map,
+                    resistance: entrySingleTile.Resistance,
+                    paddy_cat: entrySingleTile.paddy_category,
+                    selection: entrySingleTile.AdhesiveMaterials ?? entrySingleTile.AdhesiveMaterial
+                };
+                console.log(tileDatas.noa, tileDatas.manufacturer, tileDatas.selection);
                 paddyStore.addtileData(tileDatas);
             }
-        } catch (error) {
-            console.log('Error, fectching data', error);
-            // alert('An error occurred while fetching data.');
+
+            return tileDatas;
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            return null;
         }
-        return results;
     };
 
-    return { getTilenoas, responseMessage, fetchData, noaNum, results, tileDatas, paddyStore };
+    return { getTilenoa, responseMessage, fetchData, noaNum, results, tileDatas, paddyStore };
 }

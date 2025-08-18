@@ -22,7 +22,7 @@ export default function useTileSystemE() {
         material: '',
         system: [],
         designPressure: [],
-        Anchor_Base_Sheet: [],
+        Anchor_Base_Sheet: '',
         Anchor_Base_Sheet_E1: '',
         Anchor_Base_Sheet_E2: '',
         Anchor_Base_Sheet_E3: '',
@@ -36,7 +36,11 @@ export default function useTileSystemE() {
         Anchor_Base_Sheet_E11: '',
         Anchor_Base_Sheet_E12: '',
         Anchor_Base_Sheet_E13: '',
-        TileCap_Sheet_Description: [],
+        Anchor_Base_Sheet_E14: '',
+
+        Anchor_Base_Sheet_E15: '',
+
+        TileCap_Sheet_Description: '',
         TileCap_Sheet_Description_E1: '',
         TileCap_Sheet_Description_E2: '',
         TileCap_Sheet_Description_E3: '',
@@ -50,64 +54,91 @@ export default function useTileSystemE() {
         TileCap_Sheet_Description_E11: '',
         TileCap_Sheet_Description_E12: '',
         TileCap_Sheet_Description_E13: '',
+        TileCap_Sheet_Description_E14: '',
+
+        TileCap_Sheet_Description_E15: '',
+
         arraySystem: [],
         Maps: [],
         systemCheck: [],
         expiration_date: ''
     });
+    const parseJSON = (s, fallback = null) => {
+        try {
+            return JSON.parse(s);
+        } catch {
+            return fallback;
+        }
+    };
+    const toArray = (resp) => {
+        let data = resp?.data ?? resp;
+        if (typeof data === 'string') data = parseJSON(data, []);
+        if (Array.isArray(data)) return data;
 
-    function getV(saNo) {
-        inputsystem.value = saNo;
-        console.log(inputsystem.value, saNo);
+        if (data && typeof data === 'object') {
+            if ('body' in data) {
+                const b = typeof data.body === 'string' ? parseJSON(data.body, []) : data.body;
+                return Array.isArray(b) ? b : b ? [b] : [];
+            }
+            return [data];
+        }
+        return [];
+    };
+
+    function getV(udlData) {
+        inputsystem.value = udlData;
         num.value = Number(inputsystem.value);
-        const result = execute({ params: { NOA: num.value } }).then((result) => {
-            noaNum.value = data.value;
-
-            console.log(data);
-            systemDataE.noa = noaNum.value[0].NOA;
-            systemDataE.manufacturer = noaNum.value[0].Manufacturer;
-            systemDataE.material = noaNum.value[0].Material;
-            systemDataE.Anchor_Base_Sheet_E1 = noaNum.value[0].Anchor_Base_Sheet_E1;
-            systemDataE.Anchor_Base_Sheet_E2 = noaNum.value[0].Anchor_Base_Sheet_E2;
-            systemDataE.Anchor_Base_Sheet_E3 = noaNum.value[0].Anchor_Base_Sheet_E3;
-            systemDataE.Anchor_Base_Sheet_E4 = noaNum.value[0].Anchor_Base_Sheet_E4;
-            systemDataE.Anchor_Base_Sheet_E5 = noaNum.value[0].Anchor_Base_Sheet_E5;
-            systemDataE.Anchor_Base_Sheet_E6 = noaNum.value[0].Anchor_Base_Sheet_E6;
-            systemDataE.Anchor_Base_Sheet_E7 = noaNum.value[0].Anchor_Base_Sheet_E7;
-            systemDataE.Anchor_Base_Sheet_E8 = noaNum.value[0].Anchor_Base_Sheet_E8;
-            systemDataE.Anchor_Base_Sheet_E9 = noaNum.value[0].Anchor_Base_Sheet_E9;
-            systemDataE.Anchor_Base_Sheet_E10 = noaNum.value[0].Anchor_Base_Sheet_E10;
-            systemDataE.Anchor_Base_Sheet_E11 = noaNum.value[0].Anchor_Base_Sheet_E11;
-            systemDataE.Anchor_Base_Sheet_E12 = noaNum.value[0].Anchor_Base_Sheet_E12;
-            systemDataE.Anchor_Base_Sheet_E13 = noaNum.value[0].Anchor_Base_Sheet_E13;
-
-            systemDataE.TileCap_Sheet_Description_E1 = noaNum.value[0].TileCap_Sheet_Description_E1;
-            systemDataE.TileCap_Sheet_Description_E2 = noaNum.value[0].TileCap_Sheet_Description_E2;
-            systemDataE.TileCap_Sheet_Description_E3 = noaNum.value[0].TileCap_Sheet_Description_E3;
-            systemDataE.TileCap_Sheet_Description_E4 = noaNum.value[0].TileCap_Sheet_Description_E4;
-            systemDataE.TileCap_Sheet_Description_E5 = noaNum.value[0].TileCap_Sheet_Description_E5;
-            systemDataE.TileCap_Sheet_Description_E6 = noaNum.value[0].TileCap_Sheet_Description_E6;
-            systemDataE.TileCap_Sheet_Description_E7 = noaNum.value[0].TileCap_Sheet_Description_E7;
-            systemDataE.TileCap_Sheet_Description_E8 = noaNum.value[0].TileCap_Sheet_Description_E8;
-            systemDataE.TileCap_Sheet_Description_E9 = noaNum.value[0].TileCap_Sheet_Description_E9;
-            systemDataE.TileCap_Sheet_Description_E10 = noaNum.value[0].TileCap_Sheet_Description_E10;
-            systemDataE.TileCap_Sheet_Description_E11 = noaNum.value[0].TileCap_Sheet_Description_E11;
-            systemDataE.TileCap_Sheet_Description_E12 = noaNum.value[0].TileCap_Sheet_Description_E12;
-            systemDataE.TileCap_Sheet_Description_E13 = noaNum.value[0].TileCap_Sheet_Description_E13;
-
-            systemDataE.system = noaNum.value[0].System;
-            systemDataE.designPressure = noaNum.value[0].DesignPressure;
-            systemDataE.Maps = noaNum.value[0].Maps;
-            systemDataE.expiration_date = noaNum.value[0].expiration_date;
-            systemDataE.TileCap_Sheet_Description = noaNum.value[0].TileCap_Sheet_Description;
-            store.addData(systemDataE);
-            // // area.value = '';
-            // type.value = '';
-            console.log('System added');
-            //     }
-            // });
-        });
+        fetchData();
     }
+
+    const fetchData = async () => {
+        try {
+            // 1) Call the endpoint and normalize the top-level payload
+            const resp = await execute({ params: { NOA: num.value } });
+            const hits = toArray(resp); // e.g. [{ value: { body: "[...]" } }, ...]
+            if (!hits.length) return [];
+
+            // 2) Extract the first hit's body (stringified array) and parse it
+            const rawBody = hits[0]?.value?.body ?? hits[0]?.body ?? hits[0];
+            const arr = typeof rawBody === 'string' ? parseJSON(rawBody, []) : Array.isArray(rawBody) ? rawBody : rawBody ? [rawBody] : [];
+            if (!arr.length) return [];
+
+            // 3) Use the first entry
+            const entry = arr[0];
+            console.log(entry);
+            // 4) Map fields (handle alternate key names defensively)
+            const systemDataE = {
+                noa: entry.NOA ?? entry.noa,
+                manufacturer: (entry.Manufacturer ?? entry.applicant)?.trim?.(),
+                material: entry.Material ?? entry.material,
+                designPressure: entry.DesignPressure,
+                system: entry.System,
+                maps: entry.Maps
+            };
+
+            //         // 5) Copy Description_F1..F15 if present (prefers TileCap_Sheet_* source, falls back to direct)
+            for (let i = 1; i <= 15; i++) {
+                const key = `TileCap_Sheet_Description_E${i}`;
+                const src = `Anchor_Base_Sheet_E${i}`;
+                console.log(key, src, entry[src]);
+                if (entry[src] != null && entry[src] !== '') {
+                    systemDataE[src] = entry[src];
+                    // systemDataE.AnchorBase = systemDataE[src]
+                }
+                if (entry[key] != null && entry[key] !== '') {
+                    systemDataE[key] = entry[key];
+                }
+            }
+            console.log(systemDataE);
+            // 6) Persist and return
+            store.addData(systemDataE);
+            return systemDataE;
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            return null;
+        }
+    };
+
     // 18061905
-    return { inputsystem, getV, noaNum, error, ...toRefs(systemDataE), store };
+    return { inputsystem, fetchData, getV, noaNum, error, ...toRefs(systemDataE), store };
 }

@@ -133,7 +133,7 @@ watch(setRoofInputs, validateRoofSlope, validateHeight, dims.per, type, () => {}
 watchEffect(setRoofInputs, whatChanged, validateRoofSlope, () => {});
 </script>
 <template>
-    <div class="md:w-1/2 flex flex-col gap-2 shadow-lg shadow-cyan-800" style="margin-left: 500px">
+    <div class="min-w-[680px] flex flex-col gap-2 border-2 shadow-lg shadow-cyan-800" style="margin-left: 50px">
         <label for="title" style="color: #122620; margin-left: 250px">Low Slope Roof</label>
 
         <div class="w-128 gap-2" style="margin-left: 12px">

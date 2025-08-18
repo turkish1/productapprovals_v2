@@ -1,5 +1,5 @@
 <template>
-    <div class="md:w-3/4 space-y-1">
+    <div class="full:w-3/4 space-y-1">
         <logicBur1><slot name="Low Slope"></slot></logicBur1>
 
         <div v-if="loading" class="loading-indicator">Loading more content...</div>

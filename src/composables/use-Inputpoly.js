@@ -23,41 +23,78 @@ export default function usePoly() {
         description: '',
         expiration_date: ''
     });
-    function takp(udlInput) {
+    async function takp(udlInput) {
         inp.value = udlInput;
         console.log(inp.value);
         num.value = Number(inp.value);
-        fetchData();
+        await fetchData();
     }
-    const fetchData = async () => {
-        try {
-            const response = await execute({ params: { noa: num.value } }).then((response) => {
-                noaNum.value = data.value;
-                console.log(noaNum.value);
-                return noaNum.value;
-            });
-            console.log(response);
-            if (response.length === 0) {
-                // alert('No data found!');
-            } else {
-                polyData.noa = noaNum.value[0].noa;
-                polyData.applicant = noaNum.value[0].applicant;
-                polyData.material = noaNum.value[0].material;
-                polyData.description = noaNum.value[0].description;
-                polyData.expiration_date = noaNum.value[0].expiration_date;
-                if (polyData.length === 0) {
-                    return;
-                }
-                store.addData(polyData);
 
-                console.log(polyData, 'System added');
+    // Assumes `execute` is from useAxios/useFetch w/ manual execute()
+    // and `num` is a ref, `mechStore.addNoa` accepts a plain object.
+    const toArray = (resp) => {
+        let data = resp?.data ?? resp;
+
+        // If whole payload is a string, parse it
+        if (typeof data === 'string') {
+            try {
+                data = JSON.parse(data);
+            } catch {
+                return [];
             }
-        } catch (error) {
-            console.log('Error, fectching data', error);
-            // alert('An error occurred while fetching data.');
         }
 
-        return results;
+        // Lambda-style: { statusCode, body }
+        if (data && typeof data === 'object' && 'body' in data) {
+            let b = data.body;
+            if (typeof b === 'string') {
+                try {
+                    b = JSON.parse(b);
+                } catch {
+                    return [];
+                }
+            }
+            console.log(Array.isArray(b) ? b : b ? [b] : []);
+            return Array.isArray(b) ? b : b ? [b] : [];
+        }
+
+        return Array.isArray(data) ? data : data ? [data] : [];
+    };
+    const fetchData = async () => {
+        try {
+            // 1) Call the endpoint
+            const resp = await execute({ params: { noa: num.value } });
+            console.log(resp);
+            const payload = toArray(resp);
+
+            console.log(JSON.parse(payload[0].value.body));
+            // 2) Normalize payload:
+
+            // const payload = Array.isArray(raw) ? raw : typeof raw?.body === 'string' ? JSON.parse(raw.body) : Array.isArray(raw?.body) ? raw.body : [];
+            // console.log(payload);
+            if (!payload.length) {
+                // No results — bail early
+                return [];
+            }
+
+            // 3) Take the first record and map exactly what you need
+            const r = JSON.parse(payload[0].value.body);
+            console.log(r[0]);
+            const polyData = {
+                noa: r[0].noa,
+                applicant: r[0].applicant,
+                material: r[0].material,
+                description: r[0].description,
+                expiration_date: r[0].expiration_date
+            };
+            console.log(polyData, 'System added');
+            store.addData(polyData);
+
+            return polyData;
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            return null;
+        }
     };
     // 18061905
 
