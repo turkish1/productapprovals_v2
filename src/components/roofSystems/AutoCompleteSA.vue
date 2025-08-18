@@ -155,23 +155,6 @@ function checkInputSystem() {
     for (const [fKey, desc] of Object.entries(sysFDescMap.value || {})) {
         selfadhered[`Description_${fKey}`] = desc;
     }
-    // systemdatamt.value.forEach((item, index) => {
-    //      selfadhered.samanufacturer = item.systemData.manufacturer;
-    //     selfadhered.samaterial = item.systemData.material;
-    //     selfadhered.Description_F1 = item.systemData.Description_F1;
-    //     selfadhered.Description_F2 = item.systemData.Description_F2;
-    //     selfadhered.Description_F3 = item.systemData.Description_F3;
-    //     selfadhered.Description_F4 = item.systemData.Description_F4;
-    //     selfadhered.Description_F5 = item.systemData.Description_F5;
-    //     selfadhered.Description_F6 = item.systemData.Description_F6;
-    //     selfadhered.Description_F7 = item.systemData.Description_F7;
-    //     selfadhered.Description_F8 = item.systemData.Description_F8;
-    //     selfadhered.Description_F9 = item.systemData.Description_F9;
-    //     selfadhered.Description_F10 = item.systemData.Description_F10;
-    //     selfadhered.Description_F11 = item.systemData.Description_F11;
-    //     selfadhered.arrSystem = item.systemData.arraySystem;
-    //     selfadhered.system = item.systemData.system;
-    // });
 }
 // Method to send data back to parent
 const sendDataToParent = () => {

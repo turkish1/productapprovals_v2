@@ -1,6 +1,6 @@
 <template>
     <div class="autocomplete">
-        <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 20px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
                 <InputText id="tilenoa" v-tooltip.bottom="'Press Tab after value'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" />
