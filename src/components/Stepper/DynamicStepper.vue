@@ -1,33 +1,33 @@
 <template>
     <div class="layout-main-container-stepper">
-        <div class="card-system">
-            <div class="stepper">
-                <!-- Iterate over filtered steps to build the stepper UI -->
-                <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }">
-                    <div :class="{ highlight: index === currentStepIndex }">
-                        <!--  class="step" -->
-                        <span>{{ step.label }} </span>
-                    </div>
-                    <!-- Separator line (not after the last step) -->
-                    <div v-if="index < filteredSteps.length - 1" class="line"></div>
+        <!-- <div class="card-system"> -->
+        <div class="stepper">
+            <!-- Iterate over filtered steps to build the stepper UI -->
+            <div v-for="(step, index) in filteredSteps" :key="index" class="step-wrapper" :class="{ active: index === currentStepIndex }">
+                <div :class="{ highlight: index === currentStepIndex }">
+                    <!--  class="step" -->
+                    <span>{{ step.label }} </span>
                 </div>
+                <!-- Separator line (not after the last step) -->
+                <div v-if="index < filteredSteps.length - 1" class="line"></div>
             </div>
+        </div>
 
-            <!-- Step Content -->
-            <div v-if="!isLoading" class="card-system">
-                <component :is="activeComponent" />
-            </div>
-            <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
+        <!-- Step Content -->
+        <div v-if="!isLoading" class="card-system">
+            <component :is="activeComponent" />
+        </div>
+        <VueSpinnerBall v-else color="#784EA7" size="100px" style="margin-top: 300px; margin-left: 850px" />
 
-            <div class="stepper-controls">
-                <Button label="Back" severity="contrast" raised @click="prevStep" :disabled="isFirstStep"></Button>
-                <BUtton label="Next" severity="contrast" raised @click="nextStep" :disabled="isLastStep"></BUtton>
-            </div>
+        <div class="stepper-controls">
+            <Button label="Back" severity="contrast" raised @click="prevStep" :disabled="isFirstStep"></Button>
+            <BUtton label="Next" severity="contrast" raised @click="nextStep" :disabled="isLastStep"></BUtton>
+        </div>
 
-            <!-- <note>Loading: {{ isLoading.toString() }}</note>
+        <!-- <note>Loading: {{ isLoading.toString() }}</note>
             <note>Finished: {{ isFinished.toString() }}</note>
             <note>Aborted: {{ isAborted.toString() }}</note> -->
-        </div>
+        <!-- </div> -->
     </div>
 </template>
 

@@ -27,6 +27,7 @@ function scrollTerminal() {
             }
             // Add the next line to the terminal
             visibleLines.value.push(lines[index]);
+            console.log(lines[index]);
             index++;
         } else {
             clearInterval(interval); // Stop scrolling when all lines are displayed
