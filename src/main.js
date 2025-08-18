@@ -1,21 +1,21 @@
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
+import 'swiper/css';
 import Aura from '@primevue/themes/aura';
 import { useGeolocation } from '@vueuse/core';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
-import AnimateOnScroll from 'primevue/animateonscroll';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
-import 'swiper/css';
 import { createApp } from 'vue';
 import { VueSpinnersPlugin } from 'vue3-spinners';
 import App from './App.vue';
 import router from './router';
+import AnimateOnScroll from 'primevue/animateonscroll';
 
 const app = createApp(App);
 
