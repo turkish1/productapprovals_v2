@@ -90,9 +90,6 @@ function clearSelected() {
 
 <template>
     <!-- ── Top navigation bar with brand ─────────────────────────────── -->
-    <!-- <header class="topbar">
-        <img src="/logo-mepermit.svg" alt="mEPermit logo" class="logo" />
-    </header> -->
 
     <!-- ── 2-column layout container ────────────────────────────────── -->
     <main class="layout">
