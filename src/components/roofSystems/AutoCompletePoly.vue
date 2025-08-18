@@ -11,7 +11,7 @@
         </div>
         <!-- Suggestions list -->
         <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
+            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @pointerdown.prevent="selectSuggestion(suggestion)">
                 {{ suggestion }}
             </li>
         </ul>
@@ -119,7 +119,7 @@ const onInput = () => {
 const hideSuggestions = () => {
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 200);
+    }, 100);
 };
 </script>
 

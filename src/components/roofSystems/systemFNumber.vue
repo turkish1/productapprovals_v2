@@ -1,6 +1,6 @@
 <template>
     <div class="autocomplete">
-        <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 20px">
             <FloatLabel>
                 <InputText id="sanoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputSA" />
                 <label for="ac">S/A Membrane NOA: 00000000</label>
@@ -8,7 +8,7 @@
         </div>
         <!-- Suggestions list -->
         <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
+            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown.passive="selectSuggestion(suggestion)">
                 {{ suggestion }}
             </li>
         </ul>
@@ -21,10 +21,10 @@ import { usetilesysfStore } from '@/stores/tilesysfStore';
 
 import useTileSystemF from '@/composables/InputLogic/tileSystemFInput';
 
-import { computed, defineEmits, onMounted, reactive, ref } from 'vue';
+import { computed, defineEmits, onMounted, reactive, ref, watch } from 'vue';
 
 // Define the emit event to send data to parent
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'cleared']);
 // const inputData = ref(props.manufacturer, props.material, props.description);
 const { callFunction, systemFStore } = useFNumber();
 const systemStore = usetilesysfStore();
@@ -51,7 +51,15 @@ const saTiles = reactive({
     Description_F9: '',
     Description_F10: '',
     Description_F11: '',
+    Description_F12: '',
+    Description_F13: '',
+    Description_F14: '',
+    Description_F15: '',
     arrDesignPressure: []
+});
+// 🔔 Emit "cleared" whenever the field is emptied
+watch(query, (v) => {
+    if (v == null || String(v).trim() === '') emit('cleared');
 });
 const datasystemf = ref();
 // Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
@@ -60,7 +68,7 @@ const suggestions = ref([]);
 const showSuggestions = ref(false);
 onMounted(() => {
     callFunction();
-
+    console.log(systemFStore.$state);
     suggestions.value = systemFStore.$state;
 });
 // Computed property to filter suggestions based on user input
@@ -68,22 +76,28 @@ onMounted(() => {
 const systemFNOA = ref([]);
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
-    console.log(suggestions.value);
-    // systemFNOA.value = suggestions.value.sysFInput?.[0].sysFNumber.noa.body;
-    // const stringyfied1 = JSON.stringify(systemFNOA.value).split('[').join();
-    // const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
+
+    // The suggestion is all the NOAs from the database
+    console.log(suggestions.value, query.value);
+
+    console.log(suggestions.value.sysFInput[0].sysFNumber.noa);
+    systemFNOA.value = suggestions.value.sysFInput[0].sysFNumber.noa;
+    console.log(systemFNOA.value);
+    const stringyfield1 = JSON.stringify(systemFNOA.value).split('[').join();
+    const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
     // .filter((item) => console.log(item));
-    // console.log(stringyfied2);
-    // const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
-    // console.log(newArray.value);
+    console.log(stringyfield2);
+    const newArray = computed(() => stringyfield2.split(',').map((s) => s.trim()));
+    console.log(newArray.value);
 
-    // return newArray.value.filter((item) => item.toString().includes(query.value));
+    return newArray.value.filter((item) => item.toString().includes(query.value));
 
-    return suggestions.value.sysFInput[0].sysFNumber.noa.filter((item) => item.toString().includes(query.value));
+    // return suggestions.value.sysFInput[0].sysFNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 
 function grabInputSA() {
     datasystemf.value = query.value;
+    console.log(datasystemf.value);
     if (query.value !== null) {
         takef(datasystemf.value);
     }
@@ -116,7 +130,7 @@ const onInput = () => {
 const hideSuggestions = () => {
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 200);
+    }, 100);
 };
 </script>
 

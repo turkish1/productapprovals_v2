@@ -34,69 +34,165 @@ export default function useSystemf() {
         Description_F9: '',
         Description_F10: '',
         Description_F11: '',
+        Description_F11: '',
+        Description_F12: '',
+
+        Description_F13: '',
+        Description_F14: '',
+        Description_F15: '',
+
         pdfSystemValue: '',
         arraySystem: [],
         maps: [],
         systemCheck: []
     });
     const systemCheck = ref([]);
-    function takef(saNoa) {
+    async function takef(saNoa) {
         inputsystem.value = saNoa;
         num.value = Number(inputsystem.value);
 
-        fetchData();
+        await fetchData();
     }
 
+    // Assumes `execute` is from useAxios/useFetch w/ manual execute()
+    // and `num` is a ref, `mechStore.addNoa` accepts a plain object.
+    const toArray = (resp) => {
+        let data = resp?.data ?? resp;
+
+        // If whole payload is a string, parse it
+        if (typeof data === 'string') {
+            try {
+                data = JSON.parse(data);
+            } catch {
+                return [];
+            }
+        }
+
+        // Lambda-style: { statusCode, body }
+        if (data && typeof data === 'object' && 'body' in data) {
+            let b = data.body;
+            if (typeof b === 'string') {
+                try {
+                    b = JSON.parse(b);
+                } catch {
+                    return [];
+                }
+            }
+            console.log(Array.isArray(b) ? b : b ? [b] : []);
+            return Array.isArray(b) ? b : b ? [b] : [];
+        }
+
+        return Array.isArray(data) ? data : data ? [data] : [];
+    };
+    // const fetchData = async () => {
+    //     try {
+    //         const response = await execute({ params: { NOA: num.value } }).then((response) => {
+    //             noaNum.value = data.value;
+    //             console.log(data.value);
+    //             return noaNum.value;
+    //         });
+
+    //         if (response.length === 0) {
+    //             // alert('No data found!');
+    //         } else {
+    //             systemData.noa = noaNum.value[0].NOA;
+    //             systemData.manufacturer = noaNum.value[0].Manufacturer;
+    //             systemData.material = noaNum.value[0].Material;
+
+    //             systemData.Description_F1 = noaNum.value[0].Description_F1;
+    //             systemData.Description_F2 = noaNum.value[0].Description_F2;
+    //             systemData.Description_F3 = noaNum.value[0].Description_F3;
+    //             systemData.Description_F4 = noaNum.value[0].Description_F4;
+    //             systemData.Description_F5 = noaNum.value[0].Description_F5;
+    //             systemData.Description_F6 = noaNum.value[0].Description_F6;
+    //             systemData.Description_F7 = noaNum.value[0].Description_F7;
+    //             systemData.Description_F8 = noaNum.value[0].Description_F8;
+    //             systemData.Description_F9 = noaNum.value[0].Description_F9;
+    //             systemData.Description_F10 = noaNum.value[0].Description_F10;
+    //             systemData.Description_F11 = noaNum.value[0].Description_F11;
+    //             systemData.Description = noaNum.value[0].Description
+    //             systemData.system = noaNum.value[0].System;
+    //             systemData.systemCheck = noaNum.value[0].System;
+    //             if (systemData.systemCheck.length >= 2) {
+    //                 systemData.maps = noaNum.value[0].Maps;
+
+    //                 for (const [key] of Object.entries(systemData.maps)) {
+    //                     systemData.arraySystem.push(`${key}`);
+    //                     console.log(`${key}`);
+    //                 }
+    //             } else {
+    //                 systemData.system = noaNum.value[0].System;
+    //                 systemData.Description_F1 = noaNum.value[0].Description;
+    //             }
+
+    //             store.addData(systemData);
+
+    //             console.log(systemData, 'System added');
+    //         }
+    //     } catch (error) {
+    //         console.log('Error, fectching data', error);
+    //         // alert('An error occurred while fetching data.');
+    //     }
+    //     return results;
+    // };
     const fetchData = async () => {
         try {
-            const response = await execute({ params: { NOA: num.value } }).then((response) => {
-                noaNum.value = data.value;
+            // 1) Call the endpoint and normalize the top-level payload
+            const resp = await execute({ params: { NOA: num.value } });
+            const hits = toArray(resp); // e.g. [{ value: { body: "[...]" } }, ...]
+            console.log(resp, hits);
+            if (!hits.length) return [];
 
-                return noaNum.value;
-            });
+            // 2) Extract the first hit's body (stringified array) and parse it
+            const rawBody = hits[0]?.value?.body ?? hits[0]?.body ?? hits[0];
+            const arr = typeof rawBody === 'string' ? parseJSON(rawBody, []) : Array.isArray(rawBody) ? rawBody : rawBody ? [rawBody] : [];
+            console.log(arr?.[0].value[0]);
+            if (!arr.length) return [];
 
-            if (response.length === 0) {
-                // alert('No data found!');
-            } else {
-                systemData.noa = noaNum.value[0].NOA;
-                systemData.manufacturer = noaNum.value[0].Manufacturer;
-                systemData.material = noaNum.value[0].Material;
+            // 3) Use the first entry
+            const entry = arr?.[0].value[0];
+            console.log(entry);
+            // 4) Map fields (handle alternate key names defensively)
+            const systemData = {
+                noa: entry.NOA ?? entry.noa,
+                manufacturer: (entry.Manufacturer ?? entry.applicant)?.trim?.(),
+                material: entry.Material ?? entry.material,
+                description: entry.Description,
+                system: entry.System,
+                systemCheck: entry.System
+            };
 
-                systemData.Description_F1 = noaNum.value[0].Description_F1;
-                systemData.Description_F2 = noaNum.value[0].Description_F2;
-                systemData.Description_F3 = noaNum.value[0].Description_F3;
-                systemData.Description_F4 = noaNum.value[0].Description_F4;
-                systemData.Description_F5 = noaNum.value[0].Description_F5;
-                systemData.Description_F6 = noaNum.value[0].Description_F6;
-                systemData.Description_F7 = noaNum.value[0].Description_F7;
-                systemData.Description_F8 = noaNum.value[0].Description_F8;
-                systemData.Description_F9 = noaNum.value[0].Description_F9;
-                systemData.Description_F10 = noaNum.value[0].Description_F10;
-                systemData.Description_F11 = noaNum.value[0].Description_F11;
+            // 5) Copy Description_F1..F15 if present (prefers TileCap_Sheet_* source, falls back to direct)
+            // if (systemData.systemCheck.length >= 2) {
+            //     systemData.maps = entry.Maps;
+            //     for (let i = 1; i <= 15; i++) {
+            //         const key = `Description_F${i}`;
+            // //         // const src = `TileCap_Sheet_${key}`;
+            //         // if (entry[src] != null && entry[src] !== '') {
+            //         //     systemData[key] = entry[src];
 
-                systemData.system = noaNum.value[0].System;
-                systemData.systemCheck = noaNum.value[0].System;
-                if (systemData.systemCheck.length >= 2) {
-                    systemData.maps = noaNum.value[0].Maps;
+            //         if (entry[key] != null && entry[key] !== '') {
+            //             systemData[key] = entry[key];
+            //             console.log(systemData)
+            //         }
+            //     }
+            // for (const [key] of Object.entries(systemData.maps)) {
+            //     systemData.arraySystem.push(`${key}`);
+            //     console.log(`${key}`);
+            // }
+            // } else {
+            //     systemData.system = entry.System;
+            //     systemData.Description_F1 = noaNum.value[0].Description;
+            // }
 
-                    for (const [key] of Object.entries(systemData.maps)) {
-                        systemData.arraySystem.push(`${key}`);
-                        console.log(`${key}`);
-                    }
-                } else {
-                    systemData.system = noaNum.value[0].System;
-                    systemData.Description_F1 = noaNum.value[0].Description;
-                }
-
-                store.addData(systemData);
-
-                console.log(systemData, 'System added');
-            }
-        } catch (error) {
-            console.log('Error, fectching data', error);
-            // alert('An error occurred while fetching data.');
+            console.log(systemData);
+            // 6) Persist and return
+            store.addData(systemData);
+            return systemData;
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            return null;
         }
-        return results;
     };
 
     return { inputsystem, fetchData, takef, noaNum, error, results, ...toRefs(systemData), store };

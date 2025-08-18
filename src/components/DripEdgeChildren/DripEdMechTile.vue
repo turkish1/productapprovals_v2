@@ -108,8 +108,8 @@ function getdripSize() {
     }
     dripStagedata.DripEdgeMaterial = selectDripEdge.value;
     dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-    stageDripedge();
-    // dripEdge(dripStagedata);
+    // stageDripedge();
+    dripEdge(dripStagedata);
     checkRoof();
 }
 

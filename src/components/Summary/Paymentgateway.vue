@@ -1,15 +1,15 @@
 <template>
-    <div class="card-system">
-        <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 850px" />
+    <!-- <div class="card-system"> -->
+    <!-- <VueSpinnerBall v-show="isloading" color="#784EA7" size="100px" style="margin-top: 500px; margin-left: 150px" /> -->
 
-        <div class="flex flex-col w-1/2 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 300px; margin-top: 200px">
-            <div class="payment-widget">
-                <h2 style="color: black">Credit Card Payment</h2>
+    <div class="flex flex-col w-3/4 gap-2 shadow-lg shadow-cyan-800" style="margin-left: 85px; margin-top: 200px">
+        <div class="payment-widget">
+            <h2 style="color: black">Credit Card Payment</h2>
 
-                <BuyButton @click="handleTime" />
-            </div>
+            <BuyButton @click="handleTime" />
         </div>
     </div>
+    <!-- </div> -->
 </template>
 
 <script setup>
@@ -24,7 +24,6 @@ import { sessionStore } from '@/stores/sessionStore';
 import { invoke, tryOnMounted, until, useLocalStorage, watchOnce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
-import { VueSpinnerBall } from 'vue3-spinners';
 const permitStore = usePermitappStore();
 const sessStore = sessionStore();
 const cntStore = countStore();
@@ -104,40 +103,12 @@ watchOnce(callPdfSign, () => {});
 invoke(async () => {
     await until(isSigned).toBe(true);
 });
-// const downloadFile = async () => {
-//     const arr = pdfstore.downloadinput[0]?.downloadData?.download_url;
-//     console.log(arr);
-//     if (!arr || arr.length === 0) {
-//         return;
-//     }
-//     console.log(arr);
-
-//     const dlData = pdfstore.downloadinput[0]?.downloadData?.download_url;
-//     // arr[0]?.downloadData?.download_url;
-//     if (!dlData) return;
-
-//     isdataValid.value = true;
-
-//     const fileUrl = dlData;
-//     const fileName = 'processnumber.zip';
-
-//     // Create an anchor & trigger download
-//     const link = document.createElement('a');
-//     link.href = fileUrl;
-//     link.download = fileName;
-//     link.click();
-//     link.remove();
-
-//     // Show or hide button as needed
-//     isUrldownloadValid.value = true;
-//     // OR isUrldownloadValid.value = true;
-// };
 </script>
 
 <style>
 .payment-widget {
-    max-width: 1200px;
-    margin-left: 320px;
+    max-width: 1800px;
+    margin-left: 20px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;

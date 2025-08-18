@@ -36,7 +36,7 @@ export function useTileNoas() {
         };
 
         const extra = isMultiple ? { select_tile: first.select_tile ?? '' } : { description: first.description ?? '' };
-
+        console.log(base, extra);
         replaceReactiveContents(mechTilenoa, { ...base, ...extra });
 
         // Optional:

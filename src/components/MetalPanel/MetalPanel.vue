@@ -34,9 +34,8 @@
                     <!-- <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" /> -->
                 </div>
                 <br />
-                <div class="md:w-1/2 flex flex-col w-96 mb-4 gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
-                    <label style="color: #122620" for="underlaymentType">Select Required Fire Barrier: </label>
-                    <!-- <Select v-model="selectedBarrier" :options="barrierType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" /> -->
+                <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px; margin-top: 30px">
+                    <Select v-model="selectedFireBarrier" :options="FireBarrier" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
                 </div>
                 <DripEdMetal />
 
@@ -133,48 +132,132 @@
                         </div>
                     </div>
                 </ModalWindow>
-                <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
-                    <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px">
-                        <table width="100%" align="left">
-                            <tbody>
-                                <tr>
-                                    <td valign="middle">
-                                        <table style="margin: auto; font-size: large; font-weight: bold; font-family: arial">
-                                            <tbody>
-                                                <tr>
-                                                    <!-- v-model="zoneone.mg1" -->
-                                                    <td style="color: #122620">P(1):</td>
-                                                    <td style="color: #122620"><input readonly="" size="4" name="p1" value="" /> psf &nbsp;</td>
-                                                    <td style="color: #122620"><input readonly="" size="4" name="" value="" /> ≤ NOA Design Pressure: :&nbsp;</td>
-                                                    <td style="color: #122620"><input readonly="" size="4" name="" value="" /> psf &nbsp;</td>
-                                                    <!-- <i class="pi pi-check" v-show=" " style="color: green; font-size: 1.5rem" @change="updateMF"></i
-                                            >&nbsp;
-                                            <i class="pi pi-times" v-show=" " style="color: red; font-size: 1.5rem" @change="checkMR1"></i -->
-                                                    >&nbsp;
-                                                </tr>
-                                                <tr>
-                                                    <td style="color: #122620">P(1) NOA Clip/Exposed Fastener Spacing:</td>
-                                                    <td style="color: #122620"><input readonly="" size="4" name="p1" value="" /> " o/c &nbsp;</td>
-                                                </tr>
 
-                                                <tr>
-                                                    <td style="color: #122620">P(2) = P(3): &nbsp;</td>
-                                                    <td style="color: #122620"><input readonly="" size="4" name="" value="" /> psf ≤ P(3) NOA Design Pressure:&nbsp;</td>
+                <div v-show="isSelectVisible2" class="md:w-1/2 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 300px; margin-top: 20px">
+                    <label style="color: red">Select Underlayment (S/A) *</label>
+                    <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
+                </div>
 
-                                                    <td style="color: #122620"><input readonly="" size="4" name="   " value="" /> psf &nbsp;</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="color: #122620">P(2) = P(3) NOA Clip/Exposed Fastener Spacing:</td>
-                                                    <td style="color: #122620"><input readonly="" size="4" name="p1" value="" /> " o/c &nbsp;</td>
-                                                </tr>
+                <div v-show="isSelectVisible1" class="md:w-1/2 grid gap-2 border-2 border-gray-700 focus:border-orange-600 grid-cols-1" style="margin-left: 300px; margin-top: 20px">
+                    <label style="color: red">Select Underlayment (UDL) *</label>
+                    <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
+                </div>
+                <!-- <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px"> -->
+                <div class="flex flex-row gap-4 mt-10 space-x-10 space-y-6" style="margin-left: 10px">
+                    <!-- <table class="border-collapse border border-gray-400" width="80%" align="left">
+                        <tbody>
+                            <tr>
+                                <td valign="left">
+                                    <table style="margin: left; font-size: medium; font-weight: bold; font-family: arial">
+                                        <tbody>
+                                            <tr>
+                                                 <td style="color: #122620">P(1):</td>
+                                                <td style="color: #122620">
+                                                    <input readonly="" size="4" name="p1" value="" />
+                                                    &nbsp; psf &nbsp;
+                                                </td>
+                                                <td style="color: #122620"><input readonly="" size="4" name="NOA Design Pressure:" value="" /> ≤ NOA Design Pressure:&nbsp;</td>
+                                                <td style="color: #122620"><input readonly="" size="4" name="psf" value="" /> psf</td>
+                                             </tr>
+                                            <tr>
+                                                <td style="color: #122620">P(1) NOA Clip/Exposed Fastener Spacing:</td>
+                                                <td style="color: #122620"><input readonly="" size="4" name="p1" value="" /> " o/c &nbsp;</td>
+                                            </tr>
 
-                                                <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                            <tr>
+                                                <td style="color: #122620">P(2) = P(3): &nbsp;</td>
+                                                <td style="color: #122620"><input readonly="" size="4" name="" value="" /> psf ≤ P(3) NOA Design Pressure:&nbsp;</td>
+
+                                                <td style="color: #122620"><input readonly="" size="4" name="   " value="" /> psf &nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #122620">P(2) = P(3) NOA Clip/Exposed Fastener Spacing:</td>
+                                                <td style="color: #122620"><input readonly="" size="4" name="p1" value="" /> " o/c &nbsp;</td>
+                                            </tr>
+
+                                            <Message v-if="visible" severity="error" :life="3000">Select Another Material</Message>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table> -->
+                    <!-- </div> -->
+                    <div class="mt-8 max-w-2xl">
+                        <div class="rounded-xl border border-gray-200 bg-white shadow-md">
+                            <table class="w-full table-auto">
+                                <!-- was table-fixed -->
+                                <colgroup>
+                                    <col class="w-[28%]" />
+                                    <col class="w-[20%]" />
+                                    <col class="w-[32%]" />
+                                    <!-- label column gets more room -->
+                                    <col class="w-[20%]" />
+                                </colgroup>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-gray-700 font-medium">P(1)</th>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-2">
+                                                <input readonly class="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-right" />
+                                                <span class="text-gray-600">psf</span>
+                                            </div>
+                                        </td>
+
+                                        <!-- keep this on one line -->
+                                        <td class="px-4 py-3 text-gray-600 text-sm whitespace-nowrap min-w-[14ch] md:min-w-[20ch]">≤ NOA Design Pressure</td>
+
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-2">
+                                                <input readonly class="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-right" />
+                                                <span class="text-gray-600">psf</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="px-4 py-3 text-gray-600 text-sm whitespace-nowrap min-w-[8ch] md:min-w-[18ch]">P(1) NOA Clip/Exposed Fastener Spacing:</th>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-2">
+                                                <input readonly class="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-right" />
+                                                <span class="text-gray-600">"o/c </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- do the same for the P(3) label -->
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-gray-700 font-small">P(2) = P(3)</th>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-2">
+                                                <input readonly class="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-right" />
+                                                <span class="text-gray-600">psf</span>
+                                            </div>
+                                        </td>
+
+                                        <td class="px-4 py-3 text-gray-600 text-sm whitespace-nowrap min-w-[16ch] md:min-w-[22ch]">≤ P(3) NOA Design Pressure</td>
+
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-2">
+                                                <input readonly class="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-right" />
+                                                <span class="text-gray-600">psf</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="px-4 py-3 text-gray-600 text-sm whitespace-nowrap min-w-[14ch] md:min-w-[20ch]">P(2) = P(3) NOA Clip/Exposed Fastener Spacing:</th>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-2">
+                                                <input readonly class="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-right" />
+                                                <span class="text-gray-600">"o/c </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PrimeVue message kept outside the table -->
+                        <Message v-if="visible" severity="error" :life="3000" class="mt-4"> Select Another Material </Message>
                     </div>
                 </div>
                 <div class="flex justify-center mt-6 gap-4">
@@ -189,6 +272,7 @@
 <script setup>
 import DripEdMetal from '@/components/DripEdgeChildren/DripEdMetal.vue';
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
+import usemetalSlope from '@/composables/MetalPanel/use-metalpanelSlope';
 import { reactive, ref } from 'vue';
 
 const form = reactive({
@@ -201,15 +285,21 @@ const form = reactive({
     noa: Array(8).fill(''),
     agreePanelTerms: false
 });
+const dims = reactive({ area: '', per: '', height: '', slope: '' });
+const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = usemetalSlope();
+let isSelectVisible1 = ref(false);
+let isSelectVisible2 = ref(false);
+const selectedDeck = ref(null);
+const selectedFireBarrier = ref(null);
+const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 19/32" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
+const FireBarrier = ref([
+    { name: ' - Select Fire Barrier - ' },
+    { name: 'One or more layers of GAF Versashield installed above or below the underlayment' },
+    { name: 'One layer of PolyGlass USA Polystick XFR adhered directly to wood deck' },
+    { name: '¼" min. G-P Densdeck' },
+    { name: '¼" min.  United States Gypsum SECUROCK roof boards' }
+]);
 
-const deckOptions = {
-    deck58: '5/8" Plywood',
-    deck1932: '19/32" Plywood',
-    deck34: '3/4" Plywood',
-    DECK_TYPE4: '1" x 6" T&G',
-    DECK_TYPE5: '1" x 8" T&G',
-    DECK_TYPE6: 'Existing 1/2" Plywood'
-};
 let modalSAIsActive = ref(false);
 let modalUDLIsActive = ref(false);
 let modalIsActive = ref(false);
@@ -272,6 +362,48 @@ const saMetal = reactive({
     arrDesignPressure: [],
     saIdentifier: 'sa'
 });
+
+function valueEntered() {
+    if (!slope.value) {
+        console.log('Not Mounted');
+        return;
+    }
+
+    const slopeNumber = Number(slope.value);
+
+    // Reset all state first
+    isSlopeValid.value = false;
+    isSlopeLessFour.value = false;
+    isSlopeMoreFour.value = false;
+    isSelectVisible1.value = false;
+    isSelectVisible2.value = false;
+    isDisabled.value = true;
+    isPrescriptivehigh.value = false;
+
+    // Empty input
+    if (slope.value === '') {
+        return;
+    }
+
+    // Logic
+    if (slopeNumber < 2) {
+        // Nothing to set, already invalid
+        return;
+    }
+
+    if (slopeNumber >= 2 && slopeNumber <= 4) {
+        isSlopeValid.value = true;
+        isSlopeLessFour.value = true;
+        isSelectVisible1.value = true;
+        isDisabled.value = false;
+    } else if (slopeNumber > 4 && slopeNumber <= 12) {
+        isSlopeValid.value = true;
+        isSlopeMoreFour.value = true;
+        isSelectVisible2.value = true;
+        isPrescriptivehigh.value = true;
+    }
+}
+
 function submitPage() {
     if (!form.agreePanelTerms) {
         alert('You must agree to the PANEL terms in order to proceed.');

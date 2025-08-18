@@ -1,6 +1,6 @@
 <template>
     <div class="autocompletesa">
-        <div class="w-56 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
                 <InputText id="sanoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputSA" />
@@ -9,7 +9,7 @@
         </div>
         <!-- Suggestions list -->
         <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
+            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @pointerdown.prevent="selectSuggestion(suggestion)">
                 {{ suggestion }}
             </li>
         </ul>
@@ -30,7 +30,7 @@ const props = defineProps({
 });
 
 // Define the emit event to send data to parent
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'cleared']);
 const inputData = ref(props.manufacturer, props.material, props.description);
 const { callFunction, saStore } = useInputwFetchSA();
 const systemStore = usesystemfStore();
@@ -55,6 +55,10 @@ const selfadhered = reactive({
     Description_F9: '',
     Description_F10: '',
     Description_F11: '',
+    Description_F12: '',
+    Description_F13: '',
+    Description_F14: '',
+    Description_F15: '',
     system: [],
     maps: [],
     arrSystem: []
@@ -68,7 +72,6 @@ onMounted(() => {
     callFunction();
 
     suggestions.value = saStore.$state;
-    console.log(suggestions.value);
 });
 
 const saData = ref([]);
@@ -101,25 +104,74 @@ function grabInputSA() {
     checkInputSystem();
 }
 
+const buildMap = (keys = [], values = []) => Object.fromEntries((keys || []).map((k, i) => [String(k), values?.[i]]));
+
+const pickFDescriptions = (sd = {}) => {
+    // Pull Description_F* keys into a map: { F1: 'desc1', F2: 'desc2', ... }
+    const out = {};
+    for (const key of Object.keys(sd)) {
+        // matches Description_F1 ... Description_F15
+        if (/^Description_F\d+$/.test(key)) {
+            const sysKey = key.replace('Description_', ''); // -> F1
+            const raw = sd[key];
+            out[sysKey] = Array.isArray(raw) ? (raw[0] ?? '') : (raw ?? '');
+        }
+    }
+    return out;
+};
+
+const sysFMap = ref({}); // { F1: dp, F2: dp, ... }
+const sysFDescMap = ref({}); // { F1: desc, F2: desc, ... }
+// const normalizeEvtVal = (e) => (e && typeof e === 'object' && 'value' in e ? e.value : e);
+
 function checkInputSystem() {
-    systemdatamt.value.forEach((item, index) => {
-        console.log(item.systemData.Description_F1, item.systemData.Description_F2);
-        selfadhered.samanufacturer = item.systemData.manufacturer;
-        selfadhered.samaterial = item.systemData.material;
-        selfadhered.Description_F1 = item.systemData.Description_F1;
-        selfadhered.Description_F2 = item.systemData.Description_F2;
-        selfadhered.Description_F3 = item.systemData.Description_F3;
-        selfadhered.Description_F4 = item.systemData.Description_F4;
-        selfadhered.Description_F5 = item.systemData.Description_F5;
-        selfadhered.Description_F6 = item.systemData.Description_F6;
-        selfadhered.Description_F7 = item.systemData.Description_F7;
-        selfadhered.Description_F8 = item.systemData.Description_F8;
-        selfadhered.Description_F9 = item.systemData.Description_F9;
-        selfadhered.Description_F10 = item.systemData.Description_F10;
-        selfadhered.Description_F11 = item.systemData.Description_F11;
-        selfadhered.arrSystem = item.systemData.arraySystem;
-        selfadhered.system = item.systemData.system;
+    const items = systemdatamt?.value;
+    console.log(items);
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    const entry = items.find((it) => it && it.systemData);
+    if (!entry) return;
+    const sd = entry.systemData;
+    console.log(sd);
+    // base fields
+    Object.assign(selfadhered, {
+        manufacturer: sd.manufacturer ?? '',
+        material: sd.material ?? '',
+        system: sd.system ?? [], // ['F1','F2',...]
+        arrSystem: sd.arraySystem ?? '',
+        noa: sd.noa ?? '',
+        pressure: sd.designPressure ?? sd.pressure ?? []
     });
+    console.log(selfadhered);
+    // build pressure map
+    const pressures = Array.isArray(sd.designPressure) ? sd.designPressure : Array.isArray(sd.pressure) ? sd.pressure : [];
+    sysFMap.value = buildMap(selfadhered.system, pressures);
+    console.log(sysFMap.value);
+    // build description map from Description_F* keys
+    sysFDescMap.value = pickFDescriptions(sd);
+    console.log(sysFDescMap.value);
+
+    // guard Object.entries with a fallback object
+    for (const [fKey, desc] of Object.entries(sysFDescMap.value || {})) {
+        selfadhered[`Description_${fKey}`] = desc;
+    }
+    // systemdatamt.value.forEach((item, index) => {
+    //      selfadhered.samanufacturer = item.systemData.manufacturer;
+    //     selfadhered.samaterial = item.systemData.material;
+    //     selfadhered.Description_F1 = item.systemData.Description_F1;
+    //     selfadhered.Description_F2 = item.systemData.Description_F2;
+    //     selfadhered.Description_F3 = item.systemData.Description_F3;
+    //     selfadhered.Description_F4 = item.systemData.Description_F4;
+    //     selfadhered.Description_F5 = item.systemData.Description_F5;
+    //     selfadhered.Description_F6 = item.systemData.Description_F6;
+    //     selfadhered.Description_F7 = item.systemData.Description_F7;
+    //     selfadhered.Description_F8 = item.systemData.Description_F8;
+    //     selfadhered.Description_F9 = item.systemData.Description_F9;
+    //     selfadhered.Description_F10 = item.systemData.Description_F10;
+    //     selfadhered.Description_F11 = item.systemData.Description_F11;
+    //     selfadhered.arrSystem = item.systemData.arraySystem;
+    //     selfadhered.system = item.systemData.system;
+    // });
 }
 // Method to send data back to parent
 const sendDataToParent = () => {
@@ -141,7 +193,7 @@ const onInput = () => {
 const hideSuggestions = () => {
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 200);
+    }, 100);
 };
 </script>
 

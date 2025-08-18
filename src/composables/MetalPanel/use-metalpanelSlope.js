@@ -13,15 +13,17 @@ export default function usemetalSlope(fn) {
     const slopeCondition = reactive({
         slope_less_4: [
             ' -- Select Underlayment -- ',
-            '2 Plies ASTM # 30 with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c',
-            '2 Plies Polypropylene with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c',
-            '(S/A) membrane adhered directly to a wood deck, per the NOA system F'
+            '2 plies ASTM #30 with a 19" head, lap use 1 ¼" RS Nails &amp; Tin Caps 6" o/c @ Laps &amp; 1 row 12" o/c',
+            '2 plies NOA UDL with a 19" headlap, lap use 1 ¼" RS Nails &amp; Tin Caps 6" o/c @ Laps &amp; 1 row 12" o/c',
+            '(S/A) membrane adhered directly to a wood deck, per MDC NOA system F',
+            '(S/A) membrane, adhered to a fastened base/anchor sheet per MDC NOA'
         ],
         slope_more_4: [
             '  -- Select Underlayment/Basesheet -- ',
-            '1 Ply ASTM # 30 with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c',
-            '1 Ply Polypropylene with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c',
-            '(S/A) membrane adhered directly to a wood deck, per the NOA system F'
+            '1 ply ASTM #30 with a 4" headlap lap use 1 ¼" RS Nails &amp; Tin Caps 6" o/c @ Laps &amp; 2 rows 12" o/c',
+            '1 ply NOA UDL, lap use 1 ¼" RS Nails &amp; Tin Caps 6" o/c @ Laps &amp; 2 rows 12" o/c',
+            '(S/A) membrane adhered directly to a wood deck, per MDC NOA system F',
+            '(S/A) membrane, adhered to a fastened base/anchor sheet per MDC NOA'
         ]
     });
     function validateSlope() {

@@ -1,211 +1,197 @@
+// composables/Tiletables/exposure_c.js
 import { useAxios } from '@vueuse/integrations/useAxios';
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 
 import { useExposureD } from '@/stores/exposuredStore';
 
-export default function useExposured() {
-    const slope = ref('');
-    const slopeNumber = ref();
-    const height = ref();
-    const results = ref([]);
-    const zoneDatas = ref();
+export default function useExposurec() {
+    // basic state
     const loading = ref(false);
     const error = ref(null);
-    const type = ref([]);
-    const newSlp = ref();
-    const newHgt = ref();
-    const tables = reactive({
-        table1: '',
-        table2: '',
-        table3: '',
-        zn: [],
-        zoned: {
-            lessfifteen: [],
-            fifteen: [],
-            twenty: [],
-            twentyfive: [],
-            thirty: [],
-            thirtyfive: []
-        }
-    });
+
+    // inputs
+    const slope = ref(0);
+    const height = ref(0);
+
+    // debugging/insight
+    const tableType = ref(''); // 'table1' | 'table2' | 'table3'
+    const zoneData = ref(null); // resolved slope table object
+    const zonesRowdouble = ref([]); // [z1, z2, z3]
+
+    // pinia actions
     const { addDimzoned, addDimsloped, addDimheightd } = useExposureD();
-    loading.value = true;
-    let url = 'https://56loihllfj5w27ywslgbxlhp3a0uppfh.lambda-url.us-east-1.on.aws/';
 
-    const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
+    // client
+    const url = 'https://56loihllfj5w27ywslgbxlhp3a0uppfh.lambda-url.us-east-1.on.aws/';
+    const { execute, data } = useAxios(
+        url,
+        { method: 'GET' },
+        {
+            immediate: false,
+            resetOnExecute: false // don't clear data mid-flight (prevents flicker)
+        }
+    );
 
-    let zoned = reactive({});
-    let tbd = reactive({});
-    const heightOptions = {
+    // --- helpers ------------------------------------------------------------
+    const parseJSON = (s, fallback = null) => {
+        try {
+            return JSON.parse(s);
+        } catch {
+            return fallback;
+        }
+    };
+
+    // Normalize top-level shapes coming back from the Lambda
+    const normalizeHits = (resp) => {
+        // Resp can be: { data: [...] } or { data: { value: [...] }} or a string body…
+        let d = resp?.data;
+        if (Array.isArray(d)) return d;
+        if (d?.value) {
+            // vueuse/axios sometimes wraps payload under .value
+            if (Array.isArray(d.value)) return d.value;
+            // sometimes value.body is a JSON string
+            if (typeof d.value.body === 'string') {
+                const arr = parseJSON(d.value.body, []);
+                if (Array.isArray(arr)) return arr;
+            }
+            if (Array.isArray(d.value.body)) return d.value.body;
+        }
+        if (typeof d === 'string') {
+            const arr = parseJSON(d, []);
+            return Array.isArray(arr) ? arr : [];
+        }
+        if (d?.body) {
+            if (typeof d.body === 'string') {
+                const arr = parseJSON(d.body, []);
+                return Array.isArray(arr) ? arr : [];
+            }
+            if (Array.isArray(d.body)) return d.body;
+        }
+        // As a last resort: wrap object as single hit
+        return d ? [d] : [];
+    };
+
+    const bucketBySlope = (s) => {
+        if (s < 4.5) return 1; // table1: 2–4.5
+        if (s < 6) return 2; // table2: 4.5–6
+        return 3; // table3: 6–12
+    };
+
+    const HEIGHTS = Object.freeze({
         fifteen: 15,
         twenty: 20,
         twentyfive: 25,
         thirty: 30,
         thirtyfive: 35,
         forty: 40
+    });
+
+    const pickHeightKey = (h) => {
+        if (h < HEIGHTS.fifteen) return 'lessfifteen';
+        if (h < HEIGHTS.twenty) return 'fifteen';
+        if (h < HEIGHTS.twentyfive) return 'twenty';
+        if (h < HEIGHTS.thirty) return 'twentyfive';
+        if (h < HEIGHTS.thirtyfive) return 'thirty';
+        if (h < HEIGHTS.forty) return 'thirtyfive';
+        return null;
     };
 
-    const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-    const slopeRange1 = clampNumber1(2, 4.5, 6);
-    const clampNumber2 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-    const slopeRange2 = clampNumber2(4.5, 6, 12);
+    // --- request mutex to avoid cancellation --------------------------------
+    let inflight = null;
 
-    function getDatas(fn1, fn2) {
-        slopeNumber.value = fn1;
-        height.value = fn2;
-
-        slope.value = Number(slopeNumber.value);
-        height.value = Number(height.value);
-
-        if (slope.value >= slopeRange2) {
-            // tables.table1 = zoneDatas.value.slp_two_four;
-            console.log('Six is true');
-            passData('table3');
-        }
-        if (slopeRange1 < slope.value && slope.value < slopeRange2) {
-            console.log('less than Six is true');
-            passData('table2');
-        }
-        if (slope.value < slopeRange1) {
-            console.log('less than 4.5 is true');
-            passData('table1');
-        }
-    }
-
-    function passData(val) {
-        type.value = val;
-        results.value = execute().then((result) => {
-            if (type.value === 'table3') {
-                console.log('table3 executed');
-                console.log(result);
-
-                zoneDatas.value = result.data.value[0].slp_six_twelve;
-
-                slopeSelection(slope.value, height.value, zoneDatas.value);
-                addDimsloped(slope.value);
-                addDimheightd(height.value);
+    const fetchData = async () => {
+        // if a request is already running, await it rather than starting a new one
+        if (inflight) {
+            try {
+                await inflight;
+            } catch {
+                /* swallow */
             }
-            if (type.value === 'table2') {
-                console.log('table2 executed');
-
-                zoneDatas.value = result.data.value[0].slp_four_six;
-
-                slopeSelection(slope.value, height.value, zoneDatas.value);
-                addDimsloped(slope.value);
-                addDimheightd(height.value);
-            }
-            if (type.value === 'table1') {
-                console.log('table1 executed');
-
-                zoneDatas.value = result.data.value[0].slp_two_four;
-
-                slopeSelection(slope.value, height.value, zoneDatas.value);
-                addDimsloped(slope.value);
-                addDimheightd(height.value);
-            }
-        });
-        return results.value;
-    }
-    function slopeSelection(slp, hgt, zn) {
-        newSlp.value = slp;
-        newHgt.value = hgt;
-        zoned = zn;
-        console.log(zoned);
-
-        // if (slope.value < slopeRange1) {
-        processData(zoned);
-        // }
-    }
-
-    // I need to work on the less than greater than conditions
-    function processData(z) {
-        const z1 = z;
-        const fifteen = Number(heightOptions.fifteen);
-        const twenty = Number(heightOptions.twenty);
-        const twentyfive = Number(heightOptions.twentyfive);
-        const thirty = Number(heightOptions.thirty);
-        const thirtyfive = Number(heightOptions.thirtyfive);
-        const forty = Number(heightOptions.forty);
-        if (newHgt.value < fifteen) {
-            zoned = z1.lessfifteen[0];
-
-            // lessthanfifteen(zoned);
-            Object.entries(zoned).map((obj) => {
-                console.log('Object statement was executed');
-                const key = obj[0];
-                const val = obj[1];
-
-                tables.zoned.lessfifteen.push(val);
-            });
-            tbd = tables.zoned.lessfifteen;
-            addDimzoned(tbd);
-        } else if (newHgt.value >= fifteen && newHgt.value < twenty) {
-            // fifteen <= newHgt.value ||
-            zoned = z1.fifteen[0];
-
-            // fifteenormore(zoned);
-            Object.entries(zoned).map((obj) => {
-                const key = obj[0];
-                const val = obj[1];
-
-                tables.zoned.fifteen.push(val);
-            });
-            tbd = tables.zoned.fifteen;
-
-            addDimzoned(tbd);
-        } else if (newHgt.value < twentyfive && newHgt.value >= twenty) {
-            // || newHgt.value < twentyfive
-
-            zoned = z1.twenty[0];
-            console.log('if 22 statement was executed');
-            Object.entries(zoned).map((obj) => {
-                const key = obj[0];
-                const val = obj[1];
-
-                tables.zoned.twenty.push(val);
-            });
-            tbd = tables.zoned.twenty;
-
-            addDimzoned(tbd);
-        } else if (newHgt.value < thirty && newHgt.value >= twentyfive) {
-            zoned = z1.twentyfive[0];
-
-            Object.entries(zoned).map((obj) => {
-                const key = obj[0];
-                const val = obj[1];
-
-                tables.zoned.twentyfive.push(val);
-            });
-            tbd = tables.zoned.twentyfive;
-
-            addDimzoned(tbd);
-        } else if (newHgt.value < thirtyfive && newHgt.value >= thirty) {
-            zoned = z1.thirty[0];
-
-            Object.entries(zoned).map((obj) => {
-                console.log('Object statement was executed');
-                const key = obj[0];
-                const val = obj[1];
-
-                tables.zoned.thirty.push(val);
-            });
-            tbd = tables.zoned.thirty;
-            addDimzoned(tbd);
-        } else if (newHgt.value < forty && newHgt.value >= thirtyfive) {
-            zoned = z1.thirtyfive[0];
-
-            Object.entries(zoned).map((obj) => {
-                const key = obj[0];
-                const val = obj[1];
-
-                tables.zoned.thirtyfive.push(val);
-            });
-            tbd = tables.zoned.thirtyfive;
-
-            addDimzoned(tbd);
+            return data.value;
         }
+
+        try {
+            loading.value = true;
+            error.value = null;
+
+            inflight = execute(); // start request
+            const resp = await inflight; // await the *same* promise
+            const hits = normalizeHits(resp);
+            const root =
+                // most common shape: [{...}]
+                (Array.isArray(hits) && hits.length ? hits[0] : null) ||
+                // fallback: if axios put parsed array under data.value
+                (Array.isArray(resp?.data?.value) ? resp.data.value[0] : null) ||
+                // fallback: if axios put raw array under data
+                (Array.isArray(resp?.data) ? resp.data[0] : null);
+
+            if (!root) throw new Error('No data payload from endpoint');
+
+            // choose slope table
+            const b = bucketBySlope(slope.value);
+            if (b === 3) {
+                tableType.value = 'table3';
+                zoneData.value = root.slp_six_twelve ?? null;
+            } else if (b === 2) {
+                tableType.value = 'table2';
+                zoneData.value = root.slp_four_six ?? null;
+            } else {
+                tableType.value = 'table1';
+                zoneData.value = root.slp_two_four ?? null;
+            }
+
+            if (!zoneData.value) throw new Error('Zone table missing for selected slope');
+
+            // choose height row
+            const key = pickHeightKey(height.value);
+            const bucket = key ? zoneData.value[key] : null;
+            const obj = Array.isArray(bucket) ? bucket[0] : bucket;
+
+            if (!obj || typeof obj !== 'object') {
+                throw new Error('Height bucket not supported or missing in zone table');
+            }
+
+            // enforce z1,z2,z3 ordering if present
+            const arr = ['zone1', 'zone2', 'zone3'].map((k) => Number(obj[k] ?? 0));
+            zonesRowdouble.value = arr;
+
+            // push to store
+            addDimzoned(arr);
+            return resp;
+        } catch (e) {
+            error.value = e instanceof Error ? e : new Error(String(e));
+            throw e;
+        } finally {
+            loading.value = false;
+            inflight = null;
+        }
+    };
+
+    // --- public API ----------------------------------------------------------
+    async function getDatas(slp, hgt) {
+        slope.value = Number(slp ?? 0);
+        height.value = Number(hgt ?? 0);
+        addDimsloped(slope.value);
+        addDimheightd(height.value);
+
+        tableType.value = '';
+        zoneData.value = null;
+        zonesRowdouble.value = [];
+
+        await fetchData();
+        return zonesRowdouble.value;
     }
-    loading.value = false;
-    // slopeSelection_fourtosix, slopeSelection_sixtotwelve,
-    return { type, error, newSlp, tbd, processData, newHgt, slopeSelection, loading, zoneDatas, slope, tables, results, getDatas };
+
+    return {
+        // state
+        loading,
+        error,
+        slope,
+        height,
+        tableType,
+        zoneData,
+        zonesRowdouble,
+        // api
+        getDatas
+    };
 }

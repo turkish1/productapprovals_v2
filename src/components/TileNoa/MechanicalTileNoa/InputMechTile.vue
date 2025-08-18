@@ -2,22 +2,20 @@
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
-import useExposured from '@/composables/Tiletables/exposure_d';
-import { useTileNoas } from '@/composables/businesslogic/useTileNoas';
-import { useExposureD } from '@/stores/exposuredStore';
-
-import useMechNumber from '@/composables/fetchTech/use-systemMechNumber';
-
 import usePostMechanicalToLambda from '@/composables/Postdata/usePostMechanicalLambda';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
+import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-mechHeight';
 import { useNumberValidation } from '@/composables/Validation/use-mechSlope';
+import { useTileNoas } from '@/composables/businesslogic/useTileNoas';
+import useMechNumber from '@/composables/fetchTech/use-systemMechNumber';
 import useMech from '@/composables/fetchTech/use-tileMechanical';
 import { useGlobalState } from '@/stores/exposurecStore';
+import { useExposureD } from '@/stores/exposuredStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
-import { useToNumber } from '@vueuse/core';
+import { invoke, until, useToNumber, watchOnce } from '@vueuse/core';
 
 import usemultiTile from '@/composables/businesslogic/use-multiTile';
 import { storeToRefs } from 'pinia';
@@ -147,11 +145,15 @@ let datamountedMech = ref(mechStore.tilemech.value);
 let datamechnoas = ref(mechanicalData);
 
 async function grabInput() {
-    console.log(query.value);
-    if ((datamechnoas.value = query.value)) await takeMechInput(datamechnoas.value);
+    // console.log(query.value, datamechnoas.value);
+    datamechnoas.value = query.value;
+    await takeMechInput(datamechnoas.value);
+
     // await updateTick();
     useNoaTick(datamountedMech);
+    // checkTile();
     checkInput();
+
     console.log(mechTilenoa, isThiscomplextile, isCompTileValid);
 }
 
@@ -262,7 +264,7 @@ const onInput = () => {
 const hideSuggestions = () => {
     setTimeout(() => {
         showSuggestions.value = false;
-    }, 200);
+    }, 250);
 };
 const selectedDeck = ref();
 const type = ref([{ name: ' Select Deck Type ' }, { name: ' 5/8" Plywood  ' }, { name: ' 3/4" Plywood  ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
@@ -278,40 +280,18 @@ const tileValue = reactive({
 });
 function checkTile() {
     if (exposureChoosen.value === 'd') {
-        console.log(zoned, exposureChoosen);
+        console.log(zoned, exposureChoosen, zoned.value[0]);
         getDatas(dims.slope, dims.height);
-
-        zoned.value.forEach((item) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-            mechStore.tilemech.value[0].zoneone = zoneone.zone;
-            mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
-            mechStore.tilemech.value[0].zonethree = zonethree.zone;
-            console.log(mechStore.tilemech.value[0].zoneone);
-        });
-        mechStore.tilemech.value[0].zoned;
+        zoneone.zone = zoned.value[0];
+        zonetwo.zone = zoned.value[1];
+        zonethree.zone = zoned.value[2];
     } else {
         getData(dims.slope, dims.height);
-        zones.value.forEach((item) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-            mechStore.tilemech.value[0].zoneone = zoneone.zone;
-            mechStore.tilemech.value[0].zonetwo = zonetwo.zone;
-            mechStore.tilemech.value[0].zonethree = zonethree.zone;
-        });
-    }
-    console.log(mechTilenoa);
-    // if (datamountedMech.value[0].Table2.content === 'multiple') {
-    //     console.log(datamountedMech, multiTiles.select_tile);
-    //     workoutData(datamountedMech, multiTiles.select_tile);
-    //     isMultiTileValid.value = true;
-    //     tilenoas.select_tile = multiTiles.select_tile;
 
-    //     console.log(tilenoas);
-    // }
-    // mechStaging();
+        zoneone.zone = zones.value[0];
+        zonetwo.zone = zones.value[1];
+        zonethree.zone = zones.value[2];
+    }
 }
 
 watch(zoneone, selectedExposure, zonetwo, zonethree, dimensions, dims, () => {});
@@ -328,7 +308,6 @@ function getdeckType(event) {
 }
 // multitile
 function updateTile(event) {
-    console.log(event.value);
     console.log(multiTiles.table2_map);
     console.log(multiTiles.tile_map);
     // tilenoas.description = event.value;
@@ -341,7 +320,6 @@ function updateTile(event) {
 
         if (event.value === key) {
             tilenoas.tiletype = event.value;
-            console.log(event.value, obj[1], tilenoas.tiletype);
             tileSel.values = value[0];
             console.log(tileSel.values);
             zoneone.lambda1 = tileSel.values;
@@ -407,7 +385,6 @@ function updateTile(event) {
     });
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
-    console.log(tilenoas.mechanicaltilefastener, tilenoas.fastenerValues);
     // mechStaging();
 }
 async function sysEcheckInput() {
@@ -418,8 +395,8 @@ async function sysEcheckInput() {
             udlTile.manufacturer = item.systemDataE.manufacturer;
             udlTile.material = item.systemDataE.material;
             udlTile.system = item.systemDataE.system;
-            console.log(udlTile.system);
         });
+        console.log(udlTile);
     }
 }
 
@@ -460,7 +437,7 @@ watch(
             2: { isTileValid: true, isUDLValid: false, isUDLNOAValid: false, isSAValid: true },
             3: { isTileValid: true, isUDLValid: true, isUDLNOAValid: true, isSAValid: false }
         };
-
+        console.log(states);
         const next = states[save.value] ?? states[0];
 
         const refs = { isTileValid, isUDLValid, isUDLNOAValid, isSAValid };
@@ -517,16 +494,13 @@ function checkInputSystem() {
         // Dynamically assign Description_F1 to Description_F9
         for (let i = 1; i <= 15; i++) {
             const key = `Description_F${i}`;
-            console.log(key);
             if (systemData[key]) {
                 saTiles[key] = systemData[key];
-                console.log(saTiles[key]);
             }
         }
         // Set design pressure
         saTiles.arrDesignPressure = systemData.designPressure;
         saTiles.system = systemData.system;
-        console.log(saTiles.system, saTiles.designpressure);
 
         // Check system value
         if (Array.isArray(systemData.system) && systemData.system.length > 1) {
@@ -557,7 +531,7 @@ function EcheckInputSystem() {
     console.log(datamountedsystemE.value);
     datamountedsystemE.value.forEach((item, index) => {
         udlTile.Maps = item.systemDataE.Maps;
-
+        console.log(item.systemDataE.Maps);
         Anchor_Base.Anchor_Base_Sheet_E1 = item.systemDataE.Anchor_Base_Sheet_E1;
         Anchor_Base.Anchor_Base_Sheet_E2 = item.systemDataE.Anchor_Base_Sheet_E2;
         Anchor_Base.Anchor_Base_Sheet_E3 = item.systemDataE.Anchor_Base_Sheet_E3;
@@ -676,11 +650,11 @@ function setRoofInputs() {
 async function checkInputSA() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
-            console.log(item, item.systemData.designPressure[0]);
+            console.log(item, item.systemData.designPressure);
             saTiles.manufacturer = item.systemData.manufacturer;
             saTiles.material = item.systemData.material;
             saTiles.system = item.systemData.system;
-            saTiles.description = item.systemData.description;
+            // saTiles.description = item.systemData.description;
 
             saTiles.noa = item.systemData.noa;
             // saTiles.designpressure = item.systemData.designPressure[0];
@@ -690,35 +664,7 @@ async function checkInputSA() {
 
 const isTileSelectionValid = ref(false);
 const showMaterialValid = ref(false);
-// async function checkInput() {
-//     if (datamountedMech.value.length !== null) {
-//         console.log(datamountedMech.value);
 
-//         if (datamountedMech.value[0].Table2.content === 'multiple') {
-//             isTileSelectionValid = false;
-//             isMultiTileValid = true;
-//             showMaterialValid = true;
-//             tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
-//             tilenoas.material = datamountedMech.value[0].material;
-
-//             tilenoas.description = datamountedMech.value[0].description;
-//         } else {
-//             showMaterialValid = true;
-//             isTileValid = true;
-//             isTileSelectionValid = true;
-//             isMultiTileValid = false;
-//             tilenoas.manufacturer = datamountedMech.value[0].manufacturer;
-
-//             tilenoas.noa = datamountedMech.value[0].noa;
-//             tilenoas.material = datamountedMech.value[0].material;
-
-//             tilenoas.description = datamountedMech.value[0].description;
-//         }
-//     }
-
-//     selectedExposure();
-//     checkTile();
-// }
 function checkInput() {
     const list = datamountedMech?.value ?? [];
     if (!Array.isArray(list) || list.length === 0) {
@@ -735,21 +681,29 @@ function checkInput() {
     isTileSelectionValid.value = !isMultiple;
     isTileValid.value = !isMultiple;
 
-    // data
-    const { manufacturer, material, description, noa } = first || {};
-    Object.assign(tilenoas, { manufacturer, material, description });
+    // data description,
+    const { manufacturer, material, noa } = first || {};
+    Object.assign(tilenoas, { manufacturer, material });
     if (!isMultiple && noa != null) tilenoas.noa = noa;
 
     // follow-up actions
+
     selectedExposure();
     checkTile();
+    checkMaterial();
 }
+
+watchOnce(selectedUnderlayment, () => {});
+invoke(async () => {
+    await until(isTileValid).toBe(true);
+    await onOpenExposureClick();
+});
 
 const isExposureC = ref(false);
 const exposureChoosen = ref('');
 const selectedExposures = ref('');
 
-function selectedExposure() {
+async function selectedExposure() {
     const val = selectedExposures?.value?.toLowerCase?.() ?? '';
     const isC = val === 'c';
 
@@ -781,6 +735,7 @@ async function checkMaterial() {
             zonetwo.zone = item[1];
             zonethree.zone = item[2];
         });
+        console.log(zoneone.zone);
     } else {
         console.log('D exposure');
 
@@ -790,94 +745,90 @@ async function checkMaterial() {
             zonethree.zone = item[2];
         });
     }
+
     console.log(datamountedMech.value[0].mechanicaltilefastener, selectedMechanical);
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
     tilenoas.savedfastener = selectedMechanical.value;
-
-    console.log(datamountedMech);
-    zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
-    zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
-    zonethree.lambda3 = datamountedMech.value[0].Table2.Direct_Deck;
-    const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-    const slopeRange = clampNumber1(2, Number(dims.slope), 12);
-    console.log(slopeRange);
-    if (slopeRange <= slopeOptions.three) {
-        console.log('Is Less then three');
-
-        zoneone.mg1 = datamountedMech.value[0].Table3.two;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.two;
-        zonethree.mg3 = datamountedMech.value[0].Table3.two;
-        console.log(zonethree.mg3);
-    } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-        console.log('Is Less than four but equal to or higher than three', mechanicalData.Table3.three);
-
-        zoneone.mg1 = datamountedMech.value[0].Table3.three;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.three;
-        zonethree.mg3 = datamountedMech.value[0].Table3.three;
-        console.log(zonethree.mg3);
-    } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
-        console.log('Is Less');
-        zoneone.mg1 = datamountedMech.value[0].Table3.four;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.four;
-        zonethree.mg3 = datamountedMech.value[0].Table3.four;
-    } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
-        console.log('Is Less');
-        zoneone.mg1 = datamountedMech.value[0].Table3.five;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.five;
-        zonethree.mg3 = datamountedMech.value[0].Table3.five;
-        console.log(zonethree.mg3);
-    } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-        zoneone.mg1 = datamountedMech.value[0].Table3.six;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.six;
-        zonethree.mg3 = datamountedMech.value[0].Table3.six;
-    } else if (slopeRange >= slopeOptions.seven) {
-        console.log('Is Less');
-        zoneone.mg1 = datamountedMech.value[0].Table3.seven;
-        zonetwo.mg2 = datamountedMech.value[0].Table3.seven;
-        zonethree.mg3 = datamountedMech.value[0].Table3.seven;
-        console.log(zonethree.mg3);
-    }
-
-    const result1 = computed(() => zoneone.zone * zoneone.lambda1);
-
-    const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
-
-    const result3 = computed(() => zonethree.zone * zonethree.lambda3);
-
-    zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
-    zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
-    zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+    console.log(tilenoas.savedfastener, tilenoas.mechanicaltilefastener, tilenoas.fastenerValues);
+    await pushTable();
 }
+async function pushTable() {
+    if (tilenoas.savedfastener !== null) {
+        tilenoas.description = datamountedMech.value[0]?.description;
 
+        zoneone.lambda1 = datamountedMech.value[0].Table2.Direct_Deck;
+        zonetwo.lambda2 = datamountedMech.value[0].Table2.Direct_Deck;
+        zonethree.lambda3 = datamountedMech.value[0].Table2.Direct_Deck;
+        const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+        const slopeRange = clampNumber1(2, Number(dims.slope), 12);
+        console.log(slopeRange);
+        if (slopeRange <= slopeOptions.three) {
+            console.log('Is Less then three');
+
+            zoneone.mg1 = datamountedMech.value[0].Table3.two;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.two;
+            zonethree.mg3 = datamountedMech.value[0].Table3.two;
+            console.log(zonethree.mg3);
+        } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+            console.log('Is Less than four but equal to or higher than three', mechanicalData.Table3.three);
+
+            zoneone.mg1 = datamountedMech.value[0].Table3.three;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.three;
+            zonethree.mg3 = datamountedMech.value[0].Table3.three;
+            console.log(zonethree.mg3);
+        } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
+            console.log('Is Less');
+            zoneone.mg1 = datamountedMech.value[0].Table3.four;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.four;
+            zonethree.mg3 = datamountedMech.value[0].Table3.four;
+        } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
+            console.log('Is Less');
+            zoneone.mg1 = datamountedMech.value[0].Table3.five;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.five;
+            zonethree.mg3 = datamountedMech.value[0].Table3.five;
+            console.log(zonethree.mg3);
+        } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
+            zoneone.mg1 = datamountedMech.value[0].Table3.six;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.six;
+            zonethree.mg3 = datamountedMech.value[0].Table3.six;
+        } else if (slopeRange >= slopeOptions.seven) {
+            console.log('Is Less');
+            zoneone.mg1 = datamountedMech.value[0].Table3.seven;
+            zonetwo.mg2 = datamountedMech.value[0].Table3.seven;
+            zonethree.mg3 = datamountedMech.value[0].Table3.seven;
+            console.log(zonethree.mg3);
+        }
+
+        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+
+        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+
+        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+
+        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+    }
+}
 const maps = ref([]);
 const vals = ref([]);
 const v0 = ref(null);
 const mfupdate = ref();
 const fasterner = ref('');
-
+const zoneSource = reactive({
+    zones: []
+});
 function updateMF(value) {
-    console.log(value);
-    const selectedValue = value;
+    const selectedValue = tilenoas.savedfastener;
     // event?.value ?? event;
+    console.log(value);
     const mat = tilenoas.fastenerValues;
-
-    console.log(selectedMechanical.value);
+    tilenoas.savedfastener = selectedMechanical.value;
 
     const sourceZones = exposureChoosen.value === 'c' ? zones.value : zoned.value;
-    [zoneone.zone, zonetwo.zone, zonethree.zone] = sourceZones;
-    if (exposureChoosen.value === 'c') {
-        tilenoas.savedfastener = selectedMechanical.value;
-        console.log(selectedMechanical.value, tilenoas.savedfastener);
-
-        zones.value.forEach((item, index) => {
-            zoneone.zone = item[0];
-            zonetwo.zone = item[1];
-            zonethree.zone = item[2];
-        });
-    } else {
-        console.log('D exposure:', tbd, zoned, useExposured());
-    }
+    [zoneSource.zones] = sourceZones;
+    console.log(mat);
 
     // Clear previous values before repopulating
     maps.value = [];
@@ -888,9 +839,11 @@ function updateMF(value) {
         maps.value.push(key);
         vals.value.push(value);
     }
+    console.log(maps.value, vals.value);
 
     // Find index of selected fastener
     const selectedIndex = maps.value.findIndex((k) => k === selectedValue);
+    console.log(selectedValue);
     if (selectedIndex === -1) {
         console.warn(`Fastener ${selectedValue} not found in map.`);
         return;
@@ -920,7 +873,10 @@ function validateZone(mf, mr, validRef, invalidRef, fallbackFn) {
     } else {
         fallbackFn?.();
     }
-    // mechStaging();
+    checkMR1();
+    checkMR2();
+
+    checkMR3();
 }
 
 const postMetrictable = reactive({
@@ -1009,7 +965,7 @@ function updateselectSystem(selectedsystemf) {
     }
 
     if (selectedsystemf.value !== null) {
-        for (let i = 1; i <= 12; i++) {
+        for (let i = 1; i <= 15; i++) {
             const field = `F${i}`;
             if (keyValueSystemFPairsValues.value[field] !== null) {
                 saDescPressure();
@@ -1039,14 +995,14 @@ function updateselectSystemE(selectedsystemE) {
         udlDescPressure(selectedsystemE);
     }
 }
-
+const modalExposureIsActive = ref(false);
 const modalSAIsActive = ref(false);
 const modalUDLIsActive = ref(false);
 const modalIsActive = ref(false);
-// const showModalUDL = ref(false);
+const modalKeyExp = ref(false);
 const modalKeyUDL = ref(0);
 const currentTileUDl = ref(null);
-
+const currentTileExp = ref(null);
 // const showModal = ref(false);
 const modalKey = ref(0);
 // const showModalSA = ref(false);
@@ -1054,7 +1010,34 @@ const modalKeySA = ref(0);
 const currentTile = ref(null);
 
 const currentTileSA = ref(null);
-
+watch(
+    () => modalIsActive.value,
+    (newVal) => {
+        console.log('Modal changed:', newVal);
+    },
+    { immediate: true }
+);
+watch(
+    () => modalExposureIsActive.value,
+    (newVal) => {
+        console.log('Exposure Modal changed:', newVal);
+    },
+    { immediate: true }
+);
+watch(
+    () => modalUDLIsActive.value,
+    (newVal) => {
+        console.log('UDLModal changed:', newVal);
+    },
+    { immediate: true }
+);
+watch(
+    () => modalSAIsActive.value,
+    (newVal) => {
+        console.log('SAModal changed:', newVal);
+    },
+    { immediate: true }
+);
 function toPlain(v) {
     const x = unref(v);
     console.log(x);
@@ -1067,6 +1050,11 @@ function toPlainUDL(v) {
     return isProxy(x) ? toRaw(x) : x;
 }
 
+function toPlainExposure(v) {
+    const x = unref(v);
+    console.log(x);
+    return isProxy(x) ? toRaw(x) : x;
+}
 function toPlainSA(v) {
     const x = unref(v);
     console.log(x);
@@ -1074,10 +1062,39 @@ function toPlainSA(v) {
     return isProxy(x) ? toRaw(x) : x;
 }
 
+async function onOpenExposureClick() {
+    // If you have a selected row/object, pass it here:
+    // const selected = mySelectedRow.value
+    // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
+
+    // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
+    // await selectedExposure();
+
+    // 2) build a plain POJO snapshot with just the fields you need
+    const src = toPlainExposure(/* selected or shingles or wherever your data lives */ selectedExposures);
+    console.log(src);
+    currentTileExp.value = {
+        manufacturer: src?.manufacturer ?? '',
+        material: src?.material ?? '',
+        description: src?.description ?? ''
+    };
+
+    // 3) bump key BEFORE show if you want a hard reset
+    modalKeyExp.value++;
+
+    // 4) wait a tick so Vue sees the new props, THEN show the modal
+    await nextTick();
+    modalKeyExp.value++;
+
+    modalExposureIsActive.value = true;
+}
+
 async function onOpenTileClick() {
     // If you have a selected row/object, pass it here:
     // const selected = mySelectedRow.value
     // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
 
     // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
     await grabInput();
@@ -1100,78 +1117,12 @@ async function onOpenTileClick() {
 
     modalIsActive.value = true;
 }
-// const updateTick = async () => {
-//     await nextTick(); // drop if you don't actually need DOM sync
 
-//     const list = Array.isArray(datamountedMech?.value) ? datamountedMech.value : datamountedMech;
-//     const first = list?.[0];
-//     if (!first) return;
-
-//     const isMultiple = first?.Table2?.content === 'multiple';
-
-//     // flags
-//     isMultiTileValid.value = !!isMultiple;
-//     isTileValid.value = true;
-
-//     // build new object immutably
-//     const base = {
-//         noa: first.noa,
-//         manufacturer: first.manufacturer ?? first.applicant, // fallback if needed
-//         material: first.material
-//     };
-
-//     const extra = isMultiple ? { select_tile: first.select_tile } : { description: first.description };
-
-//     const nextTileNoas = { ...(tilenoas.value || {}), ...base, ...extra };
-
-//     // replace, don't mutate
-//     tilenoas.value = nextTileNoas;
-//     console.log(tilenoas.value);
-//     // addSystemvalues(nextTileNoas);
-//     // checkMaterial();
-// };
-
-// const updateTick = async () => {
-//     await nextTick();
-
-//     const list = Array.isArray(datamountedMech?.value) ? datamountedMech.value : datamountedMech;
-//     console.log(list[0]);
-//     const first = list?.[0];
-//     console.log(first);
-//     if (!first) return;
-
-//     const isMultiple = first?.Table2?.content === 'multiple';
-
-//     // flags
-//     isMultiTileValid.value = !!isMultiple;
-//     isTileValid.value = true;
-//     // isTileData.value = true;
-
-//     // shared fields
-//     const base = {
-//         noa: first.noa,
-//         manufacturer: first.manufacturer,
-//         material: first.material
-//     };
-//     // conditional fields
-//     const extra = isMultiple
-//         ? { select_tile: first.select_tile }
-//         : {
-//               description: first.description
-//           };
-
-//     console.log(base, first, extra);
-
-//     // mutate reactive object once
-//     Object.assign(tilenoas, base, extra);
-
-//     //   addSystemvalues(tilenoas);
-//     // checkMaterial();
-// };
 async function onOpenTileUDLClick() {
     // If you have a selected row/object, pass it here:
     // const selected = mySelectedRow.value
     // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
 
     // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
     await sysEcheckInput();
@@ -1198,6 +1149,7 @@ async function onOpenTileSAClick() {
     // If you have a selected row/object, pass it here:
     // const selected = mySelectedRow.value
     // Otherwise, use whatever source `checkInput()` prepared.
+    await nextTick();
 
     // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
     await checkInputSA();
@@ -1222,7 +1174,7 @@ async function onOpenTileSAClick() {
 
 function udlDescPressure(selectedsystemE) {
     const key = selectedsystemE.value;
-
+    console.log(selectedsystemE.value);
     // Dynamically resolve property names
     const descriptionKey = `TileCap_Sheet_Description_${key}`;
     const anchorKey = `Anchor_Base_Sheet_${key}`;
@@ -1267,9 +1219,11 @@ function saDescPressure() {
 
     const descriptionKey = `Description_${selectedKey}`;
     const pressureKey = keyValueSystemFPairsValues.value?.[selectedKey];
-
+    console.log(descriptionKey, pressureKey);
     const description = saTiles?.[descriptionKey] || '';
     const designpressure = Array.isArray(pressureKey) ? pressureKey : pressureKey || '';
+    console.log(description, pressureKey);
+
     saTiles.description = description;
     saTiles.designpressure = designpressure;
     // saPressure.value;
@@ -1303,14 +1257,6 @@ const mechStaging = async () => {
     console.log(postMetrictable);
     await postMech(postMetrictable);
 };
-// const handleclick = async () => {
-// await checkMaterial();
-// updateMF();
-// if (zonethree !== null) {
-// console.log('entered if statement in runPost function');
-// await mechStaging();
-// }
-// };
 
 const mechSAStaging = async () => {
     saTiles.prescriptiveSelection = selectedUnderlayment.value.selectedBasesheet;
@@ -1321,15 +1267,11 @@ const mechSAStaging = async () => {
 watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInvalid2, ismrInvalid3, ismrInvalid1, updateselectSystem, EcheckInputSystem, updateselectSystemE, checkMaterial, underlaymentType, dims, () => {});
 </script>
 <template>
-    <div id="tile" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-4" style="margin-left: 450px">
+    <div id="tile" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-4" style="margin-left: 150px">
         <!-- <label for="title" style="color: #122620; margin-left: 650px">Mechanical Tile Roof</label> -->
 
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px; margin-top: 30px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
-        </div>
-        <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
-            <label style="color: #122620" for="area">Area of Tile</label>
-            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
 
         <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
@@ -1337,73 +1279,82 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" :disabled="isDisabledslope" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
-        <div class="w-64 mt-3 ..." style="margin-left: 20px">
-            <label for="perimeter">Roof Permeter(a) = 4h</label>
-            <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
+        <div class="w-64 gap-2 mt-3 space-y-2" style="margin-left: 20px">
+            <label style="color: #122620" for="area">Area of Tile</label>
+            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
         </div>
         <div class="w-64 mt-3 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
+        <DripEdMechTile />
 
-        <div></div>
+        <div class="w-64 mt-3 ..." style="margin-left: 20px">
+            <label for="perimeter">Roof Perimeter(a) = 4h</label>
+            <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="setRoofInputs" />
+        </div>
 
-        <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
+        <div class="min-w-[780px] flex flex-col mb-4 mt-6 gap-3 space-y-2" style="margin-left: 20px">
+            <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
+            <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
+        </div>
+        <Divider />
+        <!-- <ModalWindowExposure :key="modalKeyExp" :initialData="currentTileExp" @closePopup="modalExposureIsActive = false" v-if="modalExposureIsActive"> -->
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
+            <div v-show="isTileValid" class="w-128 mt-6 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
+                <label style="color: red">Select Exposure *</label>
+                <div class="flex items-center space-x-4">
+                    <div class="field-radiobutton space-x-4 gap-2 border-2 border-gray-700 focus:border-orange-600">
+                        <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
+                        <label for="option3">C</label>
+                    </div>
+                    <div class="field-radiobutton space-x-4 gap-2 border-2 border-gray-700 focus:border-orange-600">
+                        <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
+                        <label for="option4">D</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- </ModalWindowExposure> -->
+    </div>
+    <div></div>
+    <Divider />
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-2" style="margin-left: 75px">
+        <div v-show="isUDLNOAValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
             <systemENumber />
             <!-- @keydown.tab.exact.stop="sysEcheckInput" "(modalUDLIsActive = true), sysEcheckInput()" -->
             <Button label="Submit" severity="contrast" @click="onOpenTileUDLClick" style="margin-left: 15px" />
         </div>
-        <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
+        <!-- w-96 -->
+        <div v-show="isSAValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
             <systemFNumber />
             <!-- "(modalSAIsActive = true), checkInputSA()" -->
             <Button label="Submit" severity="contrast" @click="onOpenTileSAClick" style="margin-left: 15px" />
         </div>
+        <!-- <div  class="min-w-[280px] border-2 p-2" > -->
 
-        <div v-show="isTileValid" class="w-56 mt-6 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
-            <label style="color: red">Select Exposure</label>
-            <div class="flex items-center space-x-2">
-                <div class="field-radiobutton space-x-4 gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <RadioButton inputId="option3" name="option" value="c" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
-                    <label for="option3">C</label>
+        <div v-show="isTileValid" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" style="margin-left: 50px">
+            <div class="autocomplete">
+                <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 2px">
+                    <FloatLabel>
+                        <InputText id="tilenoa" v-tooltip.bottom="'Click on the number after value entered'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" />
+                        <label for="ac">Tile NOA: 00000000</label>
+                    </FloatLabel>
+                    <Button label="Submit" severity="contrast" @click="onOpenTileClick" style="margin-left: 15px" />
                 </div>
-                <div class="field-radiobutton space-x-4 gap-2 border-2 border-gray-700 focus:border-orange-600">
-                    <RadioButton inputId="option4" name="option" value="d" variant="filled" :invalid="selectedExposures === null" v-model="selectedExposures" @update="selectedExposure" />
-                    <label for="option4">D</label>
-                </div>
+                <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
+                    <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown.left="selectSuggestion(suggestion)">
+                        {{ suggestion }}
+                    </li>
+                </ul>
             </div>
-            <Divider />
         </div>
+        <!-- </div> -->
+    </div>
 
-        <div v-show="isTileValid" class="w-128" style="margin-left: 3px">
-            <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                <div class="autocomplete">
-                    <div class="w-128 gap-2 mt-3 space-y-2 mb-4" style="margin-left: 20px">
-                        <FloatLabel>
-                            <InputText id="tilenoa" v-tooltip.bottom="'Press Tab after value'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" />
-                            <label for="ac">Tile NOA: 00000000</label>
-                        </FloatLabel>
-                    </div>
-                    <!-- Suggestions list  @keydown.tab.exact.stop="checkInput"  @click="grabInput-->
-                    <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-                        <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @mousedown="selectSuggestion(suggestion)">
-                            {{ suggestion }}
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- onOpenTileClick (modalIsActive = true), grabInput()-->
-            <Button label="Submit" severity="contrast" @click="onOpenTileClick" style="margin-left: 15px" />
-        </div>
-    </div>
-    <div class="md:w-1/2 flex flex-col w-72 mb-4 mt-6 gap-3 space-y-2" style="margin-left: 20px">
-        <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
-        <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
-    </div>
-    <DripEdMechTile />
     <Divider />
     <Divider />
-
     <ModalWindow :key="modalKeyUDL" :initialData="currentTileUDl" @closePopup="(modalUDLIsActive = false), mechUdlStaging()" v-if="modalUDLIsActive">
         <div v-show="isUDLNOAValid" class="grid grid-cols-2 gap-2">
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
@@ -1458,13 +1409,13 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                 <InputText id="designpressure" v-model="saTiles.designpressure" />
             </div>
         </div>
-        <div v-show="isSAValid" class="w-128 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+        <div v-show="isSAValid" class="min-w-[490px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
             <label style="color: #122620" for="sadescription">S/A Description</label>
             <InputText id="capsheetdescription" v-model="saTiles.description" />
         </div>
     </ModalWindow>
     <ModalWindow :key="modalKey" :initialData="currentTile" @closePopup="(modalIsActive = false), mechStaging()" v-if="modalIsActive">
-        <div v-show="isTileValid" class="grid grid-cols-2 md:grid-cols-2 gap-4" style="margin-left: 30px">
+        <div v-show="isTileValid" class="grid grid-cols-2 md:grid-cols-2 gap-2" style="margin-left: 30px">
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
@@ -1473,16 +1424,18 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                 <label style="color: #122620" for="material">Tile Material</label>
                 <InputText id="description" v-model="tilenoas.material" />
             </div>
+            <div v-show="isTileValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+                <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                    <label style="color: red">Select Mechanical Tile Fastener *</label>
+                    <!-- @click="checkMaterial" @update:modelValue="updateMF"-->
+                    <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="checkMaterial" @update:modelValue="updateMF" />
+                </div>
+            </div>
+            <div></div>
             <!-- v-show="!isTileTypeValid" min-w-[300px] flex flex-col gap-2 border-2 -->
             <div v-show="!isMultiTileValid" class="w-3/4 border-2 p-2 gap-4 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Tile Description</label>
-                <InputText class="min-w-[300px] flex flex-col gap-2 border-2" id="description" v-model="tilenoas.description" />
-            </div>
-        </div>
-        <div v-show="isTileValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" style="margin-left: 20px">
-            <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <label style="color: red">Select Mechanical Tile Fastener *</label>
-                <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @click="checkMaterial" @update:modelValue="updateMF" />
+                <InputText class="min-w-[500px] flex flex-col gap-2 border-2" id="description" v-model="tilenoas.description" @update:modelValue="checkMaterial" />
             </div>
         </div>
 
@@ -1497,7 +1450,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             </div>
         </div>
     </ModalWindow>
-    <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 6px">
+    <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 1px">
         <!-- <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px"> -->
         <table width="100%" align="left">
             <tbody>
@@ -1507,7 +1460,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                             <tbody>
                                 <tr>
                                     <td style="color: #122620">Zone 1:</td>
-                                    <td style="color: #122620"><input v-model="zoneone.zone" readonly="" size="4" name="p1" value="" /> x λ &nbsp;</td>
+                                    <td style="color: #122620"><input v-model="zoneone.zone" readonly="" size="4" name="zone1" value="" /> x λ &nbsp;</td>
                                     <td style="color: #122620"><input v-model="zoneone.lambda1" readonly="" size="4" name="lambda1" value="" /> - Mg:&nbsp;</td>
                                     <td style="color: #122620"><input v-model="zoneone.mg1" readonly="" size="4" name="mg1" value="" /> = Mr1:&nbsp;</td>
                                     <td style="color: #122620"><input v-model="zoneone.mr1" readonly="" size="4" name="mr1" value="" /> NOA Mf:&nbsp;</td>
@@ -1520,7 +1473,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
 
                                 <tr>
                                     <td style="color: #122620">Zone 2:</td>
-                                    <td style="color: #122620"><input v-model="zonetwo.zone" readonly="" size="4" name="p2" value="" /> x λ &nbsp;</td>
+                                    <td style="color: #122620"><input v-model="zonetwo.zone" readonly="" size="4" name="zone2" value="" /> x λ &nbsp;</td>
                                     <td style="color: #122620"><input v-model="zonetwo.lambda2" readonly="" size="4" name="lambda2" value="" /> - Mg:&nbsp;</td>
                                     <td style="color: #122620"><input v-model="zonetwo.mg2" readonly="" size="4" name="mg2" value="" /> = Mr2:&nbsp;</td>
                                     <td style="color: #122620"><input v-model="zonetwo.mr2" readonly="" size="4" name="mr2" value="" /> NOA Mf:&nbsp;</td>
@@ -1533,7 +1486,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
 
                                 <tr>
                                     <td style="color: #122620">Zone 3:</td>
-                                    <td style="color: #122620"><input v-model="zonethree.zone" readonly="" size="4" name="p3" value="" /> x λ</td>
+                                    <td style="color: #122620"><input v-model="zonethree.zone" readonly="" size="4" name="zone3" value="" /> x λ</td>
                                     <td style="color: #122620"><input v-model="zonethree.lambda3" readonly="" size="4" name="lambda3" value="" /> - Mg:&nbsp;</td>
                                     <td style="color: #122620"><input v-model="zonethree.mg3" readonly="" size="4" name="mg5" value="" /> = Mr3:&nbsp;</td>
                                     <td style="color: #122620"><input v-model="zonethree.mr3" readonly="" size="4" name="mr3" value="" /> NOA Mf:&nbsp;</td>
@@ -1550,9 +1503,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                 </tr>
             </tbody>
         </table>
-        <!-- </div> -->
     </div>
-    <!-- </div> -->
 </template>
 <style scoped>
 .autocomplete {

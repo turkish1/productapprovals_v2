@@ -243,66 +243,50 @@ const isLastStep = computed(() => currentStepIndex.value === filteredSteps.value
 
 console.log(isFirstStep.value, isLastStep.value, filteredSteps.value.length);
 </script>
-
 <style scoped>
-/* .card-system { */
-/* background-image: url('/src/assets/img/Roof_Systems_Background.jpeg'); */
-/* background-size: cover;
-    background-position: center; */
-/* } */
-button {
-    appearance: auto;
-    font-size: 30px;
-    text-rendering: auto;
-    color: buttontext;
-    letter-spacing: normal;
-    word-spacing: normal;
-    line-height: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: center;
-    align-items: flex-start;
-    cursor: default;
-    box-sizing: border-box;
-    background-color: white;
-    margin: 0em;
-    padding-block: 1px;
-    padding-inline: 6px;
-    border-width: 2px;
-    border-style: outset;
-    border-color: buttonborder;
-    border-image: initial;
+.layout-main-container-stepper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
 }
-/* Stepper Layout */
+
+.card-system {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .stepper {
     display: flex;
     flex-direction: row;
-    /* width: 100%; */
-    margin-left: 100px;
+    justify-content: center;
+    width: 100%;
     margin-top: 16px;
 }
 
 .step-wrapper {
     display: flex;
-    margin-top: 75px;
+    align-items: center;
 }
+
 .highlight {
     background-color: #eae7e2;
     color: #987284;
     padding: 2px 6px;
     border-radius: 4px;
-    cursor: pointer;
-    padding: 2px 4px;
-    text-align: center;
     font-weight: bold;
-    border-radius: 100%;
     width: 90px;
     height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .step {
-    cursor: pointer;
     padding: 2px 4px;
     text-align: center;
     font-weight: bold;
@@ -311,36 +295,52 @@ button {
     height: 50px;
     border: 2px solid #eae7e2;
     background-color: #eae7e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.step.active {
+.step-wrapper.active .highlight {
     background-color: #2a6bb0;
-    color: #21c21c;
+    color: #fff;
 }
-.step-wrapper.active .step span {
-    background-color: #c1c4c3;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
+
 .line {
-    width: 400px;
+    flex-grow: 1;
     height: 4.5px;
     background-color: #6c6a68;
-    margin-top: 38px;
-    margin-left: 45px;
+    margin: 0 10px;
+    min-width: 50px;
+    max-width: 200px;
 }
 
-.step-content {
-    margin-top: 18px;
-    margin-left: 25px;
-    font-size: 14px;
+.component-wrapper {
+    min-height: 300px;
+    width: 100%;
 }
 
-/* Controls Layout */
 .stepper-controls {
     display: flex;
-    gap: 1600px;
-    margin-top: 5px;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+button {
+    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 2px solid #ccc;
+    background-color: #c4bebe;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.spinner {
+    margin: 300px auto;
 }
 </style>

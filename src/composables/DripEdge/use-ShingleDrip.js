@@ -26,7 +26,6 @@ export default function useShingleDrip() {
         typeSizeShingle.value.push(holdSizeshingle.value.size1, holdSizeshingle.value.size2, holdSizeshingle.value.size3, holdSizeshingle.value.size4);
         dripShingleStore.addShinDrip(stype);
         dripShingleStore.addShinDrip(typeSizeShingle);
-        console.log(dripShingleStore.$state.dripinputshin);
         return hold.value;
     });
     loading.value = false;

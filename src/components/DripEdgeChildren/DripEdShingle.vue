@@ -36,13 +36,11 @@ const typeSizes = ref();
 const typeSizeSh = ref();
 
 const callState = tryOnMounted(() => {
-    console.log(roofType.value);
     if (roofType.value.length === 0) {
         return '';
     }
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Asphalt Shingle') {
-            console.log(roofType.value[i].item);
             isRoofShingleValid.value = true;
             typesSh.value = stype.value;
         }
@@ -80,19 +78,15 @@ onMounted(() => {
 function checkRoof() {
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Asphalt Shingle') {
-            console.log(roofType.value[i].item);
-
             shingles();
         }
     }
 }
 function checkValue() {
     types.value = type.value;
-    console.log(types.value);
 }
 
 function getdripSize() {
-    console.log(selectDripEdge.value);
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
@@ -145,7 +139,6 @@ const isdripMaterialValid = ref(false);
 const isdripsizeValid = ref(false);
 
 const storeDripEdgeSize = async (value) => {
-    console.log(dripShinData.DripEdgeSize);
     if (isRoofShingleValid.value === true) {
         dripShinData.DripEdgeSize = selectDripEdgeSize.value;
         dripShingleStore.insertShinDripAtIndex(1, dripShinData.DripEdgeMaterial);

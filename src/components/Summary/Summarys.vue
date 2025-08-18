@@ -1,5 +1,5 @@
 <template>
-    <div id="summary">
+    <div id="summary" style="margin-left: 250px">
         <div class="card flex flex-col items-left">
             <div class="flex flex-wrap justify-left gap-12">
                 <div class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4" data-aos="fade-left" data-aos-duration="1000">
@@ -105,15 +105,11 @@ import EffectCards from '../../../node_modules/swiper/modules/effect-cards';
 import 'swiper/css/navigation';
 import Navigation from '../../../node_modules/swiper/modules/navigation';
 
-import useMech from '@/composables/InputLogic/use-tileMechanical';
+import useMech from '@/composables/fetchTech/use-tileMechanical';
 import 'swiper/css/pagination';
 import { computed, onMounted, reactive, ref } from 'vue';
 import Pagination from '../../../node_modules/swiper/modules/pagination';
-// import GeneralPage from '../jsPDF/Generalpagepdf.vue';
-// import LowSlope from '../jsPDF/LowSlopepdf.vue';
-// import Shingle from '../jsPDF/Shingle.vue';
-// import TileAdhesive from '../jsPDF/TileAdhesive.vue';
-// import TileMechanical from '../jsPDF/TileMechanical.vue';
+
 const { accountUsers } = useGlobalState();
 const secCountStore = countStore();
 
@@ -144,7 +140,7 @@ const mechtileNoaInfo = ref(mechStore.tilemech.value[0]);
 
 const burInfo = ref(burpdfStore.$state.burpdfinput[0]?.burpdfData);
 const isPaddySingle = ref(false);
-const burInfoData = ref(burInfo.value?.burpdfData || '');
+// const burInfoData = ref(burInfo.value?.burpdfData || '');
 const singlePaddyData = ref(tileNoaInfo.value?.singlepaddyData || '');
 const doublePaddyData = ref(tileNoaInfo.value?.doublepaddyData || '');
 const shingleInfo = ref(shingleStore.$state.inputshingle[0]);
@@ -217,8 +213,8 @@ function makeItems(defs, pickerFn) {
 }
 
 const burDefs = [
-    ['burMaterial', 'Material: '],
-    ['burSystem', 'System: '],
+    ['burmaterial', 'Material: '],
+    ['bursystem', 'System: '],
     ['p1', 'P1: '],
     ['p3', 'P3: ']
 ];
@@ -226,7 +222,7 @@ const burDefs = [
 // field‑label definitions
 const tileDefs = [
     ['noa', 'Noa: '],
-    ['applicant', 'Applicant: '],
+    ['applicant', 'applicant: '],
     ['description', 'Description: '],
     ['expiration_date', 'Expiration Date: ']
 ];
