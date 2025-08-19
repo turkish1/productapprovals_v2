@@ -14,7 +14,7 @@ const lines = ['Initializing system...', 'Loading modules...', 'Connecting to se
 const visibleLines = ref([]);
 
 // Number of lines to display at once in the terminal
-const maxVisibleLines = 15;
+const maxVisibleLines = 20;
 
 function scrollTerminal() {
     let index = 0;
