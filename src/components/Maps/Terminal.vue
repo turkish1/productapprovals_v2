@@ -59,15 +59,6 @@ function scrollTerminal() {
 onMounted(() => {
     scrollTerminal();
 });
-onMounted(() => {
-    // if (accountUsers._value[0].DBA === '') {
-    //     console.log(accountUsers._value[0]);
-    //     return null;
-    // } else {
-    //     dba.value = accountUsers._value[0].dba;
-    //     console.log(accountUsers._value[0]);
-    // }
-});
 </script>
 
 <template>

@@ -862,6 +862,7 @@ function updateMF(value) {
     validateZone(zonetwo.mf2, zonetwo.mr2, ismrValidMR2, ismrInvalid2, checkMR2);
     validateZone(zonethree.mf3, zonethree.mr3, ismrValidMR3, ismrInvalid3, checkMR3);
 }
+
 // Validation function
 function validateZone(mf, mr, validRef, invalidRef, fallbackFn) {
     const mfVal = useToNumber(mf).value;
@@ -873,10 +874,10 @@ function validateZone(mf, mr, validRef, invalidRef, fallbackFn) {
     } else {
         fallbackFn?.();
     }
-    checkMR1();
-    checkMR2();
+    // checkMR1();
+    // checkMR2();
 
-    checkMR3();
+    // checkMR3();
 }
 
 const postMetrictable = reactive({
@@ -909,22 +910,6 @@ function checkMR1() {
         ismrValidMR1 = false;
     }
 }
-// function checkMR1() {
-//     const mfc1 = useToNumber(zoneone.mf1).value;
-//     const mr1 = useToNumber(zoneone.mr1).value;
-
-//     console.log('MF1:', mfc1, 'MR1:', mr1);
-
-//     if (mr1 > mfc1) {
-//         console.log('MR1 is greater than MF1 — Invalid');
-//         ismrInvalid1.value = true;
-//         ismrValidMR1.value = false;
-//     } else {
-//         console.log('MR1 is not greater than MF1 — Valid');
-//         ismrInvalid1.value = false;
-//         ismrValidMR1.value = true;
-//     }
-// }
 
 function checkMR2() {
     const mfcheck2 = zonetwo.mf2;
@@ -1323,18 +1308,16 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
     <div class="grid grid-cols-2 md:grid-cols-3 gap-2" style="margin-left: 75px">
         <div v-show="isUDLNOAValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
             <systemENumber />
-            <!-- @keydown.tab.exact.stop="sysEcheckInput" "(modalUDLIsActive = true), sysEcheckInput()" -->
             <Button label="Submit" severity="contrast" @click="onOpenTileUDLClick" style="margin-left: 15px" />
         </div>
         <!-- w-96 -->
         <div v-show="isSAValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
             <systemFNumber />
-            <!-- "(modalSAIsActive = true), checkInputSA()" -->
+
             <Button label="Submit" severity="contrast" @click="onOpenTileSAClick" style="margin-left: 15px" />
         </div>
-        <!-- <div  class="min-w-[280px] border-2 p-2" > -->
 
-        <div v-show="isTileValid" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" style="margin-left: 50px">
+        <div v-show="isTileValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" style="margin-left: 50px">
             <div class="autocomplete">
                 <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 2px">
                     <FloatLabel>
@@ -1367,11 +1350,11 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             </div>
 
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
-                <label style="color: red">Select System E *</label>
+                <label style="color: red">Select System E * </label>
                 <Select v-model="selectedsystemE" :options="udlTile.system" placeholder="" @click="EcheckInputSystem" @change="updateselectSystemE" />
             </div>
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="designPressure">Design psf:</label>
+                <label style="color: #122620" for="designPressure">Design psf: </label>
                 <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
             </div>
             <div v-show="isUDLNOAValid" class="grid grid-cols-1 gap-2 border-gray-700 focus:border-orange-600" style="margin-left: 2px">
@@ -1399,13 +1382,13 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             </div>
 
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
-                <label style="color: red">Select System F *</label>
+                <label style="color: red">Select System F * </label>
                 <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                 <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
             </div>
 
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
-                <label style="color: #122620" for="designpressure">Design psf:</label>
+                <label style="color: #122620" for="designpressure">Design psf: </label>
                 <InputText id="designpressure" v-model="saTiles.designpressure" />
             </div>
         </div>
@@ -1427,7 +1410,6 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             <div v-show="isTileValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: red">Select Mechanical Tile Fastener *</label>
-                    <!-- @click="checkMaterial" @update:modelValue="updateMF"-->
                     <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="checkMaterial" @update:modelValue="updateMF" />
                 </div>
             </div>

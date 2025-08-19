@@ -33,10 +33,10 @@ const visible = ref(false);
 <style lang="scss">
 .modal-wrapper {
     position: fixed;
-    left: 250px;
+    left: 150px;
     top: 100px;
     z-index: 500;
-    width: 50vw;
+    width: 55vw;
     height: 50vh;
     background: #eae7e2;
     // background: rgba(20, 7, 207, 0.2);

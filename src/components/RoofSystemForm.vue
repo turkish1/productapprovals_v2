@@ -1,334 +1,275 @@
 <script setup>
+import { useToNumber } from '@vueuse/core';
+import { computed, onMounted, reactive, ref } from 'vue';
+
+// Stores & composables
 import useGeneral from '@/composables/GeneralPage/use-Generalpage.js';
-// import useInsertData from '@/composables/Postdata/useInsertSystems';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useroofCheckStore } from '@/stores/roofCheckStore';
 import { useRoofListStore } from '@/stores/roofList';
-import { tryOnMounted, useToNumber } from '@vueuse/core';
-import { reactive, ref } from 'vue';
-import RoofSystemList from './RoofSystemList.vue';
-// PrimeVue Components
+
+// Local components (existing files)
+import RoofList from './RoofSystemList.vue';
+
+// PrimeVue
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
+import Divider from 'primevue/divider';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 
-// Store references
+// ───────────────────────────────── state ─────────────────────────────────
 const permitStore = usePermitappStore();
 const roofCheck = useroofCheckStore();
 const roofStore = useRoofListStore();
-// Roof system options
-const roofTypesDefault = [{ name: ' ' }, { name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }];
-const roofTypesMiamiBeach = roofTypesDefault.slice(2); // all except the empty one
 
-// Form state
 const area = ref('');
-const selectedItem = ref(null);
-const checked = ref(false);
+const selectedSystem = ref(null);
+const roofKind = ref('newroof'); // 'newroof' | 'reroof'
+const dragOver = ref(false);
+const files = ref([]);
 
-// Validation flags
-const isMiamiBeachValid = ref(false);
-const mbExpectedValue = 2;
-
-// Permit logic
-const MB = ref(permitStore.$state.permitapp[0]?.formdt?.checkIfBeach);
-const convertMB = useToNumber(MB.value);
-
-tryOnMounted(() => {
-    console.log(permitStore.$state, MB.value, convertMB.value);
-    isMiamiBeachValid.value = MB.value === mbExpectedValue;
-    console.log(isMiamiBeachValid.value, roofTypesMiamiBeach);
-});
-
-// General page logic
-const { addRoof, roofArea } = useGeneral();
+const { addRoof } = useGeneral();
 const dataGeneral = reactive({ roofCheck: '' });
-// const showGeneralPage = ref('');
 
-// Add selected roof item to store and clear inputs
-async function addItemAndClear() {
-    const itemName = selectedItem.value?.name?.trim();
-    if (!itemName) return;
+// Options
+const ROOF_TYPES = [{ name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 'Mechanical Fastened Tile' }, { name: 'Adhesive Set Tile' }, { name: 'Metal Panel' }];
 
-    const dim = area.value;
+// Miami Beach constraint: if MB==2, disallow first two options (Shingle/Low Slope)
+const MB = ref(permitStore.$state.permitapp?.[0]?.formdt?.checkIfBeach);
+const isMiamiBeach = computed(() => useToNumber(MB.value).value === 2);
+const roofOptions = computed(() => (isMiamiBeach.value ? ROOF_TYPES.slice(2) : ROOF_TYPES));
 
-    const systemMap = {
-        'Asphalt Shingle': () => roofStore.addSystemShingle(itemName, dim),
-        'Low Slope': () => roofStore.addSystemBur(itemName, dim),
-        'Mechanical Fastened Tile': () => roofStore.addSystemMTile(itemName, dim),
-        'Adhesive Set Tile': () => roofStore.addSystemATile(itemName, dim),
-        'Metal Panel': () => roofStore.addSystemMetal(itemName, dim)
+// Derived
+// const isFormValid = computed(() => {
+//     const sqft = Number(area.value);
+//     return !!selectedSystem.value?.name && Number.isFinite(sqft) && sqft > 0 && !!roofKind.value;
+// });
+
+// ─────────────────────────────── methods ───────────────────────────────
+function addSelectedSystem() {
+    // if (!isFormValid.value) return;
+
+    const name = selectedSystem.value.name;
+    const sqft = Number(area.value);
+
+    const byName = {
+        'Asphalt Shingle': () => roofStore.addSystemShingle(name, sqft),
+        'Low Slope': () => roofStore.addSystemBur(name, sqft),
+        'Mechanical Fastened Tile': () => roofStore.addSystemMTile(name, sqft),
+        'Adhesive Set Tile': () => roofStore.addSystemATile(name, sqft),
+        'Metal Panel': () => roofStore.addSystemMetal(name, sqft)
     };
+    byName[name]?.();
 
-    systemMap[itemName]?.();
-    console.log(checked.value, systemMap);
-    dataGeneral.roofCheck = checked.value;
-    roofCheck.addCheck(dataGeneral);
-    // roofArea(roofStore);
-    clearInputs();
-}
+    dataGeneral.roofCheck = roofKind.value;
+    roofCheck.addCheck({ ...dataGeneral });
 
-// Submit full general page data
-function addGeneralpageData() {
-    addRoof(checked);
-    clearInputs();
-}
-
-// Reset roof system inputs
-function clearInputs() {
+    // clear inputs for next add
     area.value = '';
-    selectedItem.value = null;
+    selectedSystem.value = null;
 }
 
-// Reset full roof list
-function clearSelected() {
+function submitGeneral() {
+    // Persist the general choice (new vs reroof) & continue
+    addRoof(roofKind);
+}
+
+function clearAll() {
     roofStore.$reset();
 }
+
+function onDrop(e) {
+    dragOver.value = false;
+    const list = [...(e.dataTransfer?.files || [])];
+    if (!list.length) return;
+    files.value = list;
+}
+
+function onPick(e) {
+    const list = [...(e.target?.files || [])];
+    if (!list.length) return;
+    files.value = list;
+}
+
+// Prefill if user already has something in the store
+onMounted(() => {
+    if (!selectedSystem.value && roofOptions.value.length) {
+        selectedSystem.value = roofOptions.value[0];
+    }
+});
 </script>
 
-<!-- ───────────────────────── template (modern) ────────────────────────── -->
-<!-- RoofUploadView.vue  ─────────────────────────────────────────────── -->
-
 <template>
-    <!-- ── Top navigation bar with brand ─────────────────────────────── -->
+    <main class="page">
+        <!-- Left: form -->
+        <section class="card">
+            <header class="card__header">
+                <h2>Roof System</h2>
+                <Button class="icon" text plain @click="clearAll" v-tooltip.bottom="'Reset list'">
+                    <i class="pi pi-refresh" />
+                </Button>
+            </header>
 
-    <!-- ── 2-column layout container ────────────────────────────────── -->
-    <main class="layout">
-        <!-- ── Glass card: Roof System form ───────────────────────────── -->
-        <aside class="card glass">
-            <Button class="icon-btn" plain text @click="clearSelected">
-                <i class="pi pi-refresh"></i>
-            </Button>
-            <h2 class="title">Roof System</h2>
-
-            <form class="grid-form" @submit.prevent>
+            <div class="form">
                 <div class="field">
-                    <label for="area">Square Footage</label>
-                    <InputText id="area" v-model="area" placeholder="e.g. 1200" />
+                    <label for="sqft">Square Footage</label>
+                    <InputText id="sqft" v-model="area" type="number" inputmode="numeric" placeholder="e.g. 1200" />
                 </div>
 
                 <div class="field">
                     <label for="system">Roof System</label>
-                    <Select id="system" v-model="selectedItem" :options="isMiamiBeachValid ? roofTypesMiamiBeach : roofTypesDefault" optionLabel="name" placeholder="Select roof system" class="w-full" @change="addItemAndClear" />
+                    <Select id="system" class="w-full" :options="roofOptions" optionLabel="name" v-model="selectedSystem" placeholder="Select roof system" @change="addSelectedSystem" />
+                    <small v-if="isMiamiBeach" class="hint">Miami Beach restrictions apply.</small>
                 </div>
-                <div class="flex flex-wrap mt-4 space-y-6 justify-center gap-8">
-                    <div class="flex items-center mt-4 space-y-6">
-                        <Checkbox v-model="checked" :invalid="!checked" inputId="newroof" name="checked" value="newroof" />
-                        <label for="newroof" class="ml-2" style="color: #122620">New Roof </label>
+
+                <div class="field row">
+                    <div class="check">
+                        <Checkbox inputId="kind-new" severity="contrast" name="roofKind" value="newroof" v-model="roofKind" />
+                        <label for="kind-new">New Roof</label>
                     </div>
-                    <div class="flex items-center mt-4 space-y-6">
-                        <Checkbox v-model="checked" :invalid="!checked" inputId="reroof" name="checked" value="reroof" />
-                        <label for="reroof" class="ml-2" style="color: #122620">Re-Roof </label>
+                    <div class="check">
+                        <Checkbox inputId="kind-reroof" severity="contrast" name="roofKind" value="reroof" v-model="roofKind" />
+                        <label for="kind-reroof">Re-Roof</label>
                     </div>
                 </div>
-            </form>
 
-            <footer class="footer">
-                <Button label="Submit" severity="contrast" raised as="router-link" to="/dynamicstepper" @click="addGeneralpageData" />
-            </footer>
-            <br />
-            <roof-system-list></roof-system-list>
+                <div class="actions">
+                    <RouterLink to="/dynamicstepper">
+                        <!-- :disabled="!isFormValid" -->
+                        <Button severity="contrast" label="Continue" @click="submitGeneral" />
+                    </RouterLink>
+                </div>
+            </div>
 
-            <!-- ── Blueprint PDF drop-zone ────────────────────────────────── -->
-        </aside>
+            <Divider />
 
-        <!-- ── Blueprint PDF drop-zone ────────────────────────────────── -->
-        <section class="card dropzone" @dragover.prevent="dragOver = true" @dragleave="dragOver = false" @drop.prevent="handleDrop">
-            <p class="dz-title">For Images documents</p>
-            <p class="dz-sub">Drag &amp; drop files here<br />or click to upload</p>
-            <input type="file" accept="application/pdf" multiple class="file-input" @change="handleFiles" />
+            <!-- Current selections -->
+            <RoofList />
+        </section>
+
+        <!-- Right: dropzone + terminal -->
+        <section class="side">
+            <div class="dropzone" :class="{ over: dragOver }" @dragover.prevent="dragOver = true" @dragleave="dragOver = false" @drop.prevent="onDrop">
+                <p class="dz-title">Blueprints & images</p>
+                <p class="dz-sub">Drag & drop files here, or click to select</p>
+                <input type="file" class="dz-input" multiple @change="onPick" />
+                <ul v-if="files.length" class="dz-list">
+                    <li v-for="f in files" :key="f.name">{{ f.name }}</li>
+                </ul>
+            </div>
         </section>
     </main>
 </template>
 
-<!-- ──────────────────────────── styles ───────────────────────────────── -->
-
 <style scoped>
-/* ── 1. Theme tokens ─────────────────────────────────────────────── */
-:root {
-    --c-bg: #8e959a;
-    --c-primary: #1312113c;
-    --c-primary-dark: #414747;
-    --c-card-blur: 14px;
-    --c-radius: 1.4rem;
-    --c-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.2);
-    --c-gradient: linear-gradient(135deg, #00e5ff 0%, #00bfa5 50%, #00e5ff 100%);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --c-bg: #0f172a;
-    }
-}
-
-/* ── 2. Basic layout ─────────────────────────────────────────────── */
-body {
-    background: var(--c-bg);
-}
-.topbar {
-    display: flex;
-    align-items: center;
-    height: 64px;
-    padding-inline: 1.5rem;
-}
-.logo {
-    height: 32px;
-}
-
-.layout {
-    min-block-size: calc(100vh - 64px);
+/* layout */
+.page {
+    --gap: clamp(1rem, 2vw, 2rem);
     display: grid;
-    padding: clamp(1rem, 5vw, 3rem);
-    gap: clamp(1.5rem, 4vw, 3rem);
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    place-items: start center;
+    grid-template-columns: minmax(280px, 1.4fr) minmax(240px, 1fr);
+    gap: var(--gap);
+    padding: var(--gap);
 }
 
-/* ── 3. Re-usable card base + animated border ────────────────────── */
 .card {
-    position: relative;
-    padding: 1.5rem 2rem;
-    border-radius: var(--c-radius);
-    box-shadow: var(--c-shadow);
-    overflow: hidden;
-    isolation: isolate;
-}
-.card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 2px; /* border thickness */
-    border-radius: inherit;
-    background: var(--c-gradient);
-    mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    animation: borderMove 6s linear infinite;
-    z-index: -1;
-}
-@keyframes borderMove {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
+    background: var(--surface-card, rgba(255, 255, 255, 0.7));
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
 }
 
-/* ── 4. Glass variant for the form ───────────────────────────────── */
-
-.glass {
-    backdrop-filter: blur(var(--c-card-blur));
-    background-color: rgba(255, 255, 255, 0.8);
-}
-@media (prefers-color-scheme: dark) {
-    .glass {
-        background-color: rgba(30, 41, 59, 0.75);
-    }
-}
-
-/* ── 5. Card-specific layouts ────────────────────────────────────── */
-.title {
-    text-align: center;
-    margin-block-end: 1.8rem;
-    font-size: clamp(1.4rem, 2vw, 1.8rem);
-    font-weight: 600;
-    color: var(--c-primary);
-}
-.icon-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.4rem;
-    color: #64748b;
-}
-.grid-form {
-    display: grid;
-    gap: 1.25rem;
-}
-.wide-btn {
-    width: 100%;
-    margin-block-start: 0.5rem;
-}
-.footer {
+.card__header {
     display: flex;
-    justify-content: flex-end;
-    margin-block-start: 2rem;
-}
-
-/* ── 6. Drop-zone styling & interaction ─────────────────────────── */
-.dropzone {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    /* background: url('/blueprint.jpg') center/cover; */
-    min-block-size: 260px;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.icon :deep(.pi) {
+    font-size: 1.1rem;
+}
+
+.form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.field {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.field.row {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.check {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.hint {
+    color: var(--text-secondary, #64748b);
+}
+
+.actions {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.side {
+    display: grid;
+    grid-auto-rows: min-content;
+    align-content: start;
+    gap: var(--gap);
+}
+
+/* dropzone */
+.dropzone {
+    position: relative;
+    border: 1.5px dashed var(--surface-border, #cbd5e1);
+    border-radius: 14px;
+    padding: 1.25rem;
     text-align: center;
-    color: #fff;
-    cursor: pointer;
-    transition: filter 0.25s ease;
+    transition: 0.15s ease-in-out;
+}
+.dropzone.over {
+    border-color: var(--primary-color, #3b82f6);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary-color, #3b82f6) 20%, transparent);
 }
 .dz-title {
     font-weight: 600;
-    font-size: 1rem;
-    letter-spacing: 0.02em;
+    margin-bottom: 0.2rem;
 }
 .dz-sub {
     font-size: 0.9rem;
-    opacity: 0.9;
-    margin-block-start: 0.5rem;
+    opacity: 0.8;
+    margin-bottom: 0.75rem;
 }
-
-.dropzone:hover {
-    filter: brightness(1.05);
-}
-.dropzone.drag-over {
-    outline: 3px dashed var(--c-primary);
-    outline-offset: -8px;
-}
-
-.file-input {
+.dz-input {
     position: absolute;
     inset: 0;
     opacity: 0;
     cursor: pointer;
 }
-
-/* ── 7. PrimeVue component overrides (same as before) ───────────── */
-:deep(.p-inputtext),
-:deep(.p-dropdown) {
-    width: 100%;
-    border-radius: 0.55rem;
-    border: 1px solid #cbd5e1;
-    padding: 0.55rem 0.75rem;
-    transition:
-        box-shadow 0.15s,
-        transform 0.15s;
-}
-:deep(.p-inputtext:hover),
-:deep(.p-dropdown:hover) {
-    transform: translateY(-2px);
-}
-:deep(.p-inputtext:focus),
-:deep(.p-dropdown:focus) {
-    border-color: var(--c-contrast);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 35%, transparent);
+.dz-list {
+    margin-top: 0.5rem;
+    text-align: left;
+    font-size: 0.9rem;
 }
 
-:deep(.p-button) {
-    background: var(--c-primary);
-    border: none;
-    color: #0a090b;
-    padding: 0.55rem 1.7rem;
-    border-radius: 999px;
-    font-weight: 600;
-    transition: background 0.15s ease;
-}
-:deep(.p-button:hover) {
-    background: var(--c-primary-dark);
-}
-:deep(.p-button:focus) {
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 45%, transparent);
+@media (max-width: 960px) {
+    .page {
+        grid-template-columns: 1fr;
+    }
 }
 </style>

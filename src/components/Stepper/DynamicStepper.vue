@@ -248,6 +248,7 @@ console.log(isFirstStep.value, isLastStep.value, filteredSteps.value.length);
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
+    margin-top: 50px;
 }
 
 .card-system {

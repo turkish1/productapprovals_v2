@@ -1538,7 +1538,7 @@ const tileSAStaging = async () => {
                 <InputText id="designPressure" v-model="udlTile.designPressure" @change="updateselectSystemE" />
             </div>
             <div class="grid grid-cols-1 gap-2 border-gray-700 focus:border-orange-600">
-                <div class="min-w-[1080px] flex flex-col">
+                <div class="min-w-[880px] flex flex-col">
                     <label style="color: #122620" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
                 </div>
