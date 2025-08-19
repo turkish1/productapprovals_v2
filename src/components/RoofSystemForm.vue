@@ -38,7 +38,7 @@ const ROOF_TYPES = [{ name: 'Asphalt Shingle' }, { name: 'Low Slope' }, { name: 
 // Miami Beach constraint: if MB==2, disallow first two options (Shingle/Low Slope)
 const MB = ref(permitStore.$state.permitapp?.[0]?.formdt?.checkIfBeach);
 const isMiamiBeach = computed(() => useToNumber(MB.value).value === 2);
-const roofOptions = computed(() => (isMiamiBeach.value ? ROOF_TYPES.slice(2) : ROOF_TYPES));
+const roofOptions = computed(() => (isMiamiBeach.value ? ROOF_TYPES.slice(1) : ROOF_TYPES));
 
 // Derived
 // const isFormValid = computed(() => {

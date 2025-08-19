@@ -1163,8 +1163,6 @@ const saveTileData = async () => {
     tileData2.zonetwo.mf2 = zonetwo.mf2;
     tileData2.zonethree.mf3 = zonethree.mf3;
     sendDataMongo();
-
-    // }
 };
 // NEW: local flags for modal state
 
@@ -1231,7 +1229,6 @@ const sendDataMongo = async () => {
     postMetrictable.applicant = tileData2.applicant;
     postMetrictable.description = tileData2.description;
     postMetrictable.material = tileData2.material;
-    // await post(tileManufacturerInfo);
     postMetrictable.zoneone = tileData2.zoneone;
     postMetrictable.zonetwo = tileData2.zonetwo;
     postMetrictable.zonethree = tileData2.zonethree;
@@ -1390,7 +1387,6 @@ async function onOpenTileSAClick() {
 
 const tileSAStaging = async () => {
     console.log(saTiles);
-    // saTiles.prescriptiveSelection = tileData2.prescriptiveSelection;
     await postSATile(saTiles);
 };
 </script>
@@ -1417,8 +1413,6 @@ const tileSAStaging = async () => {
             <label for="height" style="color: #122620">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isHeightValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" :disabled="isHeightDisabled" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
-            <!-- @input="setRoofInputs" -->
-            <!-- optional error message -->
         </div>
         <div></div>
         <div class="w-64 mt-3 ..." style="margin-left: 20px">

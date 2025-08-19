@@ -179,7 +179,7 @@ async function load() {
         loading.value = true;
 
         muniProcessdata.value = muniProcess.value;
-        const addr = inputAddress.value;
+        const addr = inputAddress.value.toUpperCase();
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
         await fetchData(url);
