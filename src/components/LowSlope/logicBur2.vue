@@ -180,7 +180,7 @@ async function burStaging() {
 </script>
 
 <template>
-    <div class="min-w-[880px] flex flex-col gap-2 border-2 mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6" style="margin-left: 50px; border-radius: 5px">
+    <div class="min-w-[980px] flex flex-col gap-2 border-2 mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6" style="margin-left: 50px; border-radius: 5px">
         <div>
             <label for="material" class="block text-sm font-medium text-red-600 mb-1"> Type of Low‑Slope BUR Material <span class="text-red-500">*</span> </label>
             <Select
