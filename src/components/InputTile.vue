@@ -1278,7 +1278,27 @@ function udlDescPressure() {
 function updateselectSystemE() {
     udlDescPressure();
 }
-
+watch(
+    () => modalIsActive.value,
+    (newVal) => {
+        console.log('Modal changed:', newVal);
+    },
+    { immediate: true }
+);
+watch(
+    () => modalUDLIsActive.value,
+    (newVal) => {
+        console.log('UDLModal changed:', newVal);
+    },
+    { immediate: true }
+);
+watch(
+    () => modalSAIsActive.value,
+    (newVal) => {
+        console.log('SAModal changed:', newVal);
+    },
+    { immediate: true }
+);
 // If your Select supports it, prefer this. Otherwise use @change="updateselectSystemE"
 watch(
     () => selectedsystemE.value,

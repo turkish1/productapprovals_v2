@@ -21,7 +21,7 @@ import usemultiTile from '@/composables/businesslogic/use-multiTile';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import RadioButton from 'primevue/radiobutton';
-import { computed, isProxy, isRef, nextTick, onMounted, reactive, ref, toRaw, unref, watch, watchEffect } from 'vue';
+import { computed, isProxy, isRef, nextTick, onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
 
 const ftileStore = usetilesysfStore();
 const { workoutData, multiTiles } = usemultiTile();
@@ -400,19 +400,19 @@ async function sysEcheckInput() {
     }
 }
 
-const whatChanged = computed(() => {
-    checkInput();
-    checkMR1();
-    checkMR2();
-    checkMR3();
-    sysEcheckInput();
-    setRoofInputs();
+// const whatChanged = computed(() => {
+//     checkInput();
+//     checkMR1();
+//     checkMR2();
+//     checkMR3();
+//     sysEcheckInput();
+//     setRoofInputs();
 
-    grabInput();
-    addCheckmarks();
-    validateHeight();
-    validateRoofSlope();
-});
+//     grabInput();
+//     addCheckmarks();
+//     validateHeight();
+//     validateRoofSlope();
+// });
 const selectedsystemf = ref(null);
 const selectedMechanical = ref(null);
 // const selectedsysNoa = ref(null);
@@ -462,7 +462,7 @@ const slopeOptions = {
 
 const isDataValid = ref(true);
 
-watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, () => {});
+// watchEffect(isTileValid, zoneone.mr1, zonetwo.mr2, zonethree.mr3, whatChanged, saTiles, setRoofInputs, checkData, () => {});
 
 function checkData() {
     if (mechanicalData.Table3.two === 'N/A') {
@@ -747,10 +747,15 @@ async function checkMaterial() {
     }
 
     console.log(datamountedMech.value[0].mechanicaltilefastener, selectedMechanical);
+    tilenoas.manufacturer = datamountedMech.value[0]?.manufacturer;
+    tilenoas.material = datamountedMech.value[0]?.material;
+
+    // tilenoas.description = datamountedMech.value[0]?.description;
+
     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
     tilenoas.savedfastener = selectedMechanical.value;
-    console.log(tilenoas.savedfastener, tilenoas.mechanicaltilefastener, tilenoas.fastenerValues);
+    // console.log(tilenoas.savedfastener, tilenoas.mechanicaltilefastener, tilenoas.fastenerValues, tilenoas);
     await pushTable();
 }
 async function pushTable() {
@@ -856,7 +861,7 @@ function updateMF(value) {
     zoneone.mf1 = selectedMF;
     zonetwo.mf2 = selectedMF;
     zonethree.mf3 = selectedMF;
-
+    console.log(selectedMF);
     // Validate MR < MF for each zone
     validateZone(zoneone.mf1, zoneone.mr1, ismrValidMR1, ismrInvalid1, checkMR1);
     validateZone(zonetwo.mf2, zonetwo.mr2, ismrValidMR2, ismrInvalid2, checkMR2);
@@ -874,10 +879,10 @@ function validateZone(mf, mr, validRef, invalidRef, fallbackFn) {
     } else {
         fallbackFn?.();
     }
-    // checkMR1();
-    // checkMR2();
+    checkMR1();
+    checkMR2();
 
-    // checkMR3();
+    checkMR3();
 }
 
 const postMetrictable = reactive({

@@ -13,7 +13,7 @@ import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
 import AutoCompletePoly from './roofSystems/AutoCompletePoly.vue';
 import AutoCompleteSA from './roofSystems/AutoCompleteSA.vue';
 
@@ -540,52 +540,24 @@ const udlKey = ref(0);
 
 const saVisible = ref(false);
 const saKey = ref(0);
-// async function openShingleModal(source) {
-//     shingleVisible.value = false;
-//     shingleData.value = snapshot(source); // fresh copy
-//     shingleKey.value++; // force re-mount
-//     await nextTick();
-//     shingleVisible.value = true;
-// }
+function toPlain(v) {
+    const x = unref(v);
+    console.log(x);
+    return isProxy(x) ? toRaw(x) : x;
+}
+function toPlainUDL(v) {
+    const x = unref(v);
+    console.log(x);
 
-// async function openUdlModal(source) {
-//     udlVisible.value = false;
-//     udlData.value = snapshot(source);
-//     udlKey.value++;
-//     await nextTick();
-//     udlVisible.value = true;
-// }
+    return isProxy(x) ? toRaw(x) : x;
+}
+function toPlainSA(v) {
+    const x = unref(v);
+    console.log(x);
 
-// async function openSaModal(source) {
-//     saVisible.value = false;
-//     saData.value = snapshot(source);
-//     saKey.value++;
-//     await nextTick();
-//     saVisible.value = true;
-// }
+    return isProxy(x) ? toRaw(x) : x;
+}
 
-// // USE THIS to deep-clone a plain POJO from any reactive source
-// function snapshot(src) {
-//     const v = unref(src);
-//     // toRaw guards against proxies; structuredClone gives a deep copy
-//     return structuredClone(toRaw(v));
-// }
-// // call these from your buttons instead of mutating visibility directly
-// function onOpenShingleClick() {
-//     // run any prep that mutates your stores here (e.g. checkInput())
-//     // then take a snapshot of the exact object you want to show:
-//     openShingleModal(shingles);
-// }
-
-// function onOpenShingleUDLClick() {
-//     // e.g. await checkInputPoly()
-//     openUdlModal(underlayment);
-// }
-
-// function onOpenShingleSAClick() {
-//     // e.g. await checkInputSystem()
-//     openSaModal(selfadhered);
-// }
 async function onOpenShingleClick() {
     // await nextTick();
     await checkInput(); // hydrate `shingles` from store
@@ -732,7 +704,8 @@ watch(
     <Divider />
 
     <!-- UDL Modal -->
-    <ModalWindow v-if="modalUDLIsActive" :key="modalKeyUDL" :initialData="currentShingleUDl" @closePopup="onCloseUDL">
+    <ModalWindow :key="modalKeyUDL" :initialData="currentShingleUDl" @closePopup="(modalUDLIsActive = false), shingleUdlStaging()" v-if="modalUDLIsActive">
+        <!-- <ModalWindow v-if="modalUDLIsActive" :key="modalKeyUDL" :initialData="currentShingleUDl" @closePopup="onCloseUDL"> -->
         <div v-show="isUDLNOAValid" class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="manufacturer">(UDL) NOA Applicant</label>
@@ -748,9 +721,9 @@ watch(
             </div>
         </div>
     </ModalWindow>
-
-    <!-- SA Modal -->
-    <ModalWindow v-if="modalSAIsActive" :key="modalKeySA" :initialData="currentShingleSA" @closePopup="onCloseSA">
+    <ModalWindow :key="modalKeySA" :initialData="currentShingleSA" @closePopup="(modalSAIsActive = false), shingleSAStaging()" v-if="modalSAIsActive">
+        <!-- SA Modal -->
+        <!-- <ModalWindow v-if="modalSAIsActive" :key="modalKeySA" :initialData="currentShingleSA" @closePopup="onCloseSA"> -->
         <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="saapplicant">S/A Applicant</label>
@@ -770,9 +743,9 @@ watch(
             </div>
         </div>
     </ModalWindow>
-
-    <!-- Shingle Modal -->
-    <ModalWindow v-if="modalIsActive" :key="modalKey" :initialData="currentShingle" @closePopup="onCloseShingle">
+    <ModalWindow :key="modalKey" :initialData="currentShingle" @closePopup="(modalIsActive = false), shingleMetrics()" v-if="modalIsActive">
+        <!-- Shingle Modal -->
+        <!-- <ModalWindow v-if="modalIsActive" :key="modalKey" :initialData="currentShingle" @closePopup="onCloseShingle"> -->
         <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="manufacturer">Applicant</label>
