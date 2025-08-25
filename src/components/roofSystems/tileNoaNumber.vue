@@ -98,9 +98,9 @@ onMounted(async () => {
 // if the user flips categories after mount, ensure that list is present
 watch(isDouble, async (d) => {
     if (d) {
-        if (!doubleStore?.$state?.pdInputs?.length) await callFunctions();
+        if (!doubleStore?.$state?.pdInputs?.length) callFunctions();
     } else {
-        if (!singleStore?.$state?.pdInput?.length) await callFunction();
+        if (!singleStore?.$state?.pdInput?.length) callFunction();
     }
 });
 

@@ -20,7 +20,7 @@
 import useInputwFetchSA from '@/composables/fetchTech/use-InputwFetchSA';
 import useSystemf from '@/composables/use-Inputsystemf';
 import { usesystemfStore } from '@/stores/systemfStore';
-import { computed, defineEmits, defineProps, onMounted, reactive, ref } from 'vue';
+import { computed, defineEmits, defineProps, onMounted, reactive, ref, watch } from 'vue';
 
 // Receive data from the parent component via props
 const props = defineProps({
@@ -28,9 +28,8 @@ const props = defineProps({
     material: String,
     description: String
 });
-
 // Define the emit event to send data to parent
-const emit = defineEmits(['update', 'cleared']);
+const emit = defineEmits(['updateSA']);
 const inputData = ref(props.manufacturer, props.material, props.description);
 const { callFunction, saStore } = useInputwFetchSA();
 const systemStore = usesystemfStore();
@@ -39,7 +38,15 @@ const { input, takef } = useSystemf();
 let datasbs = ref();
 let datasystemf = ref();
 // Input query
-const query = ref('');
+// const query = ref(props.sanoa);
+
+watch(
+    () => props.sanoa,
+    (v) => {
+        if (v !== query.value) query.value = v;
+    }
+);
+
 const selfadhered = reactive({
     samanufacturer: '',
     samaterial: '',
@@ -155,6 +162,7 @@ function checkInputSystem() {
     for (const [fKey, desc] of Object.entries(sysFDescMap.value || {})) {
         selfadhered[`Description_${fKey}`] = desc;
     }
+    sendDataToParent();
 }
 // Method to send data back to parent
 const sendDataToParent = () => {
@@ -162,6 +170,38 @@ const sendDataToParent = () => {
     emit('updated', inputData.value);
 };
 // Method to update the input field with selected suggestion
+// const selectSuggestion = (suggestion) => {
+//     query.value = suggestion;
+//     showSuggestions.value = false;
+// };
+
+// Method to handle input change
+// const onInput = () => {
+//     showSuggestions.value = true;
+// };
+// emit changes up whenever input changes
+
+// const sanoa = defineModel('sanoa', { type: String, default: '' });
+// const emit = defineEmits(['cleared']);
+
+const query = ref('');
+
+// keep query and model in sync both ways
+// watch(sanoa, (v) => {
+//     if (v !== query.value) query.value = v;
+// });
+
+// function onInput(e) {
+//     sanoa.value = e.target.value; // updates parent via v-model
+//     query.value = sanoa.value;
+//     if (sanoa.value === '') emit('cleared');
+// }
+
+// function selectSuggestion(s) {
+//     sanoa.value = s;
+//     query.value = s;
+// }
+
 const selectSuggestion = (suggestion) => {
     query.value = suggestion;
     showSuggestions.value = false;
@@ -171,7 +211,6 @@ const selectSuggestion = (suggestion) => {
 const onInput = () => {
     showSuggestions.value = true;
 };
-
 // Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
 const hideSuggestions = () => {
     setTimeout(() => {

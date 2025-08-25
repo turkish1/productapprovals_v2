@@ -1165,6 +1165,7 @@ const saveTileData = async () => {
     sendDataMongo();
 };
 // NEW: local flags for modal state
+const isTileModalOpen = computed(() => modalIsActive.value);
 
 // Hard reset of tile state
 function resetTileUI() {
@@ -1278,6 +1279,99 @@ function udlDescPressure() {
 function updateselectSystemE() {
     udlDescPressure();
 }
+
+function debounce(fn, ms) {
+    let t;
+    return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), ms);
+    };
+}
+
+function debouncedClearAfterFirst(getter, resetFn, ms = 1500) {
+    let seenFirstStable = false;
+    const run = debounce((v) => {
+        if (!seenFirstStable) {
+            seenFirstStable = true; // first stable value → arm
+        } else {
+            resetFn(); // subsequent stable value → clear
+        }
+    }, ms);
+
+    return (newVal, oldVal) => {
+        if (newVal === oldVal) return;
+        run(newVal);
+    };
+}
+
+// watchers
+watch(
+    () => childQueryRef,
+    debouncedClearAfterFirst(() => childQueryRef.noa, resetTileModal, 1500)
+);
+watch(
+    () => udlTile.noa,
+    debouncedClearAfterFirst(() => udlTile.noa, resetUDLModal, 1500)
+);
+watch(
+    () => saTiles.noa,
+    debouncedClearAfterFirst(() => saTiles.noa, resetSAModal, 1500)
+);
+
+function resetTileModal() {
+    modalIsActive.value = false;
+    modalKey.value++; // force a fresh modal instance next open
+    currentTile.value = null;
+
+    Object.assign(tilenoas, {
+        noa: 0,
+        manufacturer: '',
+        material: '',
+        description: '',
+        select_tile: [],
+        table2_map: {},
+        tile_map: {},
+        selection: {},
+        expiration_date: ''
+    });
+}
+// helpers
+
+// watchers (tile NOA, UDL NOA, SA NOA)
+
+function resetUDLModal() {
+    modalUDLIsActive.value = false;
+    modalKeyUDL.value++;
+    currentTileUDl.value = null;
+
+    Object.assign(udlTile, {
+        noa: '',
+        manufacturer: '',
+        material: '',
+        system: '',
+        designPressure: '',
+        Anchor_Base_Sheet: '',
+        TileCap_Sheet_Description: '',
+        expiration_date: ''
+    });
+}
+
+function resetSAModal() {
+    modalSAIsActive.value = false;
+    modalKeySA.value++;
+    currentTileSA.value = null;
+
+    Object.assign(saTiles, {
+        noa: '',
+        manufacturer: '',
+        material: '',
+        system: '',
+        designpressure: '',
+        description: '',
+        expiration_date: ''
+    });
+}
+
 watch(
     () => modalIsActive.value,
     (newVal) => {
@@ -1318,7 +1412,6 @@ async function postUDLStaging() {
 // const showModalUDL = ref(false);
 const modalKeyUDL = ref(0);
 const currentTileUDl = ref(null);
-const isTileModalOpen = computed(() => modalIsActive.value);
 
 // const showModal = ref(false);
 const modalKey = ref(0);
@@ -1362,6 +1455,21 @@ async function onOpenTileClick() {
     await nextTick();
 
     modalIsActive.value = true;
+}
+const tileNoaChanges = ref(0);
+function onTileNoaConfirmed(val) {
+    tileNoaChanges.value += 1;
+    if (tileNoaChanges.value >= 2) resetTileModal(); // after at least one prior input
+}
+const tileUDLChanges = ref(0);
+function onUdlNoaConfirmed(val) {
+    tileUDLChanges.value += 1;
+    if (tileUDLChanges.value >= 2) resetUDLModal(); // after at least one prior input
+}
+const tileSAChanges = ref(0);
+function onSaNoaConfirmed(val) {
+    tileSAChanges.value += 1;
+    if (tileSAChanges.value >= 2) resetSAModal(); // after at least one prior input
 }
 
 async function onOpenTileUDLClick() {
@@ -1472,16 +1580,18 @@ const tileSAStaging = async () => {
         </div>
         <Divider />
         <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
-            <systemENumber @cleared="resetUDLModal" />
+            <!-- @cleared="resetUDLModal" -->
+            <systemENumber @confirmed="onUdlNoaConfirmed" />
             <Buttons label="Submit" severity="contrast" @click="onOpenTileUDLClick" style="margin-left: 15px" />
         </div>
         <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
-            <systemFNumber @cleared="resetSAModal" />
+            <!-- @cleared="resetSAModal" -->
+            <systemFNumber @confirmed="onSaNoaConfirmed" />
             <Buttons label="Submit" severity="contrast" @click="onOpenTileSAClick" style="margin-left: 15px" />
         </div>
-
+        <!--  @cleared="resetTileModal" -->
         <div v-show="isPaddyCategoryValid" class="w-96" style="margin-left: 3px">
-            <tileNoaNumber @cleared="resetModal" ref="childQueryRef" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" />
+            <tileNoaNumber @confirmed="onTileNoaConfirmed" ref="childQueryRef" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" />
             <Buttons label="Submit" severity="contrast" @click="onOpenTileClick" style="margin-left: 15px" />
         </div>
     </div>
