@@ -1,30 +1,30 @@
 <script setup>
-import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
+import useShingleDrip from '@/composables/DripEdge/use-ShingleDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-import usePostMechanicalLambda from '@/composables/Postdata/usePostMechanicalLambda';
-import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
+import usePostShingleLambda from '@/composables/Postdata/usePostShingleLambda';
+import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
-const { dripEdge } = usePostMechanicalLambda();
+const { dripEdge } = usePostShingleLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 
-const { typeSize, dtype, holdSized } = useMechtileDrip();
+const { typeSize, dtype, holdSized } = useShingleDrip();
 // Reactive value bound to the select dropdown
 
 // Ref for the <select> element
 const selectSizeRef = ref(null);
 
-const mechtileStore = usedripMStore();
-console.log(mechtileStore);
+const shingleStore = usedripedgeshingleStore();
+console.log(shingleStore);
 // Define emits
 const emit = defineEmits(['update-valuesize']);
 
-let isRoofTileMechanicalValid = ref(false);
+let isRoofShingleValid = ref(false);
 
 const typeSizes = ref();
 
@@ -38,23 +38,23 @@ const callState = tryOnMounted(() => {
         return '';
     }
     for (let i = 0; i < roofType.value.length; i++) {
-        if (roofType.value[i].item === 'Mechanical Fastened Tile') {
+        if (roofType.value[i].item === 'Asphalt Shingle') {
             console.log(roofType.value[i].item);
-            isRoofTileMechanicalValid.value = true;
+            isRoofShingleValid.value = true;
             types.value = type.value;
         }
     }
     checkRoof();
 });
 
-const dripMTileData = reactive({
+const dripShingleData = reactive({
     DripEdgeMaterial: '',
     DripEdgeSize: ''
 });
 
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
-    dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
+    dripShingleData.DripEdgeSize = selectDripEdgeSize.value;
     console.log(selectDripEdgeSize.value);
     getdripSize();
 };
@@ -72,10 +72,10 @@ onMounted(() => {
 
 function checkRoof() {
     for (let i = 0; i < roofType.value.length; i++) {
-        if (roofType.value[i].item === 'Mechanical Fastened Tile') {
+        if (roofType.value[i].item === 'Asphalt Shingle') {
             console.log(roofType.value[i].item);
 
-            mtile();
+            shingle();
         }
     }
 }
@@ -113,23 +113,23 @@ function getdripSize() {
     checkRoof();
 }
 
-function mtile() {
+function shingle() {
     console.log(selectDripEdge.value);
 
-    dripMTileData.DripEdgeMaterial = selectDripEdge.value;
-    console.log(dripMTileData.DripEdgeMaterial);
+    dripShingleData.DripEdgeMaterial = selectDripEdge.value;
+    console.log(dripShingleData.DripEdgeMaterial);
 
     storeDripEdgeSize();
 }
 
 const storeDripEdgeSize = async (value) => {
-    console.log(dripMTileData.DripEdgeSize);
-    if (isRoofTileMechanicalValid.value === true) {
-        dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
-        console.log(dripMTileData.DripEdgeSize);
-        mechtileStore.insertDripAtIndex(5, dripMTileData.DripEdgeMaterial);
-        mechtileStore.insertDripAtIndex(7, dripMTileData.DripEdgeSize);
-        console.log(mechtileStore);
+    console.log(dripShingleData.DripEdgeSize);
+    if (isRoofShingleValid.value === true) {
+        dripShingleData.DripEdgeSize = selectDripEdgeSize.value;
+        console.log(dripShingleData.DripEdgeSize);
+        shingleStore.insertShinDripAtIndex(5, dripShingleData.DripEdgeMaterial);
+        shingleStore.insertShinDripAtIndex(7, dripShingleData.DripEdgeSize);
+        console.log(shingleStore);
     }
 
     // await stageDripedge();

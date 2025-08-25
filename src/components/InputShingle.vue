@@ -427,13 +427,14 @@ const shingleUdlStaging = async () => {
 };
 
 const shingleSAStaging = async () => {
-    console.log(selfadhered);
-    saData.samanufacturer = selfadhered.samanufacturer;
-    saData.sanoa = selfadhered.sanoa;
-    saData.samaterial = selfadhered.samaterial;
-    saData.sasystem = usesystemfStore.store.$state.systeminput.pdfSystemValue;
-    saData.sadescription = selfadhered.sadescription;
-
+    console.log(selfadhered, saForm);
+    saData.samanufacturer = saForm.samanufacturer;
+    saData.sanoa = saForm.sanoa;
+    saData.samaterial = saForm.samaterial;
+    saData.sasystem = saForm.sasystem;
+    // usesystemfStore.store.$state.systeminput.pdfSystemValue;
+    saData.sadescription = saForm.sadescription;
+    console.log(saData);
     await postSAshingle(saData);
 };
 
