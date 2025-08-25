@@ -84,57 +84,7 @@ export default function useSystemf() {
 
         return Array.isArray(data) ? data : data ? [data] : [];
     };
-    // const fetchData = async () => {
-    //     try {
-    //         const response = await execute({ params: { NOA: num.value } }).then((response) => {
-    //             noaNum.value = data.value;
-    //             console.log(data.value);
-    //             return noaNum.value;
-    //         });
 
-    //         if (response.length === 0) {
-    //             // alert('No data found!');
-    //         } else {
-    //             systemData.noa = noaNum.value[0].NOA;
-    //             systemData.manufacturer = noaNum.value[0].Manufacturer;
-    //             systemData.material = noaNum.value[0].Material;
-
-    //             systemData.Description_F1 = noaNum.value[0].Description_F1;
-    //             systemData.Description_F2 = noaNum.value[0].Description_F2;
-    //             systemData.Description_F3 = noaNum.value[0].Description_F3;
-    //             systemData.Description_F4 = noaNum.value[0].Description_F4;
-    //             systemData.Description_F5 = noaNum.value[0].Description_F5;
-    //             systemData.Description_F6 = noaNum.value[0].Description_F6;
-    //             systemData.Description_F7 = noaNum.value[0].Description_F7;
-    //             systemData.Description_F8 = noaNum.value[0].Description_F8;
-    //             systemData.Description_F9 = noaNum.value[0].Description_F9;
-    //             systemData.Description_F10 = noaNum.value[0].Description_F10;
-    //             systemData.Description_F11 = noaNum.value[0].Description_F11;
-    //             systemData.Description = noaNum.value[0].Description
-    //             systemData.system = noaNum.value[0].System;
-    //             systemData.systemCheck = noaNum.value[0].System;
-    //             if (systemData.systemCheck.length >= 2) {
-    //                 systemData.maps = noaNum.value[0].Maps;
-
-    //                 for (const [key] of Object.entries(systemData.maps)) {
-    //                     systemData.arraySystem.push(`${key}`);
-    //                     console.log(`${key}`);
-    //                 }
-    //             } else {
-    //                 systemData.system = noaNum.value[0].System;
-    //                 systemData.Description_F1 = noaNum.value[0].Description;
-    //             }
-
-    //             store.addData(systemData);
-
-    //             console.log(systemData, 'System added');
-    //         }
-    //     } catch (error) {
-    //         console.log('Error, fectching data', error);
-    //         // alert('An error occurred while fetching data.');
-    //     }
-    //     return results;
-    // };
     const fetchData = async () => {
         try {
             // 1) Call the endpoint and normalize the top-level payload
@@ -150,7 +100,9 @@ export default function useSystemf() {
             if (!arr.length) return [];
 
             // 3) Use the first entry
-            const entry = arr?.[0].value[0];
+            // const entry = arr?.[0].value[0];
+            const values = arr?.[0]?.value ?? [];
+            const entry = values[values.length - 1];
             console.log(entry);
             // 4) Map fields (handle alternate key names defensively)
             const systemData = {
@@ -161,29 +113,6 @@ export default function useSystemf() {
                 system: entry.System,
                 systemCheck: entry.System
             };
-
-            // 5) Copy Description_F1..F15 if present (prefers TileCap_Sheet_* source, falls back to direct)
-            // if (systemData.systemCheck.length >= 2) {
-            //     systemData.maps = entry.Maps;
-            //     for (let i = 1; i <= 15; i++) {
-            //         const key = `Description_F${i}`;
-            // //         // const src = `TileCap_Sheet_${key}`;
-            //         // if (entry[src] != null && entry[src] !== '') {
-            //         //     systemData[key] = entry[src];
-
-            //         if (entry[key] != null && entry[key] !== '') {
-            //             systemData[key] = entry[key];
-            //             console.log(systemData)
-            //         }
-            //     }
-            // for (const [key] of Object.entries(systemData.maps)) {
-            //     systemData.arraySystem.push(`${key}`);
-            //     console.log(`${key}`);
-            // }
-            // } else {
-            //     systemData.system = entry.System;
-            //     systemData.Description_F1 = noaNum.value[0].Description;
-            // }
 
             console.log(systemData);
             // 6) Persist and return

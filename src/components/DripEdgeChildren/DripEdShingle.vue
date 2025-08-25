@@ -81,7 +81,7 @@ function checkRoof() {
 }
 function checkValue(value) {
     types.value = type.value;
-    console.log(types.value, value);
+    console.log(types.value);
 }
 
 function getdripSize() {
