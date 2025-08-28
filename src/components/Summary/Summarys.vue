@@ -190,6 +190,7 @@ const callState = tryOnMounted(() => {
 });
 
 function pick(field) {
+    console.log(field);
     return isPaddySingle.value ? singlePaddyData.value[field] : doublePaddyData.value[field];
 }
 

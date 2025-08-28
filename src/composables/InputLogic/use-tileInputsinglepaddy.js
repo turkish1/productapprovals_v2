@@ -84,9 +84,12 @@ export default function useTileInputSingle() {
             const arr = typeof rawBody === 'string' ? parseJSON(rawBody, []) : Array.isArray(rawBody) ? rawBody : rawBody ? [rawBody] : [];
             console.log(rawBody, arr);
             if (!arr.length) return [];
-
+            const values = arr?.[0] ?? [];
+            console.log(values);
+            const entry = values;
+            console.log(entry);
             // 3) Use the first entry
-            const entryMultiTile = arr[0];
+            const entryMultiTile = entry;
             console.log(entryMultiTile);
             // 4) Map fields (handle alternate key names defensively)
             if (entryMultiTile.Table2.content === 'multiple') {
@@ -109,8 +112,8 @@ export default function useTileInputSingle() {
                 console.log(tileDatas);
                 paddyStore.addtileData(tileDatas);
             } else {
-                const entrySingleTile = arr[0];
-                console.log(entrySingleTile);
+                const entrySingleTile = entry;
+                console.log(entrySingleTile, entry);
                 const tileDatas = await {
                     noa: entrySingleTile.NOA ?? entrySingleTile.noa,
                     manufacturer: (entrySingleTile.applicant ?? entrySingleTile.Manufacturer)?.trim?.(),

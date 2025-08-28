@@ -49,13 +49,8 @@ export default function useTileSystemF() {
     const noaNumber = ref(0);
     async function takef(saNoa) {
         inputSystem.value = saNoa;
-        console.log(saNoa, inputSystem.value);
         noaNumber.value = Number(inputSystem.value);
-        console.log(noaNumber.value);
-        // if (isNaN(noaNumber)) {
-        //     alert('Invalid NOA number.');
-        //     return;
-        // }
+
         await fetchData();
     }
 
@@ -87,6 +82,7 @@ export default function useTileSystemF() {
             const arr = typeof rawBody === 'string' ? parseJSON(rawBody, []) : Array.isArray(rawBody) ? rawBody : rawBody ? [rawBody] : [];
             console.log(rawBody, arr);
             if (!arr.length) return [];
+            console.log(arr);
 
             // 3) Use the first entry
             const entry = arr[0];
