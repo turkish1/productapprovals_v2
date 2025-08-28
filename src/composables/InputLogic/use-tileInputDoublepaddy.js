@@ -84,9 +84,11 @@ export default function usetileInputdouble() {
             const arr = typeof rawBody === 'string' ? parseJSON(rawBody, []) : Array.isArray(rawBody) ? rawBody : rawBody ? [rawBody] : [];
             console.log(rawBody, arr);
             if (!arr.length) return [];
-
+            const values = arr?.[0] ?? [];
+            console.log(values);
+            const entry = values;
             // 3) Use the first entry
-            const entryMultiTile = arr[0];
+            const entryMultiTile = entry; //arr[0]
             console.log(entryMultiTile);
 
             if (entryMultiTile.Table2.content === 'multiple') {
@@ -109,7 +111,7 @@ export default function usetileInputdouble() {
                 console.log(tileData);
                 useDoublepaddy.addtileDatas(tileData);
             } else {
-                const entrySingleTile = arr[0];
+                const entrySingleTile = entry; //arr[0];
                 console.log(entrySingleTile);
                 const tileData = await {
                     noa: entrySingleTile.NOA ?? entrySingleTile.noa,
@@ -129,20 +131,6 @@ export default function usetileInputdouble() {
                 useDoublepaddy.addtileDatas(tileData);
             }
 
-            // 5) Copy Description_F1..F15 if present (prefers TileCap_Sheet_* source, falls back to direct)
-            // for (let i = 1; i <= 15; i++) {
-            //     const key = `TileCap_Sheet_Description_E${i}`;
-            //     const src = `Anchor_Base_Sheet_E${i}`;
-            //     console.log(key, src, entry[src]);
-            //     if (entry[src] != null && entry[src] !== '') {
-            //         tileData[src] = entry[src];
-            //         console.log(tileData[src]);
-            //         // tileData.AnchorBase = tileData[src]
-            //     } else if (entry[key] != null && entry[key] !== '') {
-            //         tileData[key] = entry[key];
-            //         console.log(tileData[key]);
-            //     }
-            // }
             console.log(tileData);
             // 6) Persist and return
 
@@ -152,62 +140,6 @@ export default function usetileInputdouble() {
             return null;
         }
     };
-
-    // const fetchData = async () => {
-    //     try {
-    //         const response = await execute({ params: { NOA: num.value } }).then((data) => {
-    //             console.log(data.data.value[0]);
-    //             noaNum.value = data.data.value;
-    //             console.log(noaNum.value);
-    //             return noaNum.value;
-    //         });
-    //         if (response.length > 0 && noaNum.value[0].Table2.content === 'multiple') {
-    //             // alert('No data found!');
-    //             // (data.value.length > 0 && noaNum.value[0].Table2.content) || noaNum.value[0].Table3.content;
-    //             console.log(noaNum.value);
-    //             tileData.noa = noaNum.value[0].NOA;
-    //             tileData.applicant = noaNum.value[0].applicant;
-    //             tileData.content = noaNum.value[0].Table2.content;
-    //             tileData.material = noaNum.value[0].AdhesiveMaterial;
-    //             tileData.selection = noaNum.value[0].AdhesiveMaterials;
-    //             tileData.description = noaNum.value[0].description;
-    //             tileData.Table2 = noaNum.value[0].Table2;
-    //             tileData.Table3 = noaNum.value[0].Table3;
-    //             tileData.select_tile = noaNum.value[0].Select_Tile;
-    //             tileData.tile_map = noaNum.value[0].Tile_Map;
-    //             tileData.table2_map = noaNum.value[0].Table2_Map;
-    //             tileData.resistance = noaNum.value[0].Resistance;
-    //             tileData.expiration_date = noaNum.value[0].expiration_date;
-    //             tileData.paddy_category = noaNum.value[0].paddy_category;
-    //             useDoublepaddy.addtileDatas(tileData);
-    //         } else if (response.length > 0) {
-    //             console.log(noaNum.value);
-    //             tileData.noa = noaNum.value[0].NOA;
-    //             tileData.applicant = noaNum.value[0].applicant;
-
-    //             tileData.material = noaNum.value[0].AdhesiveMaterial;
-    //             tileData.selection = noaNum.value[0].AdhesiveMaterials;
-    //             tileData.description = noaNum.value[0].description;
-    //             tileData.Table2 = noaNum.value[0].Table2;
-    //             tileData.Table3 = noaNum.value[0].Table3;
-    //             tileData.select_tile = noaNum.value[0].Select_Tile;
-    //             tileData.tile_map = noaNum.value[0].Tile_Map;
-    //             tileData.table2_map = noaNum.value[0].Table2_Map;
-    //             tileData.resistance = noaNum.value[0].Resistance;
-    //             tileData.expiration_date = noaNum.value[0].expiration_date;
-    //             tileData.paddy_category = noaNum.value[0].paddy_category;
-    //             useDoublepaddy.addtileDatas(tileData);
-
-    //             console.log(tileData, 'System added');
-    //         } else {
-    //             console.warn('No data found!');
-    //         }
-    //     } catch (error) {
-    //         console.log('Error, fectching data', error);
-    //         // alert('An error occurred while fetching data.');
-    //     }
-    //     return results;
-    // };
 
     return { getTilenoas, fetchData, useDoublepaddy, responseMessage, noaNum, error, results, tileData };
 }

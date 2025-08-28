@@ -55,9 +55,9 @@ const tilenoas = reactive({
     expiration_date: '',
     resistance: '',
     selection: '',
-    select_tile: '',
-    tile_map: [],
-    table2_map: [],
+    select_tile: [],
+    tile_map: {},
+    table2_map: {},
     two_ten_d_RS_Nails: null,
     one_number_eight_screw: null,
     two_number_eight_screw: null,
@@ -78,6 +78,7 @@ const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const isHeightValid = ref(false);
 // const isSlopeValid = ref(false);
+const selectedMulti = ref(null);
 
 const isDisabledslope = ref(true);
 const isDisabled = ref(true);
@@ -155,6 +156,99 @@ async function grabInput() {
     checkInput();
 
     console.log(mechTilenoa, isThiscomplextile, isCompTileValid);
+}
+function normalizeMechTable2Multiple(T2) {
+    // { content:"multiple", TypeA:{Direct_Deck:0.39}, ... } -> { TypeA:[0.39], ... }
+    if (!T2 || typeof T2 !== 'object' || T2.content !== 'multiple') return {};
+    const out = {};
+    for (const [k, v] of Object.entries(T2)) {
+        if (k === 'content') continue;
+        const d = v && typeof v === 'object' ? (v.Direct_Deck ?? v.value ?? v[0]) : v;
+        const lam = Number(Array.isArray(d) ? d[0] : d) || 0;
+        out[k] = [lam];
+    }
+    return out;
+}
+function normalizeMechTable3Multiple(T3) {
+    // { content:"multiple", TypeA:{two:..,three:..}, ... } -> { TypeA:[two..seven] }
+    if (!T3 || typeof T3 !== 'object' || T3.content !== 'multiple') return {};
+    const order = ['two', 'three', 'four', 'five', 'six', 'seven'];
+    const out = {};
+    for (const [k, v] of Object.entries(T3)) {
+        if (k === 'content') continue;
+        out[k] = order.map((key) => Number(v?.[key]) || 0);
+    }
+    return out;
+}
+const SLOPE_IDX = { 2: 0, 3: 1, 4: 2, 5: 3, 6: 4, 7: 5 };
+const clamp = (n, a, b) => Math.max(Math.min(n, Math.max(a, b)), Math.min(a, b));
+function bucketFromSlope(s) {
+    const n = clamp(Number(s || 0), 2, 12);
+    if (n <= 3) return 2;
+    if (n < 4) return 3;
+    if (n <= 4) return 4;
+    if (n < 6) return 5;
+    if (n < 7) return 6;
+    return 7;
+}
+function applyMechNOA(src) {
+    if (!src) return;
+    const isMultiple = src?.Table2?.content === 'multiple';
+
+    // base fields
+    tilenoas.noa = src.noa ?? '';
+    tilenoas.manufacturer = src.manufacturer ?? '';
+    tilenoas.material = src.material ?? '';
+    tilenoas.description = src.description ?? '';
+    tilenoas.expiration_date = src.expiration_date ?? '';
+
+    if (isMultiple) {
+        // normalize maps for multi
+        tilenoas.table2_map = normalizeMechTable2Multiple(src.Table2);
+        tilenoas.tile_map = normalizeMechTable3Multiple(src.Table3);
+        tilenoas.select_tile = Object.keys(tilenoas.table2_map);
+        // seed first type
+        if (!tilenoas.select_tile.includes(selectedMulti.value)) {
+            selectedMulti.value = tilenoas.select_tile[0] ?? null;
+        }
+        // paint λ/Mg for current selection & slope
+        if (selectedMulti.value) updateTile({ value: selectedMulti.value });
+    } else {
+        // single: clear multi maps
+        tilenoas.table2_map = {};
+        tilenoas.tile_map = {};
+        tilenoas.select_tile = [];
+
+        // λ from Direct_Deck
+        const lam = Number(src?.Table2?.Direct_Deck ?? 0) || 0;
+        zoneone.lambda1 = lam;
+        zonetwo.lambda2 = lam;
+        zonethree.lambda3 = lam;
+
+        // Mg from two..seven, pick by slope
+        const t3 = src?.Table3 || {};
+        const bucket = bucketFromSlope(dims.slope);
+        const mgByKey = { 2: t3.two, 3: t3.three, 4: t3.four, 5: t3.five, 6: t3.six, 7: t3.seven };
+        const mg = Number(mgByKey[bucket] ?? 0) || 0;
+        zoneone.mg1 = mg;
+        zonetwo.mg2 = mg;
+        zonethree.mg3 = mg;
+
+        // compute MR (zones must already be set)
+        recomputeMR();
+    }
+
+    // fastener lists (unchanged)
+    tilenoas.mechanicaltilefastener = src.mechanicaltilefastener ?? tilenoas.mechanicaltilefastener;
+    tilenoas.fastenerValues = src.fastenerValues ?? tilenoas.fastenerValues;
+}
+function recomputeMR() {
+    const z1 = Number(zoneone.zone || 0) * Number(zoneone.lambda1 || 0) - Number(zoneone.mg1 || 0);
+    const z2 = Number(zonetwo.zone || 0) * Number(zonetwo.lambda2 || 0) - Number(zonetwo.mg2 || 0);
+    const z3 = Number(zonethree.zone || 0) * Number(zonethree.lambda3 || 0) - Number(zonethree.mg3 || 0);
+    zoneone.mr1 = z1.toFixed(2);
+    zonetwo.mr2 = z2.toFixed(2);
+    zonethree.mr3 = z3.toFixed(2);
 }
 
 const newArray = ref([]);
@@ -307,86 +401,127 @@ function getdeckType(event) {
     }
 }
 // multitile
+// function updateTile(event) {
+//     console.log(multiTiles.table2_map);
+//     console.log(multiTiles.tile_map);
+//     // tilenoas.description = event.value;
+//     let type = multiTiles.table2_map;
+
+//     const valMulti = Object.entries(type).map((obj) => {
+//         const key = obj[0];
+//         const value = obj[1];
+//         console.log(key, value);
+
+//         if (event.value === key) {
+//             tilenoas.tiletype = event.value;
+//             tileSel.values = value[0];
+//             console.log(tileSel.values);
+//             zoneone.lambda1 = tileSel.values;
+//             zonetwo.lambda2 = tileSel.values;
+//             zonethree.lambda3 = tileSel.values;
+//         }
+//     });
+//     let types = multiTiles.tile_map;
+//     const valMultis = Object.entries(types).map((obj) => {
+//         const key = obj[0];
+//         const value = obj[1];
+//         console.log(key);
+//         if (event.value === key) {
+//             console.log(event.value);
+//             tileValue.v = value;
+
+//             console.log(tileValue.v);
+//             console.log(value);
+//         }
+//         const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+//         const slopeRange = clampNumber1(2, Number(dims.slope), 12);
+//         console.log(slopeRange);
+//         if (slopeRange <= slopeOptions.three) {
+//             console.log(tileValue.v);
+//             zoneone.mg1 = tileValue.v[0];
+//             zonetwo.mg2 = tileValue.v[0];
+//             zonethree.mg3 = tileValue.v[0];
+//         } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
+//             console.log(tileValue.v[1]);
+//             zoneone.mg1 = tileValue.v[1];
+//             zonetwo.mg2 = tileValue.v[1];
+//             zonethree.mg3 = tileValue.v[1];
+//         } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
+//             console.log('Is Less');
+//             zoneone.mg1 = tileValue.v[2];
+//             zonetwo.mg2 = tileValue.v[2];
+//             zonethree.mg3 = tileValue.v[2];
+//         } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
+//             console.log('Is Less');
+//             zoneone.mg1 = tileValue.v[3];
+//             zonetwo.mg2 = tileValue.v[3];
+//             zonethree.mg3 = tileValue.v[3];
+//         } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
+//             zoneone.mg1 = tileValue.v[4];
+//             zonetwo.mg2 = tileValue.v[4];
+//             zonethree.mg3 = tileValue.v[4];
+//         } else if (slopeRange >= slopeOptions.seven) {
+//             console.log('Is Less');
+//             zoneone.mg1 = tileValue.v[5];
+//             zonetwo.mg2 = tileValue.v[5];
+//             zonethree.mg3 = tileValue.v[5];
+//         }
+//         const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+
+//         const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+
+//         const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+
+//         zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+//         zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+//         zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+//         console.log(zoneone.mr1);
+//     });
+//     tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
+//     tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+//     // mechStaging();
+// }
 function updateTile(event) {
-    console.log(multiTiles.table2_map);
-    console.log(multiTiles.tile_map);
-    // tilenoas.description = event.value;
-    let type = multiTiles.table2_map;
+    const typeKey = event?.value ?? selectedMulti.value;
+    if (!typeKey) return;
 
-    const valMulti = Object.entries(type).map((obj) => {
-        const key = obj[0];
-        const value = obj[1];
-        console.log(key, value);
+    // λ from table2_map
+    const lamEntry = tilenoas.table2_map?.[typeKey];
+    const lam = Array.isArray(lamEntry) ? Number(lamEntry[0]) || 0 : typeof lamEntry === 'object' && lamEntry ? Number(lamEntry.Direct_Deck ?? lamEntry.value ?? lamEntry[0]) || 0 : Number(lamEntry) || 0;
+    zoneone.lambda1 = lam;
+    zonetwo.lambda2 = lam;
+    zonethree.lambda3 = lam;
 
-        if (event.value === key) {
-            tilenoas.tiletype = event.value;
-            tileSel.values = value[0];
-            console.log(tileSel.values);
-            zoneone.lambda1 = tileSel.values;
-            zonetwo.lambda2 = tileSel.values;
-            zonethree.lambda3 = tileSel.values;
-        }
-    });
-    let types = multiTiles.tile_map;
-    const valMultis = Object.entries(types).map((obj) => {
-        const key = obj[0];
-        const value = obj[1];
-        console.log(key);
-        if (event.value === key) {
-            console.log(event.value);
-            tileValue.v = value;
+    // Mg from tile_map by slope bucket
+    const mgArr = tilenoas.tile_map?.[typeKey] || [];
+    const idx = SLOPE_IDX[bucketFromSlope(dims.slope)] ?? 0;
+    const mg = Number(mgArr[idx] ?? 0) || 0;
+    zoneone.mg1 = mg;
+    zonetwo.mg2 = mg;
+    zonethree.mg3 = mg;
 
-            console.log(tileValue.v);
-            console.log(value);
-        }
-        const clampNumber1 = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-        const slopeRange = clampNumber1(2, Number(dims.slope), 12);
-        console.log(slopeRange);
-        if (slopeRange <= slopeOptions.three) {
-            console.log(tileValue.v);
-            zoneone.mg1 = tileValue.v[0];
-            zonetwo.mg2 = tileValue.v[0];
-            zonethree.mg3 = tileValue.v[0];
-        } else if (slopeRange === slopeOptions.three || slopeRange < slopeOptions.four) {
-            console.log(tileValue.v[1]);
-            zoneone.mg1 = tileValue.v[1];
-            zonetwo.mg2 = tileValue.v[1];
-            zonethree.mg3 = tileValue.v[1];
-        } else if (slopeRange < slopeOptions.five || slopeRange === slopeOptions.four) {
-            console.log('Is Less');
-            zoneone.mg1 = tileValue.v[2];
-            zonetwo.mg2 = tileValue.v[2];
-            zonethree.mg3 = tileValue.v[2];
-        } else if (slopeRange === slopeOptions.five || slopeRange < slopeOptions.six) {
-            console.log('Is Less');
-            zoneone.mg1 = tileValue.v[3];
-            zonetwo.mg2 = tileValue.v[3];
-            zonethree.mg3 = tileValue.v[3];
-        } else if (slopeRange == slopeOptions.six || slopeRange < slopeOptions.seven) {
-            zoneone.mg1 = tileValue.v[4];
-            zonetwo.mg2 = tileValue.v[4];
-            zonethree.mg3 = tileValue.v[4];
-        } else if (slopeRange >= slopeOptions.seven) {
-            console.log('Is Less');
-            zoneone.mg1 = tileValue.v[5];
-            zonetwo.mg2 = tileValue.v[5];
-            zonethree.mg3 = tileValue.v[5];
-        }
-        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+    tilenoas.tiletype = typeKey;
+    recomputeMR();
 
-        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
-
-        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
-
-        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
-        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
-        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
-        console.log(zoneone.mr1);
-    });
-    tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
-    tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
-    // mechStaging();
+    // keep fastener lists from store snapshot
+    if (Array.isArray(datamountedMech.value) && datamountedMech.value[0]) {
+        tilenoas.mechanicaltilefastener = datamountedMech.value[0].mechanicaltilefastener;
+        tilenoas.fastenerValues = datamountedMech.value[0].fastenerValues;
+    }
 }
+watch(
+    () => dims.slope,
+    () => {
+        // multi: re-eval Mg bucket; single: pushTable handles it
+        if (isMultiTileValid.value && selectedMulti.value) updateTile({ value: selectedMulti.value });
+        else if (!isMultiTileValid.value && Array.isArray(datamountedMech.value) && datamountedMech.value[0]) pushTable();
+    }
+);
+
+watch(selectedMulti, (v) => {
+    if (isMultiTileValid.value && v) updateTile({ value: v });
+});
+
 async function sysEcheckInput() {
     if (Edatamounted.value.length !== null) {
         Edatamounted.value.forEach((item, index) => {
@@ -400,19 +535,6 @@ async function sysEcheckInput() {
     }
 }
 
-// const whatChanged = computed(() => {
-//     checkInput();
-//     checkMR1();
-//     checkMR2();
-//     checkMR3();
-//     sysEcheckInput();
-//     setRoofInputs();
-
-//     grabInput();
-//     addCheckmarks();
-//     validateHeight();
-//     validateRoofSlope();
-// });
 const selectedsystemf = ref(null);
 const selectedMechanical = ref(null);
 // const selectedsysNoa = ref(null);
@@ -429,7 +551,7 @@ watch(
     selectedUnderlayment,
     (val) => {
         const key = val?.key ?? 0;
-        save.value = Number.isFinite(+key) ? +key : 0;
+        save.value = Number.isFinite(key) ? key : 0;
 
         const states = {
             0: { isTileValid: false, isUDLValid: false, isUDLNOAValid: false, isSAValid: false },
@@ -492,7 +614,7 @@ function checkInputSystem() {
         if (!systemData) return;
 
         // Dynamically assign Description_F1 to Description_F9
-        for (let i = 1; i <= 15; i++) {
+        for (let i = 1; i <= 15; i) {
             const key = `Description_F${i}`;
             if (systemData[key]) {
                 saTiles[key] = systemData[key];
@@ -666,31 +788,45 @@ const isTileSelectionValid = ref(false);
 const showMaterialValid = ref(false);
 
 function checkInput() {
-    const list = datamountedMech?.value ?? [];
-    if (!Array.isArray(list) || list.length === 0) {
-        // nothing to do; optionally reset flags here if you want
-        return;
-    }
+    // const list = datamountedMech?.value ?? [];
+    // if (!Array.isArray(list) || list.length === 0) {
+    //     // nothing to do; optionally reset flags here if you want
+    //     return;
+    // }
 
+    // const first = list[0];
+    // const isMultiple = first?.Table2?.content === 'multiple';
+    // console.log(first, list);
+    // // flags
+    // showMaterialValid.value = true;
+    // isMultiTileValid.value = isMultiple;
+    // isTileSelectionValid.value = !isMultiple;
+    // isTileValid.value = !isMultiple;
+
+    // // data description,
+    // const { manufacturer, material, noa } = first || {};
+    // Object.assign(tilenoas, { manufacturer, material });
+    // if (!isMultiple && noa != null) tilenoas.noa = noa;
+
+    // // follow-up actions
+
+    // selectedExposure();
+    // checkTile();
+    // checkMaterial();
+    const list = datamountedMech?.value ?? [];
+    if (!Array.isArray(list) || list.length === 0) return;
     const first = list[0];
     const isMultiple = first?.Table2?.content === 'multiple';
-    console.log(first, list);
-    // flags
+
     showMaterialValid.value = true;
     isMultiTileValid.value = isMultiple;
     isTileSelectionValid.value = !isMultiple;
-    isTileValid.value = !isMultiple;
+    isTileValid.value = true; // modal fields visible in both cases
 
-    // data description,
-    const { manufacturer, material, noa } = first || {};
-    Object.assign(tilenoas, { manufacturer, material });
-    if (!isMultiple && noa != null) tilenoas.noa = noa;
-
-    // follow-up actions
-
-    selectedExposure();
-    checkTile();
-    checkMaterial();
+    applyMechNOA(first);
+    selectedExposure(); // sets C/D
+    checkTile(); // sets zoneone/two/three.zone
+    if (!isMultiple) pushTable(); // single case uses existing logic
 }
 
 watchOnce(selectedUnderlayment, () => {});
@@ -698,7 +834,11 @@ invoke(async () => {
     await until(isTileValid).toBe(true);
     await onOpenExposureClick();
 });
-
+function resetZones() {
+    Object.assign(zoneone, { zone: '', lambda1: '', mg1: '', mr1: '', mf1: '' });
+    Object.assign(zonetwo, { zone: '', lambda2: '', mg2: '', mr2: '', mf2: '' });
+    Object.assign(zonethree, { zone: '', lambda3: '', mg3: '', mr3: '', mf3: '' });
+}
 const isExposureC = ref(false);
 const exposureChoosen = ref('');
 const selectedExposures = ref('');
@@ -805,15 +945,16 @@ async function pushTable() {
             console.log(zonethree.mg3);
         }
 
-        const result1 = computed(() => zoneone.zone * zoneone.lambda1);
+        // const result1 = computed(() => zoneone.zone * zoneone.lambda1);
 
-        const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
+        // const result2 = computed(() => zonetwo.zone * zonetwo.lambda2);
 
-        const result3 = computed(() => zonethree.zone * zonethree.lambda3);
+        // const result3 = computed(() => zonethree.zone * zonethree.lambda3);
 
-        zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
-        zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
-        zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+        // zoneone.mr1 = computed(() => (result1.value - zoneone.mg1).toFixed(2));
+        // zonetwo.mr2 = computed(() => (result2.value - zonetwo.mg2).toFixed(2));
+        // zonethree.mr3 = computed(() => (result3.value - zonethree.mg3).toFixed(2));
+        recomputeMR();
     }
 }
 const maps = ref([]);
@@ -955,7 +1096,7 @@ function updateselectSystem(selectedsystemf) {
     }
 
     if (selectedsystemf.value !== null) {
-        for (let i = 1; i <= 15; i++) {
+        for (let i = 1; i <= 15; i) {
             const field = `F${i}`;
             if (keyValueSystemFPairsValues.value[field] !== null) {
                 saDescPressure();
@@ -1071,19 +1212,19 @@ async function onOpenExposureClick() {
     };
 
     // 3) bump key BEFORE show if you want a hard reset
-    modalKeyExp.value++;
+    modalKeyExp.value;
 
     // 4) wait a tick so Vue sees the new props, THEN show the modal
     await nextTick();
-    modalKeyExp.value++;
+    modalKeyExp.value;
 
     modalExposureIsActive.value = true;
 }
 
 async function onOpenTileClick() {
-    // If you have a selected row/object, pass it here:
-    // const selected = mySelectedRow.value
-    // Otherwise, use whatever source `checkInput()` prepared.
+    // clear zone values before re-hydrate to avoid stale numbers flashing
+    resetZones();
+
     await nextTick();
 
     // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
@@ -1099,11 +1240,11 @@ async function onOpenTileClick() {
     };
 
     // 3) bump key BEFORE show if you want a hard reset
-    modalKey.value++;
+    modalKey.value;
 
     // 4) wait a tick so Vue sees the new props, THEN show the modal
     await nextTick();
-    modalKey.value++;
+    modalKey.value;
 
     modalIsActive.value = true;
 }
@@ -1127,11 +1268,11 @@ async function onOpenTileUDLClick() {
     };
 
     // 3) bump key BEFORE show if you want a hard reset
-    modalKeyUDL.value++;
+    modalKeyUDL.value;
 
     // 4) wait a tick so Vue sees the new props, THEN show the modal
     await nextTick();
-    modalKeyUDL.value++; // optional: bump key to force remount
+    modalKeyUDL.value; // optional: bump key to force remount
     modalUDLIsActive.value = true;
 }
 
@@ -1153,11 +1294,11 @@ async function onOpenTileSAClick() {
     };
 
     // 3) bump key BEFORE show if you want a hard reset
-    modalKeySA.value++;
+    modalKeySA.value;
 
     // 4) wait a tick so Vue sees the new props, THEN show the modal
     await nextTick();
-    modalKeySA.value++;
+    modalKeySA.value;
 
     modalSAIsActive.value = true;
 }

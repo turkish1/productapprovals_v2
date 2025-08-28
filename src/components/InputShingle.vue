@@ -171,6 +171,11 @@ async function checkInputSystem() {
     if (!entry?.systemData) return;
 
     const sd = entry.systemData;
+    let systemValue = sd.system ?? [];
+    if (Array.isArray(systemValue) && selectedsystemf?.value) {
+        const match = systemValue.find((s) => s === selectedsystemf.value);
+        systemValue = match ?? systemValue;
+    }
 
     // const entry = items.find((it) => it && it.systemData);
     // if (!entry) return;
@@ -186,7 +191,7 @@ async function checkInputSystem() {
         sanoa: sd.noa ?? '',
         sadescription: sd.description ?? []
     });
-    console.log(selfadhered);
+    console.log(selfadhered.system);
     // build pressure map
     // const pressures = Array.isArray(sd.designPressure) ? sd.designPressure : Array.isArray(sd.pressure) ? sd.pressure : [];
     sysFMap.value = buildMap(selfadhered.system);

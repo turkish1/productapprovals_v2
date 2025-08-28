@@ -102,7 +102,6 @@ export default function useTileSystemE() {
             const rawBody = hits[0]?.value?.body ?? hits[0]?.body ?? hits[0];
             const arr = typeof rawBody === 'string' ? parseJSON(rawBody, []) : Array.isArray(rawBody) ? rawBody : rawBody ? [rawBody] : [];
             if (!arr.length) return [];
-
             // 3) Use the first entry
             const entry = arr[0];
             console.log(entry);
@@ -120,7 +119,7 @@ export default function useTileSystemE() {
             for (let i = 1; i <= 15; i++) {
                 const key = `TileCap_Sheet_Description_E${i}`;
                 const src = `Anchor_Base_Sheet_E${i}`;
-                console.log(key, src, entry[src]);
+                // console.log(key, src, entry[src]);
                 if (entry[src] != null && entry[src] !== '') {
                     systemDataE[src] = entry[src];
                     // systemDataE.AnchorBase = systemDataE[src]
