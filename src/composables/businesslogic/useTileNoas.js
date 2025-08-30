@@ -19,7 +19,9 @@ export function useTileNoas() {
         await nextTick();
 
         const list = toArray(datamountedMech);
+        console.log(list);
         const first = list?.[0];
+        console.log(first);
         if (!first) return;
 
         const isMultiple = first?.Table2?.content === 'multiple';
