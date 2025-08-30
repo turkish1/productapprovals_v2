@@ -9,7 +9,7 @@ export default function useMech() {
     const noaNum = ref([]);
     let results = ref([]);
     const mechStore = useGlobalState();
-    const num = ref();
+    const num = ref('');
     const error = ref('');
 
     let url = 'https://2dz45lw4aeav6valksiiquuwqq0ejsio.lambda-url.us-east-1.on.aws/';
@@ -40,14 +40,48 @@ export default function useMech() {
         savedfastener: '',
         tiletype: ''
     });
-    async function takeMechInput(inputMech) {
-        input.value = inputMech;
-        console.log(input.value);
-        num.value = Number(input.value);
-        await fetchData();
-    }
+
+    const onlyDigits = (s) => String(s ?? '').replace(/\D/g, '');
+    const pad8 = (s) => s.padStart(8, '0');
+    const ensureArr = (x) => (Array.isArray(x) ? x : x ? [x] : []);
     // Assumes `execute` is from useAxios/useFetch w/ manual execute()
     // and `num` is a ref, `mechStore.addNoa` accepts a plain object.
+    function parseJSONSafe(s) {
+        try {
+            return JSON.parse(s);
+        } catch {
+            return null;
+        }
+    }
+
+    // Normalizes typical Lambda shapes into an array of records
+    function normalize(raw) {
+        // axios response
+        const data = raw?.data ?? raw;
+        console.log(data, raw);
+        if (typeof data === 'string') {
+            const parsed = parseJSONSafe(data);
+            return ensureArr(parsed);
+        }
+        if (data && typeof data === 'object' && 'body' in data) {
+            const body = typeof data.body === 'string' ? parseJSONSafe(data.body) : data.body;
+            return ensureArr(body);
+        }
+        // sometimes lambdas return [{ value: { body: '...' } }]
+        if (Array.isArray(data) && data[0]?.value?.body) {
+            const body = parseJSONSafe(data[0].value.body);
+            console.log(body);
+            return ensureArr(body);
+        }
+        return ensureArr(data);
+    }
+
+    async function takeMechInput(inputMech) {
+        input.value = onlyDigits(inputMech);
+        num.value = pad8(input.value); // <- keep 8-digit string
+        console.log(num.value, inputMech);
+        return await fetchData();
+    }
     const toArray = (resp) => {
         let data = resp?.data ?? resp;
 
@@ -94,7 +128,7 @@ export default function useMech() {
 
             // 3) Take the first record and map exactly what you need
             const r = JSON.parse(payload[0].value.body);
-            console.log(r[0]);
+            console.log(r);
             const mechanical = {
                 noa: r[0].NOA,
                 manufacturer: typeof r[0].applicant === 'string' ? r[0].applicant.trim() : r[0].applicant,
@@ -122,11 +156,16 @@ export default function useMech() {
 
             // 5) Return something useful to the caller
             return mechanical;
-        } catch (err) {
-            console.error('Error fetching data:', err);
+        } catch (e) {
+            // user typed again / double submit: old request got canceled
+            if (e?.code === 'ERR_CANCELED' || e?.name === 'CanceledError') {
+                return null; // ignore silently
+            }
+            console.error('Error fetching data:', e);
+            error.value = 'Failed to load NOA';
             return null;
         }
     };
 
-    return { input, fetchData, takeMechInput, noaNum, error, results, ...toRefs(mechanicalData), mechStore };
+    return { input, fetchData, takeMechInput, error, ...toRefs(mechanicalData), mechStore };
 }

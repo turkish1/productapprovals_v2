@@ -4,8 +4,6 @@ import Buttons from '@/components/Features/Buttons.vue';
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
 import systemFNumber from '@/components/roofSystems/systemFNumber.vue';
-import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
-import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import usePostToLambda from '@/composables/Postdata/usePostToLambda';
 import useUDL from '@/composables/TileFunc/systemE';
 import useExposurec from '@/composables/Tiletables/exposure_c';
@@ -15,8 +13,6 @@ import { useNumberValidation } from '@/composables/Validation/use-Slope';
 
 import tileNoaNumber from '@/components/roofSystems/tileNoaNumber.vue';
 import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
-import { useGlobalState } from '@/stores/exposurecStore';
-import { useExposureD } from '@/stores/exposuredStore';
 import { usemultiAdStore } from '@/stores/multitileADStore';
 import { usePaddyoptionStore } from '@/stores/paddyCatStore';
 import { useRoofListStore } from '@/stores/roofList';
@@ -36,7 +32,7 @@ const { inputdata } = storeToRefs(paddyStore);
 const useDoublepaddy = useDoublePaddyStore();
 const { inputdatas } = storeToRefs(useDoublepaddy);
 // State and Store Initialization
-const store = usevalueStore();
+// const store = usevalueStore();
 
 const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
@@ -45,12 +41,7 @@ const { multiAdinput } = storeToRefs(multipleStore);
 const { addSystemvalues, tileInputvalues } = usevalueStore();
 const resetStore = useSavedStore();
 const { addSavedvalues } = useSavedStore();
-const { Edatamounted, etileStore } = useUDL();
-
-const { tileData } = usetileInputdouble();
-const { tileDatas } = usetileInputsingle();
-const { zones } = useGlobalState();
-const { zoned } = useExposureD();
+const { Edatamounted } = useUDL();
 
 const { post, postUDL, postSATile } = usePostToLambda();
 const storeroof = useRoofListStore();
@@ -75,11 +66,6 @@ const zoneone = reactive({ zone: '', lambda1: '', mg1: '', mr1: '', mf1: '' });
 const zonetwo = reactive({ zone: '', lambda2: '', mg2: '', mr2: '', mf2: '' });
 const zonethree = reactive({ zone: '', lambda3: '', mg3: '', mr3: '', mf3: '' });
 
-// function resetZones() {
-//     Object.assign(zoneone, { zone1: '', lambda1: '', mg1: '', mr1: '', mf1: '' });
-//     Object.assign(zonetwo, { zone2: '', lambda2: '', mg2: '', mr2: '', mf2: '' });
-//     Object.assign(zonethree, { zone3: '', lambda3: '', mg3: '', mr3: '', mf3: '' });
-// }
 function resetZones() {
     Object.assign(zoneone, { zone: '', lambda1: '', mg1: '', mr1: '', mf1: '' });
     Object.assign(zonetwo, { zone: '', lambda2: '', mg2: '', mr2: '', mf2: '' });
@@ -96,7 +82,7 @@ const lastNonEmpty = (arrRef, key) => {
 };
 const selectedDeck = ref();
 const type = ref([{ name: 'Select Deck Type' }, { name: '5/8" Plywood' }, { name: '3/4" Plywood' }, { name: '1" x 6" T & G' }, { name: '1" x 8" T & G' }, { name: 'Existing 1/2" Plywood' }]);
-const save = ref([]);
+
 const UnderlaymentSelection = ref('');
 let selectedUnderlayment = ref('');
 const underlaymentType = ref([
@@ -116,10 +102,6 @@ const clamp = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a,
 const singlePaddy = computed(() => lastNonEmpty(inputdata, 'singlepaddyData'));
 const doublePaddy = computed(() => lastNonEmpty(inputdatas, 'doublepaddyData'));
 
-// normalize incoming select events (value or {value})
-
-// small numeric parser
-// const licenseEnd = ref('');
 const isMulti = (obj) => Array.isArray(obj?.select_tile) && obj.select_tile.length > 0;
 
 const isUDLValid = ref(false);
@@ -188,11 +170,8 @@ function normalizeTable3Multiple(T3) {
     return out;
 }
 
-// const visible = ref(false);
 const selectedExposures = ref('');
-// const exposureChoosen = ref('');
-// const isExposureC = ref(false);
-// const { getData } = useExposurec();
+
 const { getData, zonesRow } = useExposurec();
 
 // await getData(5.5, 22) // slope 5.5, height 22ft
@@ -314,10 +293,6 @@ function validateRoofSlope() {
 }
 // simple height validator (10..40)
 function validateHeight() {
-    // use the same source your input binds to (dims.height or heightModel)
-    // const raw = heightModel.value !== '' ? heightModel.value : dims.height;
-    // const n = Number(raw);
-    // dims.per = (raw * factor.value).toFixed(2);
     const raw = heightModel.value !== '' ? heightModel.value : dims.height;
     const n = Number(raw);
     dims.per = (n * factor.value).toFixed(2);
@@ -598,14 +573,7 @@ function onTileTypePick(val) {
     const t2 = tilenoas.table2_map || {};
     const t3 = tilenoas.tile_map || {};
     console.log(val, t2, t3);
-    // 1) λ from Table2_Map
-    // const lamArr = t2[typeKey];
-    // if (Array.isArray(lamArr) && lamArr.length) {
-    //     const lam = Number(lamArr[0]) || 0;
-    //     zoneone.lambda1 = lam;
-    //     zonetwo.lambda2 = lam;
-    //     zonethree.lambda3 = lam;
-    // }
+
     const lamEntry = t2[typeKey];
     let lam = 0;
     if (Array.isArray(lamEntry)) lam = Number(lamEntry[0]) || 0;
@@ -631,7 +599,6 @@ function onTileTypePick(val) {
     // leave MF to the material selection; we’ll set it in updateMF()
 }
 // const dataComp =  computed(() =>   async  (dtMounted.value = paddySelectedSingle.value));
-// let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 watch([inputdata, inputdatas], () => refreshSrc(), { deep: true });
 
 function computeMR2() {
@@ -703,9 +670,7 @@ function applyNOA(src, { multiple }) {
     tilenoas.description = src.description ?? '';
     tilenoas.material = src.material ?? src.selection ?? [];
     tilenoas.select_tile = src.select_tile ?? [];
-    // tilenoas.table2_map = src.Table2_map ?? src.Table2_Map ?? {};
-    // tilenoas.tile_map = src.tile_map ?? src.Tile_Map ?? {};
-    // tilenoas.expiration_date = src.expiration_date ?? '';
+
     tilenoas.table2_map = src.Table2_map ?? src.Table2_Map ?? normalizeTable2Multiple(src.Table2) ?? {};
     tilenoas.tile_map = src.tile_map ?? src.Tile_Map ?? normalizeTable3Multiple(src.Table3) ?? {};
     // 🔧 NEW: ensure single path exposes a selection map the modal can use
@@ -914,23 +879,7 @@ function clearData() {
         clearQueryInput?.();
     }
 }
-// function clearData() {
-//     Object.assign(tilenoas, {
-//         manufacturer: '',
-//         description: ''
-//     });
 
-//     zoneone.lambda1 = zonetwo.lambda2 = zonethree.lambda3 = '';
-//     zoneone.mr1 = zonetwo.mr2 = zonethree.mr3 = '';
-//     zoneone.mg1 = zonetwo.mg2 = zonethree.mg3 = '';
-//     zoneone.mf1 = zonetwo.mf2 = zonethree.mf3 = '';
-
-//     resetStore.$reset();
-//     console.log(paddyTracker.value, selectedOption.value);
-//     if (paddyTracker.value && paddyTracker.value !== selectedOption.value) {
-//         clearQueryInput?.();
-//     }
-// }
 watch(
     selectedOption,
     (mode) => {
@@ -1292,8 +1241,6 @@ watch(
     () => {
         if (isMultiTileValid.value && selectedMulti.value) {
             onTileTypePick(selectedMulti.value);
-            // re-check MF only if a material is already chosen
-            // if (selectedMaterial.value) updateMF(selectedMaterial.value);
         }
     },
     { immediate: true }
@@ -1379,10 +1326,7 @@ watch(selectedOption, (mode, prev) => {
     isTileValid.value = true;
     isMultiTileValid.value = false;
     refreshSrc();
-    // await nextTick();
     onExposureChange();
-    // if the modal is open, bump key so content remounts
-    // if (modalIsActive.value) modalKey.value++;
 });
 
 // When the user flips single/double, clear UI immediately
@@ -1432,9 +1376,7 @@ const buildEKeyMap = (keys = [], values = []) => Object.fromEntries(keys.map((k,
 
 // --- Maps built reactively (no manual loops needed)
 const sysEMap = computed(() => buildEKeyMap(udlTile.system || [], udlTile.arrDesignPressure || []));
-// Optional: if you sometimes store Anchor_Base_* on udlTile instead of Anchor_Base
-// const anchorSource = (k) => Anchor_Base?.[`Anchor_Base_Sheet_${k}`] ?? udlTile?.[`Anchor_Base_Sheet_${k}`] ?? '';
-// const capDescSource = (k) => udlTile?.[`TileCap_Sheet_Description_${k}`] ?? '';
+
 const capDescSource = (k) => udlTile?.[`TileCap_Sheet_Description_${k}`] ?? '';
 const anchorSource = (k) => udlTile?.[`Anchor_Base_Sheet_${k}`] ?? '';
 function udlDescPressure() {
@@ -1492,11 +1434,6 @@ watch(
     debouncedClearAfterFirst(() => childQueryRef.noa, resetTileModal, 1500)
 );
 
-// watch(
-//     () => saTiles.noa,
-//     debouncedClearAfterFirst(() => saTiles.noa, resetSAModal, 1500)
-// );
-
 function resetTileModal() {
     modalIsActive.value = false;
     modalKey.value++; // force a fresh modal instance next open
@@ -1510,7 +1447,6 @@ function resetTileModal() {
         select_tile: [],
         table2_map: {},
         tile_map: {},
-        // selection: {},
         expiration_date: ''
     });
     console.log(tilenoas);
@@ -1589,12 +1525,9 @@ async function postUDLStaging() {
 const modalKeyUDL = ref(0);
 const currentTileUDl = ref(null);
 
-// const showModal = ref(false);
 const modalKey = ref(0);
-// const showModalSA = ref(false);
 const modalKeySA = ref(0);
 const currentTile = ref(null);
-// assume zoneone, zonetwo, zonethree are reactive({ ... })
 const currentTileSA = ref(null);
 
 function toPlain(v) {
@@ -1617,16 +1550,12 @@ function toPlainSA(v) {
 }
 
 async function onOpenTileClick() {
-    // resetZones(); // clear the table so no stale shows
-
     // ensure latest payload has been applied by watchers
     modalKey.value++;
 
     await nextTick();
     modalKey.value++;
 
-    // simpleMethod();
-    // console.log(simpleMethod);
     const src = toPlain(tilenoas);
     console.log(src);
     currentTile.value = {
@@ -1660,8 +1589,6 @@ function onSaNoaConfirmed(val) {
 
 async function onOpenTileUDLClick() {
     // If you have a selected row/object, pass it here:
-    // const selected = mySelectedRow.value
-    // Otherwise, use whatever source `checkInput()` prepared.
     await nextTick();
 
     // 1) run any prep that fills data (but make sure it doesn’t mutate during open)
@@ -1886,7 +1813,6 @@ const tileSAStaging = async () => {
                 <label style="color: red; margin-bottom: 55px">Select System F *</label>
                 <br />
                 <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" />
-                <!-- @update:modelValue="saDescPressure" -->
             </div>
 
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
