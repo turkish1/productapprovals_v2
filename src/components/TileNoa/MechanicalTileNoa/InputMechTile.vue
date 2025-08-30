@@ -191,8 +191,9 @@ function mapFromArrays(keys = [], vals = []) {
     });
     return out;
 }
-
-// F -> Design Pressure (e.g., {F1:-60, F2:-75})
+const keyValueSystemEPairsValues = ref({});
+const keyValueSystemEPairsKeys = ref({});
+const selectedUnderlaymentOpt = computed(() => (underlaymentType.value || []).find((o) => o.key === selectedUnderlaymentKey.value) || null);
 const fSysMap = computed(() => {
     const sys = Array.isArray(saTiles.system) ? saTiles.system : [];
     const dp = Array.isArray(saTiles.arrDesignPressure) ? saTiles.arrDesignPressure : [];
@@ -222,7 +223,15 @@ const fDescForSelected = computed({
         saTiles.description = String(v ?? '');
     }
 });
+const selectedMechanical = ref(null);
 
+const selectedUnderlaymentKey = ref(0); // 0,1,2,3
+const underlaymentType = ref([
+    { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
+    { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
+    { selectedBasesheet: '(S/A) Tile Capsheet: adhered diretly to a wood deck, per the NOA System F', key: 2 },
+    { selectedBasesheet: '(S/A) Tile Capsheet: adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
+]);
 function applyMechNOA(src) {
     if (!src) return;
     const isMultiple = src?.Table2?.content === 'multiple';
@@ -652,16 +661,6 @@ watch(selectedMulti, (v) => {
     if (isMultiTileValid.value && v) updateTile({ value: v });
 });
 
-const selectedMechanical = ref(null);
-
-const selectedUnderlaymentKey = ref(0); // 0,1,2,3
-const selectedUnderlaymentOpt = computed(() => (underlaymentType.value || []).find((o) => o.key === selectedUnderlaymentKey.value) || null);
-const underlaymentType = ref([
-    { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
-    { selectedBasesheet: 'Prescriptive ASTM #90 hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
-    { selectedBasesheet: '(S/A) Tile Capsheet: adhered diretly to a wood deck, per the NOA System F', key: 2 },
-    { selectedBasesheet: '(S/A) Tile Capsheet: adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
-]);
 function onUnderlaymentChange(key) {
     save.value = Number.isFinite(key) ? key : 0;
 
@@ -1026,9 +1025,6 @@ const postMetrictable = reactive({
 
 // const keyValueSystemFPairsValues = ref({});
 // const keyValueSystemFPairsKeys = ref({});
-
-const keyValueSystemEPairsValues = ref({});
-const keyValueSystemEPairsKeys = ref({});
 
 // Assuming udlTile and Anchor_Base are imported or declared above
 function updateselectSystemE(selectedsystemE) {
