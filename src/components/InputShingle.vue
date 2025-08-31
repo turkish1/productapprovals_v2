@@ -106,7 +106,6 @@ watch(
 );
 const selectedsystemf = ref(null);
 
-// let datamounted = ref(inputshingle._object.inputshingle);
 const modalSAIsActive = ref(false);
 const modalUDLIsActive = ref(false);
 const modalIsActive = ref(false);
@@ -129,6 +128,7 @@ function getdeckType(event) {
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
         isDisabledslope.value = false;
+        dims.decktype = dt.value;
         console.log(dt.value);
     }
 }
@@ -298,16 +298,23 @@ const showSaDescription = computed(() => !!selectedsystemf.value);
 
 const modalKey = ref(0);
 
-function resetShingleForm() {
-    Object.assign(shingleForm, { manufacturer: '', material: '', description: '' });
+// function resetShingleForm() {
+//     Object.assign(shingleForm, { manufacturer: '', material: '', description: '' });
+// }
+// function resetUdlForm() {
+//     Object.assign(udlForm, { udlnoa: '', udlmanufacturer: '', udlmaterial: '', udldescription: '' });
+// }
+// function resetSaForm() {
+//     Object.assign(saForm, { sanoa: '', samanufacturer: '', samaterial: '', sasystem: [], sadescription: '' });
+// }
+async function waitFor(getter, timeoutMs = 2500, intervalMs = 50) {
+    const start = Date.now();
+    while (!getter()) {
+        if (Date.now() - start > timeoutMs) return null;
+        await new Promise((r) => setTimeout(r, intervalMs));
+    }
+    return getter();
 }
-function resetUdlForm() {
-    Object.assign(udlForm, { udlnoa: '', udlmanufacturer: '', udlmaterial: '', udldescription: '' });
-}
-function resetSaForm() {
-    Object.assign(saForm, { sanoa: '', samanufacturer: '', samaterial: '', sasystem: [], sadescription: '' });
-}
-
 const modalKeyUDL = ref(0);
 const modalKeySA = ref(0);
 const loading = ref(false);
@@ -318,9 +325,10 @@ async function openModal(kind) {
         await nextTick(); // settle pending UI writes
 
         if (kind === 'shingle') {
-            // await until(() => !!latestShingle.value).toBe(true);
-            resetShingleForm();
+            const s = await waitFor(() => latestShingle.value, 2500, 50);
+            if (!s) return;
             Object.assign(shingleForm, {
+                noa: latestShingle.value?.noa || '',
                 manufacturer: latestShingle.value?.applicant || '',
                 material: latestShingle.value?.material || '',
                 description: latestShingle.value?.description || ''
@@ -330,10 +338,12 @@ async function openModal(kind) {
             modalIsActive.value = true;
             return;
         }
+        // resetShingleForm();
 
         if (kind === 'udl') {
-            // await until(() => !!latestUdl.value).toBe(true);
-            resetUdlForm();
+            // resetUdlForm();
+            const u = await waitFor(() => latestUdl.value, 2500, 50);
+
             Object.assign(udlForm, {
                 udlnoa: latestUdl.value?.noa || '',
                 udlmanufacturer: latestUdl.value?.applicant || '',
@@ -358,14 +368,15 @@ const onOpenShingleClick = () => openModal('shingle');
 const onOpenShingleUDLClick = () => openModal('udl');
 
 const shingleUdlStaging = async () => {
-    udlData.udlmanufacturer = underlayment.udlmanufacturer;
-    udlData.udlnoa = underlayment.udlnoa;
-    udlData.udlmaterial = underlayment.udlmaterial;
-    udlData.udldescription = underlayment.udldescription;
-
-    await postUDLshingle(udlData);
+    const payload = {
+        udlmanufacturer: udlForm.udlmanufacturer || '',
+        udlnoa: udlForm.udlnoa || '',
+        udlmaterial: udlForm.udlmaterial || '',
+        udldescription: udlForm.udldescription || '',
+        udlIdentifier: 'udl'
+    };
+    await postUDLshingle(payload);
 };
-
 const shingleSAStaging = async () => {
     console.log(selfadhered, saForm);
     saData.samanufacturer = saForm.samanufacturer;
@@ -448,7 +459,11 @@ function getIndexs() {
 
     const low = normalize(selectedSlopelow.value);
     const high = normalize(selectedSlopehigh.value);
-
+    if (high) {
+        isPrescriptivehigh = true;
+        postMetrics.prescriptiveSelection = isPrescriptivehigh ? high : low;
+        console.log(low, high, postMetrics);
+    }
     if (!low && !high) return;
 
     const conditions = [
@@ -475,45 +490,21 @@ function getIndexs() {
 }
 // helpers
 const toNum = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
-const normalizeOpt = (v) => (typeof v === 'string' ? v : (v?.value ?? v?.label ?? v?.name ?? ''));
 
-// choose the prescriptive text based on the *ref* value
 const shingleMetrics = async () => {
-    // choose the prescriptive text based on the *ref* value
-    const prescriptive = normalizeOpt(isPrescriptivehigh.value ? selectedSlopehigh.value : selectedSlopelow.value);
+    postMetrics.noa = shingleForm.noa;
+    postMetrics.manufacturer = shingleForm.manufacturer;
+    postMetrics.material = shingleForm.material;
+    postMetrics.description = shingleForm.description;
+    postMetrics.slope = toNum(slope.value);
+    postMetrics.height = toNum(dims.height);
+    postMetrics.area = toNum(dims.area);
+    postMetrics.decktype = dims.decktype;
+    postMetrics.shingleIdentifier = shingles.shingleIdentifier;
 
-    const payload = {
-        shingleIdentifier: 'shingle',
-        noa: shingles.noa ?? '',
-        manufacturer: shingles.manufacturer ?? '',
-        material: shingles.material ?? '',
-        description: shingles.description ?? '',
-        slope: toNum(slope.value),
-        height: toNum(dims.height),
-        area: toNum(dims.area),
-        decktype: dt.value ?? '',
-        prescriptiveSelection: prescriptive
-    };
-
-    try {
-        await postShingle(payload);
-    } catch (err) {
-        console.error('postShingle failed:', err);
-    }
+    console.log(postMetrics);
+    await postShingle(postMetrics);
 };
-// const shingleMetrics = async () => {
-//     postMetrics.noa = shingles.noa;
-//     postMetrics.manufacturer = shingles.manufacturer;
-//     postMetrics.material = shingles.material;
-//     postMetrics.description = shingles.description;
-//     postMetrics.slope = slope.value;
-//     postMetrics.height = dims.height;
-//     postMetrics.area = dims.area;
-//     postMetrics.decktype = dt.value;
-//     postMetrics.shingleIdentifier = shingles.shingleIdentifier;
-//     postMetrics.prescriptiveSelection = isPrescriptivehigh === true ? selectedSlopehigh.value : selectedSlopelow.value;
-//     await postShingle(postMetrics);
-// };
 const slopeBand = computed(() => {
     const n = Number(slope.value || 0);
     if (n >= 2 && n <= 4) return 'low';

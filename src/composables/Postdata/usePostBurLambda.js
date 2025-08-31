@@ -69,25 +69,17 @@ export default function usePostBurLambda() {
         try {
             return await execute({ data: payload.value });
         } catch (err) {
-            error.value = err.massage;
+            if (axios.isCancel?.(err) || err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError') {
+                // expected abort; don't treat as an error
+                console.debug('postMech aborted:', err.message);
+                return null;
+            }
             console.error('Lambda post failed:', err);
+            throw err;
         } finally {
             loading.value = false;
         }
     };
-
-    // async function postBur(value) {
-    //     try {
-    //         payload.value = value;
-    //         // testOptionsPreflight();
-    //         console.log('Payload:', payload.value);
-
-    //         await execute({ data: payload.value });
-    //     } catch (e) {
-    //         // prevents uncaught promise — you can also forward this to your UI
-    //         console.error('Lambda post failed:', e);
-    //     }
-    // }
 
     return { data, errors, isFetching, loading, postBur, dripEdge };
 }
