@@ -695,22 +695,6 @@ const isDataValid = ref(true);
 
 const visible = ref(false);
 
-// const Anchor_Base = reactive({
-//     Anchor_Base_Sheet_E1: '',
-//     Anchor_Base_Sheet_E2: '',
-//     Anchor_Base_Sheet_E3: '',
-//     Anchor_Base_Sheet_E4: '',
-//     Anchor_Base_Sheet_E5: '',
-//     Anchor_Base_Sheet_E6: '',
-//     Anchor_Base_Sheet_E7: '',
-//     Anchor_Base_Sheet_E8: '',
-//     Anchor_Base_Sheet_E9: '',
-//     Anchor_Base_Sheet_E10: '',
-//     Anchor_Base_Sheet_E11: '',
-//     Anchor_Base_Sheet_E12: '',
-//     Anchor_Base_Sheet_E13: ''
-// });
-
 function EcheckInputSystem() {
     datamountedsystemE.value.forEach((item) => {
         udlTile.Maps = item.systemDataE.Maps;
@@ -804,8 +788,6 @@ const isTileSelectionValid = ref(false);
 const showMaterialValid = ref(false);
 
 function checkInput() {
-    // const list = datamountedMech?.value ?? [];
-    // if (!Array.isArray(list) || list.length === 0) return;
     const first = latestMech.value;
     const isMultiple = first?.Table2?.content === 'multiple';
 
@@ -927,9 +909,6 @@ watch(modalIsActive, (open) => {
         updateMF(selectedMechanical.value);
     }
 });
-const zoneSource = reactive({
-    zones: []
-});
 
 // pretty-print keys like "two_ten_d_RS_Nails" -> "Two Ten D RS Nails"
 function prettifyFastenerKey(k = '') {
@@ -1004,28 +983,6 @@ function updateMF(newKey) {
     ismrInvalid3.value = !ismrValidMR3.value;
 }
 
-const postMetrictable = reactive({
-    noa: '',
-    applicant: '',
-    description: '',
-    material: '',
-    decktype: '',
-    prescriptive: '',
-    height: '',
-    slope: '',
-    perimeter: '',
-    area: '',
-    fastenervalues: '',
-    zoneone: [],
-    zonetwo: [],
-    zonethree: [],
-    mechIdentifier: 'mechanicalTile',
-    checkvalues: Boolean
-});
-
-// const keyValueSystemFPairsValues = ref({});
-// const keyValueSystemFPairsKeys = ref({});
-
 // Assuming udlTile and Anchor_Base are imported or declared above
 function updateselectSystemE(selectedsystemE) {
     const sys = udlTile.system;
@@ -1094,6 +1051,19 @@ function toPlainSA(v) {
     console.log(x);
 
     return isProxy(x) ? toRaw(x) : x;
+}
+
+const postingMech = ref(false);
+async function onCloseMechModal() {
+    if (postingMech.value) return; // prevent overlap
+    postingMech.value = true;
+    try {
+        modalIsActive.value = false;
+        pushTable();
+        await mechStaging();
+    } finally {
+        postingMech.value = false;
+    }
 }
 
 async function onOpenExposureClick() {
@@ -1404,7 +1374,7 @@ const mechSAStaging = async () => {
             <InputText id="capsheetdescription" v-model="fDescForSelected" :disabled="!selectedsystemf" />
         </div>
     </ModalWindow>
-    <ModalWindow :key="modalKey" :initialData="currentTile" @closePopup="(modalIsActive = false), pushTable(), mechStaging()" v-if="modalIsActive">
+    <ModalWindow :key="modalKey" :initialData="currentTile" @closePopup="onCloseMechModal" v-if="modalIsActive">
         <div v-show="isTileValid" class="grid grid-cols-2 md:grid-cols-2 gap-2" style="margin-left: 30px">
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Tile Applicant</label>
@@ -1417,7 +1387,6 @@ const mechSAStaging = async () => {
             <div v-show="isTileValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: red">Select Mechanical Tile Fastener *</label>
-                    <!-- <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="checkMaterial" @update:modelValue="updateMF" /> -->
                     <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @update:modelValue="updateMF" />
                 </div>
             </div>
