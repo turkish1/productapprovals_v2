@@ -4,7 +4,6 @@ import usePostBurLambda from '@/composables/Postdata/usePostBurLambda';
 import { useburValidation } from '@/composables/Validation/use-burHeight';
 import { useburSlopeValidation } from '@/composables/Validation/use-burSlope';
 import { useBurStore } from '@/stores/burStore';
-// import { useBurpdfStore } from '@/stores/burpdfStore';
 import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
@@ -16,6 +15,7 @@ const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 let isvalueValid = ref(false);
 const factor = ref(0.6);
+const dt = ref('');
 const lowslopeStore = useBurStore();
 const isHeightValid = ref(false);
 
@@ -48,29 +48,14 @@ function getdeckType(evt) {
     const sel = v?.name ?? selectedDeck.value?.name;
     if (!sel || sel === 'Select Deck Type') return;
     dt.value = sel;
+    console.log(dt.value);
     // Enable slope only; height stays disabled until slope validates
     isSlopeDisabled.value = false;
     isHeightDisabled.value = true;
-    dims.deckType = selectedDeck;
+    dims.deckType = dt.value;
+    console.log(dims);
 }
 
-const dt = ref('');
-function validateRoofSlope() {
-    const n = Number(dims.slope);
-    const ok = Number.isFinite(n) && n >= 0.128 && n <= 1.5;
-    isSlopeValid.value = ok;
-
-    if (ok) {
-        // clear height and enable it
-        dims.height = '';
-        heightModel.value = '';
-        isHeightDisabled.value = false;
-    } else {
-        // keep height locked if slope is not valid
-        isHeightDisabled.value = true;
-        isHeightValid.value = false;
-    }
-}
 // when slope changes: validate it and enable/disable height accordingly
 watch(
     () => dims.slope,
@@ -136,6 +121,9 @@ watch(
     (h) => {
         validateburHeight(h);
         isHeightValid.value = true;
+        if (dims.per) {
+            burStaging();
+        }
         addCheckmarks();
     }
 );
@@ -144,6 +132,7 @@ function addCheckmarks() {
     isvalueValid.value = isHeightValid.value;
 }
 function burStaging() {
+    console.log(dims);
     postBur(dims);
 }
 </script>
@@ -167,7 +156,6 @@ function burStaging() {
         <div class="w-64 mt-3 space-y-1" style="margin-left: 20px">
             <label for="height" style="color: #122620">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isHeightValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="dims.height" type="text" placeholder="height" :disabled="isHeightDisabled" />
-            <!-- <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" :disabled="isHeightDisabled" @change="validateHeight" /> -->
             <!-- Height error -->
             <Message v-if="errorburHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">
                 {{ errorburHeightMessage }}
@@ -176,7 +164,6 @@ function burStaging() {
         <div class="w-64 mt-6 space-y-1" style="margin-left: 20px">
             <label for="per" style="color: #122620">Roof Perimeter * (a') = .6 x h:</label>
             <InputText id="per" :value="dims.per" type="text" placeholder="per" readonly />
-            <!-- <InputText id="per" :value="dims.per" type="text" placeholder="per" readonly /> -->
         </div>
 
         <DripEdLowslope />
