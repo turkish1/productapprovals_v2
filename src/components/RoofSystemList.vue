@@ -61,7 +61,7 @@ onMounted(() => {
 .terminal {
     width: 100%;
     max-width: 500px;
-    height: 200px;
+    height: 225px;
     /* background-color: transparent; */
     color: black;
     font-family: monospace;
