@@ -2,7 +2,7 @@
 import DripEdShingle from '@/components/DripEdgeChildren/DripEdShingle.vue';
 import Buttons from '@/components/Features/Buttons.vue';
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
-import AutoComplete from '@/components/roofSystems/AutoComplete.vue';
+import ShingleNoa from '@/components/roofSystems/ShingleNoa.vue';
 import usePostShingleToLambda from '@/composables/Postdata/usePostShingleLambda';
 import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
@@ -298,15 +298,6 @@ const showSaDescription = computed(() => !!selectedsystemf.value);
 
 const modalKey = ref(0);
 
-// function resetShingleForm() {
-//     Object.assign(shingleForm, { manufacturer: '', material: '', description: '' });
-// }
-// function resetUdlForm() {
-//     Object.assign(udlForm, { udlnoa: '', udlmanufacturer: '', udlmaterial: '', udldescription: '' });
-// }
-// function resetSaForm() {
-//     Object.assign(saForm, { sanoa: '', samanufacturer: '', samaterial: '', sasystem: [], sadescription: '' });
-// }
 async function waitFor(getter, timeoutMs = 2500, intervalMs = 50) {
     const start = Date.now();
     while (!getter()) {
@@ -565,11 +556,11 @@ watch(
             <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="!canEnterHeight" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
         </div>
-        <div v-show="showSA" class="min-w-[580px] flex flex-col border-2 border-gray-700 focus:border-orange-600" style="margin-top: 20px">
+        <div v-show="showSA" class="min-w-[680px] flex flex-col border-2 border-gray-700 focus:border-orange-600" style="margin-top: 20px">
             <label style="color: red">Select Underlayment (S/A) *</label>
             <Select v-model="selectedSlopehigh" :options="slopetypemore" placeholder="make selection" @change="getIndexs" />
         </div>
-        <div v-show="showUDL" class="min-w-[580px] flex flex-col border-2 border-gray-700 focus:border-orange-600" style="margin-top: 50px">
+        <div v-show="showUDL" class="min-w-[680px] flex flex-col border-2 border-gray-700 focus:border-orange-600" style="margin-top: 50px">
             <label style="color: red">Select Underlayment (UDL) *</label>
             <Select v-model="selectedSlopelow" :options="slopetypeless" placeholder="make selection" @change="getIndexs" />
         </div>
@@ -578,7 +569,7 @@ watch(
         <div class="dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 full:grid-cols-2 gap-3">
             <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                    <AutoComplete />
+                    <ShingleNoa />
                     <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px; margin-top: 30px" />
                 </div>
             </div>

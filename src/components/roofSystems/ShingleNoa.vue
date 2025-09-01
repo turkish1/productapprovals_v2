@@ -1,5 +1,5 @@
 <template>
-    <div class="autocomplete">
+    <div class="shinglenoa">
         <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 20px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
@@ -124,7 +124,7 @@ const hideSuggestions = () => {
 </script>
 
 <style scoped>
-.autocomplete {
+.shinnglenoa {
     position: relative;
     width: 300px;
 }
@@ -142,7 +142,7 @@ input {
     margin: 0;
     border: 1px solid #ccc;
     position: absolute;
-    width: 100%;
+    width: 10%;
     max-height: 150px;
     overflow-y: auto;
     background: white;
