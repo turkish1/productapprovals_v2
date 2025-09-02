@@ -30,23 +30,6 @@ export default function usecreateProcess() {
         } catch (err) {
             throw new Error(`CreateUser failed: ${(err.message, err.responseMessage)}`);
         }
-        //     // store the values
-        //     procStore.addData(procData);
-        //     // then clear the page
-        //     console.log('System added');
-        // }
-
-        // if (procData.processNumber === 'meNaN') {
-        //     return [];
-        // } else {
-        //     await execute({ data: form });
-        //     responseMessage.value = 'Form submitted successfully!';
-
-        //     // store the values
-        //     procStore.addData(procData);
-        //     // then clear the page
-        //     console.log('System added');
-        // }
     }
 
     // 18061905
