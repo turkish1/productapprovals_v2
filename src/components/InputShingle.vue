@@ -428,7 +428,8 @@ const shingleUdlStaging = async () => {
         udlmaterial: udlForm.udlmaterial || '',
         udldescription: udlForm.udldescription || '',
         udlIdentifier: 'udl',
-        hittype: udlForm.hittype
+        hittype: udlForm.hittype,
+        prescriptiveSelection: udlForm.prescriptiveSelection
     };
     console.log(payload.hittype);
     await postUDLshingle(payload);
@@ -440,7 +441,7 @@ const shingleSAStaging = async () => {
     saData.samanufacturer = saForm.samanufacturer;
     saData.sanoa = saForm.sanoa;
     saData.samaterial = saForm.samaterial;
-
+    saData.prescriptiveSelection = saForm.prescriptiveSelection;
     // ✅ always a single Fx like "F7"
     saData.sasystem = key;
 
