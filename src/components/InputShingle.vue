@@ -262,7 +262,8 @@ const udlForm = reactive({
     udlmanufacturer: '',
     udlmaterial: '',
     udldescription: '',
-    hittype: ''
+    hittype: '',
+    prescriptiveSelection: ''
 });
 const saData = reactive({
     samanufacturer: '',
@@ -271,7 +272,8 @@ const saData = reactive({
     sadescription: '',
     sasystem: '',
     saIdentifier: 'sa',
-    hittype: ''
+    hittype: '',
+    prescriptiveSelection: ''
 });
 const saForm = reactive({
     sanoa: '',
@@ -279,7 +281,8 @@ const saForm = reactive({
     samaterial: '',
     sasystem: '',
     sadescription: '',
-    hittype: ''
+    hittype: '',
+    prescriptiveSelection: ''
 });
 const conditions = [
     {
@@ -319,7 +322,10 @@ function getIndexs() {
         shingleForm.hittype = hitType.value;
         udlForm.hittype = hitType.value;
         saForm.hittype = hitType.value;
-        postMetrics.prescriptiveSelection = hit.match[0];
+        if (shingleForm.hittype) postMetrics.prescriptiveSelection = hit.match[0];
+        if (udlForm.hittype) udlForm.prescriptiveSelection = hit.match[0];
+        if (saForm.hittype) saForm.prescriptiveSelection = hit.match[0];
+
         console.log('Hit type:', hitType.value, hit.match[0]);
     } else {
         hitType.value = null;
@@ -427,17 +433,7 @@ const shingleUdlStaging = async () => {
     console.log(payload.hittype);
     await postUDLshingle(payload);
 };
-// const shingleSAStaging = async () => {
-//     saData.samanufacturer = saForm.samanufacturer;
-//     saData.sanoa = saForm.sanoa;
-//     saData.samaterial = saForm.samaterial;
-//     saData.sasystem = saForm.sasystem;
-//     saData.sadescription = saForm.sadescription;
-//     saData.hittype = saForm.hittype;
-//     console.log(saData.hittype);
 
-//     await postSAshingle(saData);
-// };
 const shingleSAStaging = async () => {
     const key = normalizeSysKey(selectedsystemf.value || saForm.sasystem);
 
@@ -596,12 +592,6 @@ watch(
         <br />
         <DripEdShingle />
         <div class="dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 full:grid-cols-2 gap-3">
-            <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
-                <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                    <ShingleNoa />
-                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px; margin-top: 30px" />
-                </div>
-            </div>
             <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                     <AutoCompletePoly />
@@ -613,6 +603,12 @@ watch(
                     <AutoCompleteSA />
 
                     <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleSAClick" style="margin-left: 75px; margin-top: 30px" />
+                </div>
+            </div>
+            <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
+                <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
+                    <ShingleNoa />
+                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px; margin-top: 30px" />
                 </div>
             </div>
             <transition name="fade">
