@@ -111,7 +111,8 @@ export default function useSystemf() {
                 material: entry.Material ?? entry.material,
                 description: entry.Description,
                 system: entry.System,
-                systemCheck: entry.System
+                systemCheck: entry.System,
+                maps: entry.Maps
             };
 
             console.log(systemData);

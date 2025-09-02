@@ -1,3 +1,4 @@
+//use-updateSlope.js
 import { reactive, ref } from 'vue';
 
 export default function useSlope(fn) {
@@ -13,14 +14,14 @@ export default function useSlope(fn) {
     const slopeCondition = reactive({
         slope_less_4: [
             ' -- Select Underlayment -- ',
-            '2 Plies # 30 with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c',
-            '2 Plies Poly with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c',
+            'ASTM #30 2 Plies with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c',
+            'Polypropylene 2 Plies with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c',
             '(S/A) membrane adhered directly to a wood deck, per the NOA system F'
         ],
         slope_more_4: [
             '  -- Select Underlayment/Basesheet -- ',
-            '1 Ply # 30 with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c',
-            '1 Ply Poly with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c',
+            'ASTM #30 1 Ply with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c',
+            'Polypropylene 1 Ply with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c',
             '(S/A) membrane adhered directly to a wood deck, per the NOA system F'
         ]
     });

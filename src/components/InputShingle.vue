@@ -31,7 +31,11 @@ const { inputshingle } = storeToRefs(store);
 
 const { systeminput } = storeToRefs(usesystemfStore.store);
 const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
+const latestOfMaps = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
+
 const latestSA = computed(() => latestOf(systeminput.value)?.systemData || null);
+const latestSADescription = computed(() => latestOfMaps(systeminput.value)?.systemData.Maps || null);
+
 const { polyinput } = storeToRefs(polyStore);
 
 const shingles = reactive({
@@ -47,40 +51,6 @@ const shingles = reactive({
     shingleIdentifier: 'shingle'
 });
 
-const underlayment = reactive({
-    udlnoa: '',
-    udlmanufacturer: '',
-    udlmaterial: '',
-    udldescription: '',
-    udlIdentifier: 'udl'
-});
-
-const selfadhered = reactive({
-    sanoa: '',
-    samanufacturer: '',
-    samaterial: '',
-    sadescription: '',
-    Description_F1: '',
-    Description_F2: '',
-    Description_F3: '',
-    Description_F4: '',
-    Description_F5: '',
-    Description_F6: '',
-    Description_F7: '',
-    Description_F8: '',
-    Description_F9: '',
-    Description_F10: '',
-    Description_F11: '',
-    Description_F12: '',
-    Description_F13: '',
-    Description_F14: '',
-    Description_F15: '',
-    system: '',
-    selfadIdentifier: 'sa',
-    systemCheck: '',
-    maps: [],
-    arrSystem: []
-});
 const dims = reactive({
     area: '',
     height: '',
@@ -115,8 +85,6 @@ const modalIsActive = ref(false);
 const latestShingle = computed(() => latestOf(inputshingle.value)?.shingleData || null);
 const latestUdl = computed(() => latestOf(polyinput.value)?.polyData || null);
 
-// let polydatamt = ref(polyinput._object.polyinput);
-
 const isHeightValid = ref(false);
 
 const dt = ref('');
@@ -132,20 +100,46 @@ function getdeckType(event) {
         console.log(dt.value);
     }
 }
-// options & fields
-const sysOptions = computed(() => saPayload.System.map((k) => ({ label: k, value: k })));
+
+const asText = (v) => {
+    if (v == null) return '';
+    if (typeof v === 'string') return v;
+    if (Array.isArray(v)) return v.join(' | '); // or just return v[0] if you prefer the first
+    return String(v);
+};
+
+const sysToDesc = computed(() => {
+    const m = {};
+    for (const k of saPayload.System) {
+        const dk = `Description_${k}`;
+        if (saPayload[dk]) {
+            m[k] = asText(saPayload[dk]); // ✅ Description_Fx
+        } else if (saPayload.Maps?.[k]) {
+            m[k] = asText(saPayload.Maps[k]); // ✅ fallback Maps[k]
+        } else {
+            m[k] = asText(saPayload.Description); // ✅ last resort
+        }
+    }
+    return m;
+});
+
+// The currently selected key
 const currentSysKey = computed(() => (typeof selectedsystemf.value === 'object' ? selectedsystemf.value?.value : selectedsystemf.value));
-const sysToDesc = computed(() => Object.fromEntries(saPayload.System.map((k) => [k, saPayload[`Description_${k}`] ?? saPayload.Maps?.[k] ?? ''])));
+
+// Bind the form field to only Fx text
+
 const resolvedSaDescription = computed({
-    get: () => (currentSysKey.value ? sysToDesc.value[currentSysKey.value] || saPayload.Description || '' : ''),
+    get: () => (currentSysKey.value ? sysToDesc.value[currentSysKey.value] || '' : ''),
     set: (v) => (saForm.sadescription = v)
 });
+
+// options & fields
+const sysOptions = computed(() => saPayload.System.map((k) => ({ label: k, value: k })));
 
 watch(selectedsystemf, (k) => {
     const key = typeof k === 'object' ? k?.value : k;
     saForm.sasystem = key || '';
-    saForm.sadescription = key ? sysToDesc.value[key] || saPayload.Description || '' : '';
-    console.log(saForm);
+    saForm.sadescription = key ? sysToDesc.value[key] || '' : '';
 });
 
 let slopetypemore = ref(slopeCondition.slope_more_4);
@@ -169,13 +163,21 @@ function hydrateSA(sd) {
     saPayload.System = System.filter(Boolean);
     saPayload.Maps = sd.Maps || sd.maps || {};
     saPayload.Description = sd.Description || sd.description || '';
+    console.log(saPayload.Maps, saPayload.Description);
+    console.log(systeminput.value);
 
     for (const k of saPayload.System) {
         const dk = `Description_${k}`;
+        console.log(dk);
         if (sd[dk] != null) saPayload[dk] = sd[dk];
+        console.log(saPayload[dk]);
     }
 }
-
+const normalizeSysKey = (v) => {
+    if (Array.isArray(v)) return normalizeSysKey(v[0]);
+    if (v && typeof v === 'object') return v.value ?? v.label ?? '';
+    return typeof v === 'string' ? v.trim() : '';
+};
 // Keep your form model in sync when selection changes
 watch(selectedsystemf, (k) => {
     saForm.sasystem = k || '';
@@ -189,14 +191,16 @@ watch(sysOptions, (opts) => {
 watch([selectedsystemf, latestSA], () => {
     const sd = latestSA.value;
     if (!sd) return;
+    console.log(systeminput.value);
     Object.assign(saForm, {
         sanoa: sd.noa || '',
         samanufacturer: sd.manufacturer || '',
         samaterial: sd.material || '',
-        sasystem: saPayload.System.slice(),
-        sadescription: resolvedSaDescription.value || ''
+        sasystem: currentSysKey.value || '', // 👈 only the chosen system
+        sadescription: resolvedSaDescription.value || '' // 👈 only that Fx’s description
     });
 });
+
 watch(
     [latestSA, () => sysOptions.value.length, currentSysKey, () => modalSAIsActive.value],
     () => {
@@ -233,25 +237,32 @@ onMounted(() => {
     });
 });
 
-const udlData = reactive({
-    udlmanufacturer: '',
-    udlnoa: '',
-    udlmaterial: '',
-    udldescription: '',
-    udlIdentifier: 'udl'
-});
-
 const shingleForm = reactive({
     manufacturer: '',
     material: '',
-    description: ''
+    description: '',
+    hittype: ''
+});
+const postMetrics = reactive({
+    slope: '',
+    height: '',
+    area: '',
+    decktype: '',
+    prescriptiveSelection: '',
+    manufacturer: '',
+    noa: '',
+    material: '',
+    description: '',
+    shingleIdentifier: 'shingle',
+    hittype: ''
 });
 
 const udlForm = reactive({
     udlnoa: '',
     udlmanufacturer: '',
     udlmaterial: '',
-    udldescription: ''
+    udldescription: '',
+    hittype: ''
 });
 const saData = reactive({
     samanufacturer: '',
@@ -259,15 +270,61 @@ const saData = reactive({
     samaterial: '',
     sadescription: '',
     sasystem: '',
-    saIdentifier: 'sa'
+    saIdentifier: 'sa',
+    hittype: ''
 });
 const saForm = reactive({
     sanoa: '',
     samanufacturer: '',
     samaterial: '',
     sasystem: '',
-    sadescription: ''
+    sadescription: '',
+    hittype: ''
 });
+const conditions = [
+    {
+        match: ['ASTM #30 2 Plies with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c', 'ASTM #30 1 Ply with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c'],
+        flags: { isUDLNOAValid: false, isSAValid: false, isShingleValid: true },
+        identifier: 'astm'
+    },
+    {
+        match: ['Polypropylene 2 Plies with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c', 'Polypropylene 1 Ply with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c'],
+        flags: { isUDLNOAValid: true, isSAValid: false, isShingleValid: true },
+        identifier: 'poly'
+    },
+    {
+        match: ['(S/A) membrane adhered directly to a wood deck, per the NOA system F', '(S/A) membrane adhered directly to a wood deck, per the NOA system F'],
+        flags: { isUDLNOAValid: false, isSAValid: true, isShingleValid: true },
+        identifier: 'sa'
+    }
+];
+let hitType = ref(null); // outside the function, globally scoped
+
+function getIndexs() {
+    const normalize = (v) => (typeof v === 'string' ? v : (v?.label ?? v?.value ?? v?.name ?? ''));
+    const low = normalize(selectedSlopelow.value);
+    const high = normalize(selectedSlopehigh.value);
+    if (!low && !high) return;
+
+    const hit = conditions.find((c) => c.match.includes(low) || c.match.includes(high));
+
+    if (hit) {
+        console.log(hit);
+        isUDLNOAValid.value = hit.flags.isUDLNOAValid;
+        isSAValid.value = hit.flags.isSAValid;
+        isShingleValid.value = hit.flags.isShingleValid;
+        // Extract the type of match
+
+        hitType.value = hit.identifier;
+        shingleForm.hittype = hitType.value;
+        udlForm.hittype = hitType.value;
+        saForm.hittype = hitType.value;
+        postMetrics.prescriptiveSelection = hit.match[0];
+        console.log('Hit type:', hitType.value, hit.match[0]);
+    } else {
+        hitType.value = null;
+    }
+}
 
 // optional: your reactive parent form state
 
@@ -364,18 +421,38 @@ const shingleUdlStaging = async () => {
         udlnoa: udlForm.udlnoa || '',
         udlmaterial: udlForm.udlmaterial || '',
         udldescription: udlForm.udldescription || '',
-        udlIdentifier: 'udl'
+        udlIdentifier: 'udl',
+        hittype: udlForm.hittype
     };
+    console.log(payload.hittype);
     await postUDLshingle(payload);
 };
+// const shingleSAStaging = async () => {
+//     saData.samanufacturer = saForm.samanufacturer;
+//     saData.sanoa = saForm.sanoa;
+//     saData.samaterial = saForm.samaterial;
+//     saData.sasystem = saForm.sasystem;
+//     saData.sadescription = saForm.sadescription;
+//     saData.hittype = saForm.hittype;
+//     console.log(saData.hittype);
+
+//     await postSAshingle(saData);
+// };
 const shingleSAStaging = async () => {
-    console.log(selfadhered, saForm);
+    const key = normalizeSysKey(selectedsystemf.value || saForm.sasystem);
+
     saData.samanufacturer = saForm.samanufacturer;
     saData.sanoa = saForm.sanoa;
     saData.samaterial = saForm.samaterial;
-    saData.sasystem = saForm.sasystem;
-    saData.sadescription = saForm.sadescription;
-    console.log(saData);
+
+    // ✅ always a single Fx like "F7"
+    saData.sasystem = key;
+
+    // (Optional but recommended) lock description to the chosen Fx mapping:
+    saData.sadescription = sysToDesc.value[key] || '';
+
+    saData.hittype = saForm.hittype;
+
     await postSAshingle(saData);
 };
 
@@ -431,54 +508,7 @@ function addCheckmarks() {
         isvalueValid.value = false;
     }
 }
-const postMetrics = reactive({
-    slope: '',
-    height: '',
-    area: '',
-    decktype: '',
-    prescriptiveSelection: '',
-    manufacturer: '',
-    noa: '',
-    material: '',
-    description: '',
-    shingleIdentifier: 'shingle'
-});
-let isPrescriptivehigh = ref(false);
-function getIndexs() {
-    // Normalize selected values to strings (PrimeVue options can be objects)
-    const normalize = (v) => (typeof v === 'string' ? v : (v?.label ?? v?.value ?? v?.name ?? ''));
 
-    const low = normalize(selectedSlopelow.value);
-    const high = normalize(selectedSlopehigh.value);
-    if (high) {
-        isPrescriptivehigh = true;
-        postMetrics.prescriptiveSelection = isPrescriptivehigh ? high : low;
-        console.log(low, high, postMetrics);
-    }
-    if (!low && !high) return;
-
-    const conditions = [
-        {
-            match: ['2 Plies # 30 with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c', '1 Ply # 30 with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c'],
-            flags: { isUDLNOAValid: false, isSAValid: false, isShingleValid: true }
-        },
-        {
-            match: ['2 Plies Poly with 19" headlap, fastened 6" o/c @ Laps & 1 row 12" o/c', '1 Ply Poly with 4" headlap, fastened 6" o/c @ Laps 2 rows 12" o/c'],
-            flags: { isUDLNOAValid: true, isSAValid: false, isShingleValid: true }
-        },
-        {
-            match: ['(S/A) membrane adhered directly to a wood deck, per the NOA system F'],
-            flags: { isUDLNOAValid: false, isSAValid: true, isShingleValid: true }
-        }
-    ];
-
-    const hit = conditions.find((c) => c.match.includes(low) || c.match.includes(high));
-    if (hit) {
-        isUDLNOAValid.value = hit.flags.isUDLNOAValid;
-        isSAValid.value = hit.flags.isSAValid;
-        isShingleValid.value = hit.flags.isShingleValid;
-    }
-}
 // helpers
 const toNum = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
@@ -492,8 +522,7 @@ const shingleMetrics = async () => {
     postMetrics.area = toNum(dims.area);
     postMetrics.decktype = dims.decktype;
     postMetrics.shingleIdentifier = shingles.shingleIdentifier;
-
-    console.log(postMetrics);
+    postMetrics.hittype = shingleForm.hittype;
     await postShingle(postMetrics);
 };
 const slopeBand = computed(() => {
@@ -549,7 +578,7 @@ watch(
         </div>
         <div class="w-64 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600 mt-3 mb-8" style="margin-left: 20px">
             <label style="color: #122620" for="area">Area</label>
-            <InputText id="area" v-model="dims.area" type="text" placeholder="area" />
+            <InputText id="area" v-model="dims.area" type="text" placeholder="area" readonly />
         </div>
         <div class="w-64 mt-1 space-y-1" style="margin-left: 10px">
             <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1rem" @change="addCheckmarks"></i>&nbsp;
@@ -613,7 +642,8 @@ watch(
         </div>
     </ModalWindow>
     <ModalWindow :key="modalKeySA" @closePopup="(modalSAIsActive = false), shingleSAStaging()" v-if="modalSAIsActive">
-        <div v-show="showSA" class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
+        <!-- v-show="showSA" -->
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="saapplicant">S/A Applicant</label>
                 <InputText id="saapplicant" v-model="saForm.samanufacturer" />
@@ -627,7 +657,7 @@ watch(
                 <Select v-model="selectedsystemf" :options="sysOptions" optionLabel="label" optionValue="value" placeholder="Select System" />
                 <ProgressSpinner v-if="!sysOptions.length" style="width: 24px; height: 24px" strokeWidth="4" />
             </div>
-            <div v-show="showSaDescription" class="min-w-[400px] flex flex-col gap-2 border-gray-700 focus:border-orange-600">
+            <div v-show="!!currentSysKey" class="min-w-[400px] flex flex-col gap-2 border-gray-700 focus:border-orange-600">
                 <label for="sadescription">S/A Description Chosen</label>
                 <InputText id="sadescription" v-model="resolvedSaDescription" />
             </div>
