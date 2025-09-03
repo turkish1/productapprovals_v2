@@ -34,6 +34,7 @@ export default function useTileSystemF() {
         Description_F13: '',
         arraySystem: [],
         systemCheck: [],
+        maps: [],
         expiration_date: '',
         prescriptiveSelection: ''
     });
@@ -93,7 +94,8 @@ export default function useTileSystemF() {
                 manufacturer: (entry.Manufacturer ?? entry.applicant)?.trim?.(),
                 material: entry.Material ?? entry.material,
                 designPressure: entry.DesignPressure,
-                system: entry.System
+                system: entry.System,
+                maps: entry.Maps
             };
 
             // 5) Copy Description_F1..F15 if present (prefers TileCap_Sheet_* source, falls back to direct)
