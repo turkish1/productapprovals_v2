@@ -343,6 +343,33 @@ async function onExposureChange() {
     }
 }
 
+// ---- options & small helpers ---------------------------------
+const sysFOptions = computed(() => (saTiles.system || []).map((k) => ({ label: k, value: k })));
+
+const selectedFKey = computed(() => {
+    const v = selectedsystemf.value;
+    return typeof v === 'object' ? (v?.value ?? v?.label ?? '') : (v ?? '');
+});
+
+const asText = (v) => (Array.isArray(v) ? v.join(' | ') : (v ?? ''));
+
+function getFDescription(k) {
+    if (!k) return '';
+    // 1) explicit Description_Fx if present
+    const fromFx = saTiles?.[`Description_${k}`];
+    if (fromFx != null && fromFx !== '') return asText(fromFx);
+    // 2) fallback to Maps[F*]
+    const fromMap = saTiles?.Maps?.[k];
+    if (fromMap != null && fromMap !== '') return asText(fromMap);
+    // 3) last resort: generic
+    return asText(saTiles.description);
+}
+
+// Bind description input to the selected F
+const fDescForSelected = computed({
+    get: () => getFDescription(selectedFKey.value),
+    set: (v) => (saTiles.description = v)
+});
 watch([selectedExposures, () => dims.slope, () => dims.height], () => {
     if (selectedExposures.value) onExposureChange();
     console.log(selectedExposures.value);
@@ -781,6 +808,7 @@ function applySA(sd) {
 
     // Keep selection valid
     if (!saTiles.system.includes(selectedsystemf.value)) {
+        console.log(selectedsystemf);
         selectedsystemf.value = saTiles.system[0] ?? null;
     }
 
@@ -802,10 +830,10 @@ const fDpForSelected = computed({
     get: () => fSysMap.value?.[selF.value] ?? '',
     set: (v) => (saTiles.designpressure = v) // keep local edits if you allow manual typing
 });
-const fDescForSelected = computed({
-    get: () => (selF.value ? (sysFDescMap.value?.[selF.value] ?? saTiles?.[`Description_${selF.value}`] ?? '') : ''),
-    set: (v) => (saTiles.description = v)
-});
+// const fDescForSelected = computed({
+//     get: () => (selF.value ? (sysFDescMap.value?.[selF.value] ?? saTiles?.[`Description_${selF.value}`] ?? '') : ''),
+//     set: (v) => (saTiles.description = v)
+// });
 
 // Keep SA fresh automatically
 watch(latestSAPayload, (sd) => applySA(sd), { immediate: true, deep: true });
@@ -816,6 +844,31 @@ const clearSAFields = () => {
     saTiles.designpressure = '';
     saTiles.description = '';
 };
+watch(
+    [latestSAPayload, () => sysFOptions.value.length, selectedFKey, () => modalSAIsActive.value],
+    () => {
+        if (!modalSAIsActive.value) return;
+        const sd = latestSAPayload.value;
+        if (!sd) return;
+
+        // hydrate once (you already have applySA(sd) in your code)
+        if (!Array.isArray(saTiles.system) || !saTiles.system.length) applySA(sd);
+
+        // default select first system (F1) if none chosen yet
+        if (!selectedFKey.value && sysFOptions.value.length) {
+            selectedsystemf.value = sysFOptions.value[0].value; // e.g., 'F1'
+        }
+
+        // keep top fields fresh and put the resolved description into the form
+        Object.assign(saTiles, {
+            noa: sd.noa || '',
+            manufacturer: sd.manufacturer || '',
+            material: sd.material || ''
+        });
+        saTiles.description = getFDescription(selectedFKey.value);
+    },
+    { immediate: true }
+);
 
 watch(
     () => saTiles.noa,
@@ -1626,14 +1679,30 @@ async function onOpenTileSAClick() {
     modalSAIsActive.value = true; // then show
 }
 async function postSAStaging() {
-    await postSATile({
-        ...toRaw(saTiles),
-        systemSelected: selectedsystemf.value ?? ''
-    });
+    const { system: _systemList, arrDesignPressure: _arr, ...rest } = toRaw(saTiles);
+    const payload = {
+        ...rest,
+        system: selectedFKey.value, // <- only the chosen F
+        systemSelected: selectedFKey.value, // (optional) explicit field
+        designpressure: fDpForSelected.value || '', // from your computed
+        description: fDescForSelected.value || '' // resolved Description_Fx/Maps
+    };
+    await postSATile(payload);
 }
+watch(selectedsystemf, () => {
+    console.log('Selected F ->', selectedFKey.value);
+});
+// if you also call tileSAStaging somewhere, fix it too:
 const tileSAStaging = async () => {
-    console.log(saTiles);
-    await postSATile(saTiles);
+    const { system: _systemList, arrDesignPressure: _arr, ...rest } = toRaw(saTiles);
+    const payload = {
+        ...rest,
+        system: selectedFKey.value,
+        systemSelected: selectedFKey.value,
+        designpressure: fDpForSelected.value || '',
+        description: fDescForSelected.value || ''
+    };
+    await postSATile(payload);
 };
 </script>
 
@@ -1812,16 +1881,22 @@ const tileSAStaging = async () => {
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: red; margin-bottom: 55px">Select System F *</label>
                 <br />
-                <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" />
+                <!-- <Select v-model="selectedsystemf" :options="sysFOptions" optionLabel="label" optionValue="value" /> -->
+                <!-- instead of :options="saTiles.system" -->
+                <Select v-model="selectedsystemf" :options="(saTiles.system || []).map((k) => ({ label: k, value: k }))" optionLabel="label" optionValue="value" />
+                <!-- <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" /> -->
             </div>
 
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="designpressure">Design psf:</label>
-                <InputText id="designpressure" v-model="fDpForSelected" :disabled="!selectedsystemf" />
+                <!-- <InputText id="designpressure" v-model="fDpForSelected" :disabled="!selectedsystemf" /> -->
+                <InputText id="designpressure" v-model="fDpForSelected" :disabled="!selectedFKey" />
             </div>
             <div v-show="isSAValid" class="min-w-[480px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="sadescription">S/A Description</label>
-                <InputText id="capsheetdescription" v-model="fDescForSelected" :disabled="!selectedsystemf" />
+                <InputText id="capsheetdescription" v-model="fDescForSelected" :disabled="!selectedFKey" />
+
+                <!-- <InputText id="capsheetdescription" v-model="fDescForSelected" :disabled="!selectedsystemf" /> -->
             </div>
         </div>
     </ModalWindow>
