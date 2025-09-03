@@ -145,6 +145,19 @@ let slopetypeless = ref(slopeCondition.slope_less_4);
 const selectedSlopehigh = ref();
 const selectedSlopelow = ref();
 const selectedDeck = ref();
+// show ASTM version when hitType is "astm" (or the common typo "atsm")
+const isAstm = computed(() => {
+    const v = (hitType?.value ?? '').toString().trim().toLowerCase();
+    console.log(v);
+    return v === 'astm' || v === 'atsm';
+});
+
+// one close handler: only posts shingleMetrics for ASTM flow
+function handleShingleModalClose() {
+    console.log(isAstm.value);
+    modalIsActive.value = false;
+    if (isAstm.value) shingleMetrics();
+}
 
 const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 // Store the incoming SA payload here (shape matches your example)
@@ -348,7 +361,7 @@ watch(
     { immediate: true }
 );
 
-const showSaDescription = computed(() => !!selectedsystemf.value);
+// const showSaDescription = computed(() => !!selectedsystemf.value);
 
 const modalKey = ref(0);
 
@@ -508,6 +521,18 @@ function addCheckmarks() {
     }
 }
 
+// helpers
+
+const shingleMetrics = async () => {
+    const body = {
+        ...commonShingle(),
+
+        shingleIdentifier: shingles.shingleIdentifier,
+        hittype: shingleForm.hittype
+    };
+    console.log(body);
+    postShingle(body);
+};
 const slopeBand = computed(() => {
     const n = Number(slope.value || 0);
     if (n >= 2 && n <= 4) return 'low';
@@ -646,7 +671,26 @@ watch(
             </div>
         </div>
     </ModalWindow>
-    <ModalWindow :key="modalKey" @closePopup="modalIsActive = false" v-if="modalIsActive">
+    <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+        <ModalWindow :key="modalKey" @closePopup="modalIsActive = false" v-if="modalIsActive">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
+                <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                    <label for="manufacturer">Applicant</label>
+                    <InputText id="manufacturer" v-model="shingleForm.manufacturer" class="w-full" />
+                </div>
+                <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                    <label for="material">Material</label>
+                    <InputText id="material" v-model="shingleForm.material" class="w-full" />
+                </div>
+                <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                    <label for="description">Description</label>
+                    <InputText id="description" v-model="shingleForm.description" class="w-full" />
+                </div>
+            </div>
+        </ModalWindow>
+    </div>
+
+    <ModalWindow :key="modalKey" @closePopup="handleShingleModalClose()" v-if="modalIsActive">
         <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="manufacturer">Applicant</label>
