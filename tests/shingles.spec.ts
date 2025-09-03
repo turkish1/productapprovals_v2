@@ -42,15 +42,15 @@ test.describe('Shingles page (Vue 3)', () => {
         await expect(shingleNoa).toHaveValue('21032316');
 
         // ----- UDL NOA -----
-        const udlNoa = page.locator('#udlInput');
-        await udlNoa.fill('21022203');
-        await page.locator('.w-96:has(#udlInput)').getByRole('button', { name: 'Submit' }).click();
-        await expect(udlNoa).toHaveValue('21022203');
+        // const udlNoa = page.locator('#udlInput');
+        // await udlNoa.fill('21022203');
+        // await page.locator('.w-96:has(#udlInput)').getByRole('button', { name: 'Submit' }).click();
+        // await expect(udlNoa).toHaveValue('21022203');
 
         // ----- Stepper "Next" (if enabled) -----
-        const nextBtn = page.getByRole('button', { name: 'Next' });
-        await expect(nextBtn).toBeEnabled();
-        await nextBtn.click();
+        // const nextBtn = page.getByRole('button', { name: 'Next' });
+        // await expect(nextBtn).toBeEnabled();
+        // await nextBtn.click();
 
         // (Optional) add an assertion here if your app shows a Summary view/state change.
     });

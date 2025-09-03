@@ -145,6 +145,19 @@ let slopetypeless = ref(slopeCondition.slope_less_4);
 const selectedSlopehigh = ref();
 const selectedSlopelow = ref();
 const selectedDeck = ref();
+// show ASTM version when hitType is "astm" (or the common typo "atsm")
+const isAstm = computed(() => {
+    const v = (hitType?.value ?? '').toString().trim().toLowerCase();
+    console.log(v);
+    return v === 'astm' || v === 'atsm';
+});
+
+// one close handler: only posts shingleMetrics for ASTM flow
+function handleShingleModalClose() {
+    console.log(isAstm.value);
+    modalIsActive.value = false;
+    if (isAstm.value) shingleMetrics();
+}
 
 const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 // Store the incoming SA payload here (shape matches your example)
@@ -348,7 +361,7 @@ watch(
     { immediate: true }
 );
 
-const showSaDescription = computed(() => !!selectedsystemf.value);
+// const showSaDescription = computed(() => !!selectedsystemf.value);
 
 const modalKey = ref(0);
 
@@ -423,39 +436,7 @@ const commonShingle = () => ({
     slope: toNum(slope.value),
     prescriptiveSelection: udlForm.prescriptiveSelection || saForm.prescriptiveSelection || postMetrics.prescriptiveSelection || ''
 });
-// const shingleUdlStaging = async () => {
-//     const payload = {
-//         udlmanufacturer: udlForm.udlmanufacturer || '',
-//         udlnoa: udlForm.udlnoa || '',
-//         udlmaterial: udlForm.udlmaterial || '',
-//         udldescription: udlForm.udldescription || '',
-//         udlIdentifier: 'udl',
-//         hittype: udlForm.hittype,
-//         prescriptiveSelection: udlForm.prescriptiveSelection
-//     };
-//     await postUDLshingle(payload);
-//     await shingleMetrics();
-// };
 
-// const shingleSAStaging = async () => {
-//     const key = normalizeSysKey(selectedsystemf.value || saForm.sasystem);
-
-//     saData.samanufacturer = saForm.samanufacturer;
-//     saData.sanoa = saForm.sanoa;
-//     saData.samaterial = saForm.samaterial;
-//     saData.prescriptiveSelection = saForm.prescriptiveSelection;
-//     // ✅ always a single Fx like "F7"
-//     saData.sasystem = key;
-
-//     // (Optional but recommended) lock description to the chosen Fx mapping:
-//     saData.sadescription = sysToDesc.value[key] || '';
-
-//     saData.hittype = saForm.hittype;
-
-//     await postSAshingle(saData);
-//     await shingleMetrics();
-// };
-// UDL + Shingle in one POST (hittype: 'poly')
 const shingleUdlStaging = async () => {
     const body = {
         ...commonShingle(),
@@ -542,19 +523,16 @@ function addCheckmarks() {
 
 // helpers
 
-// const shingleMetrics = async () => {
-//     postMetrics.noa = shingleForm.noa;
-//     postMetrics.manufacturer = shingleForm.manufacturer;
-//     postMetrics.material = shingleForm.material;
-//     postMetrics.description = shingleForm.description;
-//     postMetrics.slope = toNum(slope.value);
-//     postMetrics.height = toNum(dims.height);
-//     postMetrics.area = toNum(dims.area);
-//     postMetrics.decktype = dims.decktype;
-//     postMetrics.shingleIdentifier = shingles.shingleIdentifier;
-//     postMetrics.hittype = shingleForm.hittype;
-//     await postShingle(postMetrics);
-// };
+const shingleMetrics = async () => {
+    const body = {
+        ...commonShingle(),
+
+        shingleIdentifier: shingles.shingleIdentifier,
+        hittype: shingleForm.hittype
+    };
+    console.log(body);
+    postShingle(body);
+};
 const slopeBand = computed(() => {
     const n = Number(slope.value || 0);
     if (n >= 2 && n <= 4) return 'low';
@@ -693,7 +671,26 @@ watch(
             </div>
         </div>
     </ModalWindow>
-    <ModalWindow :key="modalKey" @closePopup="modalIsActive = false" v-if="modalIsActive">
+    <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+        <ModalWindow :key="modalKey" @closePopup="modalIsActive = false" v-if="modalIsActive">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
+                <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                    <label for="manufacturer">Applicant</label>
+                    <InputText id="manufacturer" v-model="shingleForm.manufacturer" class="w-full" />
+                </div>
+                <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                    <label for="material">Material</label>
+                    <InputText id="material" v-model="shingleForm.material" class="w-full" />
+                </div>
+                <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                    <label for="description">Description</label>
+                    <InputText id="description" v-model="shingleForm.description" class="w-full" />
+                </div>
+            </div>
+        </ModalWindow>
+    </div>
+
+    <ModalWindow :key="modalKey" @closePopup="handleShingleModalClose()" v-if="modalIsActive">
         <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="manufacturer">Applicant</label>
