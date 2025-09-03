@@ -92,12 +92,10 @@ const dt = ref('');
 const isDisabledslope = ref(true);
 const isDisabled = ref(true);
 function getdeckType(event) {
-    console.log(selectedDeck._value.name, event.value.name);
     if (selectedDeck._value.name === event.value.name) {
         dt.value = event.value.name;
         isDisabledslope.value = false;
         dims.decktype = dt.value;
-        console.log(dt.value);
     }
 }
 
@@ -163,14 +161,10 @@ function hydrateSA(sd) {
     saPayload.System = System.filter(Boolean);
     saPayload.Maps = sd.Maps || sd.maps || {};
     saPayload.Description = sd.Description || sd.description || '';
-    console.log(saPayload.Maps, saPayload.Description);
-    console.log(systeminput.value);
 
     for (const k of saPayload.System) {
         const dk = `Description_${k}`;
-        console.log(dk);
         if (sd[dk] != null) saPayload[dk] = sd[dk];
-        console.log(saPayload[dk]);
     }
 }
 const normalizeSysKey = (v) => {
@@ -191,7 +185,6 @@ watch(sysOptions, (opts) => {
 watch([selectedsystemf, latestSA], () => {
     const sd = latestSA.value;
     if (!sd) return;
-    console.log(systeminput.value);
     Object.assign(saForm, {
         sanoa: sd.noa || '',
         samanufacturer: sd.manufacturer || '',
@@ -325,8 +318,6 @@ function getIndexs() {
         if (shingleForm.hittype) postMetrics.prescriptiveSelection = hit.match[0];
         if (udlForm.hittype) udlForm.prescriptiveSelection = hit.match[0];
         if (saForm.hittype) saForm.prescriptiveSelection = hit.match[0];
-
-        console.log('Hit type:', hitType.value, hit.match[0]);
     } else {
         hitType.value = null;
     }
@@ -409,7 +400,6 @@ async function openModal(kind) {
             modalUDLIsActive.value = true;
             return;
         }
-        console.log(kind);
     } finally {
         loading.value = false;
     }
@@ -420,37 +410,49 @@ watch(selectedsystemf, (v) => console.log('selectedsystemf ->', v));
 // use it:
 const onOpenShingleClick = () => openModal('shingle');
 const onOpenShingleUDLClick = () => openModal('udl');
+const toNum = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+// helpers
+const commonShingle = () => ({
+    noa: shingleForm.noa || '',
+    manufacturer: shingleForm.manufacturer || '',
+    material: shingleForm.material || '',
+    description: shingleForm.description || '',
+    decktype: dims.decktype || '',
+    area: toNum(dims.area),
+    height: toNum(dims.height),
+    slope: toNum(slope.value),
+    prescriptiveSelection: udlForm.prescriptiveSelection || saForm.prescriptiveSelection || postMetrics.prescriptiveSelection || ''
+});
 
 const shingleUdlStaging = async () => {
-    const payload = {
-        udlmanufacturer: udlForm.udlmanufacturer || '',
+    const body = {
+        ...commonShingle(),
         udlnoa: udlForm.udlnoa || '',
+        udlmanufacturer: udlForm.udlmanufacturer || '',
         udlmaterial: udlForm.udlmaterial || '',
         udldescription: udlForm.udldescription || '',
+        hittype: 'poly',
         udlIdentifier: 'udl',
-        hittype: udlForm.hittype,
-        prescriptiveSelection: udlForm.prescriptiveSelection
+        shingleIdentifier: 'shingle'
     };
-    console.log(payload.hittype);
-    await postUDLshingle(payload);
+    await postShingle(body); // one call is enough
 };
 
+// SA + Shingle in one POST (hittype: 'sa')
 const shingleSAStaging = async () => {
     const key = normalizeSysKey(selectedsystemf.value || saForm.sasystem);
-
-    saData.samanufacturer = saForm.samanufacturer;
-    saData.sanoa = saForm.sanoa;
-    saData.samaterial = saForm.samaterial;
-    saData.prescriptiveSelection = saForm.prescriptiveSelection;
-    // ✅ always a single Fx like "F7"
-    saData.sasystem = key;
-
-    // (Optional but recommended) lock description to the chosen Fx mapping:
-    saData.sadescription = sysToDesc.value[key] || '';
-
-    saData.hittype = saForm.hittype;
-
-    await postSAshingle(saData);
+    const body = {
+        ...commonShingle(),
+        samanufacturer: saForm.samanufacturer || '',
+        sanoa: saForm.sanoa || '',
+        sasystem: key || '',
+        samaterial: saForm.samaterial || '',
+        sadescription: (key && (sysToDesc.value[key] || '')) || saForm.sadescription || '',
+        hittype: 'sa',
+        saIdentifier: 'sa',
+        shingleIdentifier: 'shingle'
+    };
+    await postShingle(body);
 };
 
 watch(slope, (newVal, oldVal) => {
@@ -506,22 +508,6 @@ function addCheckmarks() {
     }
 }
 
-// helpers
-const toNum = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
-
-const shingleMetrics = async () => {
-    postMetrics.noa = shingleForm.noa;
-    postMetrics.manufacturer = shingleForm.manufacturer;
-    postMetrics.material = shingleForm.material;
-    postMetrics.description = shingleForm.description;
-    postMetrics.slope = toNum(slope.value);
-    postMetrics.height = toNum(dims.height);
-    postMetrics.area = toNum(dims.area);
-    postMetrics.decktype = dims.decktype;
-    postMetrics.shingleIdentifier = shingles.shingleIdentifier;
-    postMetrics.hittype = shingleForm.hittype;
-    await postShingle(postMetrics);
-};
 const slopeBand = computed(() => {
     const n = Number(slope.value || 0);
     if (n >= 2 && n <= 4) return 'low';
@@ -593,6 +579,12 @@ watch(
         <br />
         <DripEdShingle />
         <div class="dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 full:grid-cols-2 gap-3">
+            <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
+                <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
+                    <ShingleNoa />
+                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px; margin-top: 30px" />
+                </div>
+            </div>
             <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                     <AutoCompletePoly />
@@ -606,12 +598,7 @@ watch(
                     <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleSAClick" style="margin-left: 75px; margin-top: 30px" />
                 </div>
             </div>
-            <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
-                <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                    <ShingleNoa />
-                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px; margin-top: 30px" />
-                </div>
-            </div>
+
             <transition name="fade">
                 <div v-if="loading" class="absolute inset-0 bg-black/20 backdrop-blur-[1px] flex items-center justify-center rounded-md">
                     <ProgressSpinner style="width: 40px; height: 40px" strokeWidth="4" />
@@ -639,7 +626,6 @@ watch(
         </div>
     </ModalWindow>
     <ModalWindow :key="modalKeySA" @closePopup="(modalSAIsActive = false), shingleSAStaging()" v-if="modalSAIsActive">
-        <!-- v-show="showSA" -->
         <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="saapplicant">S/A Applicant</label>
@@ -660,7 +646,7 @@ watch(
             </div>
         </div>
     </ModalWindow>
-    <ModalWindow :key="modalKey" @closePopup="(modalIsActive = false), shingleMetrics()" v-if="modalIsActive">
+    <ModalWindow :key="modalKey" @closePopup="modalIsActive = false" v-if="modalIsActive">
         <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
             <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="manufacturer">Applicant</label>
