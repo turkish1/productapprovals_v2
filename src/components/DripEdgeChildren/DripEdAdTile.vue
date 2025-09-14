@@ -5,7 +5,7 @@ import useDripedge from '@/composables/DripEdge/useDripedge';
 import { usedripADStore } from '@/stores/dripEdgeADTileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
-import { defineEmits, onMounted, reactive, ref, watchEffect } from 'vue';
+import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
 
@@ -121,6 +121,7 @@ const storeDripEdgeSize = () => {
     // tileStore.insertDripAtIndex(6, dripTileData.DripEdgeSize);
 };
 
+watch(types, typeSizes, type, checkRoof, () => {});
 watchEffect(checkValue, getdripSize, () => {});
 invoke(async () => {
     await until(callState).toBe(true);

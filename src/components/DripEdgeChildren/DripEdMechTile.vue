@@ -1,29 +1,27 @@
 <script setup>
-// import useShingleDrip from '@/composables/DripEdge/use-ShingleDrip';
+import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-// import usePostShingleLambda from '@/composables/Postdata/usePostShingleLambda';
-import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
+import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
-// const { dripEdge } = usePostShingleLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 
-// const { typeSize, dtype, holdSized } = useShingleDrip();
+const { typeSize, dtype, holdSized } = useMechtileDrip();
 // Reactive value bound to the select dropdown
 
 // Ref for the <select> element
 const selectSizeRef = ref(null);
 
-const shingleStore = usedripedgeshingleStore();
+const mechtileStore = usedripMStore();
 // Define emits
 const emit = defineEmits(['update-valuesize']);
 
-let isRoofShingleValid = ref(false);
+let isRoofTileMechanicalValid = ref(false);
 
 const typeSizes = ref();
 
@@ -32,50 +30,48 @@ const dripStagedata = reactive({
     DripEdgeSize: ''
 });
 const callState = tryOnMounted(() => {
-    console.log(roofType.value);
     if (roofType.value.length === 0) {
         return '';
     }
     for (let i = 0; i < roofType.value.length; i++) {
-        if (roofType.value[i].item === 'Asphalt Shingle') {
+        if (roofType.value[i].item === 'Mechanical Fastened Tile') {
             console.log(roofType.value[i].item);
-            isRoofShingleValid.value = true;
+            isRoofTileMechanicalValid.value = true;
             types.value = type.value;
         }
     }
     checkRoof();
 });
 
-const dripShingleData = reactive({
+const dripMTileData = reactive({
     DripEdgeMaterial: '',
     DripEdgeSize: ''
 });
 
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
-    dripShingleData.DripEdgeSize = selectDripEdgeSize.value;
+    dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
     getdripSize();
 };
 
-// Example: Accessing the select element via the ref and for the default use
 onMounted(() => {
     checkValue();
 });
 
 function checkRoof() {
     for (let i = 0; i < roofType.value.length; i++) {
-        if (roofType.value[i].item === 'Asphalt Shingle') {
+        if (roofType.value[i].item === 'Mechanical Fastened Tile') {
             console.log(roofType.value[i].item);
         }
     }
-    shingle();
+    mtile();
 }
-function checkValue(value) {
+function checkValue() {
     types.value = type.value;
+    // console.log(types.value, value);
 }
 
-function getdripSize() {
-    console.log(selectDripEdge.value);
+async function getdripSize() {
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
@@ -98,18 +94,21 @@ function getdripSize() {
     }
     dripStagedata.DripEdgeMaterial = selectDripEdge.value;
     dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
+
     checkRoof();
 }
 
-function shingle() {
-    dripShingleData.DripEdgeMaterial = selectDripEdge.value;
+function mtile() {
+    dripMTileData.DripEdgeMaterial = selectDripEdge.value;
 
     storeDripEdgeSize();
 }
 
 const storeDripEdgeSize = async (value) => {
-    shingleStore.resetState();
-    shingleStore.addUseritems(dripShingleData);
+    mechtileStore.resetState();
+
+    mechtileStore.addUseritems(dripStagedata);
+    console.log(mechtileStore);
 };
 
 watch(types, typeSizes, type, checkRoof, () => {});
@@ -123,11 +122,10 @@ invoke(async () => {
     <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
         <!-- <Button label="Reset" severity="danger" @click="resetState"></Button> -->
         <label style="color: #122620">Drip Edge Material</label>
-        <!--  ref="selectRef"    selectDripMaterial,  @change="emitValue" @update-value="selectDripMaterial"    " -->
         <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @update:modelValue="checkValue" />
-        <!-- @change="emitValuesize" @update-valuesize="storeDripEdgeSize" ref="selectSizeRef"-->
 
         <label style="color: #122620">Drip Edge Size</label>
-        <Select ref="selectSizeRef" v-model="selectDripEdgeSize" :options="typeSizes" @click="getdripSize" @change="emitValuesize" @update-valuesize="storeDripEdgeSize" placeholder="make selection" />
+        <!-- @update-valuesize="storeDripEdgeSize" -->
+        <Select ref="selectSizeRef" v-model="selectDripEdgeSize" :options="typeSizes" @click="getdripSize" @change="emitValuesize" placeholder="make selection" />
     </div>
 </template>
