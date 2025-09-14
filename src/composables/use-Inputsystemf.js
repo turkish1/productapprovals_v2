@@ -36,7 +36,6 @@ export default function useSystemf() {
         Description_F11: '',
         Description_F11: '',
         Description_F12: '',
-
         Description_F13: '',
         Description_F14: '',
         Description_F15: '',

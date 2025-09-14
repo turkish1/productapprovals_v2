@@ -38,13 +38,25 @@ const visible = ref(false);
     z-index: 500;
     width: 55vw;
     height: 50vh;
-    background: #eae7e2;
-    // background: rgba(20, 7, 207, 0.2);
 
-    display: grid;
-    place-items: left;
-    color: var(--black-color);
+    background-color: rgba(174, 180, 181, 0.1); // Clear light blue with 10% opacity
+    backdrop-filter: blur(15px); // Strong frosted glass effect
+    border-radius: 12px;
+    border: 1px solid rgba(102, 198, 203, 0.3); // Light sky blue border
+    box-shadow: 0 0 25px rgba(135, 206, 250, 0.4); // Light blue glow
+    color: var(--black-color); // Very light blue text for readability
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase; // High-tech aesthetic
+    transition: all 0.3s ease; // Smooth hover effect
 
+    .clear-pane:hover {
+        background-color: rgba(173, 216, 230, 0.15); // Slightly more opaque light blue on hover
+        box-shadow: 0 0 30px rgba(135, 206, 250, 0.6); // Brighter light blue glow on hover
+    }
     .inner {
         background-color: #17dda1;
         padding: 30px;
@@ -83,7 +95,7 @@ const visible = ref(false);
                 line-height: 16px;
                 letter-spacing: 0.25em;
                 text-align: left;
-                border: 1px solid #c2c2c2;
+                // border: 1px solid #c2c2c2;
                 border-radius: 4px;
                 padding: 8px 12px;
                 margin-top: 5px;

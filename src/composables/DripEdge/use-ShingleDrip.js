@@ -24,8 +24,9 @@ export default function useShingleDrip() {
             stype.value.push(hold.value[i]);
         }
         typeSizeShingle.value.push(holdSizeshingle.value.size1, holdSizeshingle.value.size2, holdSizeshingle.value.size3, holdSizeshingle.value.size4);
-        dripShingleStore.addShinDrip(stype);
-        dripShingleStore.addShinDrip(typeSizeShingle);
+        dripShingleStore.addMaterialShin(stype);
+        dripShingleStore.addSizeShin(typeSizeShingle);
+        console.log(typeSizeShingle, holdSizeshingle, stype.value, hold.value);
         return hold.value;
     });
     loading.value = false;

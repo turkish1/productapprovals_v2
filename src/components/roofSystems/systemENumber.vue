@@ -1,6 +1,6 @@
 <template>
     <div class="autocomplete">
-        <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 space-y-2 mb-2" style="margin-left: 20px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
                 <InputText id="udlInput" v-tooltip.bottom="'Press Tab after value'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputUDL" />
@@ -75,7 +75,8 @@ const udlTile = reactive({
     TileCap_Sheet_Description_E11: '',
     TileCap_Sheet_Description_E12: '',
     TileCap_Sheet_Description_E13: '',
-    arrDesignPressure: []
+    arrDesignPressure: [],
+    Maps: []
 });
 let datamountedsystemE = ref(systemStore.$state.tilesysEinput);
 // etileStore.$state.tilesysEinput

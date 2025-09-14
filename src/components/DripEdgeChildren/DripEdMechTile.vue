@@ -1,14 +1,12 @@
 <script setup>
 import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-import usePostMechanicalLambda from '@/composables/Postdata/usePostMechanicalLambda';
 import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
-const { dripEdge } = usePostMechanicalLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
@@ -20,7 +18,6 @@ const { typeSize, dtype, holdSized } = useMechtileDrip();
 const selectSizeRef = ref(null);
 
 const mechtileStore = usedripMStore();
-console.log(mechtileStore);
 // Define emits
 const emit = defineEmits(['update-valuesize']);
 
@@ -33,7 +30,6 @@ const dripStagedata = reactive({
     DripEdgeSize: ''
 });
 const callState = tryOnMounted(() => {
-    console.log(roofType.value);
     if (roofType.value.length === 0) {
         return '';
     }
@@ -55,18 +51,10 @@ const dripMTileData = reactive({
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
     dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
-    console.log(selectDripEdgeSize.value);
     getdripSize();
 };
 
-// const resetButton = () => {
-//     usedripedgeadtileStore.$reset();
-//     selectDripEdgeSize.value = selectDripEdgeSizes.value;
-//     selectDripEdge.value = selectDripEdges.value;
-// };
-// Example: Accessing the select element via the ref and for the default use
 onMounted(() => {
-    console.log('Select element:', selectSizeRef.value);
     checkValue();
 });
 
@@ -74,18 +62,16 @@ function checkRoof() {
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Mechanical Fastened Tile') {
             console.log(roofType.value[i].item);
-
-            mtile();
         }
     }
+    mtile();
 }
-function checkValue(value) {
+function checkValue() {
     types.value = type.value;
-    console.log(types.value, value);
+    // console.log(types.value, value);
 }
 
-function getdripSize() {
-    console.log(selectDripEdge.value);
+async function getdripSize() {
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
@@ -108,38 +94,21 @@ function getdripSize() {
     }
     dripStagedata.DripEdgeMaterial = selectDripEdge.value;
     dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-    // stageDripedge();
-    dripEdge(dripStagedata);
+
     checkRoof();
 }
 
 function mtile() {
-    console.log(selectDripEdge.value);
-
     dripMTileData.DripEdgeMaterial = selectDripEdge.value;
-    console.log(dripMTileData.DripEdgeMaterial);
 
     storeDripEdgeSize();
 }
 
 const storeDripEdgeSize = async (value) => {
-    console.log(dripMTileData.DripEdgeSize);
-    if (isRoofTileMechanicalValid.value === true) {
-        dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
-        console.log(dripMTileData.DripEdgeSize);
-        mechtileStore.insertDripAtIndex(5, dripMTileData.DripEdgeMaterial);
-        mechtileStore.insertDripAtIndex(7, dripMTileData.DripEdgeSize);
-        console.log(mechtileStore);
-    }
+    mechtileStore.resetState();
 
-    // await stageDripedge();
-};
-
-const stageDripedge = async () => {
-    // dripStagedata.DripEdgeMaterial = selectDripEdge.value;
-    // dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-
-    await dripEdge(dripStagedata);
+    mechtileStore.addUseritems(dripStagedata);
+    console.log(mechtileStore);
 };
 
 watch(types, typeSizes, type, checkRoof, () => {});
@@ -150,15 +119,13 @@ invoke(async () => {
 </script>
 
 <template>
-    <!-- flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800 card w-96 grid gap-4 grid-cols-1-->
     <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
         <!-- <Button label="Reset" severity="danger" @click="resetState"></Button> -->
         <label style="color: #122620">Drip Edge Material</label>
-        <!--  ref="selectRef"    selectDripMaterial,  @change="emitValue" @update-value="selectDripMaterial"    " -->
         <Select v-model="selectDripEdge" :options="types" placeholder="make selection" @update:modelValue="checkValue" />
-        <!-- @change="emitValuesize" @update-valuesize="storeDripEdgeSize" ref="selectSizeRef"-->
 
         <label style="color: #122620">Drip Edge Size</label>
-        <Select ref="selectSizeRef" v-model="selectDripEdgeSize" :options="typeSizes" @click="getdripSize" @change="emitValuesize" @update-valuesize="storeDripEdgeSize" placeholder="make selection" />
+        <!-- @update-valuesize="storeDripEdgeSize" -->
+        <Select ref="selectSizeRef" v-model="selectDripEdgeSize" :options="typeSizes" @click="getdripSize" @change="emitValuesize" placeholder="make selection" />
     </div>
 </template>

@@ -9,91 +9,30 @@ export default function usePostToLambda() {
     const errors = ref(null);
     const loading = ref(false);
 
-    var payload = ref(null);
-    var udlpayload = ref(null);
-    var sapayload = ref(null);
-    // var dimpayload = ref(null);
-    var drippayload = ref(null);
-
-    const { data, error, isFetching, execute } = useAxios(
-        // ① give the URL up front
-        lambdaUrl,
-        // ② options object
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-            // you can omit `data` here
-        },
-        // ③ axios instance
-        axios,
-        // ④ don't fire immediately
-        { immediate: false }
-    );
-
-    /**
-     * post an object to the Lambda
-     * @param {Object} obj — any JSON‐serializable object
-     */
-
-    const dripEdge = async (dripedge) => {
-        drippayload.value = dripedge;
-        console.log(drippayload.value);
+    const { data, error: axiosError, isFetching, execute } = useAxios(lambdaUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } }, axios, { immediate: false });
+    const run = async (body, label) => {
         loading.value = true;
-        error.value = null;
+        errors.value = null;
         try {
-            return await execute({ data: drippayload.value });
-        } catch (err) {
-            error.value = err.massage;
-            console.error('Lambda post failed:', err);
+            const res = await execute({ data: body });
+            return res?.data ?? data.value;
+        } catch (e) {
+            console.error(`Lambda ${label} failed:`, {
+                message: e?.message,
+                code: e?.code,
+                status: e?.response?.status,
+                data: e?.response?.data
+            });
+            errors.value = e?.message || 'Request failed';
+            throw e;
         } finally {
             loading.value = false;
         }
     };
 
-    const post = async (value) => {
-        payload.value = value;
-        console.log(payload.value);
-        loading.value = true;
-        error.value = null;
-        try {
-            return await execute({ data: payload.value });
-        } catch (err) {
-            error.value = err.massage;
-            console.error('Lambda post failed:', err);
-        } finally {
-            loading.value = false;
-        }
-    };
+    const dripEdge = (v) => run(v, 'dripEdge');
+    // const roofMeasurements = (v) => run(v, 'roofMeasurements');
+    const post = (v) => run(v, 'post');
 
-    const postUDL = async (udlValue) => {
-        udlpayload.value = udlValue;
-        console.log(udlpayload.value);
-        loading.value = true;
-        error.value = null;
-        try {
-            return await execute({ data: udlpayload.value });
-        } catch (err) {
-            error.value = err.massage;
-            console.error('Lambda post failed:', err);
-        } finally {
-            loading.value = false;
-        }
-    };
-
-    const postSATile = async (saValue) => {
-        sapayload.value = saValue;
-        console.log(sapayload.value);
-        loading.value = true;
-        error.value = null;
-        try {
-            return await execute({ data: sapayload.value });
-        } catch (err) {
-            error.value = err.massage;
-            console.error('Lambda post failed:', err);
-        } finally {
-            loading.value = false;
-        }
-    };
-
-    return { data, errors, isFetching, loading, post, postUDL, postSATile, dripEdge };
+    return { data, errors, isFetching, loading, post, dripEdge };
 }

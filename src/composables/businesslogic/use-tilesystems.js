@@ -5,8 +5,6 @@ import useSlope from '@/composables/use-updateSlope';
 export default function useTile(fn) {
     const { slopeCondition, isSlopeLessFour, isSlopeMoreFour } = useSlope();
 
-    // const underlaymentNOA = ref('');
-    // const saNOA = ref('');
     const isUDLValid = ref('');
     const isUDLNOAValid = ref('');
     const isSAValid = ref('');
