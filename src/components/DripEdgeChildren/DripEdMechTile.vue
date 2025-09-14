@@ -5,7 +5,6 @@ import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
