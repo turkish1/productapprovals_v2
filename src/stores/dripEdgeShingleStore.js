@@ -1,32 +1,29 @@
 import { defineStore } from 'pinia';
 
-export const usedripedgeshingleStore = defineStore('dripinputshin', {
+export const usedripedgeshingleStore = defineStore('dripShinMaterial', {
     //state
     state: () => ({
-        dripinputshin: [],
         dripShinMaterial: [],
-        selectDripEdges: '',
-        selectDripEdgeSizes: '',
+        dripinputshin: [],
+        selectDripEdges: [],
+        shingleEdgesize: [],
+        inputselectedUserDripEdge: [],
+        selectedDripSize: [],
         id: 1
     }),
 
     //actions
     actions: {
-        addShinDrip(dripShinData) {
-            this.dripinputshin.push({ dripShinData, completed: false });
+        addMaterialShin(dripShinData) {
+            this.dripShinMaterial.push({ dripShinData, completed: false });
+        },
+        addSizeShin(selectedShinglesSizenew) {
+            this.shingleEdgesize.push({ selectedShinglesSizenew, completed: false });
         },
 
-        insertShinDrip(dripShinData, index) {
-            const newItem = { dripShinData, completed: false };
-
-            // If an index is provided and it's within the array bounds,
-            // we can use splice to insert the item at that position
-            if (typeof index === 'number' && index >= 0 && index <= this.dripinputshin.length) {
-                this.dripinputshin.splice(index, 0, newItem);
-            } else {
-                // If no valid index is provided, just push the item to the end of the array
-                this.dripinputshin.push(newItem);
-            }
+        addUseritems(dripSelection) {
+            console.log(this.inputselectedUserDripEdge);
+            this.inputselectedUserDripEdge.push({ dripSelection, completed: false });
         },
         insertShinDripAtIndex(index, dripShinMaterial) {
             this.dripinputshin.splice(index, 0, {
@@ -51,8 +48,11 @@ export const usedripedgeshingleStore = defineStore('dripinputshin', {
          */
 
         resetState() {
-            this.$reset();
-            this.dripShinMaterial = [];
+            // this.$reset();
+            // this.dripShinMaterial = [];
+            console.log(this.inputselectedUserDripEdge);
+
+            this.inputselectedUserDripEdge = [];
         }
     }
 

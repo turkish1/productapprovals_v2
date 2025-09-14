@@ -1,22 +1,17 @@
 <script setup>
-import useADTileDrip from '@/composables/DripEdge/use-ADTileDrip';
+// import useADTileDrip from '@/composables/DripEdge/use-ADTileDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-import usePostToLambda from '@/composables/Postdata/usePostToLambda';
 
 import { usedripADStore } from '@/stores/dripEdgeADTileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
-import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
+import { defineEmits, onMounted, reactive, ref, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
-const { dripEdge } = usePostToLambda();
 
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
-
-const { typeSize, ttype, holdSizes } = useADTileDrip();
-// Reactive value bound to the select dropdown
 
 // Ref for the <select> element
 const selectSizeRef = ref(null);
@@ -60,11 +55,6 @@ const emitValuesize = () => {
     getdripSize();
 };
 
-// const resetButton = () => {
-//     usedripedgeadtileStore.$reset();
-//     selectDripEdgeSize.value = selectDripEdgeSizes.value;
-//     selectDripEdge.value = selectDripEdges.value;
-// };
 // Example: Accessing the select element via the ref and for the default use
 onMounted(() => {
     checkValue();
@@ -73,9 +63,9 @@ onMounted(() => {
 function checkRoof() {
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Adhesive Set Tile') {
-            tile();
         }
     }
+    tile();
 }
 function checkValue() {
     types.value = type.value;
@@ -85,30 +75,24 @@ function getdripSize() {
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
-            isdripMaterialValid.value = true;
-            isdripsizeValid.value = true;
-            console.log(isdripMaterialValid.value);
+            // isdripMaterialValid.value = true;
+            // isdripsizeValid.value = true;
+            // console.log(isdripMaterialValid.value);
             checkRoof();
         }
         if (selectDripEdge.value === 'Stainless Steel Metal ²') {
             typeSizes.value = holdSize.value.size2;
-            isdripMaterialValid.value = true;
-            isdripsizeValid.value = true;
-            console.log(isdripMaterialValid.value);
+
             checkRoof();
         }
         if (selectDripEdge.value === 'Aluminum Metal ³') {
             typeSizes.value = holdSize.value.size3;
-            isdripMaterialValid.value = true;
-            isdripsizeValid.value = true;
-            console.log(isdripMaterialValid.value);
+
             checkRoof();
         }
         if (selectDripEdge.value === 'Copper Metal ⁴') {
             typeSizes.value = holdSize.value.size4;
-            isdripMaterialValid.value = true;
-            isdripsizeValid.value = true;
-            console.log(isdripMaterialValid.value);
+
             checkRoof();
         }
     } else {
@@ -116,7 +100,6 @@ function getdripSize() {
     }
     dripStagedata.DripEdgeMaterial = selectDripEdge.value;
     dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-    dripEdge(dripStagedata);
     checkRoof();
 }
 
@@ -125,34 +108,19 @@ function tile() {
 
     storeDripEdgeSize();
 }
-const isdripMaterialValid = ref(false);
-const isdripsizeValid = ref(false);
 
-const storeDripEdgeSize = (value) => {
-    if (isRoofTileADValid.value === true) {
-        dripTileData.DripEdgeSize = selectDripEdgeSize.value;
-        console.log(dripTileData.DripEdgeSize);
-        tileStore.insertDripAtIndex(4, dripTileData.DripEdgeMaterial);
-        tileStore.insertDripAtIndex(6, dripTileData.DripEdgeSize);
-    }
-};
-const stageDripedge = async () => {
-    try {
-        if (isdripMaterialValid.value === true && isdripsizeValid.value == true) {
-            // console.log(dripStagedata);
-            return await dripEdge(dripStagedata);
-        } else {
-            console.log('The if statemeant failed');
+const storeDripEdgeSize = () => {
+    console.log(dripStagedata);
+    tileStore.resetState();
 
-            return [];
-        }
-    } catch (err) {
-        console.error('Lambda post failed:', err);
-    } finally {
-        loading.value = false;
-    }
+    dripTileData.DripEdgeSize = selectDripEdgeSize.value;
+    console.log(dripStagedata);
+    tileStore.addUseritems(dripStagedata);
+
+    // tileStore.addUseritems(4, dripTileData.DripEdgeMaterial);
+    // tileStore.insertDripAtIndex(6, dripTileData.DripEdgeSize);
 };
-watch(types, typeSizes, type, checkRoof, () => {});
+
 watchEffect(checkValue, getdripSize, () => {});
 invoke(async () => {
     await until(callState).toBe(true);

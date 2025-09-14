@@ -8,6 +8,7 @@ import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight'
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import useSystemf from '@/composables/use-Inputsystemf';
 import useSlope from '@/composables/use-updateSlope';
+import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
 import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
@@ -18,25 +19,23 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import AutoCompletePoly from './roofSystems/AutoCompletePoly.vue';
 import AutoCompleteSA from './roofSystems/AutoCompleteSA.vue';
 
-const { postShingle, postUDLshingle, postSAshingle } = usePostShingleToLambda();
-
+const { postShingle } = usePostShingleToLambda();
+const shingleDripstore = usedripedgeshingleStore();
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { slopeCondition } = useSlope();
 
 const polyStore = usePolyStore();
+const { polyinput } = storeToRefs(polyStore);
+
 const store = useShingleStore();
-const usesystemfStore = useSystemf();
 const { inputshingle } = storeToRefs(store);
 
+const usesystemfStore = useSystemf();
 const { systeminput } = storeToRefs(usesystemfStore.store);
-const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
-const latestOfMaps = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
-
 const latestSA = computed(() => latestOf(systeminput.value)?.systemData || null);
-const latestSADescription = computed(() => latestOfMaps(systeminput.value)?.systemData.Maps || null);
 
-const { polyinput } = storeToRefs(polyStore);
+const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
 
 const shingles = reactive({
     noa: '',
@@ -48,6 +47,8 @@ const shingles = reactive({
     deckType: '',
     expiration_date: '',
     prescriptiveSelection: '',
+    dripEdgeMaterial: '',
+    dripEdgeSize: '',
     shingleIdentifier: 'shingle'
 });
 
@@ -271,16 +272,7 @@ const udlForm = reactive({
     hittype: '',
     prescriptiveSelection: ''
 });
-const saData = reactive({
-    samanufacturer: '',
-    sanoa: '',
-    samaterial: '',
-    sadescription: '',
-    sasystem: '',
-    saIdentifier: 'sa',
-    hittype: '',
-    prescriptiveSelection: ''
-});
+
 const saForm = reactive({
     sanoa: '',
     samanufacturer: '',
@@ -311,8 +303,10 @@ let hitType = ref(null); // outside the function, globally scoped
 
 function getIndexs() {
     const normalize = (v) => (typeof v === 'string' ? v : (v?.label ?? v?.value ?? v?.name ?? ''));
+    console.log(normalize);
     const low = normalize(selectedSlopelow.value);
     const high = normalize(selectedSlopehigh.value);
+    console.log(low, high);
     if (!low && !high) return;
 
     const hit = conditions.find((c) => c.match.includes(low) || c.match.includes(high));
@@ -340,6 +334,7 @@ function getIndexs() {
 
 watch(
     () => modalIsActive.value,
+
     (newVal) => {
         console.log('Modal changed:', newVal);
     },
@@ -431,6 +426,8 @@ const commonShingle = () => ({
     material: shingleForm.material || '',
     description: shingleForm.description || '',
     decktype: dims.decktype || '',
+    dripEdgeMaterial: shingles.dripEdgeMaterial,
+    dripEdgeSize: shingles.dripEdgeSize,
     area: toNum(dims.area),
     height: toNum(dims.height),
     slope: toNum(slope.value),
@@ -516,6 +513,12 @@ function addCheckmarks() {
     if (isHeightValid.value || isDisabledslope.value) {
         isvalueValid.value = true;
         console.log('Entered checkmarks');
+        console.log(shingleDripstore);
+
+        shingles.dripEdgeMaterial = shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeMaterial;
+        shingles.dripEdgeSize = shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeSize;
+
+        console.log(shingles.dripEdgeMaterial, shingles.dripEdgeSize);
     } else {
         isvalueValid.value = false;
     }
@@ -542,6 +545,11 @@ const slopeBand = computed(() => {
 
 const showUDL = computed(() => slopeBand.value === 'low');
 const showSA = computed(() => slopeBand.value === 'high');
+
+watch([showSA, showUDL, () => slopeBand.value], () => {
+    console.log(showSA, showUDL);
+});
+
 async function onOpenShingleSAClick() {
     if (loading.value) return;
     loading.value = true;
@@ -620,7 +628,7 @@ watch(
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                     <AutoCompleteSA />
 
-                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleSAClick" style="margin-left: 75px; margin-top: 30px" />
+                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleSAClick" style="margin-left: 70px; margin-top: 25px" />
                 </div>
             </div>
 
@@ -635,12 +643,12 @@ watch(
 
     <Divider />
     <ModalWindow :key="modalKeyUDL" @closePopup="(modalUDLIsActive = false), shingleUdlStaging()" v-if="modalUDLIsActive">
-        <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
-            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+        <div class="grid grid-cols-2 md:grid-cols-2 gap-2" style="margin-left: 10px">
+            <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="manufacturer">(UDL) NOA Applicant</label>
                 <InputText id="manufacturer" v-model="udlForm.udlmanufacturer" />
             </div>
-            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+            <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="material">(UDL) Material</label>
                 <InputText id="material" v-model="udlForm.udlmaterial" />
             </div>
@@ -651,12 +659,12 @@ watch(
         </div>
     </ModalWindow>
     <ModalWindow :key="modalKeySA" @closePopup="(modalSAIsActive = false), shingleSAStaging()" v-if="modalSAIsActive">
-        <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
-            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+        <div class="grid grid-cols-2 md:grid-cols-2 gap-2" style="margin-left: 10px">
+            <div class="min-w-[350px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label for="saapplicant">S/A Applicant</label>
                 <InputText id="saapplicant" v-model="saForm.samanufacturer" />
             </div>
-            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+            <div class="min-w-[350px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                 <label for="samaterial">S/A Material Type</label>
                 <InputText id="saaterial" v-model="saForm.samaterial" />
             </div>
@@ -671,14 +679,15 @@ watch(
             </div>
         </div>
     </ModalWindow>
+    <!--  grid grid-cols-1 md:grid-cols-1 gap-2-->
     <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
         <ModalWindow :key="modalKey" @closePopup="modalIsActive = false" v-if="modalIsActive">
-            <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
-                <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-2" style="margin-left: 10px">
+                <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                     <label for="manufacturer">Applicant</label>
                     <InputText id="manufacturer" v-model="shingleForm.manufacturer" class="w-full" />
                 </div>
-                <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                     <label for="material">Material</label>
                     <InputText id="material" v-model="shingleForm.material" class="w-full" />
                 </div>
@@ -691,12 +700,12 @@ watch(
     </div>
 
     <ModalWindow :key="modalKey" @closePopup="handleShingleModalClose()" v-if="modalIsActive">
-        <div class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
-            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+        <div class="grid grid-cols-2 md:grid-cols-2 gap-4" style="margin-left: 10px">
+            <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="manufacturer">Applicant</label>
                 <InputText id="manufacturer" v-model="shingleForm.manufacturer" class="w-full" />
             </div>
-            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+            <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="material">Material</label>
                 <InputText id="material" v-model="shingleForm.material" class="w-full" />
             </div>

@@ -24,7 +24,8 @@ export default function useMechtileDrip() {
         }
         typeSize.value.push(holdSized.value.size1, holdSized.value.size2, holdSized.value.size3, holdSized.value.size4);
         useMStore.addMTileDrip(holdSized);
-        useMStore.addMTileDrip(typeSize);
+        useMStore.addSTileDrip(typeSize);
+
         return hold.value;
     });
     loading.value = false;

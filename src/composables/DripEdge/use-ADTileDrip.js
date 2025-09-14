@@ -25,8 +25,11 @@ export default function useADTileDrip() {
         }
         typeSize.value.push(holdSizes.value.size1, holdSizes.value.size2, holdSizes.value.size3, holdSizes.value.size4);
 
-        dripadTileStore.addDripTile(holdSizes);
-        dripadTileStore.addDripTile(typeSize);
+        dripadTileStore.addMaterialDrip(ttype);
+        dripadTileStore.addSizeDrip(typeSize);
+        console.log(dripadTileStore);
+        console.log(holdSizes, ttype, typeSize.value, hold.value);
+
         return hold.value;
     });
     loading.value = false;

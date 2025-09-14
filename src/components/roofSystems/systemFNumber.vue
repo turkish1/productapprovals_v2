@@ -1,6 +1,6 @@
 <template>
     <div class="autocomplete">
-        <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 space-y-2 mb-2" style="margin-left: 20px">
             <FloatLabel>
                 <InputText id="sanoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputSA" />
                 <label for="ac">S/A Membrane NOA: 00000000</label>
@@ -55,7 +55,8 @@ const saTiles = reactive({
     Description_F13: '',
     Description_F14: '',
     Description_F15: '',
-    arrDesignPressure: []
+    arrDesignPressure: [],
+    Maps: []
 });
 // 🔔 Emit "cleared" whenever the field is emptied
 watch(query, (v) => {
@@ -78,15 +79,13 @@ const filteredSuggestions = computed(() => {
     if (!query.value) return [];
 
     // The suggestion is all the NOAs from the database
-    console.log(suggestions.value, query.value);
+    // console.log(suggestions.value, query.value);
 
-    console.log(suggestions.value.sysFInput[0].sysFNumber.noa);
     systemFNOA.value = suggestions.value.sysFInput[0].sysFNumber.noa;
-    console.log(systemFNOA.value);
+
     const stringyfield1 = JSON.stringify(systemFNOA.value).split('[').join();
     const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
-    // .filter((item) => console.log(item));
-    console.log(stringyfield2);
+
     const newArray = computed(() => stringyfield2.split(',').map((s) => s.trim()));
     console.log(newArray.value);
 
@@ -97,7 +96,6 @@ const filteredSuggestions = computed(() => {
 
 function grabInputSA() {
     datasystemf.value = query.value;
-    console.log(datasystemf.value);
     if (query.value !== null) {
         takef(datasystemf.value);
     }
@@ -107,10 +105,11 @@ function grabInputSA() {
 function checkInputSA() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
-            console.log(item);
+            console.log(item.systemData);
             saTiles.manufacturer = item.systemData.manufacturer;
             saTiles.material = item.systemData.material;
             saTiles.system = item.systemData.system;
+            saTiles.designpressure = item.systemData.system;
         });
     }
 }

@@ -1,30 +1,29 @@
 <script setup>
-import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
+// import useShingleDrip from '@/composables/DripEdge/use-ShingleDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-import usePostMechanicalLambda from '@/composables/Postdata/usePostMechanicalLambda';
-import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
+// import usePostShingleLambda from '@/composables/Postdata/usePostShingleLambda';
+import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
-const { dripEdge } = usePostMechanicalLambda();
+// const { dripEdge } = usePostShingleLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 
-const { typeSize, dtype, holdSized } = useMechtileDrip();
+// const { typeSize, dtype, holdSized } = useShingleDrip();
 // Reactive value bound to the select dropdown
 
 // Ref for the <select> element
 const selectSizeRef = ref(null);
 
-const mechtileStore = usedripMStore();
-console.log(mechtileStore);
+const shingleStore = usedripedgeshingleStore();
 // Define emits
 const emit = defineEmits(['update-valuesize']);
 
-let isRoofTileMechanicalValid = ref(false);
+let isRoofShingleValid = ref(false);
 
 const typeSizes = ref();
 
@@ -38,50 +37,41 @@ const callState = tryOnMounted(() => {
         return '';
     }
     for (let i = 0; i < roofType.value.length; i++) {
-        if (roofType.value[i].item === 'Mechanical Fastened Tile') {
+        if (roofType.value[i].item === 'Asphalt Shingle') {
             console.log(roofType.value[i].item);
-            isRoofTileMechanicalValid.value = true;
+            isRoofShingleValid.value = true;
             types.value = type.value;
         }
     }
     checkRoof();
 });
 
-const dripMTileData = reactive({
+const dripShingleData = reactive({
     DripEdgeMaterial: '',
     DripEdgeSize: ''
 });
 
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
-    dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
-    console.log(selectDripEdgeSize.value);
+    dripShingleData.DripEdgeSize = selectDripEdgeSize.value;
     getdripSize();
 };
 
-// const resetButton = () => {
-//     usedripedgeadtileStore.$reset();
-//     selectDripEdgeSize.value = selectDripEdgeSizes.value;
-//     selectDripEdge.value = selectDripEdges.value;
-// };
 // Example: Accessing the select element via the ref and for the default use
 onMounted(() => {
-    console.log('Select element:', selectSizeRef.value);
     checkValue();
 });
 
 function checkRoof() {
     for (let i = 0; i < roofType.value.length; i++) {
-        if (roofType.value[i].item === 'Mechanical Fastened Tile') {
+        if (roofType.value[i].item === 'Asphalt Shingle') {
             console.log(roofType.value[i].item);
-
-            mtile();
         }
     }
+    shingle();
 }
 function checkValue(value) {
     types.value = type.value;
-    console.log(types.value, value);
 }
 
 function getdripSize() {
@@ -108,38 +98,18 @@ function getdripSize() {
     }
     dripStagedata.DripEdgeMaterial = selectDripEdge.value;
     dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-    stageDripedge();
-    // dripEdge(dripStagedata);
     checkRoof();
 }
 
-function mtile() {
-    console.log(selectDripEdge.value);
-
-    dripMTileData.DripEdgeMaterial = selectDripEdge.value;
-    console.log(dripMTileData.DripEdgeMaterial);
+function shingle() {
+    dripShingleData.DripEdgeMaterial = selectDripEdge.value;
 
     storeDripEdgeSize();
 }
 
 const storeDripEdgeSize = async (value) => {
-    console.log(dripMTileData.DripEdgeSize);
-    if (isRoofTileMechanicalValid.value === true) {
-        dripMTileData.DripEdgeSize = selectDripEdgeSize.value;
-        console.log(dripMTileData.DripEdgeSize);
-        mechtileStore.insertDripAtIndex(5, dripMTileData.DripEdgeMaterial);
-        mechtileStore.insertDripAtIndex(7, dripMTileData.DripEdgeSize);
-        console.log(mechtileStore);
-    }
-
-    // await stageDripedge();
-};
-
-const stageDripedge = async () => {
-    // dripStagedata.DripEdgeMaterial = selectDripEdge.value;
-    // dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
-
-    await dripEdge(dripStagedata);
+    shingleStore.resetState();
+    shingleStore.addUseritems(dripShingleData);
 };
 
 watch(types, typeSizes, type, checkRoof, () => {});
@@ -150,7 +120,6 @@ invoke(async () => {
 </script>
 
 <template>
-    <!-- flex flex-col w-full gap-4 bg-white shadow-lg shadow-cyan-800 card w-96 grid gap-4 grid-cols-1-->
     <div class="flex flex-col w-96 mb-4 gap-3" style="margin-left: 20px">
         <!-- <Button label="Reset" severity="danger" @click="resetState"></Button> -->
         <label style="color: #122620">Drip Edge Material</label>

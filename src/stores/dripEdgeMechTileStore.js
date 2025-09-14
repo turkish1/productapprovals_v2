@@ -1,30 +1,39 @@
 import { defineStore } from 'pinia';
 
-export const usedripMStore = defineStore('dripinputmecht', {
+export const usedripMStore = defineStore('dripinputmaterial', {
     //state
     state: () => ({
-        dripinputmecht: [],
+        dripinputmaterial: [],
         dripMTileMaterial: [],
-        selectDripEdges: '',
-        selectDripEdgeSizes: '',
+        dripinputsize: [],
+        inputselectedUserDripEdge: [],
+        selectedDripSize: [],
         id: 2
     }),
 
     //actions
     actions: {
         addMTileDrip(dripMTileData) {
-            this.dripinputmecht.push({ dripMTileData, completed: false });
+            this.dripinputmaterial.push({ dripMTileData, completed: false });
+        },
+        addSTileDrip(selectedDripSizenew) {
+            this.dripinputsize.push({ selectedDripSizenew, completed: false });
         },
         insertDripAtIndex(index, dripMTileMaterial) {
-            this.dripinputmecht.splice(index, 0, {
+            this.dripinputmaterial.splice(index, 0, {
                 dripMTileMaterial,
                 completed: false
             });
         },
-
+        addUseritems(dripSelection) {
+            this.inputselectedUserDripEdge.push({ dripSelection, completed: false });
+        },
         resetState() {
-            this.$reset();
-            this.dripMTileMaterial = [];
+            // this.$reset();
+            console.log('reset was called: ', this.inputselectedUserDripEdge);
+            // this.dripMTileMaterial = [];
+            this.inputselectedUserDripEdge = [];
+            console.log('reset was called: ', this.inputselectedUserDripEdge);
         }
     }
 
