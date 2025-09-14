@@ -10,24 +10,6 @@
 import ModalClose from '@/components/Modal/ModalClose.vue';
 import { ref } from 'vue';
 
-// const props = defineProps({ initialData: { type: Object, default: () => ({}) } });
-// const emit = defineEmits(['update:modelValue', 'closePopup']);
-
-// const local = ref({});
-
-// function resetLocal() {
-//     // every mount/re-mount gets a fresh copy
-//     local.value = structuredClone(toRaw(props.initialData || {}));
-// }
-
-// onMounted(resetLocal);
-// watch(() => props.initialData, resetLocal, { deep: true });
-
-// // when the modal is confirmed/closed, emit the local back (if you want)
-// function closeAndEmit() {
-//     emit('update:modelValue', local.value);
-//     emit('closePopup');
-// }
 const visible = ref(false);
 </script>
 <style lang="scss">
