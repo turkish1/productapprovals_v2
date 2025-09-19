@@ -1,8 +1,7 @@
 <script setup>
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
-import usePostMechanicalToLambda from '@/composables/Postdata/usePostMechanicalLambda';
-// import useUDL from '@/composables/TileFunc/systemE';
 import AnchorInputWrapper from '@/components/TileNoa/MechanicalTileNoa/AnchorInputWrapper.vue';
+import usePostMechanicalToLambda from '@/composables/Postdata/usePostMechanicalLambda';
 import useExposurec from '@/composables/Tiletables/exposure_c';
 import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-mechHeight';
@@ -1399,6 +1398,7 @@ async function closeTileModal() {
     await nextTick(() => {
         modalKeySA.value++;
     });
+    mechSAStaging();
 }
 async function closeTileUDLModal() {
     // hide first, a
@@ -1421,7 +1421,6 @@ function udlDescPressure(selectedsystemE) {
     udlTile.Anchor_Base_Sheet = Anchor_Base[anchorKey] || '';
     udlTile.designPressure = keyValueSystemEPairsValues.value[key] || '';
     udlTile.systemSelected = key;
-    console.log(tilesysEinput[0]?.systemDataE);
     if (tilesysEinput[0]?.length > 0) {
         const input = tilesysEinput[0].systemDataE;
         input.Anchor_Base = udlTile.Anchor_Base_Sheet;
@@ -1708,7 +1707,9 @@ const mechSAStaging = async () => {
             </div>
         </div>
     </ModalWindow>
-    <ModalWindow :key="modalKeySA" :initialData="currentTileSA" @closePopup="closeTileModal(), mechSAStaging()" v-if="modalSAIsActive">
+
+    <ModalWindow :key="modalKeySA" :initialData="currentTileSA" @closePopup="closeTileModal()" v-if="modalSAIsActive">
+        <!-- mechSAStaging() -->
         <div v-show="isSAValid" class="grid grid-cols-2 md:grid-cols-2 gap-4" style="margin-left: 50px">
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="saapplicant">S/A Applicant</label>
@@ -1735,10 +1736,6 @@ const mechSAStaging = async () => {
                 <InputText id="capsheetdescription" v-model="fDescForSelected" :disabled="!currentSysKey" />
             </div>
         </div>
-        <!-- <div v-show="!!currentSysKey" class="min-w-[490px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-            <label style="color: #122620" for="sadescription">S/A Description</label>
-            <InputText id="capsheetdescription" v-model="fDescForSelected" :disabled="!currentSysKey" />
-        </div> -->
     </ModalWindow>
     <!-- no function is called at closePopup because we are just saving the data -->
     <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">

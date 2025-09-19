@@ -1,7 +1,7 @@
 <template>
     <div class="modal-wrapper shadow-xl">
-        <!-- <slot :local="local" /> -->
         <slot></slot>
+
         <ModalClose @click="$emit('closePopup')" />
     </div>
 </template>
@@ -20,7 +20,6 @@ const visible = ref(false);
     z-index: 500;
     width: 55vw;
     height: 50vh;
-
     background-color: rgba(174, 180, 181, 0.1); // Clear light blue with 10% opacity
     backdrop-filter: blur(15px); // Strong frosted glass effect
     border-radius: 12px;

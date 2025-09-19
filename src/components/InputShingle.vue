@@ -709,7 +709,7 @@ watch(
                 <label for="material">Material</label>
                 <InputText id="material" v-model="shingleForm.material" class="w-full" />
             </div>
-            <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+            <div class="min-w-[400px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="description">Description</label>
                 <InputText id="description" v-model="shingleForm.description" class="w-full" />
             </div>
