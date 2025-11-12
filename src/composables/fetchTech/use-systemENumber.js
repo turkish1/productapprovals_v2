@@ -24,7 +24,7 @@ export default function useENumber() {
 
     const fetchData = async () => {
         sysENumber.noa = data;
-        console.log(data);
+        // console.log(data);
         systemEStore.addSystem(sysENumber);
     };
 

@@ -3,12 +3,15 @@ import { useStorage } from '@vueuse/core';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { onMounted, reactive, ref } from 'vue';
 
+const url = 'https://ph2b5e3vusvx74ojurdlrlx5ie0ksqeg.lambda-url.us-east-1.on.aws/';
+
 export function useGoogleAuth() {
     const accessToken = ref(null); // Gmail calls
     const idPayload = ref(null); // basic profile
     let tokenClient = null;
     const localData = ref([]);
-    let Data = reactive({});
+    // const Data = reactive({});
+    // const results = ref([]);
 
     const acctUser = reactive({
         dba: '',
@@ -33,8 +36,8 @@ export function useGoogleAuth() {
             callback: handleCredentialResponse
         });
     });
-
-    const signIn = () => tokenClient.requestAccessToken({ prompt: 'consent' }, submit());
+    // , submit()
+    const signIn = () => tokenClient.requestAccessToken({ prompt: 'consent' });
 
     const signOut = () => {
         if (!accessToken.value) return;
@@ -43,23 +46,6 @@ export function useGoogleAuth() {
             idPayload.value = null;
         });
     };
-
-    async function submit() {
-        let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/getaccounts';
-
-        const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
-
-        let results = ref([]);
-        results.value = execute().then((result) => {
-            Data = data.value;
-
-            for (const [key, value] of Object.entries(Data)) {
-                localData.value.push(value);
-            }
-        });
-    }
-    // { credential }
-    /* 3. Google callback */
 
     async function handleCredentialResponse(resp) {
         if (resp.error) return console.error(resp);
@@ -72,28 +58,64 @@ export function useGoogleAuth() {
         }).then((r) => r.json());
 
         userEmail.value = profile.email;
-        await checkEmail(userEmail);
+        await getUserdata();
     }
 
-    async function checkEmail(userEmail) {
-        const uEmail = await userEmail.value;
-        console.log(uEmail);
-        for (let i = 0; i <= localData.value[0].length; i++) {
-            if ((await localData.value[0][i]?.email) === uEmail) {
-                acctUser.email = await localData.value[0][i].email;
-                acctUser.name = await localData.value[0][i].name;
-                acctUser.dba = await localData.value[0][i].dba;
-                acctUser.cphone = await localData.value[0][i].cphone;
-                acctUser.bphone = await localData.value[0][i].bphone;
-                acctUser.phone = await localData.value[0][i].bphone;
-                acctUser.expiration_date = await localData.value[0][i].expiration_date;
-                acctUser.projects = await localData.value[0][i].projects;
-                acctUser.secondary_status = await localData.value[0][0].secondary_status;
+    const { execute } = useAxios(
+        url,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        },
+        { immediate: false }
+    );
+    // After successful API
 
-                acctUser.license = await localData.value[0][i].license;
-                await addUser(acctUser);
-            }
+    async function getUserdata() {
+        try {
+            const response = await execute({
+                data: { email: userEmail.value }
+            });
+            const Data = response.data.value.body;
+            localData.value = [Data];
+            await checkEmail(userEmail);
+
+            return Data;
+        } catch (err) {
+            console.error('API Error:', err.response?.data || err.message);
         }
     }
-    return { accessToken, idPayload, signIn, signOut, checkEmail, localData, acctUser };
+
+    // { credential }
+    /* 3. Google callback */
+
+    async function checkEmail(userEmail) {
+        const emailToFind = userEmail.value; // plain string
+
+        for (const user of localData.value) {
+            // <-- iterate over objects
+            if (user.email?.toLowerCase() === emailToFind.toLowerCase()) {
+                // Populate the reactive acctUser (no await needed – values are plain)
+
+                acctUser.email = user.email;
+                acctUser.name = user.name;
+                acctUser.dba = user.dba;
+                acctUser.cphone = user.cphone;
+                acctUser.bphone = user.bphone;
+                acctUser.phone = user.bphone;
+                acctUser.expiration_date = user.expiration_date;
+                acctUser.projects = user.projects ?? [];
+                acctUser.secondary_status = user.secondary_status;
+                acctUser.license = user.license;
+                //     // add any other fields you need
+
+                await addUser(acctUser);
+                return; // stop after first match
+            }
+        }
+
+        console.log('No user found with email', emailToFind);
+    }
+
+    return { accessToken, idPayload, signIn, signOut, getUserdata, checkEmail, localData, acctUser };
 }

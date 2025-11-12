@@ -151,9 +151,9 @@ defineExpose({
     width: 300px;
 }
 input {
-    width: 100%;
+    width: 80%;
     padding: 8px;
-    font-size: 16px;
+    font-size: 12px;
 }
 .suggestions {
     color: #111;

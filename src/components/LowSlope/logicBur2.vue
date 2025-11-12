@@ -2,7 +2,7 @@
 import usePostBurLambda from '@/composables/Postdata/usePostBurLambda';
 import useS3download from '@/composables/fetchTech/use-S3download';
 import useBurDetails from '@/composables/fetchTech/use-burdetailsdocs';
-import useburAxios from '@/composables/use-burAxios';
+import useburAxios from '@/composables/use-burSystems';
 import { useBurpdfStore } from '@/stores/burpdfStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { onMounted, reactive, ref } from 'vue';
@@ -10,7 +10,7 @@ import { onMounted, reactive, ref } from 'vue';
 // Composable & store setup
 const permitStore = usePermitappStore();
 const { downloadFile, fileUrl } = useS3download();
-const { bMaters, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
+const { callFunction, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
 const { postBur } = usePostBurLambda();
 const { calldetailsdoc } = useBurDetails();
 
@@ -33,6 +33,7 @@ const primethree = ref([]);
 const copiedString = ref('');
 onMounted(() => {
     console.log(permitStore);
+    loadMaterials();
 });
 
 const selectedBurItems = reactive({
@@ -51,14 +52,17 @@ const burPrep = reactive({
 });
 
 // Helper functions
-
+const bMaters = ref(['', 'Hot-Mopped Applied Systems', 'SBS/APP Modified Heat-Weld Bitumen Membrane', 'SBS Modified Bitumen Self-Adhered Membrane']);
 /** Load materials from the composable when the select is clicked */
 function loadMaterials() {
     mat.value = bMaters.value ?? [];
 }
 
-/** Update system options based on selected material */
-function updateSystemOptions(material) {
+async function updateSystemOptions(material) {
+    if (!material) return;
+
+    await callFunction(material); // ✅ wait for fetchData() to complete
+
     switch (material) {
         case 'Hot-Mopped Applied Systems':
             syst.value = systemHM.value;
@@ -102,15 +106,17 @@ function extractFirstToken(str) {
     return match ? match[0] : '';
 }
 
-function onMaterialChange({ value }) {
-    updateSystemOptions(value);
+async function onMaterialChange({ value }) {
+    if (!value || value === selectedBurItems.burMaterial) return;
+
     selectedBurItems.burMaterial = value;
-    // Reset dependent selections
     selectedSystem.value = null;
     selectedPrimeone.value = null;
     selectedPrimethree.value = null;
     primeone.value = [];
     primethree.value = [];
+
+    await updateSystemOptions(value);
 }
 
 function onSystemChange({ value }) {
@@ -183,15 +189,8 @@ async function burStaging() {
     <div class="min-w-[980px] flex flex-col gap-2 border-2 mx-auto p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg grid gap-6" style="margin-left: 50px; border-radius: 5px">
         <div>
             <label for="material" class="block text-sm font-medium text-red-600 mb-1"> Type of Low‑Slope BUR Material <span class="text-red-500">*</span> </label>
-            <Select
-                id="material"
-                v-model="selectedBur"
-                :options="mat"
-                placeholder="Make a selection"
-                @click="loadMaterials"
-                @change="onMaterialChange"
-                class="w-full rounded-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition"
-            />
+
+            <Select id="material" v-model="selectedBur" :options="mat" placeholder="Make a selection" @change="onMaterialChange" class="w-full rounded-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition" />
         </div>
 
         <div>

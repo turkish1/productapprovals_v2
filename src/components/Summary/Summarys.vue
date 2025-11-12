@@ -88,7 +88,7 @@ import { countStore } from '@/stores/countStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-import { useSavedStore } from '@/stores/savedTiledataStore';
+// import { useSavedStore } from '@/stores/savedTiledataStore';
 import { useShingleStore } from '@/stores/shingleStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
 import { invoke, tryOnMounted, until, watchOnce } from '@vueuse/core';
@@ -115,7 +115,7 @@ const secCountStore = countStore();
 
 const pdStore = usevalueStore();
 const { mechStore } = useMech();
-const tileADstore = useSavedStore();
+// const tileADstore = useSavedStore();
 let isGenaralPageValid = ref(false);
 let isRoofTileADValid = ref(false);
 let isRoofTileMechanicalValid = ref(false);
@@ -173,10 +173,11 @@ const callState = tryOnMounted(() => {
             } else if (roofType.value[i].item === 'Adhesive Set Tile') {
                 console.log(roofType.value[i].item);
                 isRoofTileADValid.value = true;
-                if (tileADstore.$state.savedTileinput[0].savedValues.paddySelection == 'single') {
-                    isPaddySingle.value = true;
-                    console.log(isPaddySingle);
-                }
+                // console.log(tileADstore.$state.savedTileinput);
+                // if (tileADstore.$state.savedTileinput[0].savedValues.paddySelection == 'single') {
+                //     isPaddySingle.value = true;
+                //     console.log(isPaddySingle);
+                // }
             } else if (roofType.value[i].item === 'Mechanical Fastened Tile') {
                 console.log(roofType.value[i].item);
                 isRoofTileMechanicalValid.value = true;

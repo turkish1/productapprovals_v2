@@ -1,5 +1,5 @@
 <script setup>
-import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
+// import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
 import usePostMechanicalLambda from '@/composables/Postdata/usePostMechanicalLambda';
 import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
@@ -7,13 +7,12 @@ import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
-const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
+const { selectDripEdge, selectDripEdgeSize, type, sizeTypeMetal } = useDripedge();
 const { dripEdge } = usePostMechanicalLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 
-const { typeSize, dtype, holdSized } = useMechtileDrip();
 // Reactive value bound to the select dropdown
 
 // Ref for the <select> element
@@ -81,12 +80,27 @@ function checkRoof() {
 }
 function checkValue() {
     types.value = type.value;
-    console.log(types.value);
 }
 
 function getdripSize() {
     console.log(selectDripEdge.value);
     if (selectDripEdge.value) {
+        if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
+            typeSizes.value = sizeTypeMetal.galvanized;
+            checkRoof();
+        }
+        if (selectDripEdge.value === 'Stainless Steel Metal ²') {
+            typeSizes.value = sizeTypeMetal.stainless;
+            checkRoof();
+        }
+        if (selectDripEdge.value === 'Aluminum Metal ³') {
+            typeSizes.value = sizeTypeMetal.aluminum;
+            checkRoof();
+        }
+        if (selectDripEdge.value === 'Copper Metal ⁴') {
+            typeSizes.value = sizeTypeMetal.copper;
+            checkRoof();
+        }
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = holdSize.value.size1;
             checkRoof();

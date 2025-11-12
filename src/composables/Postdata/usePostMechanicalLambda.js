@@ -15,7 +15,7 @@ export default function usePostMechanicalLambda() {
         console.log(body, label);
         try {
             const res = await execute({ data: body });
-            console.log(res?.data, data.value);
+            console.log(res?.data, data?.value);
             return res?.data ?? data.value;
         } catch (e) {
             console.error(`Lambda ${label} failed:`, {

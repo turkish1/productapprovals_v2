@@ -15,6 +15,7 @@ export default function usePostToLambda() {
         errors.value = null;
         try {
             const res = await execute({ data: body });
+            console.log(res?.data);
             return res?.data ?? data.value;
         } catch (e) {
             console.error(`Lambda ${label} failed:`, {
@@ -30,9 +31,9 @@ export default function usePostToLambda() {
         }
     };
 
-    const dripEdge = (v) => run(v, 'dripEdge');
+    // const dripEdge = (v) => run(v, 'dripEdge');
     // const roofMeasurements = (v) => run(v, 'roofMeasurements');
     const post = (v) => run(v, 'post');
 
-    return { data, errors, isFetching, loading, post, dripEdge };
+    return { data, errors, isFetching, loading, post };
 }

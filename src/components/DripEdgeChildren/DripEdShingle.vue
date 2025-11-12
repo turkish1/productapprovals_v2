@@ -7,7 +7,7 @@ import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
-const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
+const { selectDripEdge, selectDripEdgeSize, type, sizeTypeMetal } = useDripedge();
 // const { dripEdge } = usePostShingleLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
@@ -38,7 +38,7 @@ const callState = tryOnMounted(() => {
     }
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Asphalt Shingle') {
-            console.log(roofType.value[i].item);
+            // console.log(roofType.value[i].item);
             isRoofShingleValid.value = true;
             types.value = type.value;
         }
@@ -78,19 +78,19 @@ function getdripSize() {
     console.log(selectDripEdge.value);
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
-            typeSizes.value = holdSize.value.size1;
+            typeSizes.value = sizeTypeMetal.galvanized;
             checkRoof();
         }
         if (selectDripEdge.value === 'Stainless Steel Metal ²') {
-            typeSizes.value = holdSize.value.size2;
+            typeSizes.value = sizeTypeMetal.stainless;
             checkRoof();
         }
         if (selectDripEdge.value === 'Aluminum Metal ³') {
-            typeSizes.value = holdSize.value.size3;
+            typeSizes.value = sizeTypeMetal.aluminum;
             checkRoof();
         }
         if (selectDripEdge.value === 'Copper Metal ⁴') {
-            typeSizes.value = holdSize.value.size4;
+            typeSizes.value = sizeTypeMetal.copper;
             checkRoof();
         }
     } else {

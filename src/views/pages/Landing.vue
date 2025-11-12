@@ -104,6 +104,7 @@
 <script setup>
 import { useGoogleAuth } from '@/composables/Authentication/useGoogleAuth.js';
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
+// import { useGlobalState } from '@/stores/accountsStore';
 import AOS from 'aos';
 import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
@@ -116,6 +117,7 @@ defineProps({
     tagline: String
 });
 const loading = ref(false);
+// const { accountUsers } = useGlobalState();
 
 let accountUser = reactive({
     dba: '',
@@ -129,29 +131,32 @@ let accountUser = reactive({
     license: '',
     phone: ''
 });
-
+// this validates token and grants access to permit page.
 const checkAuth = () => {
-    localData.value.forEach((item, index) => {
-        for (let i = 0; i < item.length; i++) {
-            if (accessToken.value) {
-                acctCompare.value.push(item[i]);
-                accountUser.phone = item[i].bphone;
-                callNavigate();
-            }
-        }
-    });
+    // Safe guard + correct iteration
+    if (accessToken.value && Array.isArray(localData.value)) {
+        localData.value.forEach((user) => {
+            // user is an object → access properties directly
+            acctCompare.value.push(user); // push whole user
+            accountUser.phone = user.bphone; // set phone
+            callNavigate(); // navigate
+        });
+    } else {
+        console.warn('localData.value is not an array:', localData.value);
+    }
 };
 
 function callNavigate() {
     navigateNext();
-    // console.log('Line 57: callNavigate');
 }
 
 function navigateNext() {
     router.push('/permitapp');
 }
 
-watch(checkAuth, () => {});
+watch(checkAuth, () => {
+    // console.log(localData);
+});
 watchEffect(() => {
     if (accessToken.value) {
         // Example: list 10 newest messages

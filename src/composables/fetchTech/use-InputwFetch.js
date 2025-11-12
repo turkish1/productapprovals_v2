@@ -1,7 +1,5 @@
-// import DataService from '@/services/DataService';
-import { useShinglenoaStore } from '@/stores/shinglenoaNumber';
-// import { useAxios } from '@vueuse/integrations/useAxios';
-import { useFetch } from '@vueuse/core';
+ import { useShinglenoaStore } from '@/stores/shinglenoaNumber';
+ import { useFetch } from '@vueuse/core';
 import { computed, reactive, ref, toRefs } from 'vue';
 
 export default function useInputs() {

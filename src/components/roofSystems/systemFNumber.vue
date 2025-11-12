@@ -69,7 +69,7 @@ const suggestions = ref([]);
 const showSuggestions = ref(false);
 onMounted(() => {
     callFunction();
-    console.log(systemFStore.$state);
+    // console.log(systemFStore.$state);
     suggestions.value = systemFStore.$state;
 });
 // Computed property to filter suggestions based on user input
@@ -87,7 +87,7 @@ const filteredSuggestions = computed(() => {
     const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
 
     const newArray = computed(() => stringyfield2.split(',').map((s) => s.trim()));
-    console.log(newArray.value);
+    // console.log(newArray.value);
 
     return newArray.value.filter((item) => item.toString().includes(query.value));
 
@@ -142,7 +142,7 @@ const hideSuggestions = () => {
 input {
     width: 100%;
     padding: 8px;
-    font-size: 16px;
+    font-size: 12px;
 }
 
 .suggestions {
