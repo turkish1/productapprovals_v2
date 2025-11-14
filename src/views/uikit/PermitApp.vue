@@ -3,7 +3,7 @@
 import usePermitData from '@/composables/Postdata/usePermitappData';
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 import useLast from '@/composables/lastNumber.js';
-import { useprocStore } from '@/stores/processStore';
+// import { useprocStore } from '@/stores/processStore';
 import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -17,14 +17,21 @@ import { usePermitappStore } from '@/stores/permitapp';
 const loading = ref(false);
 const responseMessage = ref('');
 const isDialog = ref(false);
-const isLoading = ref(false);
-// const content = ref();
 
+const permitAppPdf = reactive({
+    dba: '',
+    jobaddress: '',
+    municipality: '',
+    muniprocessnumber: '',
+    processnumber: '',
+    masterpermit: '',
+    license: ''
+});
 // add this ref; your logic will set this to true/false
 const isHistoric = ref(false);
 
 const router = useRouter();
-const procStore = useprocStore();
+// const procStore = useprocStore();
 // composables & stores
 const { procReceive } = useCreateProcessNumber();
 // getUser, addUser these two go after accountUsers but are not being used - marked for removal
@@ -45,6 +52,22 @@ onMounted(() => {
     return { width, isUltraWide, height, isLongScreen };
 });
 // reactive form model
+// const formData = reactive({
+//     jobaddress: '',
+//     municipality: '',
+//     license: '',
+//     folio: '',
+//     dba: '',
+//     permit: '',
+//     processnumber: '',
+//     phonenumber: '',
+//     emails: '',
+//     muniprocessnumber: '',
+//     historic: Boolean,
+//     date: new Date(),
+//     checkIfBeach: 0
+// });
+
 const formData = reactive({
     address: '',
     muni: '',
@@ -66,11 +89,14 @@ const muniProcess = ref('');
 const muniProcessdata = ref('');
 const cccValid = ref(true);
 const isPhoneValid = ref(false);
-const licenseStat = ref('');
-const dba = ref('');
-const phone = ref('');
-const name = ref('');
-const email = ref('');
+const glAccount = reactive({
+    licenseStat: '',
+    dba: '',
+    phone: '',
+    name: '',
+    email: ''
+});
+
 const googleAccount = ref([]);
 const inputAddress = ref('');
 
@@ -78,8 +104,8 @@ const disabled = ref(false);
 // ---- lifecycle ------------------------------------------------------------
 
 onMounted(() => {
+    // console.log(accountUsers.value[0]?.secondary_status);
     if (disabled.value === false && accountUsers.value[0]?.secondary_status === 'I') {
-        console.log(disabled.value);
         alert('Your license is Inactive!');
     } else {
         disabled.value = true;
@@ -94,7 +120,7 @@ tryOnMounted(() => {
 const cellPhn = computed(() => {
     if (accountUsers.value[0]?.bphone !== '') {
         isPhoneValid.value = true;
-        phone.value = accountUsers.value[0].bphone;
+        phone.value = accountUsers.value[0]?.bphone;
         console.log(phone.value);
     }
     return isPhoneValid.value === true ? phone.value : accountUsers.value[0]?.bphone;
@@ -102,18 +128,19 @@ const cellPhn = computed(() => {
 
 watchOnce(setProperties, cellPhn, () => {
     /* noop */
-    // console.log(setProperties);
+    console.log(setProperties);
 });
 
 async function setProperties() {
-    googleAccount.value = await accountUsers.value[0];
-
-    name.value = googleAccount.value?.name || '';
-    email.value = googleAccount.value?.email || '';
-    licenseStat.value = googleAccount.value?.secondary_status || '';
-    console.log(licenseStat.value);
-    dba.value = googleAccount.value?.dba || '';
-    phone.value = accountUsers.value[0]?.bphone;
+    console.log(accountUsers.value);
+    googleAccount.value = accountUsers.value[0];
+    // await
+    glAccount.name = googleAccount.value?.name || '';
+    glAccount.email = googleAccount.value?.email || '';
+    glAccount.licenseStat = googleAccount.value?.secondary_status || '';
+    glAccount.dba = googleAccount.value?.dba || '';
+    glAccount.phone = googleAccount.value?.cphone || '';
+    console.log(glAccount);
 }
 invoke(async () => {
     await until(isPhoneValid).toBe(true);
@@ -140,16 +167,15 @@ async function fetchData(url) {
     error.value = null;
     try {
         const response = await fetch(url);
-        // console.log(response);
         datas.value = await response.json();
-
+        console.log('Line 171: ', datas.value.body.MinimumPropertyInfos[0]);
         data.value = datas.value.body.MinimumPropertyInfos[0];
-
-        formData.contractor = data.value.dba;
+        console.log(data.value);
+        formData.contractor = glAccount.dba;
         formData.license = data.value.secondary_status;
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
-        console.log(datas.value);
+        // console.log(datas.value);
         // It seems that I need to add the address in all caps for the historic function work properly.
         // Further investigation pending 08112025
         isHistoric.value = await datas.value.body.isHistoric;
@@ -180,17 +206,19 @@ async function load() {
 
         muniProcessdata.value = muniProcess.value;
         const addr = inputAddress.value.toUpperCase();
+        console.log(addr);
+        // This takes in the address as a field which lambda is expecting under the address below.
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
         await fetchData(url);
 
         // enrich form
         Object.assign(formData, {
-            license: licenseStat.value,
-            contractor: dba.value,
-            emails: email.value,
-            muniProc: muniProcess.value,
-            phNumber: phone.value
+            license: glAccount.licenseStat,
+            dba: glAccount.dba,
+            emails: glAccount.email,
+            muniprocessnumber: muniProcess.value,
+            phonenumber: glAccount.phone
         });
 
         const newNumber = String(resNum.value).substring(3, 19);
@@ -199,7 +227,16 @@ async function load() {
 
         formData.muniProc = muniProcess.value;
         formData.address = inputAddress.value;
-
+        Object.assign(permitAppPdf, {
+            dba: formData.contractor,
+            jobaddress: formData.address,
+            municipality: formData.muni,
+            muniprocessnumber: formData.muniProc,
+            processnumber: formData.processNumber,
+            masterpermit: formData.permit,
+            license: formData.license
+        });
+        console.log('Line 242: ', permitAppPdf);
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
         convertFolio(checkMB.value);
@@ -207,7 +244,7 @@ async function load() {
         store.addSystem(formData);
         // commented because of the onSubmit
         await procReceive(formData);
-        await callPermitdata(formData);
+        await callPermitdata(permitAppPdf);
     } catch (err) {
         alert(err);
     }
@@ -244,12 +281,12 @@ function addItemAndClear() {
                 <!-- license status -->
                 <div class="field">
                     <label for="license">License Status</label>
-                    <InputText id="license" v-model="licenseStat" placeholder="active / inactive" />
+                    <InputText id="license" v-model="glAccount.licenseStat" placeholder="active / inactive" />
                 </div>
                 <!-- municipality process # -->
                 <div class="field">
                     <label for="processMuni">Municipality Process #</label>
-                    <!-- @change="load"  -->
+                    <!-- @change="load"  this v-model is the input -->
                     <InputText id="processMuni" v-model="muniProcess" placeholder="00000000" />
                 </div>
                 <!-- property address & search -->
@@ -270,25 +307,25 @@ function addItemAndClear() {
                 <!-- DBA -->
                 <div class="field">
                     <label for="dba">DBA</label>
-                    <InputText id="dba" v-model="dba" placeholder="company alias" />
+                    <InputText id="dba" v-model="glAccount.dba" placeholder="company alias" />
                 </div>
 
                 <!-- contractor name -->
                 <div class="field">
                     <label for="name">Contractor Name</label>
-                    <InputText id="name" v-model="name" placeholder="full name" />
+                    <InputText id="name" v-model="glAccount.name" placeholder="full name" />
                 </div>
 
                 <!-- phone -->
                 <div class="field">
                     <label for="phone">Cell Phone</label>
-                    <InputMask id="phone" v-model="formData.phNumber" mask="(999) 999-9999" placeholder="(999) 999-9999" />
+                    <InputMask id="phone" v-model="glAccount.phone" mask="(999) 999-9999" placeholder="(999) 999-9999" />
                 </div>
 
                 <!-- email -->
                 <div class="field">
                     <label for="email">Email</label>
-                    <InputText id="email" v-model="email" :invalid="invalid" placeholder="you@example.com" />
+                    <InputText id="email" v-model="glAccount.email" :invalid="invalid" placeholder="you@example.com" />
                     <small v-if="invalid" class="error">Email is required</small>
                 </div>
 

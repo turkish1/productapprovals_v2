@@ -7,14 +7,12 @@ export default function usecreateProcess() {
     let results = ref([]);
     const procStore = useprocStore();
     const error = ref('');
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/process';
+    let url = 'https://ojv4t7fxsipb4a2wjnyhwjl6wu0wmypm.lambda-url.us-east-1.on.aws/';
 
     const { execute, data } = useAxios(url, { method: 'POST' }, { immediate: false });
 
     let procData = reactive({});
     async function procReceive(form) {
-        // console.log(form);
-
         try {
             procData = form;
             console.log(procData);

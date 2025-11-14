@@ -14,7 +14,7 @@
     justify-content: center;
     width: auto;
     height: auto;
-    padding: 4px; /* small clickable area */
+    padding: 25px; /* small clickable area */
     background: transparent; /* no background */
     border: none; /* remove default button border */
     cursor: pointer;

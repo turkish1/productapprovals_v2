@@ -1,24 +1,17 @@
 <script setup>
-import useLowslopeDrip from '@/composables/DripEdge/use-LowslopeDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
 import usePostBurLambda from '@/composables/Postdata/usePostBurLambda';
-
 import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
-const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
+const { selectDripEdge, selectDripEdgeSize, type, sizeTypeMetal } = useDripedge();
 const { resetState } = usedripedgeStore();
-// const { type, holdSize, hold } = usedripAxios();
-// const selectDripEdge = ref('');
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 const { dripEdge } = usePostBurLambda();
-
-const typesLw = ref();
-const { typeSize, ltype } = useLowslopeDrip();
 
 // Ref for the <select> element
 const selectSizeRef = ref(null);
@@ -38,7 +31,6 @@ const callState = tryOnMounted(() => {
     }
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Low Slope') {
-            console.log(roofType.value[i].item);
             isRoofLowslopeValid.value = true;
         }
     }
@@ -56,7 +48,6 @@ const dripStagedata = reactive({
 
 const emitValuesize = () => {
     emit('update-valuesize', selectDripEdgeSize.value);
-    console.log(selectDripEdgeSize.value);
     dripData.DripEdgeSize = selectDripEdgeSize.value;
     getdripSize();
 };
@@ -78,32 +69,29 @@ function checkRoof() {
 }
 function checkValue() {
     types.value = type.value;
-    console.log(types.value);
 }
 
 function getdripSize(event) {
-    console.log(selectDripEdge.value);
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
-            typeSizes.value = holdSize.value.size1;
+            typeSizes.value = sizeTypeMetal.galvanized;
             checkRoof();
         }
         if (selectDripEdge.value === 'Stainless Steel Metal ²') {
-            typeSizes.value = holdSize.value.size2;
+            typeSizes.value = sizeTypeMetal.stainless;
             checkRoof();
         }
         if (selectDripEdge.value === 'Aluminum Metal ³') {
-            typeSizes.value = holdSize.value.size3;
+            typeSizes.value = sizeTypeMetal.aluminum;
             checkRoof();
         }
         if (selectDripEdge.value === 'Copper Metal ⁴') {
-            typeSizes.value = holdSize.value.size4;
+            typeSizes.value = sizeTypeMetal.copper;
             checkRoof();
         }
     } else {
         console.log('The element not mounted yet');
     }
-    console.log(typeSizes.value);
     dripStagedata.DripEdgeMaterial = selectDripEdge.value;
     dripStagedata.DripEdgeSize = selectDripEdgeSize.value;
     dripEdge(dripStagedata);
@@ -111,26 +99,16 @@ function getdripSize(event) {
 }
 
 function lowslope() {
-    // console.log(selectDripEdge.value);
-
-    // console.log(ltype.value);
     dripData.DripEdgeMaterial = selectDripEdge.value;
-    // console.log(dripData.DripEdgeMaterial);
 
-    // console.log(dripStore);
     storeDripEdgeSize();
-    // storeDripEdgeSize(selectDripEdgeSize.value);
 }
 
 const storeDripEdgeSize = async (event) => {
-    console.log(dripData.DripEdgeSize);
     if (isRoofLowslopeValid.value === true) {
-        console.log(selectDripEdgeSize.value);
         dripData.DripEdgeSize = selectDripEdgeSize.value;
         dripStore.insertDripAtIndex(0, dripData.DripEdgeMaterial);
         dripStore.insertDripAtIndex(2, dripData.DripEdgeSize);
-        console.log(dripStore.$state.dripinput);
-        // isRoofLowslopeValid.value = false;
     }
 };
 

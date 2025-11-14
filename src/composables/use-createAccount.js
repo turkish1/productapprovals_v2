@@ -26,7 +26,8 @@ export default function usecreateAccount() {
 
     const error = ref('');
 
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/accounts';
+    let url = 'https://ogwpwii3iy2q3dgqyijuwcew7a0ateln.lambda-url.us-east-1.on.aws/';
+    //'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/accounts';
 
     const { execute, data } = useAxios(url, { method: 'POST' }, { immediate: false });
 

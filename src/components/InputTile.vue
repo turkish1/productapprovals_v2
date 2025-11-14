@@ -1,5 +1,7 @@
 <script setup>
 import DripEdAdTile from '@/components/DripEdgeChildren/DripEdAdTile.vue';
+import ProgressSpinner from 'primevue/progressspinner';
+
 import Buttons from '@/components/Features/Buttons.vue';
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
@@ -17,7 +19,7 @@ import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
 import { usemultiAdStore } from '@/stores/multitileADStore';
 import { usePaddyoptionStore } from '@/stores/paddyCatStore';
 import { useRoofListStore } from '@/stores/roofList';
-import { useSavedStore } from '@/stores/savedTiledataStore';
+// import { useSavedStore } from '@/stores/savedTiledataStore';
 import { usePaddyStore } from '@/stores/singlepaddyStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
@@ -39,13 +41,15 @@ const multipleStore = usemultiAdStore();
 
 const { multiAdinput } = storeToRefs(multipleStore);
 const { addSystemvalues, tileInputvalues } = usevalueStore();
-const resetStore = useSavedStore();
-const { addSavedvalues } = useSavedStore();
+// const resetStore = useSavedStore();
+// const { addSavedvalues } = useSavedStore();
 const { Edatamounted } = useUDL();
 
-const { post, postUDL, postSATile } = usePostToLambda();
+const { post } = usePostToLambda();
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
+const { tilefinput } = storeToRefs(ftileStore);
+
 const childQueryRef = ref();
 // Reactive State
 const selectedOption = ref('');
@@ -72,6 +76,25 @@ function resetZones() {
     Object.assign(zonethree, { zone: '', lambda3: '', mg3: '', mr3: '', mf3: '' });
 }
 
+const isSlopeDisabled = ref(true); // start disabled
+const isHeightDisabled = ref(true); // start disabled
+
+const isSlopeValid = ref(false);
+
+const heightInputRef = ref(null);
+
+watch(isHeightDisabled, (newVal) => {
+    if (!newVal) {
+        nextTick(() => {
+            const el = heightInputRef.value?.$el?.querySelector('input') || heightInputRef.value?.$el;
+            if (el) {
+                el.focus();
+                el.select();
+            }
+        });
+    }
+});
+
 const lastNonEmpty = (arrRef, key) => {
     const a = Array.isArray(arrRef.value) ? arrRef.value : [];
     for (let i = a.length - 1; i >= 0; i--) {
@@ -91,14 +114,10 @@ const underlaymentType = ref([
     { selectedBasesheet: 'System F: per the NOA (S/A) Tile Capsheet adhered diretly to a wood deck', key: 2 },
     { selectedBasesheet: 'System E: per the NOA (S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet', key: 3 }
 ]);
-
+const modalSAIsActive = ref(false);
+const modalUDLIsActive = ref(false);
+const modalIsActive = ref(false);
 // Don't remove yet
-// const underlaymentType = ref([
-//     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
-//     { selectedBasesheet: 'ASTM #90 Prescriptive hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
-//     { selectedBasesheet: '(S/A) Tile Capsheet adhered diretly to a wood deck, per the NOA System F', key: 2 },
-//     { selectedBasesheet: '(S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet, per the NOA System E', key: 3 }
-// ]);
 
 // --- Utilities & constants ---
 // const SUPER_RE = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g; // for MF cleanup
@@ -109,9 +128,10 @@ const clamp = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a,
 // use the latest single/double payload from the stores
 const singlePaddy = computed(() => lastNonEmpty(inputdata, 'singlepaddyData'));
 const doublePaddy = computed(() => lastNonEmpty(inputdatas, 'doublepaddyData'));
+const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
 
 const isMulti = (obj) => Array.isArray(obj?.select_tile) && obj.select_tile.length > 0;
-const selectedUnderlaymentKey = ref(0);
+// const selectedUnderlaymentKey = ref(0);
 const isUDLValid = ref(false);
 const isUDLNOAValid = ref(false);
 const isSAValid = ref(false);
@@ -151,7 +171,7 @@ const tilenoas = reactive({
     prescriptiveSelection: '',
     perimeter: '',
     tileIdentifier: 'tile',
-    hittype: 'astm'
+    hittype: ''
 });
 
 const saTiles = reactive({
@@ -180,7 +200,7 @@ const saTiles = reactive({
     arrDesignPressure: [],
     pressure: '',
     expiration_date: '',
-    saIdentifier: 'sa'
+    hittype: ''
 });
 
 // === UDL STATE (trimmed, no duplicates) ======================
@@ -220,7 +240,7 @@ const udlTile = reactive({
     TileCap_Sheet_Description_E12: '',
     TileCap_Sheet_Description_E13: '',
     expiration_date: '',
-    udlIdentifier: 'udl'
+    hittype: ''
 });
 // --- stable payload straight from backend ---
 const saPayload = reactive({
@@ -254,6 +274,7 @@ watch(
     },
     { immediate: true }
 );
+const selectedMulti = ref(null); // "Roman_Mission_Cap" etc.
 
 // if NOA changes, just clear the selection + local fields and rehydrate
 watch(
@@ -288,7 +309,7 @@ const conditions = [
     }
 ];
 
-let hitType = ref(null); // outside the function, globally scoped
+let hitType = ref(''); // outside the function, globally scoped
 function hydrateSA(sd) {
     const System = Array.isArray(sd.System) ? sd.System.slice() : Array.isArray(sd.system) ? sd.system.slice() : (sd.System ?? sd.system) ? [sd.System ?? sd.system] : [];
 
@@ -357,43 +378,49 @@ function handleTileModalClose() {
     if (postingTile.value) return; // prevent overlap
     postingTile.value = true;
     try {
+        modalIsActive.value = false;
+
         refreshExposureFromSelection();
         onExposureChange();
-        sendDataMongo();
-        modalIsActive.value = false;
+        // sendDataMongo();
         if (isAstm.value) tileStaging();
     } finally {
-        posting.value = false;
+        postingTile.value = false;
     }
 }
-// function assignUnderlayment() {
-//     console.log(selectedUnderlaymentOpt.value.selectedBasesheet);
-//     const normalize = (v) => (typeof v === 'string' ? v : (v?.label ?? v?.value ?? v?.name ?? ''));
-//     console.log(normalize);
-//     const pickedSystem = normalize(selectedUnderlaymentOpt.value.selectedBasesheet);
-//     console.log(pickedSystem);
-//     if (!pickedSystem) return;
-//     const hit = conditions.find((c) => c.match.includes(pickedSystem));
-//     console.log(hit);
-//     if (hit) {
-//         console.log(hit);
-//         isUDLNOAValid.value = hit.flags.isUDLNOAValid;
-//         isSAValid.value = hit.flags.isSAValid;
-//         isTileData.value = hit.flags.isTileData;
-//         // Extract the type of match
+function assignUnderlayment() {
+    console.log(selectedUnderlayment.value.selectedBasesheet);
+    const normalize = (v) => (typeof v === 'string' ? v : (v?.label ?? v?.value ?? v?.name ?? ''));
+    console.log(normalize);
+    const pickedSystem = normalize(selectedUnderlayment.value.selectedBasesheet);
+    console.log(pickedSystem);
+    if (!pickedSystem) return;
+    const hit = conditions.find((c) => c.match.includes(pickedSystem));
+    console.log(hit);
+    if (hit) {
+        console.log(hit);
+        isUDLNOAValid.value = hit.flags.isUDLNOAValid;
+        isSAValid.value = hit.flags.isSAValid;
+        isTileData.value = hit.flags.isTileData;
+        // Extract the type of match
 
-//         hitType.value = hit.identifier;
-//         tilenoas.hittype = hitType.value;
-//         udlTile.hittype = hitType.value;
-//         saTiles.hittype = hitType.value;
-//         if (tilenoas.hittype) tilenoas.prescriptiveSelection = hit.match[0];
-//         if (udlTile.hittype) udlTile.prescriptiveSelection = hit.match[0];
-//         if (saTiles.hittype) saTiles.prescriptiveSelection = hit.match[0];
-//     } else {
-//         hitType.value = null;
-//     }
-// }
+        hitType.value = hit.identifier;
+        tilenoas.hittype = hitType.value;
+        udlTile.hittype = hitType.value;
+        saTiles.hittype = hitType.value;
+        if (tilenoas.hittype) tilenoas.prescriptiveSelection = hit.match[0];
+        if (udlTile.hittype) udlTile.prescriptiveSelection = hit.match[0];
+        if (saTiles.hittype) saTiles.prescriptiveSelection = hit.match[0];
+        const prescriptive = hit.match[0];
+        tilenoas.prescriptiveSelection = prescriptive;
+        udlTile.prescriptiveSelection = prescriptive;
+        saTiles.prescriptiveSelection = prescriptive;
+    } else {
+        hitType.value = null;
+    }
+}
 
+watch(selectedUnderlayment, assignUnderlayment, { immediate: true });
 const factor = ref(0.4);
 function normalizeTable2Multiple(T2) {
     // build: { "TypeA": [lambda], "TypeB": [lambda] }
@@ -474,11 +501,7 @@ const refreshSrc = () => {
     srcRefreshKey.value++;
 };
 
-const modalSAIsActive = ref(false);
-const modalUDLIsActive = ref(false);
-const modalIsActive = ref(false);
 // Apply payload every time it changes
-const selectedMulti = ref(null); // "Roman_Mission_Cap" etc.
 const selectedMaterial = ref(null);
 watch(
     srcData,
@@ -504,11 +527,6 @@ watch(
     },
     { immediate: true }
 );
-
-const isSlopeDisabled = ref(true); // start disabled
-const isHeightDisabled = ref(true); // start disabled
-
-const isSlopeValid = ref(false);
 
 // Slope validation flow
 
@@ -568,16 +586,16 @@ const zoneTriplet = ref([0, 0, 0]); // [z1,z2,z3]
 async function onExposureChange() {
     const s = Number(dims.slope || 0);
     const h = Number(heightModel.value || 0);
-    console.log(s, h);
+    // console.log(s, h);
     if (!s || !h) return;
     if (selectedExposures.value === 'c') {
-        console.log('Entered c exposure');
+        // console.log('Entered c exposure');
         await getData(s, h);
         // use the *exposed ref* from useExposurec()
         const z = Array.isArray(zonesRow.value) ? zonesRow.value : zonesRow.value?.[0];
-        console.log(zonesRow.value);
+        // console.log(zonesRow.value);
         const triple = Array.isArray(zonesRow.value) ? zonesRow.value : [0, 0, 0];
-        console.log(z, triple);
+        // console.log(z, triple);
 
         [zoneone.zone, zonetwo.zone, zonethree.zone] = triple;
     } else {
@@ -613,11 +631,6 @@ function getFDescription(k) {
     return asText(saTiles.description);
 }
 
-// Bind description input to the selected F
-// const fDescForSelected = computed({
-//     get: () => getFDescription(selectedFKey.value),
-//     set: (v) => (saTiles.description = v)
-// });
 watch([selectedExposures, () => dims.slope, () => dims.height], () => {
     if (selectedExposures.value) onExposureChange();
     console.log(selectedExposures.value);
@@ -650,9 +663,9 @@ watch(
 // Value checks
 function addCheckmarks() {
     isvalueValid.value = isHeightValid.value || isDisabledslope.value;
-    console.log(dripEdgestore);
-    tilenoas.dripEdgeMaterial = dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeMaterial;
-    tilenoas.dripEdgeSize = dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeSize;
+    // console.log(dripEdgestore.$state.inputselectedTileDripEdge);
+    // tilenoas.dripEdgeMaterial = dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeMaterial;
+    // tilenoas.dripEdgeSize = dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeSize;
 }
 watch(
     () => selectedOption.value,
@@ -687,7 +700,7 @@ function pickUnderlayment(evt) {
     const next =
         {
             0: { isPaddyCategoryValid: false, isTileValid: false, isTileData: false, isUDLValid: false, isUDLNOAValid: false, isSAValid: false },
-            1: { isPaddyCategoryValid: true, isTileValid: false, isTileData: false, isUDLValid: false, isUDLNOAValid: false, isSAValid: false },
+            1: { isPaddyCategoryValid: true, isTileValid: true, isTileData: true, isUDLValid: false, isUDLNOAValid: false, isSAValid: false },
             2: { isPaddyCategoryValid: true, isTileValid: true, isTileData: true, isUDLValid: false, isUDLNOAValid: false, isSAValid: true },
             3: { isPaddyCategoryValid: true, isTileValid: true, isTileData: true, isUDLValid: true, isUDLNOAValid: true, isSAValid: false }
         }[key] ?? {};
@@ -825,21 +838,6 @@ function computeMR2() {
 
 const simpleNOA = ref(paddyStore.$state?.inputdata);
 
-// function simpleMethod() {
-//     const values = simpleNOA.value;
-//     console.log(values);
-//     const entryStaging = values[values.length - 1];
-//     console.log(entryStaging, selectedMaterial.value, safeOptions);
-//     const entry = entryStaging?.singlepaddyData;
-//     console.log(entry);
-//     // add changes to the zone tables
-//     tilenoas.noa = entry?.NOA ?? entry?.noa ?? '';
-//     tilenoas.manufacturer = entry?.manufacturer ?? entry?.applicant ?? '';
-//     tilenoas.description = entry?.description ?? '';
-//     tilenoas.selection = entry?.selection ?? [];
-//     tilenoas.resistance = entry?.resistance ?? {};
-//     refreshSrc();
-// }
 async function refreshExposureFromSelection() {
     // Your existing logic to populate λ/Mg/MF from the current selection
 
@@ -1007,10 +1005,6 @@ const fSysMap = computed(() => buildMap(saTiles.system || [], saTiles.arrDesignP
 const selF = computed(() => selectedsystemf.value || '');
 
 // What to show for the selected F (computed getters like UDL’s dp/anchor/desc)
-// const fDpForSelected = computed({
-//     get: () => fSysMap.value?.[selF.value] ?? '',
-//     set: (v) => (saTiles.designpressure = v) // keep local edits if you allow manual typing
-// });
 
 // Keep SA fresh automatically
 watch(latestSAPayload, (sd) => applySA(sd), { immediate: true, deep: true });
@@ -1104,7 +1098,7 @@ watch(latestUDLPayload, (sd) => applyUDL(sd), { immediate: true, deep: true });
 function clearData() {
     Object.assign(tilenoas, { manufacturer: '', description: '' });
     resetZones(); // <— add this
-    resetStore.$reset();
+    // resetStore.$reset();
     if (paddyTracker.value && paddyTracker.value !== selectedOption.value) {
         clearQueryInput?.();
     }
@@ -1180,7 +1174,7 @@ const tileData2 = reactive({
 });
 const selectionMap2 = computed(() => {
     const src = srcData.value || {};
-    console.log(src);
+    // console.log(src);
     // when API gives an object map
     if (src.mfMap && typeof src.mfMap === 'object' && !Array.isArray(src.mfMap)) {
         return { ...src.mfMap };
@@ -1207,7 +1201,7 @@ watch(materialOptions, (opts) => {
 });
 const selectionMap = computed(() => {
     const src = srcData.value || {};
-    console.log(src);
+    // console.log(src);
     if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
         return { ...src.selection }; // label -> MF
     }
@@ -1215,7 +1209,7 @@ const selectionMap = computed(() => {
     const map = {};
     const sel = Array.isArray(src.selection) ? src.selection : [];
     const res = Array.isArray(src.resistance) ? src.resistance : [];
-    console.log(res, sel);
+    // console.log(res, sel);
     sel.forEach((k, i) => {
         const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
         if (label) map[label] = res[i];
@@ -1387,8 +1381,6 @@ function bucketFromSlope(s) {
 function applyMgLambdaFromTables(srcOverride) {
     const src = srcOverride || unref(srcData);
 
-    // const src = srcData.value;
-    console.log(src);
     if (!src?.Table3 || !src?.Table2) return;
     if (src?.content === 'multiple') return; // multi-tile handled by onTileTypePick
 
@@ -1396,7 +1388,7 @@ function applyMgLambdaFromTables(srcOverride) {
     const bucket = bucketFromSlope(dims.slope); // 2..7
     const keys = ['two', 'three', 'four', 'five', 'six', 'seven'];
     const key = keys[Math.min(Math.max(bucket - 2, 0), 5)];
-    console.log(key);
+    // console.log(key);
     // MG: prefer Direct_Deck if present, else the raw number
     const t3row = src.Table3?.[key];
     const mg = t3row?.Direct_Deck ?? t3row ?? 0;
@@ -1410,8 +1402,7 @@ function applyMgLambdaFromTables(srcOverride) {
     zoneone.lambda1 = lam;
     zonetwo.lambda2 = lam;
     zonethree.lambda3 = lam;
-    console.log(zoneone.mg1, zoneone.lambda1);
-    // compute MR once (no need to call computeMR1 again)
+
     const z1 = Number(zoneone.zone || 0) * Number(zoneone.lambda1 || 0) - Number(zoneone.mg1 || 0);
     const z2 = Number(zonetwo.zone || 0) * Number(zonetwo.lambda2 || 0) - Number(zonetwo.mg2 || 0);
     const z3 = Number(zonethree.zone || 0) * Number(zonethree.lambda3 || 0) - Number(zonethree.mg3 || 0);
@@ -1433,12 +1424,12 @@ function computeMR1() {
 
 function updateMF(val) {
     const label = typeof val === 'object' && val ? (val.value ?? val.label) : val;
-    console.log(label);
+    // console.log(label);
 
     if (!label) return;
     const mfRaw = selectionMap2.value[label]; // e.g. "118.9⁴"
     if (mfRaw == null) return;
-    console.log(mfRaw);
+    // console.log(mfRaw);
 
     const mf = String(mfRaw);
     const mfNum = toNum(mf);
@@ -1472,22 +1463,6 @@ watch(
     },
     { immediate: true }
 );
-const postMetrictable = reactive({
-    noa: '',
-    applicant: '',
-    description: '',
-    material: '',
-    height: '',
-    slope: '',
-    perimeter: '',
-    area: '',
-    decktype: '',
-    prescriptive: '',
-    zoneone: [],
-    zonetwo: [],
-    zonethree: [],
-    tileIdentifier: 'tile'
-});
 
 const saveTileData = async () => {
     tileData2.slope = dims.slope;
@@ -1519,7 +1494,7 @@ const saveTileData = async () => {
     tileData2.zoneone.mf1 = zoneone.mf1;
     tileData2.zonetwo.mf2 = zonetwo.mf2;
     tileData2.zonethree.mf3 = zonethree.mf3;
-    sendDataMongo();
+    console.log(tileData2);
 };
 // NEW: local flags for modal state
 const isTileModalOpen = computed(() => modalIsActive.value);
@@ -1575,28 +1550,10 @@ watch(
     },
     { immediate: true }
 );
-
-// const sendDataMongo = async () => {
-//     console.log(tileData2.prescriptiveSelection);
-//     postMetrictable.noa = tileData2.noa;
-//     postMetrictable.applicant = tileData2.applicant;
-//     postMetrictable.description = tileData2.description;
-//     postMetrictable.material = tileData2.material;
-//     postMetrictable.zoneone = tileData2.zoneone;
-//     postMetrictable.zonetwo = tileData2.zonetwo;
-//     postMetrictable.zonethree = tileData2.zonethree;
-//     postMetrictable.decktype = tileData2.Decktype;
-//     postMetrictable.prescriptive = tileData2.prescriptiveSelection;
-//     console.log(postMetrictable.prescriptive, tileData2, dims.height);
-//     postMetrictable.tileIdentifier = tilenoas.tileIdentifier;
-//     postMetrictable.slope = dims.slope;
-//     postMetrictable.height = dims.height;
-//     postMetrictable.area = dims.area;
-//     postMetrictable.perimeter = dims.per;
-//     addSavedvalues(tileData2);
-
-//     await post(postMetrictable);
-// };
+const num = (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+};
 
 // One-liner map builder (keys[] -> values[])
 const buildEKeyMap = (keys = [], values = []) => Object.fromEntries(keys.map((k, i) => [String(k), values[i]]));
@@ -1743,20 +1700,32 @@ watch(
 // === POST ONLY ON CLOSE ======================================
 async function postUDLStaging() {
     const k = selectedsystemE.value ?? '';
-    await postUDL({
-        ...toRaw(udlTile),
-        systemSelected: k
-    });
+
+    const body = {
+        ...commonTile(),
+        udlapplicant: udlTile.manufacturer || '',
+        udlnoa: udlTile.noa || '',
+        udlmaterial: udlTile.material || '',
+        udldescription: eInput.tileCap || udlTile.TileCap_Sheet_Description || udlTile.udldescription || '',
+        systemeselection: udlTile.systemSelected || eInput.systemSelected || '',
+        designpressure: udlTile.designPressure || eInput.dP || '',
+        anchorbasesheet: udlTile.Anchor_Base_Sheet || eInput.Anchor_Base || udlTile.Anchor_Base || '',
+        hittype: 'system_e',
+        systemSelected: k,
+        tileIdentifier: tilenoas.tileIdentifier
+    };
+    console.log(body);
+    await post(body);
 }
 const tileStaging = async () => {
     const body = {
         ...commonTile(),
 
-        tileIdentifier: tilenoas.tileIdentifier,
         hittype: tilenoas.hittype
     };
-    console.log(body);
-    post(body);
+
+    // console.log(body);
+    await post(body);
 };
 const modalKeyUDL = ref(0);
 const currentTileUDl = ref(null);
@@ -1764,8 +1733,9 @@ const modalKey = ref(0);
 const modalKeySA = ref(0);
 const currentTile = ref(null);
 const currentTileSA = ref(null);
+const allZonesPass = computed(() => ismrValidMR1.value && ismrValidMR2.value && ismrValidMR3.value);
+
 const commonTile = () => ({
-    mechIdentifier: 'tile',
     noa: tileData2.noa ?? '',
     applicant: tileData2.applicant ?? '',
     description: tileData2.description ?? '',
@@ -1774,8 +1744,9 @@ const commonTile = () => ({
     area: num(dims.area),
     height: num(dims.height),
     slope: num(dims.slope),
-    dripEdgeMaterial: tilenoas.dripEdgeMaterial,
-    dripEdgeSize: tilenoas.dripEdgeSize,
+
+    dripEdgeMaterial: dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeMaterial,
+    dripEdgeSize: dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeSize,
     perimeter: num(dims.per),
     hittype: 'astm',
 
@@ -1790,19 +1761,19 @@ const commonTile = () => ({
 });
 function toPlain(v) {
     const x = unref(v);
-    console.log(x);
+    // console.log(x);
     return isProxy(x) ? toRaw(x) : x;
 }
 function toPlainUDL(v) {
     const x = unref(v);
-    console.log(x);
+    // console.log(x);
 
     return isProxy(x) ? toRaw(x) : x;
 }
 
 function toPlainSA(v) {
     const x = unref(v);
-    console.log(x);
+    // console.log(x);
 
     return isProxy(x) ? toRaw(x) : x;
 }
@@ -1815,7 +1786,7 @@ async function onOpenTileClick() {
     modalKey.value++;
 
     const src = toPlain(tilenoas);
-    console.log(src);
+    // console.log(src);
     currentTile.value = {
         manufacturer: src?.manufacturer ?? '',
         material: src?.material ?? '',
@@ -1832,7 +1803,7 @@ const tileNoaChanges = ref(0);
 function onTileNoaConfirmed(val) {
     tileNoaChanges.value += 1;
     if (tileNoaChanges.value >= 2) resetTileModal(); // after at least one prior input
-    console.log('onTileNoaconfirmed launched');
+    // console.log('onTileNoaconfirmed launched');
 }
 const tileUDLChanges = ref(0);
 function onUdlNoaConfirmed(val) {
@@ -1844,7 +1815,16 @@ function onSaNoaConfirmed(val) {
     tileSAChanges.value += 1;
     if (tileSAChanges.value >= 2) resetSAModal(); // after at least one prior input
 }
+async function closeSAModal() {
+    // hide first
+    modalSAIsActive.value = false;
 
+    // after it’s gone, optionally bump the key for the next open, on 9/11/2025 added the await it may not need it.
+    await nextTick(() => {
+        modalKeySA.value++;
+    });
+    postSAStaging();
+}
 async function onOpenTileUDLClick() {
     // If you have a selected row/object, pass it here:
     await nextTick();
@@ -1886,60 +1866,56 @@ async function onOpenTileSAClick() {
 
 async function postSAStaging() {
     const { system: _systemList, arrDesignPressure: _arr, ...rest } = toRaw(saTiles);
-    const payload = {
-        ...rest,
-        system: selectedFKey.value, // <- only the chosen F
+    const body = {
+        // ...rest,
+        ...commonTile(),
+        samanufacturer: saTiles.manufacturer || '',
+        sanoa: saTiles.noa || '',
+        samaterial: saTiles.material || '',
+        sadescription: saTiles.description || '',
+        designpressure: saTiles.designpressure,
+        hittype: 'system_f',
         systemSelected: selectedFKey.value, // (optional) explicit field
-        designpressure: fDpForSelected.value || '', // from your computed
-        description: fDescForSelected.value || '' // resolved Description_Fx/Maps
+        designpressure: fDpForSelected.value || '' // from your computed
     };
-    await postSATile(payload);
+    console.log(body);
+    await post(body);
 }
 watch(selectedsystemf, () => {
     console.log('Selected F ->', selectedFKey.value);
 });
-// if you also call tileSAStaging somewhere, fix it too:
-// const tileSAStaging = async () => {
-//     const { system: _systemList, arrDesignPressure: _arr, ...rest } = toRaw(saTiles);
-//     const payload = {
-//         ...rest,
-//         system: selectedFKey.value,
-//         systemSelected: selectedFKey.value,
-//         designpressure: fDpForSelected.value || '',
-//         description: fDescForSelected.value || ''
-//     };
-//     await postSATile(payload);
-// };
 </script>
 
 <template>
-    <div id="tile" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-2 md:grid-cols-3 gap-3" style="margin-left: 50px; margin-top: 100px">
+    <!-- inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-3-->
+    <div id="tile" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-4" style="margin-left: 50px; margin-top: 100px">
         <div class="w-64 gap-2 mt-5 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
         </div>
-
+        <div class="w-64 mt-2 space-y-2" style="margin-left: 20px">
+            <label style="color: #122620" for="area">Area of Tile</label>
+            <InputText id="area" v-model="dims.area" type="text" placeholder="area" readonly />
+        </div>
         <div class="w-64 gap-2 space-y-2" style="margin-left: 20px">
             <label for="slope" style="color: #122620">Roof Slope</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isSlopeValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
             <InputText id="slope" v-tooltip.bottom="'Press Tab after value'" placeholder="slope" v-model.number="dims.slope" :disabled="isSlopeDisabled" @change="validateRoofSlope" />
             <Message v-if="errorMessage" class="w-96 mt-1 ..." severity="error" :life="6000" style="margin-left: 2px">{{ errorMessage }}</Message>
         </div>
 
-        <div></div>
-        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
-            <label style="color: #122620" for="area">Area of Tile</label>
-            <InputText id="area" v-model="dims.area" type="text" placeholder="area" readonly />
-        </div>
-
-        <div class="w-64 mt-6 space-y-2" style="margin-left: 20px">
+        <div class="w-64 mt-2 space-y-1" style="margin-left: 20px">
             <label for="height" style="color: #122620">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isHeightValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" :disabled="isHeightDisabled" @change="validateHeight" />
+            <InputText ref="heightInputRef" id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" :disabled="isHeightDisabled" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
-        <div></div>
+
+        <!-- <Divider /> -->
+        <DripEdAdTile />
+
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
             <label style="color: #122620" for="perimeter">Roof Permeter(a) = 4h</label>
             <InputText id="perimeter" v-model="dims.per" type="text" placeholder=" " @change="validateHeight" readonly />
         </div>
+
         <div class="grid grid-cols-3 gap-2">
             <div class="min-w-[580px] flex flex-col" style="margin-left: 50px">
                 <label style="color: red">Select Exposure</label>
@@ -1954,7 +1930,7 @@ watch(selectedsystemf, () => {
                         <label style="color: #122620; margin-left: 20px" for="option4">D</label>
                     </div>
                 </div>
-                <div class="min-w-[580px] flex flex-col mt-5">
+                <div class="min-w-[380px] flex flex-col mt-5">
                     <label style="color: red">Select a Paddy Category</label>
                     <div class="flex items-center mt-10">
                         <div class="field-radiobutton space-x-3 gap-2 border-2 border-gray-700 focus:border-orange-600">
@@ -1970,42 +1946,48 @@ watch(selectedsystemf, () => {
             </div>
         </div>
         <Divider />
-        <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
-            <div v-show="isPaddyCategoryValid" class="w-96" style="margin-left: 3px">
-                <tileNoaNumber @confirmed="onTileNoaConfirmed" ref="childQueryRef" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" />
-                <Buttons label="Submit" severity="contrast" @click="onOpenTileClick" style="margin-left: 15px" />
+        <div class="px-12">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <!-- Tile NOA Section -->
+                <div v-show="isPaddyCategoryValid" class="w-96 flex flex-col border-2 p-2 gap-2 space-y-1">
+                    <tileNoaNumber @confirmed="onTileNoaConfirmed" ref="childQueryRef" class="animate-duration-2000 animate-ease-in-out" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" />
+                    <Buttons label="Submit" severity="contrast" @click="onOpenTileClick" class="self-start" />
+                </div>
+
+                <!-- UDL NOA Section -->
+                <div v-show="isUDLNOAValid" class="w-96 flex flex-col border-2 p-2 gap-2 space-y-3" style="margin-left: 75px; margin-top: 30px">
+                    <systemENumber @confirmed="onUdlNoaConfirmed" />
+                    <Buttons label="Submit" severity="contrast" @click="onOpenTileUDLClick" class="self-start" style="margin-left: 15px; margin-top: 15px" />
+                </div>
+
+                <!-- SA Section -->
+                <div v-show="isSAValid" class="w-96 flex flex-col border-2 p-2 gap-2 space-y-3" style="margin-left: 75px; margin-top: 30px">
+                    <systemFNumber @confirmed="onSaNoaConfirmed" />
+                    <Buttons label="Submit" severity="contrast" @click="onOpenTileSAClick" class="self-start" style="margin-left: 15px; margin-top: 15px" />
+                </div>
             </div>
-            <systemENumber @confirmed="onUdlNoaConfirmed" />
-            <Buttons label="Submit" severity="contrast" @click="onOpenTileUDLClick" style="margin-left: 15px" />
-        </div>
-        <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
-            <systemFNumber @confirmed="onSaNoaConfirmed" />
-            <Buttons label="Submit" severity="contrast" @click="onOpenTileSAClick" style="margin-left: 15px" />
+            <!-- Loading Spinner -->
+            <transition name="fade">
+                <div v-if="loadingMech" class="absolute inset-0 bg-black/20 backdrop-blur-[1px] flex items-center justify-center rounded-lg">
+                    <ProgressSpinner style="width: 40px; height: 40px" strokeWidth="4" />
+                </div>
+            </transition>
         </div>
     </div>
-    <div class="min-w-[580px] flex flex-col w-72 mb-4 mt-6 gap-3 space-y-2" style="margin-left: 50px">
+    <div class="max-w-[680px] flex flex-col mb-4 mt-6 gap-3 space-y-2" style="margin-left: 50px">
         <label style="color: #122620" for="underlaymentType">Select Underlayment (UDL) and/or Tile Capsheet</label>
         <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="pickUnderlayment" />
     </div>
-    <DripEdAdTile style="margin-left: 50px" />
     <Divider />
     <Divider />
     <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
-        <ModalWindow
-            :key="modalKey"
-            :initialData="currentTile"
-            @closePopup="
-                () => {
+        <ModalWindow :key="modalKey" :initialData="currentTile" @closePopup="modalIsActive = false" v-if="modalIsActive">
+            <!-- () => {
                     refreshExposureFromSelection();
-                    onExposureChange();
-                    modalIsActive = false;
-                    sendDataMongo();
-                }
-            "
-            v-if="modalIsActive"
-        >
+                    onExposureChange();  sendDataMongo();
+                } -->
             <div v-show="isTileData" class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
-                <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <div class="min-w-[350px]flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="manufacturer">Tile Applicant</label>
                     <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
                 </div>
@@ -2020,11 +2002,11 @@ watch(selectedsystemf, () => {
                 </div>
 
                 <Divider />
-                <div v-show="!isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
+                <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="description">Tile Description</label>
                     <InputText id="description" v-model="tilenoas.description" />
                 </div>
-                <div v-show="!isMultiTileValid" class="w-2/3 flex flex-col border-2 p-2 border-gray-700">
+                <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700">
                     <label style="color: #122620">Tile Material</label>
                     <Select
                         v-model="selectedMaterial"
@@ -2046,7 +2028,7 @@ watch(selectedsystemf, () => {
     </div>
     <ModalWindow :key="modalKey" :initialData="currentTile" @closePopup="handleTileModalClose" v-if="modalIsActive">
         <div v-show="isTileData" class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
-            <div class="w-1/2 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+            <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="manufacturer">Tile Applicant</label>
                 <InputText id="manufacturer" v-model="tilenoas.manufacturer" />
             </div>
@@ -2055,17 +2037,17 @@ watch(selectedsystemf, () => {
                 <Select v-model="selectedMulti" :options="tilenoas.select_tile" placeholder="make a selection" @update:modelValue="onTileTypePick" />
             </div>
 
-            <div v-show="isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700">
+            <div v-show="isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700">
                 <label for="material">Tile Material</label>
                 <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="updateMF" />
             </div>
 
             <Divider />
-            <div v-show="!isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
+            <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
-            <div v-show="!isMultiTileValid" class="w-2/3 flex flex-col border-2 p-2 border-gray-700">
+            <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700">
                 <label style="color: #122620">Tile Material</label>
                 <Select
                     v-model="selectedMaterial"
@@ -2107,14 +2089,14 @@ watch(selectedsystemf, () => {
                     <label style="color: #122620" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="anchorForSelected" :disabled="!selectedsystemE" />
                 </div>
-                <div class="min-w-[280px] flex flex-col">
+                <div class="min-w-[380px] flex flex-col">
                     <label style="color: #122620" for="description">(UDL) Description</label>
                     <InputText id="description" v-model="descForSelected" :disabled="!selectedsystemE" />
                 </div>
             </div>
         </div>
     </ModalWindow>
-    <ModalWindow :key="modalKeySA" :initialData="currentTileSA" @closePopup="(modalSAIsActive = false), postSAStaging()" v-if="modalSAIsActive">
+    <ModalWindow :key="modalKeySA" :initialData="currentTileSA" @closePopup="closeSAModal()" v-if="modalSAIsActive">
         <div v-show="isSAValid" class="grid grid-cols-1 md:grid-cols-2 gap-2" style="margin-left: 10px">
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="saapplicant">S/A Applicant</label>

@@ -1,16 +1,15 @@
 <script setup>
-import useMechtileDrip from '@/composables/DripEdge/use-MechtileDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
 import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
-const { selectDripEdge, selectDripEdgeSize, holdSize, type } = useDripedge();
+
+const { selectDripEdge, selectDripEdgeSize, type, sizeTypeMetal } = useDripedge();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
 
-const { typeSize, dtype, holdSized } = useMechtileDrip();
 // Reactive value bound to the select dropdown
 
 // Ref for the <select> element
@@ -34,7 +33,6 @@ const callState = tryOnMounted(() => {
     }
     for (let i = 0; i < roofType.value.length; i++) {
         if (roofType.value[i].item === 'Mechanical Fastened Tile') {
-            console.log(roofType.value[i].item);
             isRoofTileMechanicalValid.value = true;
             types.value = type.value;
         }
@@ -73,19 +71,19 @@ function checkValue() {
 async function getdripSize() {
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
-            typeSizes.value = holdSize.value.size1;
+            typeSizes.value = sizeTypeMetal.galvanized;
             checkRoof();
         }
         if (selectDripEdge.value === 'Stainless Steel Metal ²') {
-            typeSizes.value = holdSize.value.size2;
+            typeSizes.value = sizeTypeMetal.stainless;
             checkRoof();
         }
         if (selectDripEdge.value === 'Aluminum Metal ³') {
-            typeSizes.value = holdSize.value.size3;
+            typeSizes.value = sizeTypeMetal.aluminum;
             checkRoof();
         }
         if (selectDripEdge.value === 'Copper Metal ⁴') {
-            typeSizes.value = holdSize.value.size4;
+            typeSizes.value = sizeTypeMetal.copper;
             checkRoof();
         }
     } else {

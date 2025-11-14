@@ -11,6 +11,7 @@ export const useGlobalState = createGlobalState(() => {
     // actions
     async function addUser(account) {
         accountUsers.value.push(account);
+        console.log(accountUsers.value);
     }
     class reset {
         constructor() {

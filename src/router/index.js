@@ -17,11 +17,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/Landing.vue')
                 },
 
-                {
-                    path: '/login',
-                    name: 'login',
-                    component: () => import('@/views/pages/auth/AuthGoogle.vue')
-                },
+                // {
+                //     path: '/login',
+                //     name: 'login',
+                //     component: () => import('@/views/pages/auth/AuthGoogle.vue')
+                // },
                 {
                     path: '/noc',
                     name: 'noc',
@@ -52,11 +52,11 @@ const router = createRouter({
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
-                {
-                    path: '/userlanding',
-                    name: 'userland',
-                    component: () => import('@/components/UserLanding/UserDash.vue')
-                },
+                // {
+                //     path: '/userlanding',
+                //     name: 'userland',
+                //     component: () => import('@/components/UserLanding/UserDash.vue')
+                // },
                 {
                     path: '/terms',
                     name: 'termsofUse',
@@ -174,11 +174,6 @@ const router = createRouter({
                     path: '/map',
                     name: 'map',
                     component: () => import('@/components/Maps/Map.vue')
-                },
-                {
-                    path: '/documentation',
-                    name: 'documentation',
-                    component: () => import('@/views/pages/Documentation.vue')
                 }
             ]
         },

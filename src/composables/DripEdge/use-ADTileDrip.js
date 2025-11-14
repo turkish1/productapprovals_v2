@@ -2,37 +2,50 @@ import { usedripADStore } from '@/stores/dripEdgeADTileStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { ref } from 'vue';
 
+const url = 'https://n5eq37lnykjzbxixgmuzbuxmiy0mwuef.lambda-url.us-east-1.on.aws/';
+
 export default function useADTileDrip() {
     const hold = ref([]);
     const holdSizes = ref([]);
     const results = ref([]);
-    const typeSize = ref([]);
+    // const typeSize = ref([]);
     const loading = ref(false);
     const error = ref(null);
     const ttype = ref([]);
     loading.value = true;
+    const sizeTypeMetal = reactive({
+        galvanized: [],
+        stainless: [],
+        aluminum: [],
+        copper: []
+    });
     const dripadTileStore = usedripADStore();
-
-    let url = 'https://us-east-1.aws.data.mongodb-api.com/app/data-aquwo/endpoint/dripmaterials';
 
     const { execute, then, data } = useAxios(url, { method: 'GET' }, { immediate: false });
 
     results.value = execute().then((result) => {
-        holdSizes.value = data.value.result;
-        hold.value = data.value.result.Drip_Edge_Material_Type;
+        const doc = result.data.value.body;
+        const [wrapper] = JSON.parse(doc);
+        const { DripEdge_Data_Types } = wrapper;
+        const { size1, size2, size3, size4 } = wrapper;
+
+        const material_data = computed(() => DripEdge_Data_Types.filter((_, i) => i % 2 === 1));
+        hold.value = material_data.value;
         for (let i = 0; i < hold.value.length; i++) {
             ttype.value.push(hold.value[i]);
         }
-        typeSize.value.push(holdSizes.value.size1, holdSizes.value.size2, holdSizes.value.size3, holdSizes.value.size4);
-
+        sizeTypeMetal.galvanized = size1;
+        sizeTypeMetal.stainless = size2;
+        sizeTypeMetal.aluminum = size3;
+        sizeTypeMetal.copper = size4;
         dripadTileStore.addMaterialDrip(ttype);
-        dripadTileStore.addSizeDrip(typeSize);
-        console.log(dripadTileStore);
-        console.log(holdSizes, ttype, typeSize.value, hold.value);
+        dripadTileStore.addSizeDrip(sizeTypeMetal);
+        // console.log(dripadTileStore);
+        // console.log(holdSizes, ttype, typeSize.value, hold.value);
 
-        return hold.value;
+        return hold.value, sizeTypeMetal;
     });
     loading.value = false;
 
-    return { ttype, error, loading, hold, results, typeSize, holdSizes };
+    return { sizeTypeMetal, ttype, error, loading, hold, results, holdSizes };
 }

@@ -673,7 +673,7 @@ watch(
                 <Select v-model="selectedsystemf" :options="sysOptions" optionLabel="label" optionValue="value" placeholder="Select System" />
                 <ProgressSpinner v-if="!sysOptions.length" style="width: 24px; height: 24px" strokeWidth="4" />
             </div>
-            <div v-show="!!currentSysKey" class="min-w-[400px] flex flex-col gap-2 border-gray-700 focus:border-orange-600">
+            <div v-show="!!currentSysKey" class="min-w-[480px] flex flex-col gap-2 border-gray-700 focus:border-orange-600">
                 <label for="sadescription">S/A Description Chosen</label>
                 <InputText id="sadescription" v-model="resolvedSaDescription" />
             </div>
@@ -687,11 +687,11 @@ watch(
                     <label for="manufacturer">Applicant</label>
                     <InputText id="manufacturer" v-model="shingleForm.manufacturer" class="w-full" />
                 </div>
-                <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <div class="min-w-[450px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                     <label for="material">Material</label>
                     <InputText id="material" v-model="shingleForm.material" class="w-full" />
                 </div>
-                <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <div class="min-w-[650px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label for="description">Description</label>
                     <InputText id="description" v-model="shingleForm.description" class="w-full" />
                 </div>

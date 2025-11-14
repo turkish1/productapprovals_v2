@@ -527,6 +527,7 @@ function assignUnderlayment() {
         if (tilenoas.hittype) tilenoas.prescriptiveSelection = hit.match[0];
         if (udlTile.hittype) udlTile.prescriptiveSelection = hit.match[0];
         if (saTiles.hittype) saTiles.prescriptiveSelection = hit.match[0];
+        // ---- prescriptive text (first match string) ---------------------------
     } else {
         hitType.value = null;
     }
