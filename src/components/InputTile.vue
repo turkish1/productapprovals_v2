@@ -1,7 +1,5 @@
 <script setup>
 import DripEdAdTile from '@/components/DripEdgeChildren/DripEdAdTile.vue';
-import ProgressSpinner from 'primevue/progressspinner';
-
 import Buttons from '@/components/Features/Buttons.vue';
 import ModalWindow from '@/components/Modal/ModalWindow.vue';
 import systemENumber from '@/components/roofSystems/systemENumber.vue';
@@ -13,6 +11,8 @@ import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-Height';
 import { useNumberValidation } from '@/composables/Validation/use-Slope';
 import { usedripADStore } from '@/stores/dripEdgeADTileStore';
+import ProgressSpinner from 'primevue/progressspinner';
+import RadioButton from 'primevue/radiobutton';
 
 import tileNoaNumber from '@/components/roofSystems/tileNoaNumber.vue';
 import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
@@ -25,7 +25,6 @@ import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
-import RadioButton from 'primevue/radiobutton';
 import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
 
 const { addPaddyCatval, paddycatInput } = usePaddyoptionStore();
@@ -663,9 +662,6 @@ watch(
 // Value checks
 function addCheckmarks() {
     isvalueValid.value = isHeightValid.value || isDisabledslope.value;
-    // console.log(dripEdgestore.$state.inputselectedTileDripEdge);
-    // tilenoas.dripEdgeMaterial = dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeMaterial;
-    // tilenoas.dripEdgeSize = dripEdgestore.$state.inputselectedTileDripEdge[0]?.dripSelection?.DripEdgeSize;
 }
 watch(
     () => selectedOption.value,

@@ -1,7 +1,7 @@
 <script setup>
 import { useToNumber } from '@vueuse/core';
+import RadioButton from 'primevue/radiobutton';
 import { computed, onMounted, reactive, ref } from 'vue';
-
 // Stores & composables
 import useGeneral from '@/composables/GeneralPage/use-Generalpage.js';
 import { usePermitappStore } from '@/stores/permitapp';
@@ -13,7 +13,6 @@ import RoofList from './RoofSystemList.vue';
 
 // PrimeVue
 import Button from 'primevue/button';
-import Checkbox from 'primevue/checkbox';
 import Divider from 'primevue/divider';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
@@ -25,7 +24,7 @@ const roofStore = useRoofListStore();
 
 const area = ref('');
 const selectedSystem = ref(null);
-const roofKind = ref('newroof'); // 'newroof' | 'reroof'
+const roofKind = ref(''); // 'newroof' | 'reroof'
 const dragOver = ref(false);
 const files = ref([]);
 
@@ -61,7 +60,6 @@ function addSelectedSystem() {
         'Metal Panel': () => roofStore.addSystemMetal(name, sqft)
     };
     byName[name]?.();
-
     dataGeneral.roofCheck = roofKind.value;
     roofCheck.addCheck({ ...dataGeneral });
 
@@ -123,13 +121,23 @@ onMounted(() => {
                     <small v-if="isMiamiBeach" class="hint">Miami Beach restrictions apply.</small>
                 </div>
 
-                <div class="field row">
+                <!-- <div class="field row">
                     <div class="check">
                         <Checkbox inputId="kind-new" severity="contrast" name="roofKind" value="newroof" v-model="roofKind" />
                         <label for="kind-new">New Roof</label>
                     </div>
                     <div class="check">
                         <Checkbox inputId="kind-reroof" severity="contrast" name="roofKind" value="reroof" v-model="roofKind" />
+                        <label for="kind-reroof">Re-Roof</label>
+                    </div>
+                </div> -->
+                <div class="field row">
+                    <div class="check">
+                        <RadioButton inputId="kind-new" name="roofKind" value="newroof" v-model="roofKind" />
+                        <label for="kind-new">New Roof</label>
+                    </div>
+                    <div class="check">
+                        <RadioButton inputId="kind-reroof" name="roofKind" value="reroof" v-model="roofKind" />
                         <label for="kind-reroof">Re-Roof</label>
                     </div>
                 </div>

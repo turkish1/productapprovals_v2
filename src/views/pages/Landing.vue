@@ -92,7 +92,8 @@
                 </div>
                 <span class="text-center">Click to Login</span>
                 <span class="text-2xl font-bold">
-                    <Button icon="pi pi-user" severity="contrast" rounded :loading="loading" @click="signIn" @change="checkAuth" raised @input="email" />
+                    <!-- <Button icon="pi pi-user" severity="contrast" rounded :loading="loading" @click="signIn" @change="checkAuth" raised @input="email" /> -->
+                    <Button icon="pi pi-user" severity="contrast" rounded :loading="loading" @click="handleSignIn" raised />
                 </span>
 
                 <pre v-if="idPayload">{{ idPayload }}</pre>
@@ -106,7 +107,7 @@ import { useGoogleAuth } from '@/composables/Authentication/useGoogleAuth.js';
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 // import { useGlobalState } from '@/stores/accountsStore';
 import AOS from 'aos';
-import { onMounted, reactive, ref, watch, watchEffect } from 'vue';
+import { onMounted, reactive, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 
 const { accessToken, idPayload, signIn, localData } = useGoogleAuth();
@@ -131,32 +132,35 @@ let accountUser = reactive({
     license: '',
     phone: ''
 });
-// this validates token and grants access to permit page.
-const checkAuth = () => {
-    // Safe guard + correct iteration
-    if (accessToken.value && Array.isArray(localData.value)) {
-        localData.value.forEach((user) => {
-            // user is an object → access properties directly
-            acctCompare.value.push(user); // push whole user
-            accountUser.phone = user.bphone; // set phone
-            callNavigate(); // navigate
-        });
-    } else {
-        console.warn('localData.value is not an array:', localData.value);
+
+const handleSignIn = async () => {
+    loading.value = true;
+    try {
+        await signIn(); // Assume this returns a Promise or triggers async flow
+        // Navigation will be handled by watcher below
+    } catch (error) {
+        console.error('Sign-in failed:', error);
+    } finally {
+        loading.value = false;
     }
 };
+watchEffect(() => {
+    console.log('Auth State:', {
+        hasToken: !!accessToken.value,
+        localDataCount: localData.value?.length,
+        navigating: accessToken.value && localData.value?.length > 0
+    });
+    if (accessToken.value && localData.value?.length > 0) {
+        // Optional: Add a small delay to ensure DOM/auth is settled
+        const timer = setTimeout(() => {
+            router.push('/permitapp');
+        }, 50);
 
-function callNavigate() {
-    navigateNext();
-}
-
-function navigateNext() {
-    router.push('/permitapp');
-}
-
-watch(checkAuth, () => {
-    // console.log(localData);
+        // Cleanup to prevent memory leaks
+        return () => clearTimeout(timer);
+    }
 });
+
 watchEffect(() => {
     if (accessToken.value) {
         // Example: list 10 newest messages
