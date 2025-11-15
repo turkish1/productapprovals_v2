@@ -1,0 +1,1 @@
+import{D as i}from"./index-Dw13dYgB.js";const p=i("permitapp",{state:()=>({permitapp:[],id:0}),actions:{addSystem(t,e){this.permitapp.push({formdt:t,mbId:e,id:this.id++,completed:!1})}},getters:{form:t=>t.formdt,folio:t=>t.mbId,muniNum:t=>t.muniNum}});export{p as u};
