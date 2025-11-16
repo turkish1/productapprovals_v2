@@ -113,7 +113,7 @@ export default function usetileInputdouble() {
             } else {
                 const entrySingleTile = entry; //arr[0];
                 console.log(entrySingleTile);
-                const tileData = await {
+                const tileData = {
                     noa: entrySingleTile.NOA ?? entrySingleTile.noa,
                     manufacturer: (entrySingleTile.applicant ?? entrySingleTile.Manufacturer)?.trim?.(),
                     material: entrySingleTile.material ?? entrySingleTile.Material,

@@ -7,7 +7,7 @@ import { useBurStore } from '@/stores/burStore';
 import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 
 const { postBur } = usePostBurLambda();
 const dripStore = usedripedgeStore();
@@ -84,6 +84,19 @@ watch(
     }
 );
 
+const heightInputRef = ref(null);
+
+watch(isHeightDisabled, (newVal) => {
+    if (!newVal) {
+        nextTick(() => {
+            const el = heightInputRef.value?.$el?.querySelector('input') || heightInputRef.value?.$el;
+            if (el) {
+                el.focus();
+                el.select();
+            }
+        });
+    }
+});
 // (optional) show the overall “check” only when both are valid
 // const bothValid = computed(() => isSlopeValid.value && isHeightValid.value);
 
@@ -155,7 +168,7 @@ function burStaging() {
         </div>
         <div class="w-64 mt-3 space-y-1" style="margin-left: 20px">
             <label for="height" style="color: #122620">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isHeightValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="dims.height" type="text" placeholder="height" :disabled="isHeightDisabled" />
+            <InputText ref="heightInputRef" id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="dims.height" type="text" placeholder="height" :disabled="isHeightDisabled" />
             <!-- Height error -->
             <Message v-if="errorburHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">
                 {{ errorburHeightMessage }}

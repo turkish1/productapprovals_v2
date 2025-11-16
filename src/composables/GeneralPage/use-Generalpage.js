@@ -3,7 +3,6 @@ import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
-import { usePermitappStore } from '@/stores/permitapp';
 // import useInsertData from '@/composables/Postdata/useInsertSystems';
 
 export default function useGeneral() {
@@ -61,8 +60,8 @@ export default function useGeneral() {
     });
 
     function addRoof(typeOfroof) {
-        roofType.value = typeOfroof.value[0];
-
+        roofType.value = typeOfroof.value;
+        console.log(roofType.value);
         const typeMapping = {
             'Asphalt Shingle': { dim: 'dim1', flag: 'shingle', steepKey: 'steep1' },
             'Adhesive Set Tile': { dim: 'dim4', flag: 'adtile', steepKey: 'steep2' },

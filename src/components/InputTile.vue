@@ -76,9 +76,8 @@ function resetZones() {
 }
 
 const isSlopeDisabled = ref(true); // start disabled
-const isHeightDisabled = ref(true); // start disabled
-
 const isSlopeValid = ref(false);
+const isHeightDisabled = ref(true); // start disabled
 
 const heightInputRef = ref(null);
 
@@ -372,7 +371,7 @@ const isAstm = computed(() => {
 const postingTile = ref(false);
 
 function handleTileModalClose() {
-    console.log(isAstm.value);
+    // console.log(isAstm.value);
     // modalIsActive.value = false;
     if (postingTile.value) return; // prevent overlap
     postingTile.value = true;
@@ -388,16 +387,16 @@ function handleTileModalClose() {
     }
 }
 function assignUnderlayment() {
-    console.log(selectedUnderlayment.value.selectedBasesheet);
+    // console.log(selectedUnderlayment.value.selectedBasesheet);
     const normalize = (v) => (typeof v === 'string' ? v : (v?.label ?? v?.value ?? v?.name ?? ''));
-    console.log(normalize);
+    // console.log(normalize);
     const pickedSystem = normalize(selectedUnderlayment.value.selectedBasesheet);
-    console.log(pickedSystem);
+    // console.log(pickedSystem);
     if (!pickedSystem) return;
     const hit = conditions.find((c) => c.match.includes(pickedSystem));
-    console.log(hit);
+    // console.log(hit);
     if (hit) {
-        console.log(hit);
+        // console.log(hit);
         isUDLNOAValid.value = hit.flags.isUDLNOAValid;
         isSAValid.value = hit.flags.isSAValid;
         isTileData.value = hit.flags.isTileData;
@@ -632,7 +631,6 @@ function getFDescription(k) {
 
 watch([selectedExposures, () => dims.slope, () => dims.height], () => {
     if (selectedExposures.value) onExposureChange();
-    console.log(selectedExposures.value);
 });
 function getdeckType(evt) {
     const v = normalizeEvtVal(evt);
@@ -743,7 +741,6 @@ function checkInputSA() {
     const entry = items.find((it) => it && it.systemData);
     if (!entry) return;
     const sd = entry.systemData;
-    console.log(sd);
     // base fields
     Object.assign(saTiles, {
         manufacturer: sd.manufacturer ?? '',
@@ -753,11 +750,9 @@ function checkInputSA() {
         noa: sd.noa ?? '',
         pressure: sd.designPressure ?? sd.pressure ?? []
     });
-    console.log(saTiles);
     // build pressure map
     const pressures = Array.isArray(sd.designPressure) ? sd.designPressure : Array.isArray(sd.pressure) ? sd.pressure : [];
     sysFMap.value = buildMap(saTiles.system, pressures);
-    console.log(sysFMap.value);
     // build description map from Description_F* keys
     sysFDescMap.value = pickFDescriptions(sd);
     console.log(sysFDescMap.value);
@@ -841,7 +836,6 @@ async function refreshExposureFromSelection() {
 
     const fresh = unref(srcData);
     if (!fresh) return;
-    console.log(fresh, srcData);
     // seed λ directly from fresh.Table2 if you want
     // const lam = fresh?.Table2?.Direct_Deck ?? fresh?.Table2 ?? 0;
     const lam =
@@ -983,7 +977,6 @@ function applySA(sd) {
 
     // Keep selection valid
     if (!saTiles.system.includes(selectedsystemf.value)) {
-        console.log(selectedsystemf);
         selectedsystemf.value = saTiles.system[0] ?? null;
     }
 
@@ -1197,7 +1190,6 @@ watch(materialOptions, (opts) => {
 });
 const selectionMap = computed(() => {
     const src = srcData.value || {};
-    // console.log(src);
     if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
         return { ...src.selection }; // label -> MF
     }
@@ -1205,7 +1197,6 @@ const selectionMap = computed(() => {
     const map = {};
     const sel = Array.isArray(src.selection) ? src.selection : [];
     const res = Array.isArray(src.resistance) ? src.resistance : [];
-    // console.log(res, sel);
     sel.forEach((k, i) => {
         const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
         if (label) map[label] = res[i];
@@ -1216,7 +1207,6 @@ const selectionMap = computed(() => {
 // ---- SAFE OPTION BUILDERS (always return a FLAT ARRAY) ----
 const toOption = (opt) => {
     if (opt == null) return null;
-    console.log(opt);
     // if a primitive string/number
     if (typeof opt === 'string' || typeof opt === 'number') {
         const s = String(opt);
@@ -1255,7 +1245,6 @@ function getMaterialKey(val) {
     return val ?? '';
 }
 function updatedMF1(val = selectedMaterial.value) {
-    console.log(val);
     const key = getMaterialKey(val);
     console.log(key, val, selectedMaterial.value);
     if (!key) return;
@@ -1265,12 +1254,10 @@ function updatedMF1(val = selectedMaterial.value) {
 
     const mfStr = String(mfRaw);
     const mfNum = toNum(mfStr);
-    console.log(mfStr);
     // Write MF everywhere it’s needed
     zoneone.mf1 = mfStr;
     zonetwo.mf2 = mfStr;
     zonethree.mf3 = mfStr;
-    console.log(zoneone.mf1);
 
     // Re-validate MR vs MF
     const mr1 = toNum(zoneone.mr1);
@@ -1322,7 +1309,7 @@ watch(
     [() => slopeBucket.value, () => srcData.value, () => selectionMap.value],
     () => {
         if (selectedMaterial.value) {
-            console.log(selectedMaterial.value);
+            // console.log(selectedMaterial.value);
             // First update λ/Mg/MR… then re-compare against current MF
             applyMgLambdaFromTables(); // your function that recomputes lambda/mg/mr
             updatedMF1(); // no arg = use current selectedMaterial
@@ -1384,7 +1371,6 @@ function applyMgLambdaFromTables(srcOverride) {
     const bucket = bucketFromSlope(dims.slope); // 2..7
     const keys = ['two', 'three', 'four', 'five', 'six', 'seven'];
     const key = keys[Math.min(Math.max(bucket - 2, 0), 5)];
-    // console.log(key);
     // MG: prefer Direct_Deck if present, else the raw number
     const t3row = src.Table3?.[key];
     const mg = t3row?.Direct_Deck ?? t3row ?? 0;
@@ -1420,16 +1406,13 @@ function computeMR1() {
 
 function updateMF(val) {
     const label = typeof val === 'object' && val ? (val.value ?? val.label) : val;
-    // console.log(label);
 
     if (!label) return;
     const mfRaw = selectionMap2.value[label]; // e.g. "118.9⁴"
     if (mfRaw == null) return;
-    // console.log(mfRaw);
 
     const mf = String(mfRaw);
     const mfNum = toNum(mf);
-    console.log(mf);
     zoneone.mf1 = mf;
     zonetwo.mf2 = mf;
     zonethree.mf3 = mf;
@@ -1490,7 +1473,6 @@ const saveTileData = async () => {
     tileData2.zoneone.mf1 = zoneone.mf1;
     tileData2.zonetwo.mf2 = zonetwo.mf2;
     tileData2.zonethree.mf3 = zonethree.mf3;
-    console.log(tileData2);
 };
 // NEW: local flags for modal state
 const isTileModalOpen = computed(() => modalIsActive.value);
@@ -1710,18 +1692,34 @@ async function postUDLStaging() {
         systemSelected: k,
         tileIdentifier: tilenoas.tileIdentifier
     };
-    console.log(body);
     await post(body);
 }
+
 const tileStaging = async () => {
-    const body = {
-        ...commonTile(),
+    try {
+        const body = {
+            ...commonTile(),
+            hittype: tilenoas.hittype
+        };
+        await post(body);
+        // Success: maybe show a toast or update UI
+        console.log('Posted successfully');
+    } catch (error) {
+        // This prevents "Uncaught (in promise)"!
+        console.error('Post failed:', error);
 
-        hittype: tilenoas.hittype
-    };
-
-    // console.log(body);
-    await post(body);
+        // Optional: show user-friendly message
+        if (error.response) {
+            // Server responded with error status (4xx, 5xx)
+            alert(`Error ${error.response.status}: ${error.response.data.message || 'Request failed'}`);
+        } else if (error.request) {
+            // No response received (network issue)
+            alert('Network error: Please check your connection');
+        } else {
+            // Something else
+            alert('An unexpected error occurred');
+        }
+    }
 };
 const modalKeyUDL = ref(0);
 const currentTileUDl = ref(null);
@@ -1757,19 +1755,16 @@ const commonTile = () => ({
 });
 function toPlain(v) {
     const x = unref(v);
-    // console.log(x);
     return isProxy(x) ? toRaw(x) : x;
 }
 function toPlainUDL(v) {
     const x = unref(v);
-    // console.log(x);
 
     return isProxy(x) ? toRaw(x) : x;
 }
 
 function toPlainSA(v) {
     const x = unref(v);
-    // console.log(x);
 
     return isProxy(x) ? toRaw(x) : x;
 }
@@ -1782,7 +1777,6 @@ async function onOpenTileClick() {
     modalKey.value++;
 
     const src = toPlain(tilenoas);
-    // console.log(src);
     currentTile.value = {
         manufacturer: src?.manufacturer ?? '',
         material: src?.material ?? '',
@@ -1799,7 +1793,6 @@ const tileNoaChanges = ref(0);
 function onTileNoaConfirmed(val) {
     tileNoaChanges.value += 1;
     if (tileNoaChanges.value >= 2) resetTileModal(); // after at least one prior input
-    // console.log('onTileNoaconfirmed launched');
 }
 const tileUDLChanges = ref(0);
 function onUdlNoaConfirmed(val) {
@@ -1874,7 +1867,6 @@ async function postSAStaging() {
         systemSelected: selectedFKey.value, // (optional) explicit field
         designpressure: fDpForSelected.value || '' // from your computed
     };
-    console.log(body);
     await post(body);
 }
 watch(selectedsystemf, () => {

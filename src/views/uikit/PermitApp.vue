@@ -48,26 +48,9 @@ const prefix = ref('me');
 
 onMounted(() => {
     const { width, isUltraWide, height, isLongScreen } = useScreenSize();
-    console.log(width, isUltraWide);
+    // console.log(width, isUltraWide);
     return { width, isUltraWide, height, isLongScreen };
 });
-// reactive form model
-// const formData = reactive({
-//     jobaddress: '',
-//     municipality: '',
-//     license: '',
-//     folio: '',
-//     dba: '',
-//     permit: '',
-//     processnumber: '',
-//     phonenumber: '',
-//     emails: '',
-//     muniprocessnumber: '',
-//     historic: Boolean,
-//     date: new Date(),
-//     checkIfBeach: 0
-// });
-
 const formData = reactive({
     address: '',
     muni: '',
@@ -121,7 +104,6 @@ const cellPhn = computed(() => {
     if (accountUsers.value[0]?.bphone !== '') {
         isPhoneValid.value = true;
         phone.value = accountUsers.value[0]?.bphone;
-        console.log(phone.value);
     }
     return isPhoneValid.value === true ? phone.value : accountUsers.value[0]?.bphone;
 });
@@ -132,7 +114,6 @@ watchOnce(setProperties, cellPhn, () => {
 });
 
 async function setProperties() {
-    console.log(accountUsers.value);
     googleAccount.value = accountUsers.value[0];
     // await
     glAccount.name = googleAccount.value?.name || '';
@@ -140,7 +121,6 @@ async function setProperties() {
     glAccount.licenseStat = googleAccount.value?.secondary_status || '';
     glAccount.dba = googleAccount.value?.dba || '';
     glAccount.phone = googleAccount.value?.cphone || '';
-    console.log(glAccount);
 }
 invoke(async () => {
     await until(isPhoneValid).toBe(true);
@@ -168,9 +148,7 @@ async function fetchData(url) {
     try {
         const response = await fetch(url);
         datas.value = await response.json();
-        console.log('Line 171: ', datas.value.body.MinimumPropertyInfos[0]);
         data.value = datas.value.body.MinimumPropertyInfos[0];
-        console.log(data.value);
         formData.contractor = glAccount.dba;
         formData.license = data.value.secondary_status;
         formData.muni = data.value.Municipality;
@@ -190,13 +168,10 @@ async function fetchData(url) {
 }
 
 async function convertFolio(folios) {
-    const miamibeach = folios.value;
-
-    console.log(folios.value, miamibeach);
+    // const miamibeach = folios.value;
 
     if (folios.value === 2) {
         formData.checkIfBeach = folios.value;
-        console.log('Updated mbId:', formData.checkIfBeach);
     }
 }
 
@@ -206,7 +181,6 @@ async function load() {
 
         muniProcessdata.value = muniProcess.value;
         const addr = inputAddress.value.toUpperCase();
-        console.log(addr);
         // This takes in the address as a field which lambda is expecting under the address below.
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
@@ -236,7 +210,6 @@ async function load() {
             masterpermit: formData.permit,
             license: formData.license
         });
-        console.log('Line 242: ', permitAppPdf);
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
         convertFolio(checkMB.value);
@@ -260,8 +233,6 @@ function addItemAndClear() {
     // post(formData);
 
     store.addSystem(formData, mbId);
-
-    console.log(store);
 }
 </script>
 <template>

@@ -58,7 +58,7 @@ export default function usePostBurLambda() {
         } catch (err) {
             if (axios.isCancel?.(err) || err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError') {
                 // expected abort; don't treat as an error
-                console.debug('postMech aborted:', err.message);
+                console.debug('postLowSlope aborted:', err.message);
                 return null;
             }
             console.error('Lambda post failed:', err);

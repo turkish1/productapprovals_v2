@@ -31,7 +31,6 @@ export default function usePermitData() {
      */
     const callPermitdata = async (formdataSent) => {
         payload.value = formdataSent;
-        console.log(payload.value);
         loading.value = true;
         error.value = null;
         try {
@@ -51,5 +50,4 @@ export default function usePermitData() {
         loading,
         callPermitdata
     };
-    //  genData
 }

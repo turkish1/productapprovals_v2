@@ -1285,7 +1285,7 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
         </div>
         <div class="w-64 mt-3 space-y-2" style="margin-left: 20px">
             <label for="height">Height</label><label class="px-2" style="color: red">*</label> <i class="pi pi-check" v-show="isvalueValid" style="color: green; font-size: 1.2rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" :disabled="isDisabled" @change="validateHeight" />
+            <InputText ref="heightInputRef" id="height" v-tooltip.bottom="'Press Tab after value'" v-model.number="heightModel" type="text" placeholder="height" @input="setRoofInputs" :disabled="isDisabled" @change="validateHeight" />
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
         <DripEdMechTile />
@@ -1300,7 +1300,6 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             <Select v-model="selectedUnderlayment" :options="underlaymentType" optionLabel="selectedBasesheet" placeholder="make selection" @change="checkInputSystem" />
         </div>
         <Divider />
-        <!-- <ModalWindowExposure :key="modalKeyExp" :initialData="currentTileExp" @closePopup="modalExposureIsActive = false" v-if="modalExposureIsActive"> -->
         <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
             <div v-show="isTileValid" class="w-128 mt-6 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
                 <label style="color: red">Select Exposure *</label>
@@ -1316,23 +1315,19 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                 </div>
             </div>
         </div>
-        <!-- </ModalWindowExposure> -->
     </div>
     <div></div>
     <Divider />
     <div class="grid grid-cols-2 md:grid-cols-3 gap-2" style="margin-left: 75px">
         <div v-show="isUDLNOAValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
             <systemENumber />
-            <!-- @keydown.tab.exact.stop="sysEcheckInput" "(modalUDLIsActive = true), sysEcheckInput()" -->
             <Button label="Submit" severity="contrast" @click="onOpenTileUDLClick" style="margin-left: 15px" />
         </div>
         <!-- w-96 -->
         <div v-show="isSAValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600" style="margin-left: 50px">
             <systemFNumber />
-            <!-- "(modalSAIsActive = true), checkInputSA()" -->
             <Button label="Submit" severity="contrast" @click="onOpenTileSAClick" style="margin-left: 15px" />
         </div>
-        <!-- <div  class="min-w-[280px] border-2 p-2" > -->
 
         <div v-show="isTileValid" v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out" style="margin-left: 50px">
             <div class="autocomplete">
@@ -1350,7 +1345,6 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                 </ul>
             </div>
         </div>
-        <!-- </div> -->
     </div>
 
     <Divider />
@@ -1378,7 +1372,6 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
                 <div class="min-w-[680px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" class="mt-3" for="anchor">Anchor Base Sheet</label>
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" @change="updateselectSystemE" />
-                    <!-- @click="EcheckInputSystem" -->
                 </div>
                 <div class="min-w-[480px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="description">(UDL) Description</label>
@@ -1400,7 +1393,6 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
 
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: red">Select System F *</label>
-                <!-- @click="checkInputSystem" @change="updateselectSystem" -->
                 <Select v-model="selectedsystemf" :options="saTiles.system" placeholder="" @click="checkInputSystem" @change="updateselectSystem" />
             </div>
 
@@ -1427,12 +1419,10 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
             <div v-show="isTileValid" class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <div v-show="isTileSelectionValid" class="w-72 flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label style="color: red">Select Mechanical Tile Fastener *</label>
-                    <!-- @click="checkMaterial" @update:modelValue="updateMF"-->
                     <Select v-model="selectedMechanical" :options="tilenoas.mechanicaltilefastener" @change="checkMaterial" @update:modelValue="updateMF" />
                 </div>
             </div>
             <div></div>
-            <!-- v-show="!isTileTypeValid" min-w-[300px] flex flex-col gap-2 border-2 -->
             <div v-show="!isMultiTileValid" class="w-3/4 border-2 p-2 gap-4 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Tile Description</label>
                 <InputText class="min-w-[500px] flex flex-col gap-2 border-2" id="description" v-model="tilenoas.description" @update:modelValue="checkMaterial" />
@@ -1451,7 +1441,6 @@ watch(MF, validateRoofSlope, ismrValidMR3, ismrValidMR1, ismrValidMR2, ismrInval
         </div>
     </ModalWindow>
     <div class="flex flex-wrap gap-1 mt-10" style="margin-left: 1px">
-        <!-- <div class="lg:w-full min-h-[10px] flex flex-row gap-18" style="margin-left: 10px"> -->
         <table width="100%" align="left">
             <tbody>
                 <tr>

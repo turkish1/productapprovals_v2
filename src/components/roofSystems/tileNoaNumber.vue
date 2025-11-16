@@ -25,6 +25,7 @@ import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepadd
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
 import useDouble from '@/composables/fetchTech/use-doublepdNumber';
 import useSingle from '@/composables/fetchTech/use-singlepdNumber';
+import { useSinglepdStore } from '@/stores/singlepdNumberStore';
 
 import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
 import { usePaddyoptionStore } from '@/stores/paddyCatStore';
@@ -34,9 +35,9 @@ import { usevalueStore } from '@/stores/tilevalueStore';
 // --- composables that fetch NOA detail by number ---
 const { getTilenoa } = usetileInputsingle();
 const { getTilenoas } = usetileInputdouble();
-
+const { pdInput } = useSinglepdStore();
 // --- composables that load the NOA lists for tile ---
-const { callFunction, singleStore } = useSingle(); // single pd list
+const { callFunction, singleStore, pdNumber } = useSingle(); // single pd list
 const { callFunctions, doubleStore } = useDouble(); // double pd list
 
 // --- stores ---
@@ -59,8 +60,7 @@ watch(query, (v) => {
 });
 // current category: 'single' | 'double' (defaults to 'single' if nothing yet)
 const paddyCategory = computed(() => {
-    const list = paddyCat.$state?.paddycatInput;
-    console.log(list);
+    const list = paddyCat.$state;
     if (!Array.isArray(list) || list.length === 0) return 'single';
 
     // modern: Array.prototype.findLast
@@ -71,8 +71,7 @@ const isDouble = computed(() => paddyCategory.value === 'double');
 
 // normalize current NOA suggestions from the active list
 const currentNOAs = computed(() => {
-    const src = isDouble.value ? doubleStore?.$state?.pdInputs?.[0]?.pdNumbers?.noa?.body : singleStore?.$state?.pdInput?.[0]?.pdNumber?.noa?.body;
-    console.log(isDouble.value, paddyCat.$state?.paddycatInput?.[0]?.paddyValues, doubleStore?.$state, paddyCategory.value, paddyCat.$state?.paddycatInput?.[1]?.paddyValues);
+    const src = isDouble.value ? doubleStore?.$state?.pdInputs?.[0]?.pdNumbers?.noa : singleStore?.$state?.pdInput?.[0]?.pdNumber.noa;
     if (Array.isArray(src)) return src.map(String);
     if (typeof src === 'string') {
         return src

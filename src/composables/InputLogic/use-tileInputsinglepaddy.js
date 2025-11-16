@@ -114,7 +114,7 @@ export default function useTileInputSingle() {
             } else {
                 const entrySingleTile = entry;
                 console.log(entrySingleTile, entry);
-                const tileDatas = await {
+                const tileDatas = {
                     noa: entrySingleTile.NOA ?? entrySingleTile.noa,
                     manufacturer: (entrySingleTile.applicant ?? entrySingleTile.Manufacturer)?.trim?.(),
                     material: entrySingleTile.material ?? entrySingleTile.Material,

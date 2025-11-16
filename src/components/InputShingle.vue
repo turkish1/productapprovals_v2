@@ -483,6 +483,22 @@ const { errorshHeightMessage, validateShingleHeight } = useShingleHghtValidation
     required: true
 });
 
+const isHeightDisabled = ref(true); // start disabled
+
+const heightInputRef = ref(null);
+
+watch(isHeightDisabled, (newVal) => {
+    if (!newVal) {
+        nextTick(() => {
+            const el = heightInputRef.value?.$el?.querySelector('input') || heightInputRef.value?.$el;
+            if (el) {
+                el.focus();
+                el.select();
+            }
+        });
+    }
+});
+
 function validateRoofSlope() {
     validateInput();
     if (dims.slope >= 2) {
@@ -598,7 +614,7 @@ watch(
         </div>
         <div class="w-64 mt-1 space-y-1" style="margin-left: 10px">
             <label for="height" style="color: red">Height *</label><i class="pi pi-check" v-show="isvalueValid" style="margin-left: 10px; color: green; font-size: 1rem" @change="addCheckmarks"></i>&nbsp;
-            <InputText id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="!canEnterHeight" @change="validateHeight" />
+            <InputText ref="heightInputRef" id="height" v-model.number="dims.height" type="text" placeholder="height" :invalid="height === null" :disabled="!canEnterHeight" @change="validateHeight" />
             <Message v-if="errorshHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorshHeightMessage }}</Message>
         </div>
         <div v-show="showSA" class="min-w-[680px] flex flex-col border-2 border-gray-700 focus:border-orange-600" style="margin-top: 20px">

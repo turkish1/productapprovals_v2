@@ -1,40 +1,49 @@
 import { useDoublepdStore } from '@/stores/doublepdNumberStore';
-
 import { useFetch } from '@vueuse/core';
-import { computed, reactive, ref, toRefs } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 
 export default function useDouble() {
     const input = ref();
     const errors = ref('');
-    let results = ref([]);
+    const results = ref([]);
     const doubleStore = useDoublepdStore();
 
     const pdNumbers = reactive({
         noa: []
     });
-    function callFunctions() {
-        fetchData();
-    }
+
     const url = computed(() => {
-        return 'https://kqhhddc2c4.execute-api.us-east-1.amazonaws.com/doublePaddyNOAstaging';
-        // 'https://uuls1vdjtd.execute-api.us-east-1.amazonaws.com/doublePaddyNOA';
-        // 'https://kqhhddc2c4.execute-api.us-east-1.amazonaws.com/doublePaddyNOAstaging';
-        // 'https://uuls1vdjtd.execute-api.us-east-1.amazonaws.com/doublePaddyNOA';
-        // 'https://kqhhddc2c4.execute-api.us-east-1.amazonaws.com/doublePaddyNOAstaging';
-        // 'https://uuls1vdjtd.execute-api.us-east-1.amazonaws.com/doublePaddyNOA';
+        return 'https://fcnamqr5pm5p2mqiwlliryrdli0voxkb.lambda-url.us-east-1.on.aws/';
     });
-    const { data, error: fetchError } = useFetch(url).get().json();
+
+    // Trigger fetch immediately
+    const { data, error: fetchError, isFetching, execute } = useFetch(url, { immediate: false }).get().json();
+
+    watch(data, (arr) => {
+        console.log('NOA List:', arr.body);
+        if (Array.isArray(arr?.body)) {
+            pdNumbers.noa = arr.body; // Keep local reactive
+            doubleStore.addNoas({ noa: arr.body }); // Store correct shape
+        }
+    });
 
     const fetchData = async () => {
-        if (fetchError.value) {
-            errors.value = fetchError.value;
-            return;
-        } else {
-            pdNumbers.noa = data;
-
-            doubleStore.addNoas(pdNumbers);
-        }
+        errors.value = '';
+        await execute(); // This triggers the GET request
     };
 
-    return { input, fetchData, callFunctions, errors, results, ...toRefs(pdNumbers), doubleStore };
+    const callFunctions = () => {
+        fetchData();
+    };
+
+    return {
+        input,
+        fetchData,
+        callFunctions,
+        errors,
+        results,
+        isFetching,
+
+        doubleStore
+    };
 }

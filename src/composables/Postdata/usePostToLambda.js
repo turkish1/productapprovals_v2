@@ -10,7 +10,7 @@ export default function usePostToLambda() {
     const loading = ref(false);
 
     const { data, error: axiosError, isFetching, execute } = useAxios(lambdaUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } }, axios, { immediate: false });
-    const run = async (body, label) => {
+    const run = async (body) => {
         loading.value = true;
         errors.value = null;
         try {
@@ -18,7 +18,7 @@ export default function usePostToLambda() {
             console.log(res?.data);
             return res?.data ?? data.value;
         } catch (e) {
-            console.error(`Lambda ${label} failed:`, {
+            console.error(`Lambda failed:`, {
                 message: e?.message,
                 code: e?.code,
                 status: e?.response?.status,

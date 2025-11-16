@@ -39,12 +39,6 @@ const MB = ref(permitStore.$state.permitapp?.[0]?.formdt?.checkIfBeach);
 const isMiamiBeach = computed(() => useToNumber(MB.value).value === 2);
 const roofOptions = computed(() => (isMiamiBeach.value ? ROOF_TYPES.slice(1) : ROOF_TYPES));
 
-// Derived
-// const isFormValid = computed(() => {
-//     const sqft = Number(area.value);
-//     return !!selectedSystem.value?.name && Number.isFinite(sqft) && sqft > 0 && !!roofKind.value;
-// });
-
 // ─────────────────────────────── methods ───────────────────────────────
 function addSelectedSystem() {
     // if (!isFormValid.value) return;
@@ -61,6 +55,7 @@ function addSelectedSystem() {
     };
     byName[name]?.();
     dataGeneral.roofCheck = roofKind.value;
+    console.log(dataGeneral.roofCheck);
     roofCheck.addCheck({ ...dataGeneral });
 
     // clear inputs for next add
@@ -121,16 +116,6 @@ onMounted(() => {
                     <small v-if="isMiamiBeach" class="hint">Miami Beach restrictions apply.</small>
                 </div>
 
-                <!-- <div class="field row">
-                    <div class="check">
-                        <Checkbox inputId="kind-new" severity="contrast" name="roofKind" value="newroof" v-model="roofKind" />
-                        <label for="kind-new">New Roof</label>
-                    </div>
-                    <div class="check">
-                        <Checkbox inputId="kind-reroof" severity="contrast" name="roofKind" value="reroof" v-model="roofKind" />
-                        <label for="kind-reroof">Re-Roof</label>
-                    </div>
-                </div> -->
                 <div class="field row">
                     <div class="check">
                         <RadioButton inputId="kind-new" name="roofKind" value="newroof" v-model="roofKind" />
@@ -144,7 +129,6 @@ onMounted(() => {
 
                 <div class="actions">
                     <RouterLink to="/dynamicstepper">
-                        <!-- :disabled="!isFormValid" -->
                         <Button severity="contrast" label="Continue" @click="submitGeneral" />
                     </RouterLink>
                 </div>
