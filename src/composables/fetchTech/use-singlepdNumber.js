@@ -30,6 +30,7 @@ export default function useSingle() {
     watch(data, (arr) => {
         if (arr?.body) {
             pdNumber.noa = arr.body; // Keep local reactive
+            console.log(arr.body);
             singleStore.addNoas({ noa: arr.body }); // Store correct shape
         }
     });

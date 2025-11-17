@@ -37,7 +37,7 @@ const { getTilenoa } = usetileInputsingle();
 const { getTilenoas } = usetileInputdouble();
 const { pdInput } = useSinglepdStore();
 // --- composables that load the NOA lists for tile ---
-const { callFunction, singleStore, pdNumber } = useSingle(); // single pd list
+const { callFunction, singleStore } = useSingle(); // single pd list
 const { callFunctions, doubleStore } = useDouble(); // double pd list
 
 // --- stores ---
@@ -72,6 +72,7 @@ const isDouble = computed(() => paddyCategory.value === 'double');
 // normalize current NOA suggestions from the active list
 const currentNOAs = computed(() => {
     const src = isDouble.value ? doubleStore?.$state?.pdInputs?.[0]?.pdNumbers?.noa : singleStore?.$state?.pdInput?.[0]?.pdNumber.noa;
+    console.log(src);
     if (Array.isArray(src)) return src.map(String);
     if (typeof src === 'string') {
         return src

@@ -23,6 +23,8 @@ export default function useDouble() {
         console.log('NOA List:', arr.body);
         if (Array.isArray(arr?.body)) {
             pdNumbers.noa = arr.body; // Keep local reactive
+            console.log(arr.body);
+
             doubleStore.addNoas({ noa: arr.body }); // Store correct shape
         }
     });
