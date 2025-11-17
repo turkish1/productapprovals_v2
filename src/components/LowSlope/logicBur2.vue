@@ -58,26 +58,74 @@ function loadMaterials() {
     mat.value = bMaters.value ?? [];
 }
 
+// At component level (outside setup)
+const systemCache = reactive({
+    'Hot-Mopped Applied Systems': null,
+    'SBS/APP Modified Heat-Weld Bitumen Membrane': null,
+    'SBS Modified Bitumen Self-Adhered Membrane': null
+});
+
+// async function updateSystemOptions(material) {
+//     if (!material) return;
+
+//     await callFunction(material); // ✅ wait for fetchData() to complete
+
+//     switch (material) {
+//         case 'Hot-Mopped Applied Systems':
+//             syst.value = systemHM.value;
+//             break;
+//         case 'SBS/APP Modified Heat-Weld Bitumen Membrane':
+//             syst.value = systemHW.value;
+//             break;
+//         case 'SBS Modified Bitumen Self-Adhered Membrane':
+//             syst.value = systemSA.value;
+//             break;
+//         default:
+//             syst.value = [];
+//     }
+// }
 async function updateSystemOptions(material) {
-    if (!material) return;
+    if (!material) {
+        syst.value = [];
+        return;
+    }
 
-    await callFunction(material); // ✅ wait for fetchData() to complete
+    // Return from cache if we already fetched it
+    if (systemCache[material] !== null) {
+        syst.value = systemCache[material];
+        return;
+    }
 
-    switch (material) {
-        case 'Hot-Mopped Applied Systems':
-            syst.value = systemHM.value;
-            break;
-        case 'SBS/APP Modified Heat-Weld Bitumen Membrane':
-            syst.value = systemHW.value;
-            break;
-        case 'SBS Modified Bitumen Self-Adhered Membrane':
-            syst.value = systemSA.value;
-            break;
-        default:
-            syst.value = [];
+    // Show loading state (optional but nice)
+    syst.value = [];
+    // you can add isLoading.value = true
+
+    try {
+        await callFunction(material); // still fetches only the first time
+
+        let data;
+        switch (material) {
+            case 'Hot-Mopped Applied Systems':
+                data = systemHM.value;
+                break;
+            case 'SBS/APP Modified Heat-Weld Bitumen Membrane':
+                data = systemHW.value;
+                break;
+            case 'SBS Modified Bitumen Self-Adhered Membrane':
+                data = systemSA.value;
+                break;
+            default:
+                data = [];
+        }
+
+        // Cache it!
+        systemCache[material] = data;
+        syst.value = data;
+    } catch (err) {
+        console.error('Failed to load systems:', err);
+        syst.value = [];
     }
 }
-
 /** Map superscript numerals to Perimeters keys */
 function resolvePerimeterOptions(system) {
     const superscriptMap = {

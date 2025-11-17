@@ -40,9 +40,9 @@ const isMiamiBeach = computed(() => useToNumber(MB.value).value === 2);
 const roofOptions = computed(() => (isMiamiBeach.value ? ROOF_TYPES.slice(1) : ROOF_TYPES));
 
 // ─────────────────────────────── methods ───────────────────────────────
-function addSelectedSystem() {
+function addSelectedSystem(newValue) {
     // if (!isFormValid.value) return;
-
+    if (!newValue || area.value == 0) return;
     const name = selectedSystem.value.name;
     const sqft = Number(area.value);
 
@@ -55,7 +55,6 @@ function addSelectedSystem() {
     };
     byName[name]?.();
     dataGeneral.roofCheck = roofKind.value;
-    console.log(dataGeneral.roofCheck);
     roofCheck.addCheck({ ...dataGeneral });
 
     // clear inputs for next add
@@ -112,7 +111,7 @@ onMounted(() => {
 
                 <div class="field">
                     <label for="system">Roof System</label>
-                    <Select id="system" class="w-full" :options="roofOptions" optionLabel="name" v-model="selectedSystem" placeholder="Select roof system" @change="addSelectedSystem" />
+                    <Select id="system" class="w-full" :options="roofOptions" optionLabel="name" v-model="selectedSystem" placeholder="Select roof system" @update:model-value="addSelectedSystem" />
                     <small v-if="isMiamiBeach" class="hint">Miami Beach restrictions apply.</small>
                 </div>
 
