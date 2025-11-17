@@ -45,12 +45,9 @@
                     </div>
                     <span class="text-2xl font-bold">Documents</span>
                     <span class="text-muted-color text-center">Attached documents</span>
-                    <!-- <span class="text-2xl font-bold">Bur Selection</span>
-                    <span v-for="(item, i) in infoItemsbur" :key="i" class="text-muted-color text-center"> {{ item.label }}{{ item.value }} </span> -->
                 </div>
                 <div class="flex flex-wrap justify-left gap-12">
                     <Swiper :modules="[EffectCards, Navigation, Pagination]" effect="cards" grab-cursor="true" navigation pagination class="w-md max-w-md mx-auto">
-                        <!-- class="flex justify-center items-center" -->
                         <SwiperSlide v-for="(card, i) in cards" :key="i">
                             <StackCard :icon="card.icon" :title="card.title" :items="card.items" :bgClass="card.bg" :textClass="card.text" />
                         </SwiperSlide>
@@ -147,7 +144,7 @@ const shingleInfo = ref(shingleStore.$state.inputshingle[0]);
 const shData = ref(shingleInfo.value?.shingleData || '');
 const mechData = ref(mechtileNoaInfo.value);
 //  Second section
-
+console.log(tileNoaInfo, singlePaddyData, doublePaddyData);
 function displayUserInfo() {
     accountUsers.value.forEach((item, index) => {
         dba.value = item.dba;

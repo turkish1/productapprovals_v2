@@ -87,6 +87,7 @@ const disabled = ref(false);
 // ---- lifecycle ------------------------------------------------------------
 
 onMounted(() => {
+    console.log(accountUsers.value[0]?.secondary_status);
     // console.log(accountUsers.value[0]?.secondary_status);
     if (disabled.value === false && accountUsers.value[0]?.secondary_status === 'I') {
         formData.license = 'Inactive';
@@ -94,7 +95,7 @@ onMounted(() => {
         alert('Your license is Inactive!');
     } else {
         formData.license = 'Active';
-
+        console.log(formData.license);
         disabled.value = true;
     }
 });
@@ -122,7 +123,7 @@ async function setProperties() {
     // await
     glAccount.name = googleAccount.value?.name || '';
     glAccount.email = googleAccount.value?.email || '';
-    glAccount.licenseStat = googleAccount.value?.secondary_status || '';
+    // glAccount.licenseStat = googleAccount.value?.secondary_status || '';
     glAccount.dba = googleAccount.value?.dba || '';
     glAccount.phone = googleAccount.value?.cphone || '';
 }
@@ -154,7 +155,7 @@ async function fetchData(url) {
         datas.value = await response.json();
         data.value = datas.value.body.MinimumPropertyInfos[0];
         formData.contractor = glAccount.dba;
-        formData.license = data.value.secondary_status;
+        // formData.license = data.value.secondary_status;
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
         // console.log(datas.value);
@@ -256,7 +257,7 @@ function addItemAndClear() {
                 <!-- license status -->
                 <div class="field">
                     <label for="license">License Status</label>
-                    <InputText id="license" v-model="glAccount.licenseStat" placeholder="active / inactive" />
+                    <InputText id="license" v-model="formData.license" placeholder="active / inactive" />
                 </div>
                 <!-- municipality process # -->
                 <div class="field">

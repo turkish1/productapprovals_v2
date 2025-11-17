@@ -668,7 +668,8 @@ watch(
                 <label for="material">(UDL) Material</label>
                 <InputText id="material" v-model="udlForm.udlmaterial" />
             </div>
-            <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+            <div class="min-w-[350px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                <!-- <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600"> -->
                 <label for="description">(UDL) Description</label>
                 <InputText id="description" v-model="udlForm.udldescription" />
             </div>
