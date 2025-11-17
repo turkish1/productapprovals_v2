@@ -19,7 +19,18 @@ export default function useSingle() {
         fetchData();
     };
     // Enable manual trigger + get execute()
-    const { data, error: fetchError, isFetching, execute } = useFetch(url, { immediate: false }).get().json();
+    const {
+        data,
+        error: fetchError,
+        isFetching,
+        execute
+    } = useFetch(url, {
+        immediate: false,
+        mode: 'cors', // ← force CORS mode
+        credentials: 'omit'
+    })
+        .get()
+        .json();
     const fetchData = async () => {
         errors.value = '';
         await execute(); // This triggers the GET request

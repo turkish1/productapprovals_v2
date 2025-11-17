@@ -17,7 +17,18 @@ export default function useDouble() {
     });
 
     // Trigger fetch immediately
-    const { data, error: fetchError, isFetching, execute } = useFetch(url, { immediate: false }).get().json();
+    const {
+        data,
+        error: fetchError,
+        isFetching,
+        execute
+    } = useFetch(url, {
+        immediate: false,
+        mode: 'cors', // ← force CORS mode
+        credentials: 'omit'
+    })
+        .get()
+        .json();
 
     watch(data, (arr) => {
         console.log('NOA List:', arr.body);
