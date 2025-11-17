@@ -1,0 +1,1 @@
+import{D as p}from"./index-DAGH9h9Y.js";const d=p("burpdfinput",{state:()=>({burpdfinput:[],id:0}),actions:{addpdfData(t){this.burpdfinput.push({burpdfData:t,completed:!1})}},getters:{burpdfData:t=>t.burpdfData}});export{d as u};
