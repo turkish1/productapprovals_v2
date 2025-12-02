@@ -70,7 +70,7 @@ export default function useMech() {
         // sometimes lambdas return [{ value: { body: '...' } }]
         if (Array.isArray(data) && data[0]?.value?.body) {
             const body = parseJSONSafe(data[0].value.body);
-            console.log(body);
+            // console.log(body);
             return ensureArr(body);
         }
         return ensureArr(data);
@@ -79,7 +79,7 @@ export default function useMech() {
     async function takeMechInput(inputMech) {
         input.value = onlyDigits(inputMech);
         num.value = pad8(input.value); // <- keep 8-digit string
-        console.log(num.value, inputMech);
+        // console.log(num.value, inputMech);
         return await fetchData();
     }
     const toArray = (resp) => {

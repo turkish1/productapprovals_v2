@@ -1,13 +1,10 @@
-// import DataService from '@/services/DataService';
 import { useShinglenoaStore } from '@/stores/shinglenoaNumber';
-// import { useAxios } from '@vueuse/integrations/useAxios';
 import { useFetch } from '@vueuse/core';
-import { computed, reactive, ref, toRefs } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 
 export default function useInputs() {
     const input = ref();
 
-    const noaNum = ref([]);
     let results = ref([]);
     const noaStore = useShinglenoaStore();
 
@@ -22,19 +19,33 @@ export default function useInputs() {
     const url = computed(() => {
         // shibleNoaNumber
 
-        return 'https://mvx0sdvsh5.execute-api.us-east-1.amazonaws.com/shinglenoaNumberStaging';
+        return 'https://iio4t6dcc6hgc2omqvg4lovh5a0mzkpl.lambda-url.us-east-1.on.aws/';
     });
-    const { data } = useFetch(url).get().json();
 
+    const {
+        data,
+        error: fetchError,
+        isFetching,
+        execute
+    } = useFetch(url, {
+        immediate: false,
+        mode: 'cors', // ← force CORS mode
+        credentials: 'omit'
+    })
+        .get()
+        .json();
     const fetchData = async () => {
-        // try {
-
-        shingleNoaNumber.noa = data;
-
-        noaStore.addShingle(shingleNoaNumber);
-
-        console.log(shingleNoaNumber, 'System added');
+        errors.value = '';
+        await execute(); // This triggers the GET request
     };
 
-    return { input, fetchData, callFunction, errors, results, ...toRefs(shingleNoaNumber), noaStore };
+    watch(data, (arr) => {
+        if (arr?.body) {
+            shingleNoaNumber.noa = arr.body; // Keep local reactive
+            // console.log(arr.body);
+            noaStore.addShingle({ noa: arr.body }); // Store correct shape
+        }
+    });
+
+    return { input, fetchData, callFunction, errors, results, noaStore };
 }

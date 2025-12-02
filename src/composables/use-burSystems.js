@@ -57,50 +57,6 @@ export default function useBurAxios() {
         }
     }
 
-    // --- Fetch data ---
-    // async function fetchData(body = null, label = 'BUR Request') {
-    //     loading.value = true;
-    //     error.value = null;
-
-    //     try {
-    //         const res = await execute({ data: body });
-    //         console.log('Lambda raw response:', res);
-
-    //         const doc = res.data.value.body;
-    //         const [wrapper] = JSON.parse(doc);
-
-    //         const { system, perimeter } = wrapper;
-
-    //         // Select correct system
-    //         if (activeSystemType.value === 'HM') {
-    //             systemHM.value = system.systemHM || [];
-    //         } else if (activeSystemType.value === 'HW') {
-    //             systemHW.value = system.systemHW || [];
-    //             console.log(systemHW.value, system.systemHW);
-    //         } else if (activeSystemType.value === 'SA') {
-    //             console.log(activeSystemType.value);
-    //             systemSA.value = system.systemSA || [];
-    //             console.log(systemSA.value, system.systemSA);
-    //         }
-
-    //         // Update perimeters
-    //         for (const key in Perimeters) {
-    //             Perimeters[key] = perimeter[key] || [];
-    //         }
-
-    //         console.log('Fetched:', activeSystemType.value, { systemHM, systemHW, systemSA, Perimeters });
-    //     } catch (e) {
-    //         console.error(`Lambda ${label} failed:`, {
-    //             message: e?.message,
-    //             code: e?.code,
-    //             status: e?.response?.status,
-    //             data: e?.response?.data
-    //         });
-    //         error.value = e?.message || 'Request failed';
-    //     } finally {
-    //         loading.value = false;
-    //     }
-    // }
     async function fetchData(body = null, label = 'BUR Request') {
         loading.value = true;
         error.value = null;
@@ -129,7 +85,7 @@ export default function useBurAxios() {
                 Perimeters[key] = perimeter[key] || [];
             }
 
-            console.log('Fetched:', activeSystemType.value, { systemHM, systemHW, systemSA, Perimeters });
+            // console.log('Fetched:', activeSystemType.value, { systemHM, systemHW, systemSA, Perimeters });
         } catch (e) {
             console.error(`Lambda ${label} failed:`, {
                 message: e?.message,

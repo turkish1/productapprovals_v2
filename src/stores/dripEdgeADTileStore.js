@@ -8,7 +8,10 @@ export const usedripADStore = defineStore('dripinputadmaterial', {
         dripinputsize: [],
         inputselectedTileDripEdge: [],
         selectedDripSize: [],
-        id: 3
+        // id: 3
+        dripinput: [],
+        dripMaterial: [],
+        id: 0
     }),
 
     //actions
@@ -30,12 +33,4 @@ export const usedripADStore = defineStore('dripinputadmaterial', {
             console.log('reset was called: ', this.inputselectedTileDripEdge);
         }
     }
-
-    //getters
-    // getters: {
-    //     noaInfo(state) {
-    //         return state.inputshingle.shingleData;
-    //     }
-    // }
-    // persist: true
 });

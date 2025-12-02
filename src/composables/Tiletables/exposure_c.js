@@ -1,7 +1,7 @@
 // composables/Tiletables/exposure_c.js
+import { useGlobalState } from '@/stores/exposurecStore';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { ref } from 'vue';
-import { useGlobalState } from '@/stores/exposurecStore';
 
 export default function useExposurec() {
     // basic state
@@ -72,7 +72,7 @@ export default function useExposurec() {
     const bucketBySlope = (s) => {
         if (s < 4.5) return 1; // table1: 2–4.5
         if (s < 6) return 2; // table2: 4.5–6
-        console.log(s);
+        // console.log(s);
         return 3; // table3: 6–12
     };
 
@@ -86,14 +86,14 @@ export default function useExposurec() {
     });
 
     const pickHeightKey = (h) => {
-        console.log(h);
+        // console.log(h);
         if (h < HEIGHTS.fifteen) return 'lessfifteen';
         if (h < HEIGHTS.twenty) return 'fifteen';
         if (h < HEIGHTS.twentyfive) return 'twenty';
         if (h < HEIGHTS.thirty) return 'twentyfive';
         if (h < HEIGHTS.thirtyfive) return 'thirty';
         if (h < HEIGHTS.forty) return 'thirtyfive';
-        console.log(h, HEIGHTS.fifteen);
+        // console.log(h, HEIGHTS.fifteen);
         return null;
     };
 
@@ -130,7 +130,7 @@ export default function useExposurec() {
 
             // choose slope table
             const b = bucketBySlope(slope.value);
-            console.log(slope.value);
+            // console.log(slope.value);
             if (b === 3) {
                 tableType.value = 'table3';
                 zoneData.value = root.slp_six_twelve ?? null;
@@ -149,7 +149,7 @@ export default function useExposurec() {
             const key = pickHeightKey(height.value);
             const bucket = key ? zoneData.value[key] : null;
             const obj = Array.isArray(bucket) ? bucket[0] : bucket;
-            console.log(obj);
+            // console.log(obj);
             if (!obj || typeof obj !== 'object') {
                 throw new Error('Height bucket not supported or missing in zone table');
             }

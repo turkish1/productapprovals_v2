@@ -4,50 +4,38 @@ export const usedripedgeStore = defineStore('dripinput', {
     //state
     state: () => ({
         dripinput: [],
+        dripinputsize: [],
+        inputselectedDripEdge: [],
+        selectedDripSize: [],
         dripMaterial: [],
         id: 0
     }),
 
     //actions
     actions: {
-        addDrip(dripData) {
+        addMaterialDrip(dripData) {
             this.dripinput.push({ dripData, completed: false });
         },
-
-        insertDrip(dripData, index) {
-            const newItem = { dripData, completed: false };
-
-            // If an index is provided and it's within the array bounds,
-            // we can use splice to insert the item at that position
-            if (typeof index === 'number' && index >= 0 && index <= this.dripinput.length) {
-                this.dripinput.splice(index, 0, newItem);
-            } else {
-                // If no valid index is provided, just push the item to the end of the array
-                this.dripinput.push(newItem);
-            }
+        addSizeDrip(selectedDripSizenew) {
+            this.dripinputsize.push({ selectedDripSizenew, completed: false });
         },
-        insertDripAtIndex(index, dripMaterial) {
-            this.dripinput.splice(index, 0, {
-                dripMaterial,
 
-                completed: false
-            });
+        addUseritems(dripSelection) {
+            this.inputselectedDripEdge.push({ dripSelection, completed: false });
         },
         resetState() {
-            this.$reset();
-            this.dripMaterial = [];
-        }
-        // reset() {
-        //     this.dripMaterial.$reset();
-        //     this.dripData.$reset();
-        // }
-    }
+            // console.log('reset was called: ', this.inputselectedDripEdge);
 
-    //getters
-    // getters: {
-    //     noaInfo(state) {
-    //         return state.inputshingle.shingleData;
-    //     }
-    // }
-    // persist: true
+            this.inputselectedDripEdge = [];
+            // console.log('reset was called: ', this.inputselectedDripEdge);
+        }
+    },
+    getters: {
+        selectedDripEdgeMaterial: (state) => {
+            return state.inputselectedDripEdge[0]?.dripSelection?.dripEdgeMaterial ?? '';
+        },
+        selectedDripEdgeSize: (state) => {
+            return state.inputselectedDripEdge[0]?.dripSelection?.dripEdgeSize ?? '';
+        }
+    }
 });

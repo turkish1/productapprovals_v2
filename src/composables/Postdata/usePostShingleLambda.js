@@ -10,14 +10,14 @@ export default function usePostShingleLambda() {
     const loading = ref(false);
 
     const { data, error: axiosError, isFetching, execute } = useAxios(lambdaUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } }, axios, { immediate: false });
-    const run = async (body, label) => {
+    const run = async (body) => {
         loading.value = true;
         errors.value = null;
         try {
             const res = await execute({ data: body });
             return res?.data ?? data.value;
         } catch (e) {
-            console.error(`Lambda ${label} failed:`, {
+            console.error(`Lambda failed:`, {
                 message: e?.message,
                 code: e?.code,
                 status: e?.response?.status,
@@ -30,9 +30,9 @@ export default function usePostShingleLambda() {
         }
     };
 
-    const dripEdge = (v) => run(v, 'dripEdge');
-    const roofMeasurements = (v) => run(v, 'roofMeasurements');
+    // const dripEdge = (v) => run(v, 'dripEdge');
+    // const roofMeasurements = (v) => run(v, 'roofMeasurements');
     const postShingle = (v) => run(v, 'postShingle');
 
-    return { data, errors, isFetching, loading, dripEdge, roofMeasurements, postShingle };
+    return { data, errors, isFetching, loading, postShingle };
 }

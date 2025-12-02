@@ -135,7 +135,7 @@ const license = ref(permitStore.$state.permitapp[0]?.formdt?.license || '');
 const tileNoaInfo = ref(pdStore.$state.tileInputvalues[0]?.tileValues[0]);
 const mechtileNoaInfo = ref(mechStore.tilemech.value[0]);
 
-const burInfo = ref(burpdfStore.$state.burpdfinput[0]?.burpdfData);
+const burInfo = ref(burpdfStore.$state.burpdfinput[1]?.burpdfData);
 const isPaddySingle = ref(false);
 // const burInfoData = ref(burInfo.value?.burpdfData || '');
 const singlePaddyData = ref(tileNoaInfo.value?.singlepaddyData || '');
@@ -166,7 +166,7 @@ const callState = tryOnMounted(() => {
                 displayInfo.item = roofType.value[i].item;
             } else if (roofType.value[i].item === 'Low Slope') {
                 isRoofLowslopeValid.value = true;
-                console.log(isRoofLowslopeValid);
+                console.log(isRoofLowslopeValid, burInfo);
             } else if (roofType.value[i].item === 'Adhesive Set Tile') {
                 console.log(roofType.value[i].item);
                 isRoofTileADValid.value = true;

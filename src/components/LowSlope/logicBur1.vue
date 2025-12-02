@@ -1,23 +1,24 @@
 <script setup>
 import DripEdLowslope from '@/components/DripEdgeChildren/DripEdLowslope.vue';
-import usePostBurLambda from '@/composables/Postdata/usePostBurLambda';
 import { useburValidation } from '@/composables/Validation/use-burHeight';
 import { useburSlopeValidation } from '@/composables/Validation/use-burSlope';
-import { useBurStore } from '@/stores/burStore';
-import { usedripedgeStore } from '@/stores/dripEdgeStore';
+import { useBurpdfStore } from '@/stores/burpdfStore';
+// import { usePermitappStore } from '@/stores/permitapp';
+
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 
-const { postBur } = usePostBurLambda();
-const dripStore = usedripedgeStore();
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
+// const permitStore = usePermitappStore();
+// const muniNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc || '');
+
 let isvalueValid = ref(false);
 const factor = ref(0.6);
 const dt = ref('');
-const lowslopeStore = useBurStore();
 const isHeightValid = ref(false);
+const burcardStore = useBurpdfStore();
 
 const isSlopeDisabled = ref(true); // start disabled
 const isHeightDisabled = ref(true);
@@ -97,8 +98,6 @@ watch(isHeightDisabled, (newVal) => {
         });
     }
 });
-// (optional) show the overall “check” only when both are valid
-// const bothValid = computed(() => isSlopeValid.value && isHeightValid.value);
 
 onMounted(() => {
     roofList.value.forEach((item, index) => {
@@ -125,10 +124,10 @@ watch(
     () => dims.slope,
     (s) => {
         validateburSlope(s);
-        // isDisabled.value = Number(s) >= 2 ? false : true;
         addCheckmarks();
     }
 );
+
 watch(
     () => dims.height,
     (h) => {
@@ -144,9 +143,26 @@ watch(
 function addCheckmarks() {
     isvalueValid.value = isHeightValid.value;
 }
-function burStaging() {
-    console.log(dims);
-    postBur(dims);
+
+const commonBur = () => ({
+    decktype: dims.deckType ?? '',
+    area: dims.area ?? '',
+    height: dims.height ?? '',
+    slope: dims.slope ?? '',
+    perimeter: dims.per ?? '',
+    hittype: 'lowslope'
+
+    // give this a real boolean, not the Boolean constructor
+});
+
+async function burStaging() {
+    console.log(commonBur());
+    const body = {
+        ...commonBur()
+    };
+
+    burcardStore.addpdfData(body);
+    console.log(burcardStore);
 }
 </script>
 <template>

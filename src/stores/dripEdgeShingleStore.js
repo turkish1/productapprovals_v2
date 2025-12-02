@@ -22,7 +22,7 @@ export const usedripedgeshingleStore = defineStore('dripShinMaterial', {
         },
 
         addUseritems(dripSelection) {
-            console.log(this.inputselectedUserDripEdge);
+            // console.log(this.inputselectedUserDripEdge);
             this.inputselectedUserDripEdge.push({ dripSelection, completed: false });
         },
         insertShinDripAtIndex(index, dripShinMaterial) {

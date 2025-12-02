@@ -12,19 +12,19 @@ export default function usePostMechanicalLambda() {
     const run = async (body, label) => {
         loading.value = true;
         errors.value = null;
-        console.log(body, label);
+        // console.log(body, label);
         try {
             const res = await execute({ data: body });
-            console.log(res?.data, data?.value);
+            // console.log(res?.data, data?.value);
             return res?.data ?? data.value;
         } catch (e) {
             console.error(`Lambda ${label} failed:`, {
                 message: e?.message,
                 code: e?.code,
                 status: e?.response?.status,
-                data: e?.response?.data,
-                ...existing,
-                body: body
+                data: e?.response?.data
+                // ...existing,
+                // body: body
             });
             errors.value = e?.message || 'Request failed';
             throw e;

@@ -27,7 +27,7 @@ import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
 
-const { addPaddyCatval, paddycatInput } = usePaddyoptionStore();
+const { addPaddyCatval } = usePaddyoptionStore();
 const paddyStore = usePaddyStore();
 const { inputdata } = storeToRefs(paddyStore);
 
@@ -827,7 +827,7 @@ function computeMR2() {
 //
 // Flat material options for PrimeVue (NEVER return an object/array-of-arrays)
 
-const simpleNOA = ref(paddyStore.$state?.inputdata);
+// const simpleNOA = ref(paddyStore.$state?.inputdata);
 
 async function refreshExposureFromSelection() {
     // Your existing logic to populate λ/Mg/MF from the current selection
@@ -1246,7 +1246,7 @@ function getMaterialKey(val) {
 }
 function updatedMF1(val = selectedMaterial.value) {
     const key = getMaterialKey(val);
-    console.log(key, val, selectedMaterial.value);
+    // console.log(key, val, selectedMaterial.value);
     if (!key) return;
 
     const mfRaw = selectionMap.value?.[key];
@@ -1299,7 +1299,7 @@ watch(
 watch(
     () => selectedMaterial.value,
     (val) => {
-        console.log(val);
+        // console.log(val);
         updatedMF1(val);
     }
 );
@@ -1326,8 +1326,8 @@ watch(safeOptions, (opts) => {
     // if current selection not in the new list, clear it
     if (!opts.some((o) => o?.value === selections.value)) {
         console.log(opts.some((o) => o?.value === selectedMaterial.value));
-        console.log(selectedMaterial.value);
-        console.log(opts.some((o) => o?.value));
+        // console.log(selectedMaterial.value);
+        // console.log(opts.some((o) => o?.value));
 
         selections.value = null;
     }
@@ -1970,10 +1970,6 @@ watch(selectedsystemf, () => {
     <Divider />
     <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
         <ModalWindow :key="modalKey" :initialData="currentTile" @closePopup="modalIsActive = false" v-if="modalIsActive">
-            <!-- () => {
-                    refreshExposureFromSelection();
-                    onExposureChange();  sendDataMongo();
-                } -->
             <div v-show="isTileData" class="grid grid-cols-1 md:grid-cols-1 gap-2" style="margin-left: 10px">
                 <div class="min-w-[350px]flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                     <label style="color: #122620" for="manufacturer">Tile Applicant</label>

@@ -21,7 +21,7 @@ import useInputwFetch from '@/composables/fetchTech/use-InputwFetch';
 import useInputs from '@/composables/use-Inputs';
 import { useShingleStore } from '@/stores/shingleStore';
 import { storeToRefs } from 'pinia';
-import { computed, defineEmits, defineProps, onMounted, reactive, ref } from 'vue';
+import { computed, defineEmits, defineProps, onMounted, reactive, ref, watch } from 'vue';
 
 // Receive data from the parent component via props
 const props = defineProps({
@@ -56,25 +56,31 @@ const shingleIterate = ref([]);
 onMounted(() => {
     callFunction();
 
-    suggestions.value = noaStore.$state.noashingle;
-    // console.log(suggestions.value);
+    // Use nextTick or watch if noaStore is populated asynchronously
+    suggestions.value = noaStore.$state.noashingle[0]?.shingleNoaNumber?.noa || [];
 });
+
+watch(
+    () => noaStore.$state.noashingle[0]?.shingleNoaNumber?.noa,
+    (newVal) => {
+        suggestions.value = newVal || [];
+        // console.log(newVal, suggestions.value);
+    },
+    { immediate: true }
+);
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
-
-    shingleData.value = suggestions.value[0]?.shingleNoaNumber?.noa;
-    console.log(shingleData.value.body);
-    shingleIterate.value = shingleData.value.body;
-    // console.log('line 69', shingleIterate.value);
+    // noaStore.$state.noashingle[0]?.shingleNoaNumber?.noa,
+    shingleData.value = suggestions.value;
+    shingleIterate.value = shingleData.value;
     const stringyfied1 = JSON.stringify(shingleIterate.value).split('[').join();
 
     const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
     const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
-    console.log(newArray.value);
 
     return newArray.value.filter((item) => item.toString().includes(query.value));
-
+    // return shingleIterate.value;
     // return suggestions.value[0].shingleNoaNumber.noa.filter((item) => item.toString().includes(query.value));
 });
 
@@ -90,7 +96,6 @@ function grabInput() {
 function checkInput() {
     if (datamounted.value.length !== null) {
         datamounted.value.forEach((item, index) => {
-            // console.log(item.shingleData, index);
             shingles.manufacturer = item.shingleData.applicant;
             shingles.material = item.shingleData.material;
             shingles.description = item.shingleData.description;

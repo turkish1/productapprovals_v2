@@ -13,8 +13,9 @@ export default function useBurDetails() {
 
     const errors = ref('');
 
-    function calldetailsdoc(objkey) {
-        des_key.value = objkey;
+    function calldetailsdoc(objkeys) {
+        des_key.value = objkeys;
+        console.log(objkeys);
 
         fetchData();
     }
@@ -25,9 +26,9 @@ export default function useBurDetails() {
 
     const fetchData = async () => {
         try {
-            console.log(muniNumber.value);
-            const response = await execute({ params: { processnumber: muniNumber.value, destination_objkey: des_key.value } }).then((response) => {
-                console.log(data);
+            // console.log(muniNumber.value);
+            const response = await execute({ params: { processnumber: muniNumber.value, objkey: des_key.value } }).then((response) => {
+                console.log(data, response);
                 results.status = response.response;
             });
 

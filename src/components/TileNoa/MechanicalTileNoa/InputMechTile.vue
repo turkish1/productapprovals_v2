@@ -12,8 +12,10 @@ import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useExposureD } from '@/stores/exposuredStore';
 import { useRoofListStore } from '@/stores/roofList';
+import { usemechStore } from '@/stores/tilemechanicalNumber';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
+
 import { invoke, until, useToNumber } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
@@ -30,10 +32,23 @@ const suggestions = ref([]);
 // State to control suggestions visibility
 const showSuggestions = ref(false);
 // This calls the NOAs
-const { callNumber, mechanicalStore } = useMechNumber();
+const { callNumber } = useMechNumber();
 const { postMech } = usePostMechanicalToLambda();
 const selectedDripstore = usedripMStore();
-const { takeMechInput, mechanicalData, mechStore } = useMech();
+const { takeMechInput, mechStore } = useMech();
+const mechanicalStore = usemechStore();
+const srcRefreshKey = ref(0);
+
+const { tileMechInput } = storeToRefs(mechanicalStore);
+
+const lastNonEmpty = (arrRef, key) => {
+    const a = Array.isArray(arrRef.value) ? arrRef.value : [];
+    for (let i = a.length - 1; i >= 0; i--) {
+        const x = a[i]?.[key];
+        if (x && Object.keys(x).length) return x;
+    }
+    return null;
+};
 const { zones } = useGlobalState();
 const tilenoas = reactive({
     mechIdentifier: 'mechanicaltile',
@@ -186,11 +201,22 @@ const zonethree = reactive({
     mf3: ''
 });
 
+const mechTileNoas = computed(() => lastNonEmpty(tileMechInput, 'tileMechNumber'));
+// Which dataset to use, preferring selected option if valid
+
 onMounted(() => {
     callNumber();
-    mechanical.value = mechanicalStore.$state;
-    // console.log(mechanical.value);
+    // mechanical.value = mechanicalStore.$state;
+    console.log(mechTileNoas.value?.noa);
 });
+const refreshSrc = () => {
+    srcRefreshKey.value++;
+};
+// preload both lists once
+onMounted(async () => {
+    await Promise.allSettled([callNumber()]);
+});
+watch([tileMechInput], () => refreshSrc(), { deep: true });
 
 onMounted(() => {
     roofList.value.forEach((item, index) => {
@@ -632,16 +658,29 @@ async function ensureExposureAndZonesReady() {
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
     if (!query.value) return [];
-    // paddyInputSelected?.pdNumbers?.noa ?? []
-    // console.log(mechanical.value.tileMechInput[0]?.tileMechNumber.noa);
-    newArray.value = mechanical.value.tileMechInput[0]?.tileMechNumber?.noa;
-    iterateItem.value = newArray.value.body ?? [];
-    const stringyfied1 = JSON.stringify(iterateItem.value).split('[').join();
+    newArray.value = mechTileNoas.value?.noa;
+    console.log(newArray.value);
+    iterateItem.value = newArray.value ?? [];
+    console.log(iterateItem.value);
 
-    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
-    const splitItem = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+    const stringyfield1 = JSON.stringify(iterateItem.value).split('[').join();
+    console.log(stringyfield1);
 
+    const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
+    console.log(stringyfield2);
+
+    const splitItem = computed(() => stringyfield2.split(',').map((s) => s.replace(/^\s*[-•*+▪▫►‣]\s*/g, '').trimStart()));
+    console.log(splitItem.value.filter((item) => item.toString().includes(query.value)));
+    // This might work to trim bullet
+    // if (typeof src === 'string') {
+    //     return src
+    //         .split(',')
+    //         .map((s) => s.replace(/[[\]"']/g, '').trim())
+    //         .filter(Boolean);
+    // }
     return splitItem.value.filter((item) => item.toString().includes(query.value));
+    // splitItem.value.map((item) => String(item).trim()).filter((item) => item.toLowerCase().includes(query.value));
+    // return splitItem.value.filter((item) => item.toString().includes(query.value));
 });
 
 const Anchor_Base = reactive(Object.fromEntries(Array.from({ length: 13 }, (_, i) => [`Anchor_Base_Sheet_E${i + 1}`, ''])));

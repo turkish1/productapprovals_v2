@@ -1,20 +1,14 @@
 <script setup>
-// import useShingleDrip from '@/composables/DripEdge/use-ShingleDrip';
 import useDripedge from '@/composables/DripEdge/useDripedge';
-// import usePostShingleLambda from '@/composables/Postdata/usePostShingleLambda';
 import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { invoke, tryOnMounted, until } from '@vueuse/core';
 import { defineEmits, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 
 const { selectDripEdge, selectDripEdgeSize, type, sizeTypeMetal } = useDripedge();
-// const { dripEdge } = usePostShingleLambda();
 const store = useRoofListStore();
 const roofType = ref(store.$state.roofList);
 const types = ref();
-
-// const { typeSize, dtype, holdSized } = useShingleDrip();
-// Reactive value bound to the select dropdown
 
 // Ref for the <select> element
 const selectSizeRef = ref(null);
@@ -70,12 +64,12 @@ function checkRoof() {
     }
     shingle();
 }
-function checkValue(value) {
+function checkValue() {
     types.value = type.value;
 }
 
 function getdripSize() {
-    console.log(selectDripEdge.value);
+    // console.log(selectDripEdge.value);
     if (selectDripEdge.value) {
         if (selectDripEdge.value === 'Galvanized Steel Metal ¹') {
             typeSizes.value = sizeTypeMetal.galvanized;

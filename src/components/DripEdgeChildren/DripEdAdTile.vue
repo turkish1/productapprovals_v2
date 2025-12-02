@@ -107,34 +107,12 @@ function tile() {
 }
 
 const storeDripEdgeSize = () => {
-    // console.log(dripStagedata);
     tileStore.resetState();
 
     dripTileData.DripEdgeSize = selectDripEdgeSize.value;
-    // console.log(dripStagedata);
     tileStore.addUseritems(dripStagedata);
-
-    // tileStore.addUseritems(4, dripTileData.DripEdgeMaterial);
-    // tileStore.insertDripAtIndex(6, dripTileData.DripEdgeSize);
 };
-// const stageDripedge = async () => {
-//     console.log(dripStagedata);
 
-//     try {
-//         if (isdripMaterialValid.value === true && isdripsizeValid.value == true) {
-//             console.log(dripStagedata);
-//             return await dripEdge(dripStagedata);
-//         } else {
-//             console.log('The if statemeant failed');
-
-//             return [];
-//         }
-//     } catch (err) {
-//         console.error('Lambda post failed:', err);
-//     } finally {
-//         loading.value = false;
-//     }
-// };
 watch(types, typeSizes, type, checkRoof, () => {});
 watchEffect(checkValue, getdripSize, () => {});
 invoke(async () => {

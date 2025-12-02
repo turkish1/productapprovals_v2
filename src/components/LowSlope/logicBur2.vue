@@ -4,15 +4,18 @@ import useS3download from '@/composables/fetchTech/use-S3download';
 import useBurDetails from '@/composables/fetchTech/use-burdetailsdocs';
 import useburAxios from '@/composables/use-burSystems';
 import { useBurpdfStore } from '@/stores/burpdfStore';
+import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, toRaw, watch } from 'vue';
 
 // Composable & store setup
+
 const permitStore = usePermitappStore();
 const { downloadFile, fileUrl } = useS3download();
 const { callFunction, systemHW, systemHM, systemSA, Perimeters } = useburAxios();
 const { postBur } = usePostBurLambda();
 const { calldetailsdoc } = useBurDetails();
+const dripStore = usedripedgeStore();
 
 // References & state
 const fileName = ref('downloaded-file.pdf');
@@ -25,14 +28,20 @@ const selectedPrimeone = ref(null);
 const selectedPrimethree = ref(null);
 const burcardStore = useBurpdfStore();
 
+console.log('STORE FULL STATE:', toRaw(dripStore.$state));
+console.log('inputselectedDripEdge array:', dripStore.inputselectedDripEdge);
+console.log('First item:', dripStore.inputselectedDripEdge?.[0]);
+console.log('dripSelection object:', dripStore.inputselectedDripEdge?.[0]?.dripSelection);
+
 const mat = ref([]);
 const syst = ref([]);
 const primeone = ref([]);
 const primethree = ref([]);
-
 const copiedString = ref('');
+const dripMaterialComp = computed(() => dripStore.inputselectedDripEdge[0]?.dripEdgeMaterial ?? dripStore.inputselectedDripEdge[0]?.dripSelection?.dripEdgeMaterial ?? '');
+const dripSizeComp = computed(() => dripStore.inputselectedDripEdge[0]?.dripEdgeSize ?? dripStore.inputselectedDripEdge[0]?.dripSelection?.dripEdgeSize ?? '');
+
 onMounted(() => {
-    console.log(permitStore);
     loadMaterials();
 });
 
@@ -43,21 +52,26 @@ const selectedBurItems = reactive({
     p3: ''
 });
 
-const burPrep = reactive({
-    p1: '',
-    p3: '',
-    bursystem: '',
-    burmaterial: '',
-    burIdentifier: 'lowslope'
-});
-
 // Helper functions
 const bMaters = ref(['', 'Hot-Mopped Applied Systems', 'SBS/APP Modified Heat-Weld Bitumen Membrane', 'SBS Modified Bitumen Self-Adhered Membrane']);
 /** Load materials from the composable when the select is clicked */
 function loadMaterials() {
     mat.value = bMaters.value ?? [];
 }
-
+const dripSel = reactive({
+    dripMaterial: '',
+    dripSize: ''
+});
+watch(
+    () => dripStore.inputselectedDripEdge,
+    (newVal) => {
+        // console.log('Drip edge selection changed:', newVal);
+        dripSel.dripMaterial = newVal[0]?.dripSelection.DripEdgeMaterial;
+        dripSel.dripSize = newVal[0]?.dripSelection?.DripEdgeSize;
+    },
+    { deep: true }
+);
+//
 // At component level (outside setup)
 const systemCache = reactive({
     'Hot-Mopped Applied Systems': null,
@@ -65,25 +79,6 @@ const systemCache = reactive({
     'SBS Modified Bitumen Self-Adhered Membrane': null
 });
 
-// async function updateSystemOptions(material) {
-//     if (!material) return;
-
-//     await callFunction(material); // ✅ wait for fetchData() to complete
-
-//     switch (material) {
-//         case 'Hot-Mopped Applied Systems':
-//             syst.value = systemHM.value;
-//             break;
-//         case 'SBS/APP Modified Heat-Weld Bitumen Membrane':
-//             syst.value = systemHW.value;
-//             break;
-//         case 'SBS Modified Bitumen Self-Adhered Membrane':
-//             syst.value = systemSA.value;
-//             break;
-//         default:
-//             syst.value = [];
-//     }
-// }
 async function updateSystemOptions(material) {
     if (!material) {
         syst.value = [];
@@ -179,8 +174,9 @@ function onSystemChange({ value }) {
     }
     const firstPart = extractFirstToken(value);
     copiedString.value = firstPart;
+    console.log(firstPart);
     calldetailsdoc(firstPart);
-    handleDownload();
+    // handleDownload();
 }
 
 function onPrimeOneChange({ value }) {
@@ -222,14 +218,35 @@ async function handleDownload() {
     }
 }
 
-/** Trigger the Lambda call to store selected BUR data */
+const commonBur = () => ({
+    p1: selectedBurItems.p1,
+    p3: selectedBurItems.p3,
+    bursystem: selectedBurItems.burSystem,
+    burmaterial: selectedBurItems.burMaterial,
+    hittype: 'lowslope'
+
+    // give this a real boolean, not the Boolean constructor
+});
+
 async function burStaging() {
-    burPrep.p1 = selectedBurItems.p1;
-    burPrep.p3 = selectedBurItems.p3;
-    burPrep.bursystem = selectedBurItems.burSystem;
-    burPrep.burmaterial = selectedBurItems.burMaterial;
-    burcardStore.addpdfData(burPrep);
-    await postBur(burPrep);
+    console.log(burcardStore);
+    const burInput = burcardStore.burpdfinput[1]?.burpdfData;
+    const body = {
+        ...commonBur(),
+        area: burInput?.area,
+
+        decktype: burInput?.decktype,
+        slope: burInput?.slope,
+        dripEdgeMaterial: dripSel.dripMaterial,
+        dripEdgeSize: dripSel.dripSize,
+        height: burInput?.height,
+        permiter: burInput?.perimeter,
+
+        hittype: burcardStore.$state.burpdfinput[0]?.burpdfData?.hittype
+    };
+    // add body to a store to filee the poker cards in summary page
+    console.log(body);
+    await postBur(body);
 }
 </script>
 

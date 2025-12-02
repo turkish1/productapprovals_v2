@@ -4,6 +4,8 @@ export const useBurpdfStore = defineStore('burpdfinput', {
     //state
     state: () => ({
         burpdfinput: [],
+        inputselection: [],
+        burSelection: [],
         id: 0
     }),
 
@@ -11,6 +13,16 @@ export const useBurpdfStore = defineStore('burpdfinput', {
     actions: {
         addpdfData(burpdfData) {
             this.burpdfinput.push({ burpdfData, completed: false });
+        },
+
+        addUseritems(lowSelection) {
+            this.burSelection.push({ lowSelection, completed: false });
+        },
+        resetState() {
+            console.log('reset was called: ', this.inputselection);
+
+            this.inputselection = [];
+            console.log('reset was called: ', this.inputselection);
         }
     },
 

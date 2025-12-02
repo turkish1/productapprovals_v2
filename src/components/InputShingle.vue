@@ -154,11 +154,11 @@ const isAstm = computed(() => {
 });
 
 // one close handler: only posts shingleMetrics for ASTM flow
-function handleShingleModalClose() {
-    console.log(isAstm.value);
-    modalIsActive.value = false;
-    if (isAstm.value) shingleMetrics();
-}
+// function handleShingleModalClose() {
+//     console.log(isAstm.value);
+//     modalIsActive.value = false;
+//     if (isAstm.value) shingleMetrics();
+// }
 
 const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 // Store the incoming SA payload here (shape matches your example)
@@ -248,6 +248,7 @@ const shingleForm = reactive({
     manufacturer: '',
     material: '',
     description: '',
+    prescriptiveSelection: '',
     hittype: ''
 });
 const postMetrics = reactive({
@@ -260,8 +261,7 @@ const postMetrics = reactive({
     noa: '',
     material: '',
     description: '',
-    shingleIdentifier: 'shingle',
-    hittype: ''
+    hittype: 'astm'
 });
 
 const udlForm = reactive({
@@ -322,7 +322,7 @@ function getIndexs() {
         shingleForm.hittype = hitType.value;
         udlForm.hittype = hitType.value;
         saForm.hittype = hitType.value;
-        if (shingleForm.hittype) postMetrics.prescriptiveSelection = hit.match[0];
+        if (shingleForm.hittype) shingleForm.prescriptiveSelection = hit.match[0];
         if (udlForm.hittype) udlForm.prescriptiveSelection = hit.match[0];
         if (saForm.hittype) saForm.prescriptiveSelection = hit.match[0];
     } else {
@@ -355,8 +355,6 @@ watch(
     },
     { immediate: true }
 );
-
-// const showSaDescription = computed(() => !!selectedsystemf.value);
 
 const modalKey = ref(0);
 
@@ -441,9 +439,7 @@ const shingleUdlStaging = async () => {
         udlmanufacturer: udlForm.udlmanufacturer || '',
         udlmaterial: udlForm.udlmaterial || '',
         udldescription: udlForm.udldescription || '',
-        hittype: 'poly',
-        udlIdentifier: 'udl',
-        shingleIdentifier: 'shingle'
+        hittype: 'poly'
     };
     await postShingle(body); // one call is enough
 };
@@ -458,9 +454,7 @@ const shingleSAStaging = async () => {
         sasystem: key || '',
         samaterial: saForm.samaterial || '',
         sadescription: (key && (sysToDesc.value[key] || '')) || saForm.sadescription || '',
-        hittype: 'sa',
-        saIdentifier: 'sa',
-        shingleIdentifier: 'shingle'
+        hittype: 'sa'
     };
     await postShingle(body);
 };
@@ -529,12 +523,12 @@ function addCheckmarks() {
     if (isHeightValid.value || isDisabledslope.value) {
         isvalueValid.value = true;
         console.log('Entered checkmarks');
-        console.log(shingleDripstore);
+        // console.log(shingleDripstore);
 
         shingles.dripEdgeMaterial = shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeMaterial;
         shingles.dripEdgeSize = shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeSize;
 
-        console.log(shingles.dripEdgeMaterial, shingles.dripEdgeSize);
+        // console.log(shingles.dripEdgeMaterial, shingles.dripEdgeSize);
     } else {
         isvalueValid.value = false;
     }
@@ -542,16 +536,48 @@ function addCheckmarks() {
 
 // helpers
 
-const shingleMetrics = async () => {
-    const body = {
-        ...commonShingle(),
+const postingShingle = ref(false);
 
-        shingleIdentifier: shingles.shingleIdentifier,
-        hittype: shingleForm.hittype
-    };
-    console.log(body);
-    postShingle(body);
+function handleShingleModalClose() {
+    if (postingShingle.value) return; // prevent overlap
+    postingShingle.value = true;
+    try {
+        modalIsActive.value = false;
+        console.log(isAstm.value);
+        // if (isAstm.value)
+        shingleStaging();
+    } finally {
+        postingShingle.value = false;
+    }
+}
+
+const shingleStaging = async () => {
+    try {
+        const body = {
+            ...commonShingle(),
+            hittype: shingleForm.hittype
+        };
+        await postShingle(body);
+        // Success: maybe show a toast or update UI
+        console.log('Posted successfully');
+    } catch (error) {
+        // This prevents "Uncaught (in promise)"!
+        console.error('Post failed:', error);
+
+        // Optional: show user-friendly message
+        if (error.response) {
+            // Server responded with error status (4xx, 5xx)
+            alert(`Error ${error.response.status}: ${error.response.data.message || 'Request failed'}`);
+        } else if (error.request) {
+            // No response received (network issue)
+            alert('Network error: Please check your connection');
+        } else {
+            // Something else
+            alert('An unexpected error occurred');
+        }
+    }
 };
+
 const slopeBand = computed(() => {
     const n = Number(slope.value || 0);
     if (n >= 2 && n <= 4) return 'low';
@@ -698,7 +724,7 @@ watch(
     </ModalWindow>
     <!--  grid grid-cols-1 md:grid-cols-1 gap-2-->
     <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
-        <ModalWindow :key="modalKey" @closePopup="modalIsActive = false" v-if="modalIsActive">
+        <ModalWindow :key="modalKey" @closePopup="handleShingleModalClose" v-if="modalIsActive">
             <div class="grid grid-cols-2 md:grid-cols-2 gap-2" style="margin-left: 10px">
                 <div class="min-w-[350px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                     <label for="manufacturer">Applicant</label>

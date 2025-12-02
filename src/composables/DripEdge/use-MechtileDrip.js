@@ -6,9 +6,7 @@ const url = 'https://n5eq37lnykjzbxixgmuzbuxmiy0mwuef.lambda-url.us-east-1.on.aw
 
 export default function useMechtileDrip() {
     const hold = ref([]);
-    // const holdSized = ref([]);
     const results = ref([]);
-    // const typeSize = ref([]);
     const loading = ref(false);
     const error = ref(null);
     const dtype = ref([]);
