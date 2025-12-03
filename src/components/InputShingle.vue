@@ -140,6 +140,7 @@ watch(selectedsystemf, (k) => {
     saForm.sasystem = key || '';
     saForm.sadescription = key ? sysToDesc.value[key] || '' : '';
 });
+const heightModel = ref('');
 
 let slopetypemore = ref(slopeCondition.slope_more_4);
 let slopetypeless = ref(slopeCondition.slope_less_4);
@@ -245,24 +246,28 @@ onMounted(() => {
 });
 
 const shingleForm = reactive({
-    manufacturer: '',
-    material: '',
-    description: '',
-    prescriptiveSelection: '',
-    hittype: ''
-});
-const postMetrics = reactive({
     slope: '',
     height: '',
     area: '',
     decktype: '',
-    prescriptiveSelection: '',
     manufacturer: '',
-    noa: '',
     material: '',
     description: '',
+    prescriptiveSelection: '',
     hittype: 'astm'
 });
+// const postMetrics = reactive({
+//     slope: '',
+//     height: '',
+//     area: '',
+//     decktype: '',
+//     prescriptiveSelection: '',
+//     manufacturer: '',
+//     noa: '',
+//     material: '',
+//     description: '',
+//     hittype: 'astm'
+// });
 
 const udlForm = reactive({
     udlnoa: '',
@@ -424,12 +429,14 @@ const commonShingle = () => ({
     material: shingleForm.material || '',
     description: shingleForm.description || '',
     decktype: dims.decktype || '',
-    dripEdgeMaterial: shingles.dripEdgeMaterial,
-    dripEdgeSize: shingles.dripEdgeSize,
+
+    dripEdgeMaterial: shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeMaterial,
+    dripEdgeSize: shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeSize,
+
     area: toNum(dims.area),
     height: toNum(dims.height),
     slope: toNum(slope.value),
-    prescriptiveSelection: udlForm.prescriptiveSelection || saForm.prescriptiveSelection || postMetrics.prescriptiveSelection || ''
+    prescriptiveSelection: udlForm.prescriptiveSelection || saForm.prescriptiveSelection || shingleForm.prescriptiveSelection || ''
 });
 
 const shingleUdlStaging = async () => {
@@ -492,43 +499,98 @@ watch(isHeightDisabled, (newVal) => {
         });
     }
 });
+// function validateRoofSlope() {
+//     const n = Number(dims.slope);
+//     const ok = Number.isFinite(n) && n >= 2 && n <= 12;
+//     isSlopeValid.value = ok;
+
+//     if (ok) {
+//         // clear height and enable it
+//         dims.height = '';
+//         heightModel.value = '';
+//         isHeightDisabled.value = false;
+//     } else {
+//         // keep height locked if slope is not valid
+//         isHeightDisabled.value = true;
+//         isHeightValid.value = false;
+//     }
+// }
+const isSlopeValid = ref(false);
 
 function validateRoofSlope() {
     validateInput();
-    if (dims.slope >= 2) {
-        isDisabled.value = false;
-        addCheckmarks();
-        console.log('entered slope');
+    const n = Number(dims.slope);
+    const ok = Number.isFinite(n) && n >= 2 && n <= 12;
+    isSlopeValid.value = ok;
+
+    if (ok) {
+        // clear height and enable it
+        dims.height = '';
+        heightModel.value = '';
+        isHeightDisabled.value = false;
     } else {
-        isDisabled.value = false;
+        // keep height locked if slope is not valid
+        isHeightDisabled.value = true;
+        isHeightValid.value = false;
     }
-    addCheckmarks();
+    // if (dims.slope >= 2) {
+    //     isDisabled.value = false;
+    //     // addCheckmarks();
+    //     console.log('entered slope');
+    // } else {
+    //     isDisabled.value = false;
+    // }
+    // addCheckmarks();
 }
 const validateInput = () => {
     validateShingleSlope(slope.value);
 };
 
-const validateshHeightInput = () => {
-    validateShingleHeight(dims.height);
-    isHeightValid.value = true;
-    addCheckmarks();
-};
+// const validateshHeightInput = () => {
+//     validateShingleHeight(dims.height);
+//     isHeightValid.value = true;
+//     addCheckmarks();
+// };
 
+// function validateHeight() {
+//     validateshHeightInput();
+//     addCheckmarks();
+// }
 function validateHeight() {
-    validateshHeightInput();
-    addCheckmarks();
+    const raw = heightModel.value !== '' ? heightModel.value : dims.height;
+    const n = Number(raw);
+    // dims.per = (n * factor.value).toFixed(2);
+    // ✅ keep dims.height in sync so the exposure watcher can react
+    dims.height = n;
+    const ok = Number.isFinite(n) && n >= 10 && n <= 40;
+    isHeightValid.value = ok;
 }
-
+watch(
+    () => dims.slope,
+    (s) => {
+        validateShingleSlope(s);
+        isDisabled.value = Number(s) >= 2 ? false : true;
+        addCheckmarks();
+    }
+);
+watch(
+    () => dims.height,
+    (h) => {
+        validateShingleHeight(h);
+        isHeightValid.value = true;
+        addCheckmarks();
+    }
+);
 function addCheckmarks() {
     if (isHeightValid.value || isDisabledslope.value) {
         isvalueValid.value = true;
         console.log('Entered checkmarks');
-        // console.log(shingleDripstore);
+        console.log(shingleDripstore);
 
         shingles.dripEdgeMaterial = shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeMaterial;
         shingles.dripEdgeSize = shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeSize;
 
-        // console.log(shingles.dripEdgeMaterial, shingles.dripEdgeSize);
+        console.log(shingles.dripEdgeMaterial, shingles.dripEdgeSize);
     } else {
         isvalueValid.value = false;
     }
