@@ -106,8 +106,6 @@ const filteredSuggestions = computed(() => {
     console.log(newArray.value);
 
     return newArray.value.filter((item) => item.toString().includes(query.value));
-    // return suggestions.value.sysEInput?.[0].sysENumber.noa.filter((item) => console.log(item))
-    // filter((item) => item.toString().includes(query.value));
 });
 
 function grabInputUDL() {

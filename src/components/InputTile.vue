@@ -1686,11 +1686,11 @@ async function postUDLStaging() {
         udlmaterial: udlTile.material || '',
         udldescription: udlTile.TileCap_Sheet_Description || udlTile.udldescription || '',
         systemeselection: udlTile.systemSelected || '',
-        designpressure: udlTile.designPressure || '',
+        udldesignPressure: udlTile.designPressure || '',
         anchorbasesheet: udlTile.Anchor_Base_Sheet || udlTile.Anchor_Base || '',
         hittype: 'system_e',
-        systemSelected: k,
-        tileIdentifier: tilenoas.tileIdentifier
+        udlsystemESelected: k
+        // tileIdentifier: tilenoas.tileIdentifier
     };
     await post(body);
 }

@@ -162,7 +162,7 @@ async function fetchData(url) {
         // It seems that I need to add the address in all caps for the historic function work properly.
         // Further investigation pending 08112025
         isHistoric.value = await datas.value.body.isHistoric;
-        console.log(isHistoric.value);
+        // console.log(isHistoric.value);
         checkV.value = formData.folio;
     } catch (err) {
         alert('No data found or enter correct address!');
