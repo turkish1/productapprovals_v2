@@ -87,7 +87,7 @@ const disabled = ref(false);
 // ---- lifecycle ------------------------------------------------------------
 
 onMounted(() => {
-    console.log(accountUsers.value[0]?.secondary_status);
+    // console.log(accountUsers.value[0]?.secondary_status);
     // console.log(accountUsers.value[0]?.secondary_status);
     if (disabled.value === false && accountUsers.value[0]?.secondary_status === 'I') {
         formData.license = 'Inactive';
@@ -95,7 +95,7 @@ onMounted(() => {
         alert('Your license is Inactive!');
     } else {
         formData.license = 'Active';
-        console.log(formData.license);
+        // console.log(formData.license);
         disabled.value = true;
     }
 });

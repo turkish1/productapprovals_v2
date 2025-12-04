@@ -153,7 +153,6 @@ const udlTile = reactive({
     prescriptiveSelection: '',
     syst: '',
     pressure: ''
-    // tileIdentifier: 'tile'
 });
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
@@ -162,7 +161,7 @@ const selectedMulti = ref(null);
 
 const isDisabledslope = ref(true);
 const isDisabled = ref(true);
-const mechanical = ref([]);
+// const mechanical = ref([]);
 
 const selectedsystemE = ref(null);
 const isMultiTileValid = ref(false);
@@ -1510,8 +1509,8 @@ const mechUdlStaging = async () => {
         udlDescPressure(selectedsystemE.value);
         await nextTick(); // Ensure udlTile updates flush
     }
-    console.log('Is UDL Complete', isUDLComplete.value, latestEPayload.value, loadingUDL.value);
-    console.log('udlTile after population:', toPlainUDL(udlTile));
+    // console.log('Is UDL Complete', isUDLComplete.value, latestEPayload.value, loadingUDL.value);
+    // console.log('udlTile after population:', toPlainUDL(udlTile));
 
     // Re-check completeness post-tick
     if (!isUDLComplete.value) {

@@ -15,7 +15,7 @@ export default function usecreateProcess() {
     async function procReceive(form) {
         try {
             procData = form;
-            console.log(procData);
+            // console.log(procData);
 
             if (procData.processNumber === 'meNaN') return [];
 
@@ -29,8 +29,6 @@ export default function usecreateProcess() {
             throw new Error(`CreateUser failed: ${(err.message, err.responseMessage)}`);
         }
     }
-
-    // 18061905
 
     return { error, results, procReceive, responseMessage, procData, procStore };
 }

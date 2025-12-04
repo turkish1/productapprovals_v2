@@ -240,7 +240,7 @@ async function burStaging() {
         dripEdgeMaterial: dripSel.dripMaterial,
         dripEdgeSize: dripSel.dripSize,
         height: burInput?.height,
-        permiter: burInput?.perimeter,
+        perimeter: burInput?.perimeter,
 
         hittype: burcardStore.$state.burpdfinput[0]?.burpdfData?.hittype
     };
