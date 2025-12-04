@@ -1692,6 +1692,7 @@ async function postUDLStaging() {
         udlsystemESelected: k
         // tileIdentifier: tilenoas.tileIdentifier
     };
+    console.log(body);
     await post(body);
 }
 
