@@ -15,7 +15,7 @@ export default function usePostToLambda() {
         errors.value = null;
         try {
             const res = await execute({ data: body });
-            // console.log(res?.data);
+            console.log(res?.data);
             return res?.data ?? data.value;
         } catch (e) {
             console.error(`Lambda failed:`, {

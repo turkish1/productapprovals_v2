@@ -1685,7 +1685,7 @@ async function postUDLStaging() {
         udlnoa: udlTile.noa || '',
         udlmaterial: udlTile.material || '',
         udldescription: udlTile.TileCap_Sheet_Description || udlTile.udldescription || '',
-        systemeselection: udlTile.systemSelected || '',
+        // systemeselection: udlTile.systemSelected || '',
         udldesignPressure: udlTile.designPressure || '',
         anchorbasesheet: udlTile.Anchor_Base_Sheet || udlTile.Anchor_Base || '',
         hittype: 'system_e',
