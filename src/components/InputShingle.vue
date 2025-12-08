@@ -692,7 +692,7 @@ watch(
             <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                     <AutoCompletePoly />
-                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleUDLClick" style="margin-left: 2px; margin-top: 5px" />
+                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleUDLClick" style="margin-top: 5px" />
                 </div>
             </div>
             <div v-show="isSAValid" class="w-96" style="margin-left: 2px">

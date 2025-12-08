@@ -1533,7 +1533,7 @@ const mechUdlStaging = async () => {
         udlmaterial: udlTile.material || '',
         udldescription: eInput.tileCap || udlTile.TileCap_Sheet_Description || udlTile.udldescription || '',
         udlsystemESelected: udlTile.systemSelected || eInput.systemSelected || '',
-        designPressure: udlTile.designPressure || '',
+        udldesignPressure: udlTile.designPressure || '',
         anchorbasesheet: udlTile.Anchor_Base_Sheet || eInput.Anchor_Base || udlTile.Anchor_Base || '',
         hittype: 'system_e'
     };
