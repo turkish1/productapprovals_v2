@@ -1,0 +1,1 @@
+import{D as t}from"./index-BA1eTbHH.js";const l=t("tileInputvalues",{state:()=>({tileInputvalues:[]}),actions:{addSystemvalues(e){this.tileInputvalues.push({tileValues:e,completed:!1})},reset(){this.tileInputvalues=[]}},getters:{getTilevalue:e=>e.tileInputvalues}});export{l as u};
