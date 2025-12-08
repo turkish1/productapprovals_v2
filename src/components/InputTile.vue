@@ -899,20 +899,38 @@ function applyNOA(src, { multiple }) {
 const selE = computed(() => selectedsystemE.value || '');
 
 // what to show for the current selection
-const dpForSelected = computed({
-    get: () => sysEMap.value?.[selE.value] ?? '',
-    set: (v) => (udlTile.designPressure = v) // optional: keep local edits
-});
+// const dpForSelected = computed({
+//     get: () => sysEMap.value?.[selE.value] ?? '',
+//     set: (v) => (udlTile.designPressure = v) // optional: keep local edits
+// });
 
-const anchorForSelected = computed({
-    get: () => (selE.value ? anchorSource(selE.value) : ''),
-    set: (v) => (udlTile.Anchor_Base_Sheet = v)
-});
+// const anchorForSelected = computed({
+//     get: () => (selE.value ? anchorSource(selE.value) : ''),
+//     set: (v) => (udlTile.Anchor_Base_Sheet = v)
+// });
 
-const descForSelected = computed({
-    get: () => (selE.value ? capDescSource(selE.value) : ''),
-    set: (v) => (udlTile.TileCap_Sheet_Description = v)
-});
+// const descForSelected = computed({
+//     get: () => (selE.value ? capDescSource(selE.value) : ''),
+//     set: (v) => (udlTile.TileCap_Sheet_Description = v)
+// });
+// Add this watcher instead:
+watch(
+    selectedsystemE,
+    (newKey) => {
+        if (!newKey) {
+            udlTile.Anchor_Base_Sheet = '';
+            udlTile.TileCap_Sheet_Description = '';
+            udlTile.designPressure = '';
+            return;
+        }
+
+        // Safely update all three fields when system changes
+        udlTile.designPressure = sysEMap.value[newKey] ?? '';
+        udlTile.Anchor_Base_Sheet = udlTile[`Anchor_Base_Sheet_${newKey}`] ?? '';
+        udlTile.TileCap_Sheet_Description = udlTile[`TileCap_Sheet_Description_${newKey}`] ?? '';
+    },
+    { immediate: true }
+);
 // label of material; used to lookup MF
 
 function updateTile() {
@@ -1685,12 +1703,10 @@ async function postUDLStaging() {
         udlnoa: udlTile.noa || '',
         udlmaterial: udlTile.material || '',
         udldescription: udlTile.TileCap_Sheet_Description || udlTile.udldescription || '',
-        // systemeselection: udlTile.systemSelected || '',
         udldesignPressure: udlTile.designPressure || '',
         anchorbasesheet: udlTile.Anchor_Base_Sheet || udlTile.Anchor_Base || '',
         hittype: 'system_e',
         udlsystemESelected: k
-        // tileIdentifier: tilenoas.tileIdentifier
     };
     console.log(body);
     await post(body);
@@ -2067,16 +2083,19 @@ watch(selectedsystemf, () => {
             </div>
             <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="designPressure">Design psf:</label>
-                <InputText id="designPressure" v-model="dpForSelected" :disabled="!selectedsystemE" />
+                <!-- <InputText id="designPressure" v-model="dpForSelected" :disabled="!selectedsystemE" /> -->
+                <InputText id="designPressure" v-model="udlTile.designPressure" :disabled="!selectedsystemE" />
             </div>
             <div class="grid grid-cols-1 gap-2 border-gray-700 focus:border-orange-600">
-                <div class="min-w-[880px] flex flex-col">
+                <div class="min-w-[700px] flex flex-col">
                     <label style="color: #122620" for="anchor">Anchor Base Sheet</label>
-                    <InputText id="anchor" v-model="anchorForSelected" :disabled="!selectedsystemE" />
+                    <!-- <InputText id="anchor" v-model="anchorForSelected" :disabled="!selectedsystemE" /> -->
+                    <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" :disabled="!selectedsystemE" />
                 </div>
                 <div class="min-w-[380px] flex flex-col">
                     <label style="color: #122620" for="description">(UDL) Description</label>
-                    <InputText id="description" v-model="descForSelected" :disabled="!selectedsystemE" />
+                    <!-- <InputText id="description" v-model="descForSelected" :disabled="!selectedsystemE" /> -->
+                    <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" :disabled="!selectedsystemE" />
                 </div>
             </div>
         </div>

@@ -499,22 +499,7 @@ watch(isHeightDisabled, (newVal) => {
         });
     }
 });
-// function validateRoofSlope() {
-//     const n = Number(dims.slope);
-//     const ok = Number.isFinite(n) && n >= 2 && n <= 12;
-//     isSlopeValid.value = ok;
 
-//     if (ok) {
-//         // clear height and enable it
-//         dims.height = '';
-//         heightModel.value = '';
-//         isHeightDisabled.value = false;
-//     } else {
-//         // keep height locked if slope is not valid
-//         isHeightDisabled.value = true;
-//         isHeightValid.value = false;
-//     }
-// }
 const isSlopeValid = ref(false);
 
 function validateRoofSlope() {
@@ -533,29 +518,11 @@ function validateRoofSlope() {
         isHeightDisabled.value = true;
         isHeightValid.value = false;
     }
-    // if (dims.slope >= 2) {
-    //     isDisabled.value = false;
-    //     // addCheckmarks();
-    //     console.log('entered slope');
-    // } else {
-    //     isDisabled.value = false;
-    // }
-    // addCheckmarks();
 }
 const validateInput = () => {
     validateShingleSlope(slope.value);
 };
 
-// const validateshHeightInput = () => {
-//     validateShingleHeight(dims.height);
-//     isHeightValid.value = true;
-//     addCheckmarks();
-// };
-
-// function validateHeight() {
-//     validateshHeightInput();
-//     addCheckmarks();
-// }
 function validateHeight() {
     const raw = heightModel.value !== '' ? heightModel.value : dims.height;
     const n = Number(raw);
@@ -725,7 +692,7 @@ watch(
             <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                     <AutoCompletePoly />
-                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleUDLClick" style="margin-left: 15px; margin-top: 30px" />
+                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleUDLClick" style="margin-left: 10px; margin-top: 20px" />
                 </div>
             </div>
             <div v-show="isSAValid" class="w-96" style="margin-left: 2px">

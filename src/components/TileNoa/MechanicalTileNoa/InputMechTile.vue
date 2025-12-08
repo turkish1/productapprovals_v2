@@ -70,6 +70,7 @@ const tilenoas = reactive({
     two_number_eight_screw: null,
     mechanicaltilefastener: '',
     fastenerValues: '',
+    designPressure: '',
     slope: '',
     height: '',
     dripEdgeMaterial: '',
@@ -1532,7 +1533,7 @@ const mechUdlStaging = async () => {
         udlmaterial: udlTile.material || '',
         udldescription: eInput.tileCap || udlTile.TileCap_Sheet_Description || udlTile.udldescription || '',
         systemeselection: udlTile.systemSelected || eInput.systemSelected || '',
-        designpressure: udlTile.designPressure || eInput.dP || '',
+        designpressure: udlTile.designPressure || '',
         anchorbasesheet: udlTile.Anchor_Base_Sheet || eInput.Anchor_Base || udlTile.Anchor_Base || '',
         hittype: 'system_e',
         udlIdentifier: 'udl'
