@@ -1532,11 +1532,10 @@ const mechUdlStaging = async () => {
         udlnoa: udlTile.noa || '',
         udlmaterial: udlTile.material || '',
         udldescription: eInput.tileCap || udlTile.TileCap_Sheet_Description || udlTile.udldescription || '',
-        systemeselection: udlTile.systemSelected || eInput.systemSelected || '',
-        designpressure: udlTile.designPressure || '',
+        udlsystemESelected: udlTile.systemSelected || eInput.systemSelected || '',
+        designPressure: udlTile.designPressure || '',
         anchorbasesheet: udlTile.Anchor_Base_Sheet || eInput.Anchor_Base || udlTile.Anchor_Base || '',
-        hittype: 'system_e',
-        udlIdentifier: 'udl'
+        hittype: 'system_e'
     };
     console.log('UDL Body Debug:', body);
     await postMech(body);
