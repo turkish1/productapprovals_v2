@@ -1,6 +1,6 @@
 <template>
     <div class="autocompletepoly">
-        <div class="w-64 gap-2 mt-3 space-y-2 mb-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 15px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
                 <InputText id="udlInput" inputId="ac" v-model="query" @change="grabInputUDL" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" />
