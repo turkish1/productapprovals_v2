@@ -5,8 +5,8 @@ import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 import useLast from '@/composables/lastNumber.js';
 // import { useprocStore } from '@/stores/processStore';
 import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
-import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { onBeforeRouteLeave, useRouter } from 'vue-router';
 
 import useCreateProcessNumber from '@/composables/use-createProcessnumber';
 
@@ -95,7 +95,7 @@ onMounted(() => {
         alert('Your license is Inactive!');
     } else {
         formData.license = 'Active';
-        // console.log(formData.license);
+        console.log(formData.license);
         disabled.value = true;
     }
 });
@@ -121,11 +121,14 @@ watchOnce(setProperties, cellPhn, () => {
 async function setProperties() {
     googleAccount.value = accountUsers.value[0];
     // await
+
     glAccount.name = googleAccount.value?.name || '';
     glAccount.email = googleAccount.value?.email || '';
-    // glAccount.licenseStat = googleAccount.value?.secondary_status || '';
+    // glAccount.licenseStat = formData.license || '';
+    // googleAccount.value?.secondary_status || '';
     glAccount.dba = googleAccount.value?.dba || '';
     glAccount.phone = googleAccount.value?.cphone || '';
+    console.log(glAccount.licenseStat);
 }
 invoke(async () => {
     await until(isPhoneValid).toBe(true);
@@ -179,6 +182,33 @@ async function convertFolio(folios) {
         formData.checkIfBeach = folios.value;
     }
 }
+function saveFormToStore() {
+    // Just save current state — no clearing!
+    // add later , mbId
+    store.addSystem({ ...formData }); // spread to avoid mutations later
+}
+function clearForm() {
+    Object.assign(formData, {
+        address: '',
+        muni: '',
+        license: '',
+        folio: '',
+        contractor: '',
+        permit: '',
+        processNumber: '',
+        phNumber: '',
+        emails: '',
+        muniProc: '',
+        historic: false,
+        date: new Date(),
+        checkIfBeach: 0
+    });
+
+    inputAddress.value = '';
+    muniProcess.value = '';
+    // Don't clear glAccount — that's user info!
+    // glAccount is from logged-in user → should persist
+}
 
 async function load() {
     try {
@@ -193,7 +223,7 @@ async function load() {
 
         // enrich form
         Object.assign(formData, {
-            license: glAccount.licenseStat,
+            // license: glAccount.licenseStat,
             dba: glAccount.dba,
             emails: glAccount.email,
             muniprocessnumber: muniProcess.value,
@@ -218,27 +248,72 @@ async function load() {
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
         convertFolio(checkMB.value);
-
-        store.addSystem(formData);
+        // store.addSystem(formData);
         // commented because of the onSubmit
         await procReceive(formData);
         await callPermitdata(permitAppPdf);
+        saveFormToStore(); // ← use the new clean function
     } catch (err) {
         alert(err);
     }
 }
 
+onBeforeRouteLeave((to, from, next) => {
+    saveFormToStore(); // save draft when leaving
+    next();
+});
+
+onBeforeUnmount(() => {
+    saveFormToStore();
+});
 async function onSubmit() {
-    // await procReceive(formData);
+    saveFormToStore(); // or store.addSystem(formData, mbId)
 
-    store.addSystem(formData, mbId);
+    clearForm(); // ← now it's safe to clear
+
+    // Optional: navigate
+    router.push('/roofsystem');
 }
+// async function onSubmit() {
+//     // await procReceive(formData);
 
-function addItemAndClear() {
-    // post(formData);
+//     store.addSystem(formData, mbId);
+// }
 
-    store.addSystem(formData, mbId);
-}
+// future code to  test, inserted on jan 6 as well
+// function addItemAndClear() {
+//   store.addSystem({ ...formData }, mbId); // spread to snapshot current values
+
+//   // Clear form
+//   Object.assign(formData, {
+//     address: '',
+//     muni: '',
+//     license: '',
+//     folio: '',
+//     contractor: '',
+//     permit: '',
+//     processNumber: '',
+//     phNumber: '',
+//     emails: '',
+//     muniProc: '',
+//     historic: false,
+//     date: new Date(),
+//     checkIfBeach: 0
+//   });
+
+//   // Also clear other related fields if needed
+//   inputAddress.value = '';
+//   muniProcess.value = '';
+//   glAccount.dba = '';
+//   glAccount.name = '';
+//   glAccount.phone = '';
+//   glAccount.email = '';
+// }
+
+// change on jan 6 2026
+// function addItemAndClear() {
+//     store.addSystem(formData, mbId);
+// }
 </script>
 <template>
     <!-- dialog stays unchanged -->
@@ -257,7 +332,8 @@ function addItemAndClear() {
                 <!-- license status -->
                 <div class="field">
                     <label for="license">License Status</label>
-                    <InputText id="license" v-model="formData.license" placeholder="active / inactive" />
+                    <!-- glAccount.licenseStat formData.license-->
+                    <InputText id="license" v-model="formData.license" placeholder="empty" />
                 </div>
                 <!-- municipality process # -->
                 <div class="field">
@@ -271,7 +347,6 @@ function addItemAndClear() {
                     <div class="input-row">
                         <InputText id="addr" v-model="inputAddress" placeholder="123 SW 1st St" />
                         <!-- blinking label -->
-
                         <Button type="button" icon="pi pi-search" :loading="loading" @click="load" />
                     </div>
                 </div>
@@ -308,7 +383,7 @@ function addItemAndClear() {
                 <!-- municipality -->
                 <div class="field">
                     <label for="muni">Municipality</label>
-                    <InputText id="muni" v-model="formData.muni" placeholder="Miami" />
+                    <InputText id="muni" v-model="formData.muni" placeholder="Boris County" />
                 </div>
 
                 <!-- folio -->
@@ -334,8 +409,10 @@ function addItemAndClear() {
 
                 <!-- submit -->
                 <div class="span-2 submit-row">
-                    <!-- @click="addItemAndClear"  -->
-                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" @update="addItemAndClear" />
+                    <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised />
+
+                    <!--  @update="addItemAndClear"  -->
+                    <!-- <Button label="Submit" type="submit" :loading="loading" severity="contrast" raised as="router-link" to="/roofsystem" /> -->
                 </div>
             </form>
         </div>
