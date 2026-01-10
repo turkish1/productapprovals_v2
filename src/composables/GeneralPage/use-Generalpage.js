@@ -1,21 +1,17 @@
 import usePostGeneralpageLambda from '@/composables/Postdata/usePostGeneralpageLambda';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
-// import useInsertData from '@/composables/Postdata/useInsertSystems';
 
 export default function useGeneral() {
     const roofStore = useRoofListStore();
     const { roofList } = storeToRefs(roofStore);
-    // const permitStore = usePermitappStore();
+    const permitStore = usePermitappStore();
 
-    // const { createSystemPost } = useInsertData();
+    const processnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.processNumber);
 
-    // const createDocument = reactive({
-    //     roofSystem: [],
-    //     muniNumber: ''
-    // });
     const loading = ref(false);
 
     const generalStore = useGeneralpdfStore();
@@ -46,17 +42,23 @@ export default function useGeneral() {
         total: 0
     });
 
+    //  mtileChk: false,
+    //         adtileChk: false,
+    //         shingleChk: false,
+    //         slopeChk: false,
+    //         metalChk: false,
     const dataGeneral = reactive({
         steepData: '',
         slopeData: '',
         totalData: '',
-        mtileChk: false,
-        adtileChk: false,
-        shingleChk: false,
-        slopeChk: false,
-        metalChk: false,
+        checkedmtile: false,
+        checkedmetal: false,
+        checkedslp: false,
+        checkedadtile: false,
+        checkedshingle: false,
         roofCheck: '',
-        area: ''
+        area: '',
+        processnumber: ''
     });
 
     function addRoof(typeOfroof) {
@@ -89,9 +91,7 @@ export default function useGeneral() {
                 }
             }
         });
-        // createDocument.muniNumber = ref(permitStore.$state.permitapp[0]?.formdt?.muniProc);
 
-        // createInsertDoc(createDocument);
         roofArea();
     }
 
@@ -104,27 +104,11 @@ export default function useGeneral() {
         dataGeneral.slopeData = totals.lowslope;
         dataGeneral.totalData = totals.total;
         dataGeneral.roofCheck = roofType.value;
-
+        dataGeneral.processnumber = processnumber.value;
         generalStore.addgeneralpdfData(dataGeneral);
         await postGeneral(dataGeneral);
         isGeneralPageValid.value = true;
     }
-    // const createInsertDoc = async (doc) => {
-    //     // payload.value = formdataSent;
-    //     loading.value = true;
-
-    //     // console.log(payload.value);
-    //     console.log(doc);
-    //     try {
-    //         await createSystemPost(doc);
-    //         // return await execute({ data: payload.value });
-    //     } catch (err) {
-    //         error.value = err.massage;
-    //         console.error('Lambda post failed:', err);
-    //     } finally {
-    //         loading.value = false;
-    //     }
-    // };
 
     return {
         addRoof,

@@ -1,12 +1,10 @@
 <script setup>
 import CadViewer from '@/components/Editor/CadViewer.vue';
-// import FileSystem from '@/components/FileSystem/FileSystem.vue';
+import usePostGeneralpageLambda from '@/composables/Postdata/usePostGeneralpageLambda';
 import { useGlobalState } from '@/stores/accountsStore';
 import { useGeneralpdfStore } from '@/stores/generalpageStore';
 import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
-// import { invoke, until } from '@vueuse/core';
-import usePostGeneralpageLambda from '@/composables/Postdata/usePostGeneralpageLambda';
 import { storeToRefs } from 'pinia';
 import Checkbox from 'primevue/checkbox';
 import Divider from 'primevue/divider';
@@ -21,10 +19,6 @@ const { roofList } = storeToRefs(store);
 const router = useRouter();
 const generalpageStore = useGeneralpdfStore();
 const { accountUsers } = useGlobalState();
-
-// const stepGeneralPagePDF = defineAsyncComponent(() => import('@/components/jsPDF/Generalpagepdf.vue'));
-
-// const availableComponentsPDF = [stepGeneralPagePDF];
 
 let total = ref('');
 let low1 = ref('');
@@ -118,12 +112,15 @@ function roofArea() {
     steep.value = st1 + st2 + st3 + st4;
 
     lowslope.value = l1;
+    // console.log(process.value);
 
     total.value = lowslope.value + steep.value;
     dataGeneral.slopeData = lowslope.value;
     dataGeneral.steepData = steep.value;
     dataGeneral.totalData = Number(total.value);
     dataGeneral.roofCheck = checked;
+    // this should post to the aws function, then we use the process number to filter
+    // dataGeneral.processnumber = process.value;
     console.log(dataGeneral);
     generalpageStore.addgeneralpdfData(dataGeneral);
     postGeneral(generalpageStore);

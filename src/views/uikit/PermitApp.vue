@@ -31,7 +31,6 @@ const permitAppPdf = reactive({
 const isHistoric = ref(false);
 
 const router = useRouter();
-// const procStore = useprocStore();
 // composables & stores
 const { procReceive } = useCreateProcessNumber();
 // getUser, addUser these two go after accountUsers but are not being used - marked for removal
@@ -88,7 +87,6 @@ const disabled = ref(false);
 
 onMounted(() => {
     // console.log(accountUsers.value[0]?.secondary_status);
-    // console.log(accountUsers.value[0]?.secondary_status);
     if (disabled.value === false && accountUsers.value[0]?.secondary_status === 'I') {
         formData.license = 'Inactive';
 
@@ -124,8 +122,6 @@ async function setProperties() {
 
     glAccount.name = googleAccount.value?.name || '';
     glAccount.email = googleAccount.value?.email || '';
-    // glAccount.licenseStat = formData.license || '';
-    // googleAccount.value?.secondary_status || '';
     glAccount.dba = googleAccount.value?.dba || '';
     glAccount.phone = googleAccount.value?.cphone || '';
     console.log(glAccount.licenseStat);
@@ -161,7 +157,6 @@ async function fetchData(url) {
         // formData.license = data.value.secondary_status;
         formData.muni = data.value.Municipality;
         formData.folio = data.value.Strap;
-        // console.log(datas.value);
         // It seems that I need to add the address in all caps for the historic function work properly.
         // Further investigation pending 08112025
         isHistoric.value = await datas.value.body.isHistoric;
@@ -195,7 +190,7 @@ function clearForm() {
         folio: '',
         contractor: '',
         permit: '',
-        processNumber: '',
+        // processNumber: '',
         phNumber: '',
         emails: '',
         muniProc: '',
@@ -248,8 +243,6 @@ async function load() {
         convMB.value = checkV.value.substring(1, 2);
         checkMB.value = useToNumber(convMB);
         convertFolio(checkMB.value);
-        // store.addSystem(formData);
-        // commented because of the onSubmit
         await procReceive(formData);
         await callPermitdata(permitAppPdf);
         saveFormToStore(); // ← use the new clean function
@@ -338,7 +331,7 @@ async function onSubmit() {
                 <!-- municipality process # -->
                 <div class="field">
                     <label for="processMuni">Municipality Process #</label>
-                    <!-- @change="load"  this v-model is the input -->
+                    <!-- add a no space validation-->
                     <InputText id="processMuni" v-model="muniProcess" placeholder="00000000" />
                 </div>
                 <!-- property address & search -->

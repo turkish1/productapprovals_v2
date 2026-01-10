@@ -30,8 +30,6 @@ export default function usePostShingleLambda() {
         }
     };
 
-    // const dripEdge = (v) => run(v, 'dripEdge');
-    // const roofMeasurements = (v) => run(v, 'roofMeasurements');
     const postShingle = (v) => run(v, 'postShingle');
 
     return { data, errors, isFetching, loading, postShingle };
