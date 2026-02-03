@@ -1,29 +1,30 @@
 import { defineStore } from 'pinia';
 
-export const useDoublepdStore = defineStore('pdInputs', {
-    //state
+export const useDoublepdStore = defineStore('doublepd', {
     state: () => ({
-        pdInputs: [],
-        id: 0
+        noaRaw: null
     }),
 
-    //actions
-    actions: {
-        addNoas(pdNumbers) {
-            this.pdInputs.push({ pdNumbers, completed: false });
-        },
-        reset() {
-            // this.$reset();
+    getters: {
+        noaList: (state) => {
+            const src = state.noaRaw;
 
-            this.pdNumbers = [];
+            if (Array.isArray(src)) return src.map(String);
+
+            if (typeof src === 'string') {
+                return src
+                    .split(',')
+                    .map((s) => s.replace(/[[\]"']/g, '').trim())
+                    .filter(Boolean);
+            }
+
+            return [];
         }
     },
 
-    //getters
-
-    getters: {
-        pdNumbers: (state) => state.pdNumbers
+    actions: {
+        addNoas(payload) {
+            this.noaRaw = payload?.noa ?? null;
+        }
     }
-
-    // persist: true
 });

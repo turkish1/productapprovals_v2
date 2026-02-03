@@ -28,7 +28,10 @@ import { storeToRefs } from 'pinia';
 import Divider from 'primevue/divider';
 import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
 
-const { addPaddyCatval } = usePaddyoptionStore();
+// addPaddyCatval
+const paddyCat = usePaddyoptionStore();
+
+const { setCategory } = usePaddyoptionStore();
 const paddyStore = usePaddyStore();
 const { inputdata } = storeToRefs(paddyStore);
 
@@ -41,8 +44,8 @@ const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
 
 const { multiAdinput } = storeToRefs(multipleStore);
-const { addSystemvalues, tileInputvalues } = usevalueStore();
-// const resetStore = useSavedStore();
+const { addSystemvalues } = usevalueStore();
+// const pdStore = usevalueStore();
 // const { addSavedvalues } = useSavedStore();
 const { Edatamounted } = useUDL();
 
@@ -56,11 +59,11 @@ const muniprocessnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.munipro
 const childQueryRef = ref();
 // Reactive State
 const selectedOption = ref('');
-// const query = ref('');
-const isPaddySingle = ref(false);
-const isPaddyDouble = ref(false);
+const query = ref('');
+// const isPaddySingle = ref(false);
+// const isPaddyDouble = ref(false);
 
-const isPaddydatavalid = ref(false);
+// const isPaddydatavalid = ref(false);
 const isHeightValid = ref(false);
 const isDisabledslope = ref(true);
 const isDisabled = ref(true);
@@ -97,14 +100,14 @@ watch(isHeightDisabled, (newVal) => {
     }
 });
 
-const lastNonEmpty = (arrRef, key) => {
-    const a = Array.isArray(arrRef.value) ? arrRef.value : [];
-    for (let i = a.length - 1; i >= 0; i--) {
-        const x = a[i]?.[key];
-        if (x && Object.keys(x).length) return x;
-    }
-    return null;
-};
+// const lastNonEmpty = (arrRef, key) => {
+//     const a = Array.isArray(arrRef.value) ? arrRef.value : [];
+//     for (let i = a.length - 1; i >= 0; i--) {
+//         const x = a[i]?.[key];
+//         if (x && Object.keys(x).length) return x;
+//     }
+//     return null;
+// };
 const selectedDeck = ref();
 const type = ref([{ name: 'Select Deck Type' }, { name: '5/8" Plywood' }, { name: '3/4" Plywood' }, { name: '1" x 6" T & G' }, { name: '1" x 8" T & G' }, { name: 'Existing 1/2" Plywood' }]);
 
@@ -127,9 +130,7 @@ const SLOPE_BOUNDS = { two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7 };
 
 // clamp helper
 const clamp = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-// use the latest single/double payload from the stores
-const singlePaddy = computed(() => lastNonEmpty(inputdata, 'singlepaddyData'));
-const doublePaddy = computed(() => lastNonEmpty(inputdatas, 'doublepaddyData'));
+// // use the latest single/double payload from the stores
 const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
 
 const isMulti = (obj) => Array.isArray(obj?.select_tile) && obj.select_tile.length > 0;
@@ -453,6 +454,7 @@ function normalizeTable3Multiple(T3) {
 }
 
 const selectedExposures = ref('');
+const currentPaddyKind = computed(() => paddyCat.activeCategory);
 
 const { getData, zonesRow } = useExposurec();
 
@@ -460,21 +462,31 @@ const { getDatas, zonesRowdouble } = useExposured();
 // Decide which kind we want based on UI state
 // Final dataset with fallback
 const srcRefreshKey = ref(0);
-const currentPaddyKind = computed(() => {
-    if (selectedOption.value === 'single' && isPaddydatavalid.value) return 'single';
-    if (selectedOption.value === 'double' && isPaddydatavalid.value) return 'double';
-    addPaddyCatval(selectedOption.value, isPaddydatavalid.value);
+// const currentPaddyKind = computed(() => {
+//     // console.log(isPaddydatavalid.value);
+//     if (selectedOption.value === 'single') return 'single';
+//     if (selectedOption.value === 'double') return 'double';
+//     setCategory(selectedOption.value);
 
-    return isPaddySingle.value ? 'single' : 'double';
-});
+//     return isPaddySingle.value ? 'single' : 'double';
+// });
+// const srcData = computed(() => {
+//     srcRefreshKey.value;
+
+//     const preferSingle = currentPaddyKind.value === 'single';
+//     const primary = preferSingle ? singlePaddy.value : doublePaddy.value;
+//     const fallback = preferSingle ? doublePaddy.value : singlePaddy.value;
+//     return primary ?? fallback;
+// });
+const singlePaddy = computed(() => inputdata.value?.singlepaddyData ?? null);
+const doublePaddy = computed(() => inputdatas.value?.doublepaddyData ?? null);
+
 const srcData = computed(() => {
-    srcRefreshKey.value;
-
-    const preferSingle = currentPaddyKind.value === 'single';
-    const primary = preferSingle ? singlePaddy.value : doublePaddy.value;
-    const fallback = preferSingle ? doublePaddy.value : singlePaddy.value;
-    return primary ?? fallback;
+    srcRefreshKey.value; // force refresh
+    console.log(currentPaddyKind.value);
+    return currentPaddyKind.value === 'single' ? singlePaddy.value : doublePaddy.value;
 });
+
 watch(
     srcData,
     (src) => {
@@ -504,6 +516,14 @@ function updateFromPaddy() {
 const refreshSrc = () => {
     srcRefreshKey.value++;
 };
+watch(
+    () => paddyCat.activeCategory,
+    () => {
+        query.value = '';
+        // paddyCat.clear();
+        // emit('cleared');
+    }
+);
 
 // Apply payload every time it changes
 const selectedMaterial = ref(null);
@@ -671,8 +691,8 @@ watch(
     () => selectedOption.value,
     (opt, prev) => {
         paddyTracker.value = prev || '';
-        isPaddySingle.value = opt === 'single';
-        isPaddyDouble.value = opt === 'double';
+        // isPaddySingle.value = opt === 'single';
+        // isPaddyDouble.value = opt === 'double';
 
         isMultiTileValid.value = false;
         isTileValid.value = true;
@@ -1021,6 +1041,20 @@ const fSysMap = computed(() => buildMap(saTiles.system || [], saTiles.arrDesignP
 const selF = computed(() => selectedsystemf.value || '');
 
 // What to show for the selected F (computed getters like UDL’s dp/anchor/desc)
+function onTileNoaConfirmed(payload) {
+    if (!payload) return;
+
+    const multiple = payload?.content === 'multiple' || payload?.Table2?.content === 'multiple';
+
+    applyNOA(payload, { multiple }); // ✅ fills tilenoas + maps
+    if (!multiple) applyMgLambdaFromTables(payload);
+
+    // optional: seed first multi tile
+    if (multiple) {
+        selectedMulti.value = Array.isArray(tilenoas.select_tile) ? tilenoas.select_tile[0] : null;
+        if (selectedMulti.value) onTileTypePick(selectedMulti.value);
+    }
+}
 
 // Keep SA fresh automatically
 watch(latestSAPayload, (sd) => applySA(sd), { immediate: true, deep: true });
@@ -1119,6 +1153,9 @@ function clearData() {
         clearQueryInput?.();
     }
 }
+watch(selectedOption, (v) => {
+    if (v === 'single' || v === 'double') paddyCat.setCategory(v);
+});
 
 watch(
     selectedOption,
@@ -1531,8 +1568,8 @@ watch(selectedOption, (mode, prev) => {
     if (prev && prev !== mode) childQueryRef.value?.clearInput?.();
 
     resetTileUI();
-    isPaddySingle.value = mode === 'single';
-    isPaddyDouble.value = mode === 'double';
+    // isPaddySingle.value = mode === 'single';
+    // isPaddyDouble.value = mode === 'double';
     isTileValid.value = true;
     isMultiTileValid.value = false;
     refreshSrc();
@@ -1621,11 +1658,15 @@ watch(
 );
 
 // watchers
-watch(
-    () => childQueryRef,
-    debouncedClearAfterFirst(() => childQueryRef.noa, resetTileModal, 1500)
-);
+// watch(
+//     () => childQueryRef,
+//     debouncedClearAfterFirst(() => childQueryRef.noa, resetTileModal, 1500)
+// );
 
+watch(
+    () => childQueryRef.value?.noa,
+    debouncedClearAfterFirst(() => childQueryRef.value?.noa, resetTileModal, 1500)
+);
 function resetTileModal() {
     modalIsActive.value = false;
     modalKey.value++; // force a fresh modal instance next open
@@ -1799,9 +1840,19 @@ function toPlainSA(v) {
 
     return isProxy(x) ? toRaw(x) : x;
 }
+// async function onOpenTileClick() {
+//     // ✅ force the NOA input to fetch + emit before modal opens
+//     await childQueryRef.value?.commit?.();
+
+//     // at this point, onTileNoaConfirmed(payload) has already hydrated tilenoas
+//     modalKey.value++;
+//     await nextTick();
+//     modalIsActive.value = true;
+// }
 
 async function onOpenTileClick() {
     // ensure latest payload has been applied by watchers
+    await childQueryRef.value?.commit?.();
     modalKey.value++;
 
     await nextTick();
@@ -1821,10 +1872,10 @@ async function onOpenTileClick() {
     modalIsActive.value = true;
 }
 const tileNoaChanges = ref(0);
-function onTileNoaConfirmed(val) {
-    tileNoaChanges.value += 1;
-    if (tileNoaChanges.value >= 2) resetTileModal(); // after at least one prior input
-}
+// function onTileNoaConfirmed(val) {
+//     tileNoaChanges.value += 1;
+//     if (tileNoaChanges.value >= 2) resetTileModal(); // after at least one prior input
+// }
 const tileUDLChanges = ref(0);
 function onUdlNoaConfirmed(val) {
     tileUDLChanges.value += 1;
@@ -1883,9 +1934,6 @@ async function onOpenTileSAClick() {
     await nextTick();
     modalSAIsActive.value = true; // then show
 } // In the component where the user picks the mode:
-function setMode(mode) {
-    paddyCat.history.push({ paddyValues: mode, timestamp: Date.now() });
-}
 
 async function postSAStaging() {
     const { system: _systemList, arrDesignPressure: _arr, ...rest } = toRaw(saTiles);

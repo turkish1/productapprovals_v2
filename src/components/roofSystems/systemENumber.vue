@@ -95,12 +95,10 @@ const systemENOA = ref([]);
 // Computed property to filter suggestions based on user input
 const filteredSuggestions = computed(() => {
     console.log(suggestions.value.sysEInput?.[0].sysENumber.noa.body);
-    // paddyCategory.value === 'double' ? suggestions.value.pdInputs?.[0].pdNumbers.noa.body
     if (!query.value) return [];
     systemENOA.value = suggestions.value.sysEInput?.[0].sysENumber.noa.body;
     const stringyfield1 = JSON.stringify(systemENOA.value).split('[').join();
     const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
-    // .filter((item) => console.log(item));
     console.log(stringyfield2);
     const newArray = computed(() => stringyfield2.split(',').map((s) => s.trim()));
     console.log(newArray.value);

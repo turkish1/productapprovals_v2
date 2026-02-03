@@ -1,43 +1,67 @@
 import { usemechStore } from '@/stores/tilemechanicalNumber';
 import { useFetch } from '@vueuse/core';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 export default function useMechNumber() {
-    const mechanicalStore = usemechStore();
-    const errors = ref('');
+    const mechNumberStore = usemechStore();
+    // const plainNoa = (arr) => (Array.isArray(arr) ? [...toRaw(unref(arr))] : []);
 
-    // Use a simple ref for local tracking if needed
-    const localNoa = ref([]);
+    const errors = ref('');
+    // const localNoa = ref([]); // string[]
 
     const url = 'https://mczqlparb6o6umu7j4ct7pv4vi0jrnat.lambda-url.us-east-1.on.aws/';
+    const parseJSON = (s, fallback = null) => {
+        try {
+            return JSON.parse(s);
+        } catch {
+            return fallback;
+        }
+    };
+
+    /**
+     * Normalizes Lambda responses that may look like:
+     *  - { body: "[...]" }
+     *  - { body: [...] }
+     *  - [...]
+     */
+    const normalizeNoaList = (ctxData) => {
+        let body = ctxData?.body ?? ctxData;
+
+        if (typeof body === 'string') {
+            body = parseJSON(body, []);
+        }
+
+        if (!Array.isArray(body)) return [];
+
+        // ✅ plain array of strings
+        return body.map(String).slice();
+    };
 
     const {
-        data,
         error: fetchError,
         isFetching,
         execute
     } = useFetch(url, {
-        immediate: false, // Manual trigger
+        immediate: false,
         afterFetch(ctx) {
-            // This hook is often more reliable than a watcher for processing
-            const body = ctx.data?.body;
-            if (body) {
-                localNoa.value = body;
-                // Ensure this matches the key 'tileMechNumber' used in lastNonEmpty
-                mechanicalStore.addSystem({
-                    tileMechNumber: { noa: body },
+            const list = normalizeNoaList(ctx.data);
+
+            if (list.length) {
+                mechNumberStore.addSystem({
+                    noa: list, // already plain
                     fetchedAt: Date.now()
                 });
             }
+
             return ctx;
         }
     })
         .get()
         .json();
 
-    // Sync errors
+    // keep errors synced
     watch(fetchError, (v) => {
-        if (v) errors.value = v;
+        errors.value = v ? String(v) : '';
     });
 
     const callNumber = async () => {
@@ -45,11 +69,14 @@ export default function useMechNumber() {
         return await execute();
     };
 
+    // ✅ Always return a plain array to callers
+    const tileMechNumber = computed(() => mechNumberStore.latestNoa);
+
     return {
-        tileMechNumber: localNoa, // Return the ref directly
+        tileMechNumber, // <-- plain array (computed)
         callNumber,
         isFetching,
         errors,
-        mechanicalStore
+        mechNumberStore
     };
 }

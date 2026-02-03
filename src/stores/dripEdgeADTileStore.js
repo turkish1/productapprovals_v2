@@ -27,10 +27,10 @@ export const usedripADStore = defineStore('dripinputadmaterial', {
             this.inputselectedTileDripEdge.push({ dripSelection, completed: false });
         },
         resetState() {
-            console.log('reset was called: ', this.inputselectedTileDripEdge);
+            // console.log('reset was called: ', this.inputselectedTileDripEdge);
 
             this.inputselectedTileDripEdge = [];
-            console.log('reset was called: ', this.inputselectedTileDripEdge);
+            // console.log('reset was called: ', this.inputselectedTileDripEdge);
         }
     }
 });

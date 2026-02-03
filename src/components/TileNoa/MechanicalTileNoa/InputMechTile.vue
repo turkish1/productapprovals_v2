@@ -44,15 +44,11 @@ const srcRefreshKey = ref(0);
 const { tileMechInput } = storeToRefs(mechanicalStore);
 const processnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.processNumber);
 const muniprocessnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.muniprocessnumber);
-
-// const lastNonEmpty = (arrRef, key) => {
-//     const a = Array.isArray(arrRef.value) ? arrRef.value : [];
-//     for (let i = a.length - 1; i >= 0; i--) {
-//         const x = a[i]?.[key];
-//         if (x && Object.keys(x).length) return x;
-//     }
-//     return null;
-// };
+const isExposureC = ref(false);
+const exposureChoosen = ref('');
+const selectedExposures = ref('');
+const { tilemech } = storeToRefs(mechStore);
+const datamountedMech = tilemech;
 
 /**
  * Scans an array from right to left to find the most recent object
@@ -238,23 +234,93 @@ const zonethree = reactive({
 
 // const mechTileNoas = computed(() => lastNonEmpty(tileMechInput, 'tileMechNumber'));
 // Which dataset to use, preferring selected option if valid
-const mechTileNoas = computed(() => lastNonEmpty(tileMechInput, 'tileMechNumber'));
+const mechTileNoas = computed(() => lastNonEmpty(tileMechInput, 'noa'));
+const rawNoa = computed(() => mechanicalStore.latestNoa);
 
 // Call it immediately so the store starts populating
 // while the rest of the component is setting up.
-callNumber();
 
 onMounted(async () => {
     // Keep this if you need to ensure it's finished for specific logic,
     // but the call above handles the initial trigger.
-    callNumber();
-    console.log(tileMechInput);
+    await callNumber();
+    console.log('STORE:', mechanicalStore.tileMechInput);
+});
+watch(
+    [() => exposureChoosen.value, () => zones.value, () => zoned.value],
+    () => {
+        setZonesFromStore();
+        recomputeMR();
+    },
+    { deep: true }
+);
+
+let isvalueValid = ref(false);
+
+const { errorMessage, validateNumber } = useNumberValidation({
+    min: 4,
+    max: 12,
+    required: true
 });
 
-// onMounted(() => {
-//     callNumber();
-//     // mechanical.value = mechanicalStore.$state;
-// });
+const { errorHeightMessage, validateTileHeight } = useHeightValidation({
+    min: 10,
+    max: 40,
+    required: true
+});
+
+function validateRoofSlope() {
+    if (dims.slope >= 4) {
+        isDisabled.value = false;
+        addCheckmarks();
+        console.log('entered slope');
+    } else {
+        isDisabled.value = false;
+    }
+    validateInput();
+}
+const validateInput = () => {
+    validateNumber(dims.slope);
+    console.log(dims.slope);
+};
+
+const validateHeightInput = () => {
+    validateTileHeight(dims.height);
+    console.log(dims.height);
+    isHeightValid.value = true;
+    addCheckmarks();
+};
+
+function addCheckmarks() {
+    if (isHeightValid.value || isDisabledslope.value) {
+        isvalueValid.value = true;
+        console.log('Entered checkmarks');
+    } else {
+        isvalueValid.value = false;
+    }
+}
+
+function validateHeight() {
+    validateHeightInput();
+    console.log(height.value);
+}
+
+const factor = ref(0.4);
+const { getData } = useExposurec();
+const { getDatas } = useExposured();
+function setRoofInputs() {
+    dims.height = heightModel.value;
+    dims.per = (dims.height * factor.value).toFixed(2);
+    tilenoas.height = dims.height;
+    tilenoas.perimeter = dims.per;
+    tilenoas.area = dims.area;
+
+    addCheckmarks();
+}
+
+const isTileSelectionValid = ref(false);
+const showMaterialValid = ref(false);
+
 const refreshSrc = () => {
     srcRefreshKey.value++;
 };
@@ -288,11 +354,6 @@ let datamountedsystemE = ref(etileStore.$state.tilesysEinput);
 const selectedsystemf = ref(null);
 
 const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
-const isExposureC = ref(false);
-const exposureChoosen = ref('');
-const selectedExposures = ref('');
-const { tilemech } = storeToRefs(mechStore);
-const datamountedMech = tilemech;
 
 function normalizeMechTable2Multiple(T2) {
     // { content:"multiple", TypeA:{Direct_Deck:0.39}, ... } -> { TypeA:[0.39], ... }
@@ -705,59 +766,27 @@ async function ensureExposureAndZonesReady() {
 }
 
 // Computed property to filter suggestions based on user input
-// const filteredSuggestions = computed(() => {
-//     if (!query.value) return [];
-//     newArray.value = mechTileNoas.value?.noa;
-//     console.log(newArray.value);
-//     iterateItem.value = newArray.value ?? [];
-//     console.log(iterateItem.value);
 
-//     const stringyfield1 = JSON.stringify(iterateItem.value).split('[').join();
-//     console.log(stringyfield1);
-
-//     const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
-//     console.log(stringyfield2);
-
-//     const splitItem = computed(() => stringyfield2.split(',').map((s) => s.replace(/^\s*[-•*+▪▫►‣]\s*/g, '').trimStart()));
-//     console.log(splitItem.value.filter((item) => item.toString().includes(query.value)));
-//     // This might work to trim bullet
-//     // if (typeof src === 'string') {
-//     //     return src
-//     //         .split(',')
-//     //         .map((s) => s.replace(/[[\]"']/g, '').trim())
-//     //         .filter(Boolean);
-//     // }
-//     return splitItem.value.filter((item) => item.toString().includes(query.value));
-//     // splitItem.value.map((item) => String(item).trim()).filter((item) => item.toLowerCase().includes(query.value));
-//     // return splitItem.value.filter((item) => item.toString().includes(query.value));
-// });
 // This correctly retrieves the full object containing the NOA data
 
 // This ensures filteredSuggestions is looking at the right data type
 const filteredSuggestions = computed(() => {
-    const searchTerm = query.value.toLowerCase().trim();
+    const searchTerm = String(query.value ?? '')
+        .toLowerCase()
+        .trim();
     if (!searchTerm) return [];
 
-    // Safely extract the 'noa' property from the result of lastNonEmpty
-    const rawNoa = mechTileNoas.value?.noa;
-    if (!rawNoa) return [];
-
-    // Convert to array if it's a comma-separated string, then clean each item
-    const items = Array.isArray(rawNoa)
-        ? rawNoa
-        : String(rawNoa)
-              .split(',')
-              .map((s) => s.replace(/[\[\]"]/g, '').trim());
-
-    return items
-        .map((item) =>
-            String(item)
+    const items = rawNoa.value
+        .map((s) =>
+            String(s)
                 .replace(/^\s*[-•*+▪▫►‣]\s*/g, '')
                 .trim()
         )
-        .filter((item) => item.toLowerCase().includes(searchTerm))
-        .filter(Boolean); // Remove empty strings
+        .filter(Boolean);
+
+    return items.filter((s) => s.toLowerCase().includes(searchTerm));
 });
+
 const Anchor_Base = reactive(Object.fromEntries(Array.from({ length: 13 }, (_, i) => [`Anchor_Base_Sheet_E${i + 1}`, ''])));
 // Update latestEPayload to use reactive store
 const latestEPayload = computed(() => {
@@ -1061,12 +1090,12 @@ const slopeOptions = {
 
 const visible = ref(false);
 
-function EcheckInputSystem() {
-    datamountedsystemE.value.forEach((item) => {
-        udlTile.Maps = item.systemDataE.Maps;
-        udlTile.system = Array.isArray(item.systemDataE.system) ? item.systemDataE.system : [item.systemDataE.system].filter(Boolean);
-    });
-}
+// function EcheckInputSystem() {
+//     datamountedsystemE.value.forEach((item) => {
+//         udlTile.Maps = item.systemDataE.Maps;
+//         udlTile.system = Array.isArray(item.systemDataE.system) ? item.systemDataE.system : [item.systemDataE.system].filter(Boolean);
+//     });
+// }
 
 function setZonesFromStore() {
     const src = exposureChoosen.value === 'd' ? zoned.value : zones.value;
@@ -1082,80 +1111,6 @@ function setZonesFromStore() {
     tilenoas.dripEdgeSize = selectedDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeSize;
     console.log(tilenoas.dripEdgeMaterial, tilenoas.dripEdgeSize);
 }
-watch(
-    [() => exposureChoosen.value, () => zones.value, () => zoned.value],
-    () => {
-        setZonesFromStore();
-        recomputeMR();
-    },
-    { deep: true }
-);
-
-let isvalueValid = ref(false);
-
-const { errorMessage, validateNumber } = useNumberValidation({
-    min: 4,
-    max: 12,
-    required: true
-});
-
-const { errorHeightMessage, validateTileHeight } = useHeightValidation({
-    min: 10,
-    max: 40,
-    required: true
-});
-
-function validateRoofSlope() {
-    if (dims.slope >= 4) {
-        isDisabled.value = false;
-        addCheckmarks();
-        console.log('entered slope');
-    } else {
-        isDisabled.value = false;
-    }
-    validateInput();
-}
-const validateInput = () => {
-    validateNumber(dims.slope);
-    console.log(dims.slope);
-};
-
-const validateHeightInput = () => {
-    validateTileHeight(dims.height);
-    console.log(dims.height);
-    isHeightValid.value = true;
-    addCheckmarks();
-};
-
-function addCheckmarks() {
-    if (isHeightValid.value || isDisabledslope.value) {
-        isvalueValid.value = true;
-        console.log('Entered checkmarks');
-    } else {
-        isvalueValid.value = false;
-    }
-}
-
-function validateHeight() {
-    validateHeightInput();
-    console.log(height.value);
-}
-
-const factor = ref(0.4);
-const { getData } = useExposurec();
-const { getDatas } = useExposured();
-function setRoofInputs() {
-    dims.height = heightModel.value;
-    dims.per = (dims.height * factor.value).toFixed(2);
-    tilenoas.height = dims.height;
-    tilenoas.perimeter = dims.per;
-    tilenoas.area = dims.area;
-
-    addCheckmarks();
-}
-
-const isTileSelectionValid = ref(false);
-const showMaterialValid = ref(false);
 
 function checkInput() {
     const first = latestMech.value;

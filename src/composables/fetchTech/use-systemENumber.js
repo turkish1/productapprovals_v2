@@ -16,9 +16,7 @@ export default function useENumber() {
         fetchData();
     }
     const url = computed(() => {
-        // return 'https://0g5mpw7fbb.execute-api.us-east-1.amazonaws.com/systemENOAsdev/';
-        return 'https://5qygih823j.execute-api.us-east-1.amazonaws.com/systemEnumStaging';
-
+        return 'https://5ximwjuddpk4tgm2swqvqakvnq0nhbub.lambda-url.us-east-1.on.aws/';
     });
     const { data } = useFetch(url).get().json();
 

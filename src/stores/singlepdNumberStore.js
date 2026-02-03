@@ -1,27 +1,29 @@
 import { defineStore } from 'pinia';
 
-export const useSinglepdStore = defineStore('pdInput', {
-    //state
+export const useSinglepdStore = defineStore('singlepd', {
     state: () => ({
-        pdInput: [],
-        id: 0
+        noaRaw: null // array|string|null
     }),
+    getters: {
+        noaList: (state) => {
+            const src = state.noaRaw;
 
-    //actions singlepdNumber
-    actions: {
-        addNoas(pdNumber) {
-            this.pdInput.push({ pdNumber, completed: false });
-        },
-        reset() {
-            this.$reset();
+            if (Array.isArray(src)) return src.map(String);
+
+            if (typeof src === 'string') {
+                return src
+                    .split(',')
+                    .map((s) => s.replace(/[[\]"']/g, '').trim())
+                    .filter(Boolean);
+            }
+
+            return [];
         }
     },
 
-    //getters
-
-    getters: {
-        pdNumber: (state) => state.pdNumber
+    actions: {
+        addNoas({ noa }) {
+            this.noaRaw = noa ?? null;
+        }
     }
-
-    // persist: true
 });

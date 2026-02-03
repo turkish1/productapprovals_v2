@@ -21,8 +21,7 @@ export default function useInputSA() {
         fetchData();
     }
     const url = computed(() => {
-        // return 'https://popv3o1ks8.execute-api.us-east-1.amazonaws.com/sanoaNumberdev';
-        return 'https://xzgfruh7de.execute-api.us-east-1.amazonaws.com/sanoaNumberstaging';
+        return 'https://jz24a4kr3s7relnyfxwcbatkce0ersxj.lambda-url.us-east-1.on.aws/';
     });
     const { data } = useFetch(url).get().json();
 

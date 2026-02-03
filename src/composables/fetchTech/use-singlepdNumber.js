@@ -6,6 +6,7 @@ export default function useSingle() {
     const input = ref(null);
     const results = ref([]);
     const errors = ref('');
+
     const singleStore = useSinglepdStore();
 
     const pdNumber = reactive({
@@ -15,9 +16,7 @@ export default function useSingle() {
     const url = computed(() => {
         return 'https://kn5yokjdkzi7aylxly7cqo2hm40ezyfl.lambda-url.us-east-1.on.aws/';
     });
-    const callFunction = () => {
-        fetchData();
-    };
+
     // Enable manual trigger + get execute()
     const {
         data,
@@ -31,21 +30,29 @@ export default function useSingle() {
     })
         .get()
         .json();
-    const fetchData = async () => {
-        errors.value = '';
-        await execute(); // This triggers the GET request
+
+    watch(
+        () => data.value,
+        (val) => {
+            console.log('[single fetch] data.value:', val);
+            const body = val?.body ?? val; // fallback if lambda returns list directly
+            if (!body) return;
+
+            singleStore.addNoas({ noa: body });
+        },
+        { immediate: true }
+    );
+
+    const callFunction = async () => {
+        await fetchData();
     };
 
-    // Watch for data arrival
-
-    watch(data, (arr) => {
-        console.log(data, arr);
-        if (arr?.body) {
-            pdNumber.noa = arr.body; // Keep local reactive
-            console.log(arr.body);
-            singleStore.addNoas({ noa: arr.body }); // Store correct shape
-        }
-    });
+    const fetchData = async () => {
+        errors.value = '';
+        console.log('[single fetch] execute() starting');
+        await execute();
+        console.log('[single fetch] execute() done');
+    };
 
     return {
         input,

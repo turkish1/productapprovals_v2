@@ -39,14 +39,12 @@ export default function useDouble() {
             doubleStore.addNoas({ noa: arr.body }); // Store correct shape
         }
     });
-
+    const callFunctions = async () => {
+        await fetchData();
+    };
     const fetchData = async () => {
         errors.value = '';
         await execute(); // This triggers the GET request
-    };
-
-    const callFunctions = () => {
-        fetchData();
     };
 
     return {
