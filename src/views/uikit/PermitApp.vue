@@ -3,7 +3,6 @@
 import usePermitData from '@/composables/Postdata/usePermitappData';
 import { useScreenSize } from '@/composables/ScreenSize/useScreenSize.js';
 import useLast from '@/composables/lastNumber.js';
-// import { useprocStore } from '@/stores/processStore';
 import { invoke, tryOnMounted, until, useToNumber, watchOnce } from '@vueuse/core';
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { onBeforeRouteLeave, useRouter } from 'vue-router';
@@ -267,46 +266,6 @@ async function onSubmit() {
     // Optional: navigate
     router.push('/roofsystem');
 }
-// async function onSubmit() {
-//     // await procReceive(formData);
-
-//     store.addSystem(formData, mbId);
-// }
-
-// future code to  test, inserted on jan 6 as well
-// function addItemAndClear() {
-//   store.addSystem({ ...formData }, mbId); // spread to snapshot current values
-
-//   // Clear form
-//   Object.assign(formData, {
-//     address: '',
-//     muni: '',
-//     license: '',
-//     folio: '',
-//     contractor: '',
-//     permit: '',
-//     processNumber: '',
-//     phNumber: '',
-//     emails: '',
-//     muniProc: '',
-//     historic: false,
-//     date: new Date(),
-//     checkIfBeach: 0
-//   });
-
-//   // Also clear other related fields if needed
-//   inputAddress.value = '';
-//   muniProcess.value = '';
-//   glAccount.dba = '';
-//   glAccount.name = '';
-//   glAccount.phone = '';
-//   glAccount.email = '';
-// }
-
-// change on jan 6 2026
-// function addItemAndClear() {
-//     store.addSystem(formData, mbId);
-// }
 </script>
 <template>
     <!-- dialog stays unchanged -->

@@ -9,6 +9,7 @@ import { useShingleValidation } from '@/composables/Validation/use-shSlope';
 import useSystemf from '@/composables/use-Inputsystemf';
 import useSlope from '@/composables/use-updateSlope';
 import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import { usePolyStore } from '@/stores/polyStore';
 import { useRoofListStore } from '@/stores/roofList';
 import { useShingleStore } from '@/stores/shingleStore';
@@ -30,6 +31,7 @@ const { polyinput } = storeToRefs(polyStore);
 
 const store = useShingleStore();
 const { inputshingle } = storeToRefs(store);
+const permitStore = usePermitappStore();
 
 const usesystemfStore = useSystemf();
 const { systeminput } = storeToRefs(usesystemfStore.store);
@@ -37,8 +39,13 @@ const latestSA = computed(() => latestOf(systeminput.value)?.systemData || null)
 
 const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
 
+const processnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.processNumber);
+const muniprocessnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.muniprocessnumber);
+
 const shingles = reactive({
     noa: '',
+    meProcessnumber: 0,
+    muniProc: 0,
     manufacturer: '',
     material: '',
     description: '',
@@ -243,6 +250,9 @@ onMounted(() => {
             dims.area = item.dim1;
         }
     });
+
+    shingles.meProcessnumber = processnumber.value;
+    shingles.muniProc = muniprocessnumber.value;
 });
 
 const shingleForm = reactive({
@@ -256,18 +266,6 @@ const shingleForm = reactive({
     prescriptiveSelection: '',
     hittype: 'astm'
 });
-// const postMetrics = reactive({
-//     slope: '',
-//     height: '',
-//     area: '',
-//     decktype: '',
-//     prescriptiveSelection: '',
-//     manufacturer: '',
-//     noa: '',
-//     material: '',
-//     description: '',
-//     hittype: 'astm'
-// });
 
 const udlForm = reactive({
     udlnoa: '',
@@ -424,6 +422,9 @@ const onOpenShingleUDLClick = () => openModal('udl');
 const toNum = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 // helpers
 const commonShingle = () => ({
+    meProcess: shingles.meProcessnumber,
+    muniProcess: shingles.muniProc,
+
     noa: shingleForm.noa || '',
     manufacturer: shingleForm.manufacturer || '',
     material: shingleForm.material || '',

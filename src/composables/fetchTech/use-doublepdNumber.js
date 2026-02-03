@@ -31,10 +31,10 @@ export default function useDouble() {
         .json();
 
     watch(data, (arr) => {
-        console.log('NOA List:', arr.body);
-        if (Array.isArray(arr?.body)) {
+        console.log(arr?.body);
+        if (arr?.body) {
             pdNumbers.noa = arr.body; // Keep local reactive
-            console.log(arr.body);
+            console.log(arr?.body);
 
             doubleStore.addNoas({ noa: arr.body }); // Store correct shape
         }

@@ -54,6 +54,7 @@ function addSelectedSystem(newValue) {
         'Adhesive Set Tile': () => roofStore.addSystemATile(name, sqft),
         'Metal Panel': () => roofStore.addSystemMetal(name, sqft)
     };
+    console.log(byName);
     byName[name]?.();
     dataGeneral.roofCheck = roofKind.value;
     roofCheck.addCheck({ ...dataGeneral });

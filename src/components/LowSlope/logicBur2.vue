@@ -6,7 +6,7 @@ import useburAxios from '@/composables/use-burSystems';
 import { useBurpdfStore } from '@/stores/burpdfStore';
 import { usedripedgeStore } from '@/stores/dripEdgeStore';
 import { usePermitappStore } from '@/stores/permitapp';
-import { computed, onMounted, reactive, ref, toRaw, watch } from 'vue';
+import { onMounted, reactive, ref, toRaw, watch } from 'vue';
 
 // Composable & store setup
 
@@ -21,6 +21,8 @@ const dripStore = usedripedgeStore();
 const fileName = ref('downloaded-file.pdf');
 const muniProcessNumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.muniProc ?? '');
 const uploadUrl = ref('');
+const processnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.processNumber);
+const muniprocessnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.muniprocessnumber);
 
 const selectedBur = ref(null);
 const selectedSystem = ref(null);
@@ -38,18 +40,23 @@ const syst = ref([]);
 const primeone = ref([]);
 const primethree = ref([]);
 const copiedString = ref('');
-const dripMaterialComp = computed(() => dripStore.inputselectedDripEdge[0]?.dripEdgeMaterial ?? dripStore.inputselectedDripEdge[0]?.dripSelection?.dripEdgeMaterial ?? '');
-const dripSizeComp = computed(() => dripStore.inputselectedDripEdge[0]?.dripEdgeSize ?? dripStore.inputselectedDripEdge[0]?.dripSelection?.dripEdgeSize ?? '');
-
-onMounted(() => {
-    loadMaterials();
-});
+// const dripMaterialComp = computed(() => dripStore.inputselectedDripEdge[0]?.dripEdgeMaterial ?? dripStore.inputselectedDripEdge[0]?.dripSelection?.dripEdgeMaterial ?? '');
+// const dripSizeComp = computed(() => dripStore.inputselectedDripEdge[0]?.dripEdgeSize ?? dripStore.inputselectedDripEdge[0]?.dripSelection?.dripEdgeSize ?? '');
 
 const selectedBurItems = reactive({
+    meProcessnumber: 0,
+    muniProc: 0,
     burMaterial: '',
     burSystem: '',
     p1: '',
     p3: ''
+});
+
+onMounted(() => {
+    loadMaterials();
+
+    selectedBurItems.meProcessnumber = processnumber.value;
+    selectedBurItems.muniProc = muniprocessnumber.value;
 });
 
 // Helper functions
@@ -174,7 +181,6 @@ function onSystemChange({ value }) {
     }
     const firstPart = extractFirstToken(value);
     copiedString.value = firstPart;
-    console.log(firstPart);
     calldetailsdoc(firstPart);
     // handleDownload();
 }
@@ -219,6 +225,8 @@ async function handleDownload() {
 }
 
 const commonBur = () => ({
+    meProcess: selectedBurItems.meProcessnumber ?? '',
+    muniProcess: selectedBurItems.muniProc ?? '',
     p1: selectedBurItems.p1,
     p3: selectedBurItems.p3,
     bursystem: selectedBurItems.burSystem,

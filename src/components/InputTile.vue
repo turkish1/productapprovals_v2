@@ -11,6 +11,7 @@ import useExposured from '@/composables/Tiletables/exposure_d';
 import { useHeightValidation } from '@/composables/Validation/use-Height';
 import { useNumberValidation } from '@/composables/Validation/use-Slope';
 import { usedripADStore } from '@/stores/dripEdgeADTileStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import ProgressSpinner from 'primevue/progressspinner';
 import RadioButton from 'primevue/radiobutton';
 
@@ -34,6 +35,7 @@ const { inputdata } = storeToRefs(paddyStore);
 const useDoublepaddy = useDoublePaddyStore();
 const { inputdatas } = storeToRefs(useDoublepaddy);
 const dripEdgestore = usedripADStore();
+const permitStore = usePermitappStore();
 
 const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
@@ -48,6 +50,8 @@ const { post } = usePostToLambda();
 const storeroof = useRoofListStore();
 const { roofList } = storeToRefs(storeroof);
 const { tilefinput } = storeToRefs(ftileStore);
+const processnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.processNumber);
+const muniprocessnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.muniprocessnumber);
 
 const childQueryRef = ref();
 // Reactive State
@@ -148,6 +152,8 @@ const latestSA = computed(() => latestOf(tilefinput.value)?.systemData || null);
 
 const tilenoas = reactive({
     noa: 0,
+    meProcessnumber: 0,
+    muniProc: 0,
     manufacturer: '',
     material: '',
     description: '',
@@ -684,6 +690,9 @@ const paddyTracker = ref('');
 // I need to provide data this var
 onMounted(() => {
     checkInputSA();
+    console.log(processnumber.value);
+    tilenoas.meProcessnumber = processnumber.value;
+    tilenoas.muniProc = muniprocessnumber.value;
 });
 
 function pickUnderlayment(evt) {
@@ -1140,6 +1149,8 @@ onMounted(() => {
 
 const tileData2 = reactive({
     noa: '',
+    meProc: 0,
+    muniProc: 0,
     manufacturerData: '',
     material: '',
     description: '',
@@ -1467,7 +1478,8 @@ const saveTileData = async () => {
     tileData2.area = dims.area;
     tileData2.perimeter = dims.per;
     tileData2.noa = tilenoas.noa;
-
+    tileData2.meProc = tilenoas.meProcessnumber;
+    tileData2.muniProc = tilenoas.muniProc;
     tileData2.Decktype = dt.value;
     tileData2.prescriptiveSelection = UnderlaymentSelection.value;
 
@@ -1747,6 +1759,8 @@ const currentTileSA = ref(null);
 const allZonesPass = computed(() => ismrValidMR1.value && ismrValidMR2.value && ismrValidMR3.value);
 
 const commonTile = () => ({
+    meProcess: tilenoas.meProcessnumber,
+    muniProcess: tilenoas.muniProc,
     noa: tileData2.noa ?? '',
     applicant: tileData2.applicant ?? '',
     description: tileData2.description ?? '',
@@ -1868,6 +1882,9 @@ async function onOpenTileSAClick() {
     modalKeySA.value++; // force remount
     await nextTick();
     modalSAIsActive.value = true; // then show
+} // In the component where the user picks the mode:
+function setMode(mode) {
+    paddyCat.history.push({ paddyValues: mode, timestamp: Date.now() });
 }
 
 async function postSAStaging() {

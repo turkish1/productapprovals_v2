@@ -21,11 +21,16 @@ export default function useGeneral() {
     const isGeneralPageValid = ref(false);
 
     const checkedTypes = reactive({
-        mtile: false,
-        adtile: false,
-        shingle: false,
-        metal: false,
-        slope: false
+        // mtile: false,
+        // adtile: false,
+        // shingle: false,
+        // metal: false,
+        // slope:
+        checkedmtile: false,
+        checkedmetal: false,
+        checkedslp: false,
+        checkedadtile: false,
+        checkedshingle: false
     });
 
     const dims = reactive({
@@ -42,11 +47,6 @@ export default function useGeneral() {
         total: 0
     });
 
-    //  mtileChk: false,
-    //         adtileChk: false,
-    //         shingleChk: false,
-    //         slopeChk: false,
-    //         metalChk: false,
     const dataGeneral = reactive({
         steepData: '',
         slopeData: '',
@@ -65,24 +65,26 @@ export default function useGeneral() {
         roofType.value = typeOfroof.value;
         console.log(roofType.value);
         const typeMapping = {
-            'Asphalt Shingle': { dim: 'dim1', flag: 'shingle', steepKey: 'steep1' },
-            'Adhesive Set Tile': { dim: 'dim4', flag: 'adtile', steepKey: 'steep2' },
-            'Mechanical Fastened Tile': { dim: 'dim3', flag: 'mtile', steepKey: 'steep3' },
-            'Metal Panel': { dim: 'dim5', flag: 'metal', steepKey: 'steep4' },
-            'Low Slope': { dim: 'dim2', flag: 'slope' }
+            'Asphalt Shingle': { dim: 'dim1', flag: 'checkedshingle', steepKey: 'steep1' },
+            'Adhesive Set Tile': { dim: 'dim4', flag: 'checkedadtile', steepKey: 'steep2' },
+            'Mechanical Fastened Tile': { dim: 'dim3', flag: 'checkedmtile', steepKey: 'steep3' },
+            'Metal Panel': { dim: 'dim5', flag: 'checkedmetal', steepKey: 'steep4' },
+            'Low Slope': { dim: 'dim2', flag: 'checkedslp' }
         };
-
+        console.log(checkedTypes, dims);
         // Reset previous state
         Object.keys(checkedTypes).forEach((key) => (checkedTypes[key] = false));
         Object.keys(dims).forEach((key) => (dims[key] = 0));
 
         roofList.value.forEach((item) => {
+            console.log(item, typeMapping[item.item]);
             const config = typeMapping[item.item];
             if (config) {
+                console.log(config);
                 const dimValue = Number(item[config.dim]) || 0;
                 checkedTypes[config.flag] = true;
-                dataGeneral[`${config.flag}Chk`] = true;
-                console.log(config.flag);
+                dataGeneral[`${config.flag}`] = true;
+                console.log(config.flag, dataGeneral);
                 // createDocument.roofSystem.push(config.flag);
                 if (config.flag === 'slope') {
                     dims.low1 = dimValue;

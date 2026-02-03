@@ -1,4 +1,5 @@
 <script setup>
+// This page may not be used any more
 import CadViewer from '@/components/Editor/CadViewer.vue';
 import usePostGeneralpageLambda from '@/composables/Postdata/usePostGeneralpageLambda';
 import { useGlobalState } from '@/stores/accountsStore';

@@ -11,6 +11,7 @@ import useMech from '@/composables/fetchTech/use-tileMechanical';
 import { usedripMStore } from '@/stores/dripEdgeMechTileStore';
 import { useGlobalState } from '@/stores/exposurecStore';
 import { useExposureD } from '@/stores/exposuredStore';
+import { usePermitappStore } from '@/stores/permitapp';
 import { useRoofListStore } from '@/stores/roofList';
 import { usemechStore } from '@/stores/tilemechanicalNumber';
 import { usetilesysEStore } from '@/stores/tilesysEStore';
@@ -25,7 +26,8 @@ import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, wa
 
 // Input query
 const query = ref('');
-const { tbd, zoned } = useExposureD();
+const { zoned } = useExposureD();
+const permitStore = usePermitappStore();
 
 // Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
 const suggestions = ref([]);
@@ -40,19 +42,52 @@ const mechanicalStore = usemechStore();
 const srcRefreshKey = ref(0);
 
 const { tileMechInput } = storeToRefs(mechanicalStore);
+const processnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.processNumber);
+const muniprocessnumber = ref(permitStore.$state.permitapp?.[0]?.formdt?.muniprocessnumber);
 
+// const lastNonEmpty = (arrRef, key) => {
+//     const a = Array.isArray(arrRef.value) ? arrRef.value : [];
+//     for (let i = a.length - 1; i >= 0; i--) {
+//         const x = a[i]?.[key];
+//         if (x && Object.keys(x).length) return x;
+//     }
+//     return null;
+// };
+
+/**
+ * Scans an array from right to left to find the most recent object
+ * that contains a specific non-empty key.
+ */
 const lastNonEmpty = (arrRef, key) => {
-    const a = Array.isArray(arrRef.value) ? arrRef.value : [];
-    for (let i = a.length - 1; i >= 0; i--) {
-        const x = a[i]?.[key];
-        if (x && Object.keys(x).length) return x;
+    // 1. Unwrap the reference and ensure it's an array
+    const list = unref(arrRef);
+    if (!Array.isArray(list) || list.length === 0) return null;
+
+    // 2. Iterate backwards (newest first)
+    for (let i = list.length - 1; i >= 0; i--) {
+        const item = list[i];
+
+        // 3. Ensure item exists and has the property we want
+        if (item && typeof item === 'object' && item[key]) {
+            const val = item[key];
+
+            // 4. If the value is a string/array, check length. If object, check keys.
+            if (typeof val === 'string' || Array.isArray(val)) {
+                if (val.length > 0) return item;
+            } else if (Object.keys(val).length > 0) {
+                return item;
+            }
+        }
     }
     return null;
 };
+
 const { zones } = useGlobalState();
 const tilenoas = reactive({
     mechIdentifier: 'mechanicaltile',
     manufacturer: '',
+    meProcessnumber: 0,
+    muniProc: 0,
     noa: '',
     material: '',
     description: '',
@@ -162,7 +197,7 @@ const selectedMulti = ref(null);
 
 const isDisabledslope = ref(true);
 const isDisabled = ref(true);
-// const mechanical = ref([]);
+const mechanical = ref([]);
 
 const selectedsystemE = ref(null);
 const isMultiTileValid = ref(false);
@@ -201,14 +236,25 @@ const zonethree = reactive({
     mf3: ''
 });
 
-const mechTileNoas = computed(() => lastNonEmpty(tileMechInput, 'tileMechNumber'));
+// const mechTileNoas = computed(() => lastNonEmpty(tileMechInput, 'tileMechNumber'));
 // Which dataset to use, preferring selected option if valid
+const mechTileNoas = computed(() => lastNonEmpty(tileMechInput, 'tileMechNumber'));
 
-onMounted(() => {
+// Call it immediately so the store starts populating
+// while the rest of the component is setting up.
+callNumber();
+
+onMounted(async () => {
+    // Keep this if you need to ensure it's finished for specific logic,
+    // but the call above handles the initial trigger.
     callNumber();
-    // mechanical.value = mechanicalStore.$state;
-    console.log(mechTileNoas.value?.noa);
+    console.log(tileMechInput);
 });
+
+// onMounted(() => {
+//     callNumber();
+//     // mechanical.value = mechanicalStore.$state;
+// });
 const refreshSrc = () => {
     srcRefreshKey.value++;
 };
@@ -224,6 +270,9 @@ onMounted(() => {
             dims.area = item.dim3;
         }
     });
+
+    tilenoas.meProcessnumber = processnumber.value;
+    tilenoas.muniProc = muniprocessnumber.value;
 });
 
 const etileStore = usetilesysEStore();
@@ -656,33 +705,59 @@ async function ensureExposureAndZonesReady() {
 }
 
 // Computed property to filter suggestions based on user input
+// const filteredSuggestions = computed(() => {
+//     if (!query.value) return [];
+//     newArray.value = mechTileNoas.value?.noa;
+//     console.log(newArray.value);
+//     iterateItem.value = newArray.value ?? [];
+//     console.log(iterateItem.value);
+
+//     const stringyfield1 = JSON.stringify(iterateItem.value).split('[').join();
+//     console.log(stringyfield1);
+
+//     const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
+//     console.log(stringyfield2);
+
+//     const splitItem = computed(() => stringyfield2.split(',').map((s) => s.replace(/^\s*[-•*+▪▫►‣]\s*/g, '').trimStart()));
+//     console.log(splitItem.value.filter((item) => item.toString().includes(query.value)));
+//     // This might work to trim bullet
+//     // if (typeof src === 'string') {
+//     //     return src
+//     //         .split(',')
+//     //         .map((s) => s.replace(/[[\]"']/g, '').trim())
+//     //         .filter(Boolean);
+//     // }
+//     return splitItem.value.filter((item) => item.toString().includes(query.value));
+//     // splitItem.value.map((item) => String(item).trim()).filter((item) => item.toLowerCase().includes(query.value));
+//     // return splitItem.value.filter((item) => item.toString().includes(query.value));
+// });
+// This correctly retrieves the full object containing the NOA data
+
+// This ensures filteredSuggestions is looking at the right data type
 const filteredSuggestions = computed(() => {
-    if (!query.value) return [];
-    newArray.value = mechTileNoas.value?.noa;
-    console.log(newArray.value);
-    iterateItem.value = newArray.value ?? [];
-    console.log(iterateItem.value);
+    const searchTerm = query.value.toLowerCase().trim();
+    if (!searchTerm) return [];
 
-    const stringyfield1 = JSON.stringify(iterateItem.value).split('[').join();
-    console.log(stringyfield1);
+    // Safely extract the 'noa' property from the result of lastNonEmpty
+    const rawNoa = mechTileNoas.value?.noa;
+    if (!rawNoa) return [];
 
-    const stringyfield2 = JSON.stringify(stringyfield1).split(']').join();
-    console.log(stringyfield2);
+    // Convert to array if it's a comma-separated string, then clean each item
+    const items = Array.isArray(rawNoa)
+        ? rawNoa
+        : String(rawNoa)
+              .split(',')
+              .map((s) => s.replace(/[\[\]"]/g, '').trim());
 
-    const splitItem = computed(() => stringyfield2.split(',').map((s) => s.replace(/^\s*[-•*+▪▫►‣]\s*/g, '').trimStart()));
-    console.log(splitItem.value.filter((item) => item.toString().includes(query.value)));
-    // This might work to trim bullet
-    // if (typeof src === 'string') {
-    //     return src
-    //         .split(',')
-    //         .map((s) => s.replace(/[[\]"']/g, '').trim())
-    //         .filter(Boolean);
-    // }
-    return splitItem.value.filter((item) => item.toString().includes(query.value));
-    // splitItem.value.map((item) => String(item).trim()).filter((item) => item.toLowerCase().includes(query.value));
-    // return splitItem.value.filter((item) => item.toString().includes(query.value));
+    return items
+        .map((item) =>
+            String(item)
+                .replace(/^\s*[-•*+▪▫►‣]\s*/g, '')
+                .trim()
+        )
+        .filter((item) => item.toLowerCase().includes(searchTerm))
+        .filter(Boolean); // Remove empty strings
 });
-
 const Anchor_Base = reactive(Object.fromEntries(Array.from({ length: 13 }, (_, i) => [`Anchor_Base_Sheet_E${i + 1}`, ''])));
 // Update latestEPayload to use reactive store
 const latestEPayload = computed(() => {
@@ -1560,6 +1635,9 @@ const allZonesPass = computed(() => ismrValidMR1.value && ismrValidMR2.value && 
 const commonTile = () => ({
     mechIdentifier: 'mechanicalTile',
     noa: tilenoas.noa ?? '',
+    meProcess: tilenoas.meProcessnumber ?? '',
+    muniProcess: tilenoas.muniProc ?? '',
+
     applicant: tilenoas.manufacturer ?? '',
     description: tilenoas.description ?? '',
     material: tilenoas.material ?? '',
