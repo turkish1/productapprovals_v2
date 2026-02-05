@@ -1,0 +1,1 @@
+import{s as t}from"./reset-store-DV4B0nzH.js";import{D as o,aA as i}from"./index-j-3Mtl8U.js";const l=o("inputshingle",{state:()=>({inputshingle:[],id:0}),actions:{addShingle(e){console.log(e),this.inputshingle.push({shingleData:e,completed:!1})}},getters:{shingleData:e=>e.shingleData}}),s=i();s.use(t);console.log(s);export{l as u};
