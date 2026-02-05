@@ -3,22 +3,15 @@ import { useFetch } from '@vueuse/core';
 import { computed, reactive, ref, watch } from 'vue';
 
 export default function useInputs() {
-    const input = ref();
-
-    let results = ref([]);
-    const noaStore = useShinglenoaStore();
-
+    const input = ref('');
+    const results = ref([]);
     const errors = ref('');
 
-    const shingleNoaNumber = reactive({
-        noa: []
-    });
-    function callFunction() {
-        fetchData();
-    }
-    const url = computed(() => {
-        // shibleNoaNumber
+    const noaStore = useShinglenoaStore();
 
+    const shingleNoaNumber = reactive({ noa: [] });
+
+    const url = computed(() => {
         return 'https://iio4t6dcc6hgc2omqvg4lovh5a0mzkpl.lambda-url.us-east-1.on.aws/';
     });
 
@@ -34,18 +27,41 @@ export default function useInputs() {
     })
         .get()
         .json();
-    const fetchData = async () => {
-        errors.value = '';
-        await execute(); // This triggers the GET request
+
+    watch(
+        () => data.value,
+        (val) => {
+            if (!val) return;
+
+            let body = val.body ?? val;
+
+            // ✅ parse lambda body if it's JSON string
+            if (typeof body === 'string') {
+                try {
+                    body = JSON.parse(body);
+                } catch (e) {}
+            }
+
+            // ✅ force array
+            const arr = Array.isArray(body) ? body : [];
+            shingleNoaNumber.noa = arr;
+            // ✅ store consistent shape your component can read
+            noaStore.addShingle(shingleNoaNumber);
+            // {
+
+            // }
+        }
+    );
+
+    const callFunction = async () => {
+        await fetchData();
     };
 
-    watch(data, (arr) => {
-        if (arr?.body) {
-            shingleNoaNumber.noa = arr.body; // Keep local reactive
-            // console.log(arr.body);
-            noaStore.addShingle({ noa: arr.body }); // Store correct shape
-        }
-    });
+    const fetchData = async () => {
+        errors.value = '';
+        await execute();
+        console.log('[shingle fetch] execute() done');
+    };
 
-    return { input, fetchData, callFunction, errors, results, noaStore };
+    return { input, fetchData, callFunction, errors, results, noaStore, shingleNoaNumber };
 }

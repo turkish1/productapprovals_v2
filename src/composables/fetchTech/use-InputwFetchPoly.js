@@ -6,7 +6,7 @@ import { computed, reactive, ref, toRefs } from 'vue';
 export default function useInputPoly() {
     const input = ref();
 
-    const noaNum = ref([]);
+    // const noaNum = ref([]);
     let results = ref([]);
 
     const polyStores = usePolynoaStore();
@@ -15,8 +15,8 @@ export default function useInputPoly() {
     const polyNoaNumber = reactive({
         noa: []
     });
-    function callFunction() {
-        fetchData();
+    async function callFunction() {
+        await fetchData();
     }
     const url = computed(() => {
         return 'https://d7mp4al3qe74qouvprf6spai4u0uqyps.lambda-url.us-east-1.on.aws/';

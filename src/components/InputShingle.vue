@@ -6,6 +6,7 @@ import ShingleNoa from '@/components/roofSystems/ShingleNoa.vue';
 import usePostShingleToLambda from '@/composables/Postdata/usePostShingleLambda';
 import { useShingleHghtValidation } from '@/composables/Validation/use-shHeight';
 import { useShingleValidation } from '@/composables/Validation/use-shSlope';
+import useInputs from '@/composables/use-Inputs';
 import useSystemf from '@/composables/use-Inputsystemf';
 import useSlope from '@/composables/use-updateSlope';
 import { usedripedgeshingleStore } from '@/stores/dripEdgeShingleStore';
@@ -36,6 +37,8 @@ const permitStore = usePermitappStore();
 const usesystemfStore = useSystemf();
 const { systeminput } = storeToRefs(usesystemfStore.store);
 const latestSA = computed(() => latestOf(systeminput.value)?.systemData || null);
+
+const { takeValue } = useInputs();
 
 const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
 
@@ -161,13 +164,6 @@ const isAstm = computed(() => {
     return v === 'astm' || v === 'atsm';
 });
 
-// one close handler: only posts shingleMetrics for ASTM flow
-// function handleShingleModalClose() {
-//     console.log(isAstm.value);
-//     modalIsActive.value = false;
-//     if (isAstm.value) shingleMetrics();
-// }
-
 const type = ref([{ name: ' - Select Deck Type - ' }, { name: ' 5/8" Plywood ' }, { name: ' 3/4" Plywood ' }, { name: ' 1" x 6" T & G ' }, { name: ' 1" x 8" T & G ' }, { name: ' Existing 1/2" Plywood ' }]);
 // Store the incoming SA payload here (shape matches your example)
 const saPayload = reactive({
@@ -250,12 +246,12 @@ onMounted(() => {
             dims.area = item.dim1;
         }
     });
-
     shingles.meProcessnumber = processnumber.value;
     shingles.muniProc = muniprocessnumber.value;
 });
 
 const shingleForm = reactive({
+    noa: '',
     slope: '',
     height: '',
     area: '',
@@ -264,6 +260,7 @@ const shingleForm = reactive({
     material: '',
     description: '',
     prescriptiveSelection: '',
+    expiration_date: '',
     hittype: 'astm'
 });
 
@@ -303,6 +300,32 @@ const conditions = [
     }
 ];
 let hitType = ref(null); // outside the function, globally scoped
+function onShinglePicked(payload) {
+    // console.log(payload);
+    const noa = payload?.noa;
+    takeValue(noa);
+    console.log(noa, inputshingle.value[0]?.shingleData);
+    if (!noa) return;
+    console.log(inputshingle.value[0]?.shingleData);
+}
+watch(
+    inputshingle.value,
+    (v) => {
+        console.log('INPUTSHINGLE:', JSON.stringify(v, null, 2), v);
+        const noa = v?.noa;
+        const list = Array.isArray(v) ? v : [];
+
+        const sd = list[0]?.shingleData;
+        Object.assign(shingleForm, {
+            noa: sd?.noa ?? '',
+            manufacturer: sd?.applicant ?? sd?.manufacturer ?? '',
+            material: sd?.material ?? '',
+            description: sd?.description ?? '',
+            expiration_date: sd?.expiration_date ?? ''
+        });
+    },
+    { immediate: true }
+);
 
 function getIndexs() {
     const normalize = (v) => (typeof v === 'string' ? v : (v?.label ?? v?.value ?? v?.name ?? ''));
@@ -372,43 +395,47 @@ async function waitFor(getter, timeoutMs = 2500, intervalMs = 50) {
 const modalKeyUDL = ref(0);
 const modalKeySA = ref(0);
 const loading = ref(false);
-async function openModal(kind) {
+
+const pickedShingleNoa = computed(() => String(shingleForm.noa ?? '').trim());
+
+async function onOpenShingleClick() {
     if (loading.value) return;
     loading.value = true;
     try {
         await nextTick(); // settle pending UI writes
 
-        if (kind === 'shingle') {
-            const s = await waitFor(() => latestShingle.value, 2500, 50);
-            if (!s) return;
-            Object.assign(shingleForm, {
-                noa: latestShingle.value?.noa || '',
-                manufacturer: latestShingle.value?.applicant || '',
-                material: latestShingle.value?.material || '',
-                description: latestShingle.value?.description || ''
-            });
-            modalKey.value++;
-            await nextTick();
-            modalIsActive.value = true;
-            return;
-        }
+        console.log(pickedShingleNoa.value);
+
+        modalKey.value++;
+        await nextTick();
+        modalIsActive.value = true;
+        return;
+        // }
         // resetShingleForm();
+    } finally {
+        loading.value = false;
+    }
+}
 
-        if (kind === 'udl') {
-            // resetUdlForm();
-            const u = await waitFor(() => latestUdl.value, 2500, 50);
+async function openModalUdl() {
+    if (loading.value) return;
+    loading.value = true;
+    try {
+        await nextTick(); // settle pending UI writes
 
-            Object.assign(udlForm, {
-                udlnoa: latestUdl.value?.noa || '',
-                udlmanufacturer: latestUdl.value?.applicant || '',
-                udlmaterial: latestUdl.value?.material || '',
-                udldescription: latestUdl.value?.description || ''
-            });
-            modalKeyUDL.value++;
-            await nextTick();
-            modalUDLIsActive.value = true;
-            return;
-        }
+        const u = await waitFor(() => latestUdl.value, 2500, 50);
+
+        Object.assign(udlForm, {
+            udlnoa: latestUdl.value?.noa || '',
+            udlmanufacturer: latestUdl.value?.applicant || '',
+            udlmaterial: latestUdl.value?.material || '',
+            udldescription: latestUdl.value?.description || ''
+        });
+        modalKeyUDL.value++;
+        await nextTick();
+        modalUDLIsActive.value = true;
+        return;
+        // }
     } finally {
         loading.value = false;
     }
@@ -417,8 +444,7 @@ watch(latestSA, (v) => console.log('latestSA ->', v), { immediate: true });
 watch(sysOptions, (v) => console.log('sysOptions ->', v), { immediate: true });
 watch(selectedsystemf, (v) => console.log('selectedsystemf ->', v));
 // use it:
-const onOpenShingleClick = () => openModal('shingle');
-const onOpenShingleUDLClick = () => openModal('udl');
+
 const toNum = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 // helpers
 const commonShingle = () => ({
@@ -430,7 +456,7 @@ const commonShingle = () => ({
     material: shingleForm.material || '',
     description: shingleForm.description || '',
     decktype: dims.decktype || '',
-
+    expiration_date: shingleForm.expiration_date || '',
     dripEdgeMaterial: shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeMaterial,
     dripEdgeSize: shingleDripstore.$state.inputselectedUserDripEdge[0]?.dripSelection?.DripEdgeSize,
 
@@ -574,8 +600,11 @@ function handleShingleModalClose() {
     try {
         modalIsActive.value = false;
         console.log(isAstm.value);
-        // if (isAstm.value)
-        shingleStaging();
+        if (isAstm.value === false) {
+            return;
+        } else {
+            shingleStaging();
+        }
     } finally {
         postingShingle.value = false;
     }
@@ -686,14 +715,15 @@ watch(
         <div class="dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 full:grid-cols-2 gap-3">
             <div v-show="isShingleValid" class="w-96" style="margin-left: 2px; margin-top: 4px">
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
-                    <ShingleNoa />
+                    <ShingleNoa @updated="onShinglePicked" />
+                    <!-- :disabled="!shingleForm.noa" @updated="onShinglePicked" -->
                     <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleClick" style="margin-left: 15px; margin-top: 30px" />
                 </div>
             </div>
             <div v-show="isUDLNOAValid" class="w-96" style="margin-left: 2px">
                 <div v-animateonscroll="{ enterClass: 'animate-flipup', leaveClass: 'animate-fadeout' }" class="flex animate-duration-2000 animate-ease-in-out">
                     <AutoCompletePoly />
-                    <Buttons label="Submit" severity="contrast" raised @click="onOpenShingleUDLClick" style="margin-left: 10px; margin-top: 30px" />
+                    <Buttons label="Submit" severity="contrast" raised @click="openModalUdl" style="margin-left: 10px; margin-top: 30px" />
                 </div>
             </div>
             <div v-show="isSAValid" class="w-96" style="margin-left: 2px">
@@ -725,7 +755,6 @@ watch(
                 <InputText id="material" v-model="udlForm.udlmaterial" />
             </div>
             <div class="min-w-[350px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
-                <!-- <div class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600"> -->
                 <label for="description">(UDL) Description</label>
                 <InputText id="description" v-model="udlForm.udldescription" />
             </div>
@@ -752,7 +781,6 @@ watch(
             </div>
         </div>
     </ModalWindow>
-    <!--  grid grid-cols-1 md:grid-cols-1 gap-2-->
     <div v-if="!isAstm" class="w-2/3 flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
         <ModalWindow :key="modalKey" @closePopup="handleShingleModalClose" v-if="modalIsActive">
             <div class="grid grid-cols-2 md:grid-cols-2 gap-2" style="margin-left: 10px">
@@ -767,6 +795,10 @@ watch(
                 <div class="min-w-[650px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                     <label for="description">Description</label>
                     <InputText id="description" v-model="shingleForm.description" class="w-full" />
+                </div>
+                <div class="min-w-[300px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                    <label for="description">Expiration Date</label>
+                    <InputText id="description" v-model="shingleForm.expiration_date" class="w-full" />
                 </div>
             </div>
         </ModalWindow>
@@ -785,6 +817,10 @@ watch(
             <div class="min-w-[400px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
                 <label for="description">Description</label>
                 <InputText id="description" v-model="shingleForm.description" class="w-full" />
+            </div>
+            <div class="min-w-[300px] flex flex-col border-2 p-2 gap-2 border-gray-700 focus:border-orange-600">
+                <label for="description">Expiration Date</label>
+                <InputText id="description" v-model="shingleForm.expiration_date" class="w-full" />
             </div>
         </div>
     </ModalWindow>

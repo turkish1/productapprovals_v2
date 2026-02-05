@@ -1,135 +1,111 @@
 <template>
     <div class="shinglenoa">
         <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 20px">
-            <!-- @keypress="checkInput" -->
             <FloatLabel>
-                <InputText id="shinglenoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInput" />
+                <!-- <AutoComplete v-model="query" showClear :suggestions="items" @complete="search" @item-select="onSelect" inputClass="w-56" /> -->
+                <AutoComplete v-model="query" showClear :suggestions="items" @complete="search" @item-select="onSelect" @itemSelect="onSelect" inputClass="w-56" />
+
                 <label for="ac">Shingle NOA: 00000000</label>
             </FloatLabel>
         </div>
-        <!-- Suggestions list -->
-        <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions">
-            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @pointerdown.prevent="selectSuggestion(suggestion)">
-                {{ suggestion }}
-            </li>
-        </ul>
     </div>
 </template>
-
 <script setup>
 import useInputwFetch from '@/composables/fetchTech/use-InputwFetch';
-import useInputs from '@/composables/use-Inputs';
 import { useShingleStore } from '@/stores/shingleStore';
 import { storeToRefs } from 'pinia';
-import { computed, defineEmits, defineProps, onMounted, reactive, ref, watch } from 'vue';
+import AutoComplete from 'primevue/autocomplete';
+import { computed, onMounted, ref, watch } from 'vue';
 
-// Receive data from the parent component via props
-const props = defineProps({
-    manufacturer: String,
-    material: String,
-    description: String
-});
+const emit = defineEmits(['updated']);
 
-// Define the emit event to send data to parent
-const emit = defineEmits(['update']);
-const inputData = ref(props.manufacturer, props.material, props.description);
 const { callFunction, noaStore } = useInputwFetch();
+
 const store = useShingleStore();
 const { inputshingle } = storeToRefs(store);
-const { input, takeValue } = useInputs();
-let data = ref();
-// Input query
 const query = ref('');
-const shingles = reactive({
-    manufacturer: '',
-    material: '',
-    description: ''
-});
-// Array of suggestions containing 8-digit numbers (can be fetched from an API or hardcoded)
-const suggestions = ref([]);
-// State to control suggestions visibility
-const showSuggestions = ref(false);
+const items = ref([]);
+// ✅ derive the NOA list reactively from the store (no local ref copy)
+const allNoas = computed(() => {
+    const v = noaStore.$state.noashingle;
 
-const shingleData = ref([]);
-const shingleIterate = ref([]);
+    const first = Array.isArray(v) ? v[0] : null;
+    const candidate = first?.shingleNoaNumber?.noa ?? first?.noa ?? v?.shingleNoaNumber?.noa ?? v?.noa ?? [];
+
+    let arr = candidate;
+    if (typeof arr === 'string') {
+        try {
+            arr = JSON.parse(arr);
+        } catch {}
+    }
+
+    return Array.isArray(arr) ? arr.map(String) : [];
+});
 
 onMounted(() => {
     callFunction();
-
-    // Use nextTick or watch if noaStore is populated asynchronously
-    suggestions.value = noaStore.$state.noashingle[0]?.shingleNoaNumber?.noa || [];
 });
 
-watch(
-    () => noaStore.$state.noashingle[0]?.shingleNoaNumber?.noa,
-    (newVal) => {
-        suggestions.value = newVal || [];
-        // console.log(newVal, suggestions.value);
-    },
-    { immediate: true }
-);
-// Computed property to filter suggestions based on user input
-const filteredSuggestions = computed(() => {
-    if (!query.value) return [];
-    // noaStore.$state.noashingle[0]?.shingleNoaNumber?.noa,
-    shingleData.value = suggestions.value;
-    shingleIterate.value = shingleData.value;
-    const stringyfied1 = JSON.stringify(shingleIterate.value).split('[').join();
+const onSelect = (e) => {
+    // e.value should be the selected item
+    const noa = e?.value ?? query.value;
+    console.log('[ShingleNoa] selected:', noa);
 
-    const stringyfied2 = JSON.stringify(stringyfied1).split(']').join();
-    const newArray = computed(() => stringyfied2.split(',').map((s) => s.trim()));
+    emit('updated', { noa }); // ✅ parent can now see it
 
-    return newArray.value.filter((item) => item.toString().includes(query.value));
-    // return shingleIterate.value;
-    // return suggestions.value[0].shingleNoaNumber.noa.filter((item) => item.toString().includes(query.value));
-});
+    // optional: if you want full payload:
+    emitSelectedFromStore(noa);
+};
 
-let datamounted = ref(inputshingle._object.inputshingle);
-function grabInput() {
-    data.value = query.value;
+// ✅ PrimeVue AutoComplete: must set items.value in search()
+// const search = (event) => {
+//     const q = (event.query ?? '').toString().trim();
 
-    if (query.value !== null) {
-        takeValue(data.value);
-        checkInput();
+//     // if empty input, you can show top N or none
+//     if (!q) {
+//         items.value = allNoas.value.slice(0, 50); // or [] if you prefer
+//         return;
+//     }
+
+//     items.value = allNoas.value.filter((noa) => noa.includes(q)).slice(0, 50);
+// };
+
+// optional: when user selects an item, emit details
+// const onSelect = (e) => {
+//     const noa = e.value;
+//     emitSelectedFromStore(noa);
+// };
+const search = (event) => {
+    const q = String(event.query ?? '').trim();
+    const list = allNoas.value; // your computed list
+
+    items.value = !q ? list.slice(0, 50) : list.filter((noa) => noa.includes(q)).slice(0, 50);
+};
+
+function emitSelectedFromStore(noa) {
+    const list = Array.isArray(inputshingle.value) ? inputshingle.value : [];
+    console.log(inputshingle);
+    const match = list.find((x) => x?.shingleData?.noa?.toString() === noa?.toString()) || list.find((x) => x?.shingleData?.NOA?.toString() === noa?.toString());
+    const sd = match?.shingleData;
+    console.log(sd);
+    if (!sd) {
+        // at least emit noa so parent can open modal
+        emit('updated', { noa });
+        return;
     }
+
+    emit('updated', {
+        noa,
+        manufacturer: sd.applicant ?? sd.manufacturer ?? '',
+        material: sd.material ?? '',
+        description: sd.description ?? ''
+    });
 }
-function checkInput() {
-    if (datamounted.value.length !== null) {
-        datamounted.value.forEach((item, index) => {
-            shingles.manufacturer = item.shingleData.applicant;
-            shingles.material = item.shingleData.material;
-            shingles.description = item.shingleData.description;
-        });
-    }
-    sendDataToParent();
-}
-
-// Method to send data back to parent
-const sendDataToParent = () => {
-    // Emitting the 'update' event with data
-    emit('updated', inputData.value);
-};
-// Method to update the input field with selected suggestion
-const selectSuggestion = (suggestion) => {
-    query.value = suggestion;
-    showSuggestions.value = false;
-};
-
-// Method to handle input change
-const onInput = () => {
-    showSuggestions.value = true;
-};
-
-// Method to hide suggestions when input loses focus (with a delay to allow clicking suggestions)
-const hideSuggestions = () => {
-    setTimeout(() => {
-        showSuggestions.value = false;
-    }, 100);
-};
+watch(allNoas, (v) => console.log('allNoas len', v.length, v[0]), { immediate: true });
 </script>
 
 <style scoped>
-.shinnglenoa {
+.shinglenoa {
     position: relative;
     width: 300px;
 }
