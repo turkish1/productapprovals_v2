@@ -34,6 +34,7 @@ export default function useSingle() {
     watch(
         () => data.value,
         (val) => {
+            console.log(data.value);
             console.log('[single fetch] data.value:', val);
             const body = val?.body ?? val; // fallback if lambda returns list directly
             if (!body) return;

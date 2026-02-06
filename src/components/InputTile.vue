@@ -39,6 +39,7 @@ const useDoublepaddy = useDoublePaddyStore();
 const { inputdatas } = storeToRefs(useDoublepaddy);
 const dripEdgestore = usedripADStore();
 const permitStore = usePermitappStore();
+const lastTilePayload = ref(null);
 
 const ftileStore = usetilesysfStore();
 const multipleStore = usemultiAdStore();
@@ -162,11 +163,17 @@ const tilenoas = reactive({
     Table2: [],
     Table3: [],
     select_tile: [],
-    tile_map: [],
-    table2_map: [],
-    Table3_obj_map: [],
-    mfMap: [],
-    Table2_obj_map: [],
+    // tile_map: [],
+    // table2_map: [],
+    // Table3_obj_map: [],
+    // mfMap: [],
+    // Table2_obj_map: [],
+    tile_map: {},
+    table2_map: {},
+    Table3_obj_map: {},
+    mfMap: {},
+    Table2_obj_map: {},
+    selection: {},
     slope: 0,
     height: 0,
     dripEdgeMaterial: '',
@@ -379,7 +386,6 @@ const postingTile = ref(false);
 
 function handleTileModalClose() {
     // console.log(isAstm.value);
-    // modalIsActive.value = false;
     if (postingTile.value) return; // prevent overlap
     postingTile.value = true;
     try {
@@ -462,36 +468,23 @@ const { getDatas, zonesRowdouble } = useExposured();
 // Decide which kind we want based on UI state
 // Final dataset with fallback
 const srcRefreshKey = ref(0);
-// const currentPaddyKind = computed(() => {
-//     // console.log(isPaddydatavalid.value);
-//     if (selectedOption.value === 'single') return 'single';
-//     if (selectedOption.value === 'double') return 'double';
-//     setCategory(selectedOption.value);
 
-//     return isPaddySingle.value ? 'single' : 'double';
-// });
-// const srcData = computed(() => {
-//     srcRefreshKey.value;
-
-//     const preferSingle = currentPaddyKind.value === 'single';
-//     const primary = preferSingle ? singlePaddy.value : doublePaddy.value;
-//     const fallback = preferSingle ? doublePaddy.value : singlePaddy.value;
-//     return primary ?? fallback;
-// });
 const singlePaddy = computed(() => inputdata.value?.singlepaddyData ?? null);
 const doublePaddy = computed(() => inputdatas.value?.doublepaddyData ?? null);
 
 const srcData = computed(() => {
     srcRefreshKey.value; // force refresh
-    console.log(currentPaddyKind.value);
+    console.log(currentPaddyKind.value, doublePaddy.value);
     return currentPaddyKind.value === 'single' ? singlePaddy.value : doublePaddy.value;
 });
 
 watch(
     srcData,
     (src) => {
+        console.log(src);
         if (!src) return;
         const multiple = isMulti(src); // <— use this
+        console.log(multiple, src, srcData);
         applyNOA(src, { multiple });
         if (!multiple) applyMgLambdaFromTables();
 
@@ -520,8 +513,6 @@ watch(
     () => paddyCat.activeCategory,
     () => {
         query.value = '';
-        // paddyCat.clear();
-        // emit('cleared');
     }
 );
 
@@ -710,7 +701,6 @@ const paddyTracker = ref('');
 // I need to provide data this var
 onMounted(() => {
     checkInputSA();
-    console.log(processnumber.value);
     tilenoas.meProcessnumber = processnumber.value;
     tilenoas.muniProc = muniprocessnumber.value;
 });
@@ -856,8 +846,6 @@ function computeMR2() {
 //
 // Flat material options for PrimeVue (NEVER return an object/array-of-arrays)
 
-// const simpleNOA = ref(paddyStore.$state?.inputdata);
-
 async function refreshExposureFromSelection() {
     // Your existing logic to populate λ/Mg/MF from the current selection
 
@@ -896,25 +884,46 @@ function applyNOA(src, { multiple }) {
     tilenoas.material = src.material ?? src.selection ?? [];
     tilenoas.select_tile = src.select_tile ?? [];
 
+    // ✅ CHANGE: keep raw tables too (single path uses these)
+    tilenoas.Table2 = src.Table2 ?? {};
+    tilenoas.Table3 = src.Table3 ?? {};
+
     tilenoas.table2_map = src.Table2_map ?? src.Table2_Map ?? normalizeTable2Multiple(src.Table2) ?? {};
     tilenoas.tile_map = src.tile_map ?? src.Tile_Map ?? normalizeTable3Multiple(src.Table3) ?? {};
     // 🔧 NEW: ensure single path exposes a selection map the modal can use
-    if (!multiple) {
-        // build label->MF map from selection/resistance arrays (or pass through object map if provided)
+    // if (!multiple) {
+    //     // build label->MF map from selection/resistance arrays (or pass through object map if provided)
+    //     const map = {};
+    //     if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
+    //         Object.assign(map, src.selection);
+    //     } else {
+    //         const sel = Array.isArray(src.selection) ? src.selection : [];
+    //         const res = Array.isArray(src.resistance) ? src.resistance : [];
+    //         sel.forEach((k, i) => {
+    //             const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
+    //             if (label) map[label] = res[i];
+    //         });
+    //     }
+    //     // expose to modal
+    //     tilenoas.selection = map; // <— single path feeds the modal
+    // }
+    if (src.mfMap && typeof src.mfMap === 'object' && !Array.isArray(src.mfMap)) {
+        tilenoas.selection = { ...src.mfMap };
+    } else if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
+        tilenoas.selection = { ...src.selection };
+    } else {
         const map = {};
-        if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
-            Object.assign(map, src.selection);
-        } else {
-            const sel = Array.isArray(src.selection) ? src.selection : [];
-            const res = Array.isArray(src.resistance) ? src.resistance : [];
-            sel.forEach((k, i) => {
-                const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
-                if (label) map[label] = res[i];
-            });
-        }
-        // expose to modal
-        tilenoas.selection = map; // <— single path feeds the modal
+        const sel = Array.isArray(src.selection) ? src.selection : [];
+        const res = Array.isArray(src.resistance) ? src.resistance : [];
+        sel.forEach((k, i) => {
+            const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
+            if (label) map[label] = res[i];
+        });
+        tilenoas.selection = map;
     }
+    // ✅ CHANGE: clear stale material selection whenever NOA changes
+
+    selectedMaterial.value = null;
 
     // preselect the first tile type for multi
     selectedMulti.value = Array.isArray(tilenoas.select_tile) ? tilenoas.select_tile[0] : null;
@@ -925,23 +934,8 @@ function applyNOA(src, { multiple }) {
     refreshSrc();
 }
 // selected "E" key, e.g. "E11"
-const selE = computed(() => selectedsystemE.value || '');
+// const selE = computed(() => selectedsystemE.value || '');
 
-// what to show for the current selection
-// const dpForSelected = computed({
-//     get: () => sysEMap.value?.[selE.value] ?? '',
-//     set: (v) => (udlTile.designPressure = v) // optional: keep local edits
-// });
-
-// const anchorForSelected = computed({
-//     get: () => (selE.value ? anchorSource(selE.value) : ''),
-//     set: (v) => (udlTile.Anchor_Base_Sheet = v)
-// });
-
-// const descForSelected = computed({
-//     get: () => (selE.value ? capDescSource(selE.value) : ''),
-//     set: (v) => (udlTile.TileCap_Sheet_Description = v)
-// });
 // Add this watcher instead:
 watch(
     selectedsystemE,
@@ -1043,13 +1037,19 @@ const selF = computed(() => selectedsystemf.value || '');
 // What to show for the selected F (computed getters like UDL’s dp/anchor/desc)
 function onTileNoaConfirmed(payload) {
     if (!payload) return;
+    lastTilePayload.value = payload;
+    console.log('[CONFIRMED PAYLOAD]', payload);
 
     const multiple = payload?.content === 'multiple' || payload?.Table2?.content === 'multiple';
 
-    applyNOA(payload, { multiple }); // ✅ fills tilenoas + maps
-    if (!multiple) applyMgLambdaFromTables(payload);
+    // applyNOA(payload, { multiple }); // ✅ fills tilenoas + maps
+    // if (!multiple) applyMgLambdaFromTables(payload);
+    applyNOA(payload, { multiple });
+    // optional: seed first multi
+    // ✅ CHANGE: compute λ/Mg using the confirmed payload (NOT srcData)
+    console.log('[AFTER applyNOA] tilenoas', JSON.parse(JSON.stringify(tilenoas)));
 
-    // optional: seed first multi tile
+    if (!multiple) applyMgLambdaFromTables(payload);
     if (multiple) {
         selectedMulti.value = Array.isArray(tilenoas.select_tile) ? tilenoas.select_tile[0] : null;
         if (selectedMulti.value) onTileTypePick(selectedMulti.value);
@@ -1245,15 +1245,10 @@ const selectionMap2 = computed(() => {
     return map;
 });
 // --- main actions ---------------------------------------------------------
-const materialOptions = computed(() => Object.keys(selectionMap2.value).map((label) => ({ label, value: label })));
+// const materialOptions = computed(() => Object.keys(selectionMap2.value).map((label) => ({ label, value: label })));
 
 // keep model sane when options change
-watch(materialOptions, (opts) => {
-    if (!opts.some((o) => o?.value === selectedMaterial.value)) {
-        console.log(opts.some((o) => o?.value === selectedMaterial.value));
-        selectedMaterial.value = null;
-    }
-});
+
 const selectionMap = computed(() => {
     const src = srcData.value || {};
     if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
@@ -1302,8 +1297,8 @@ const safeOptions = computed(() => {
     const arr = Array.isArray(src) ? src : [];
     return arr.map(toOption).filter(Boolean);
 });
-const SUPER_RE = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
-const toNum = (x) => Number(String(x ?? '').replace(SUPER_RE, ''));
+// const SUPER_RE = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+// const toNum = (x) => Number(String(x ?? '').replace(SUPER_RE, ''));
 
 function getMaterialKey(val) {
     // Normalize: if val is an option object {label, value}, use .value; else use val
@@ -1346,7 +1341,7 @@ function updatedMF1(val = selectedMaterial.value) {
     tileData2.material = key;
 
     // If save triggers re-renders that reset state, move it to an explicit "Save" action
-    onSaveClick();
+    // onSaveClick();
 }
 
 const selections = ref(null); // v-model for the Select
@@ -1426,39 +1421,97 @@ function bucketFromSlope(s) {
     if (n < 7) return 6;
     return 7;
 }
+// ✅ CHANGE: single computed MF map that works for BOTH single + mult
+
+const mfByMaterial = computed(() => {
+    const src = srcData.value || {};
+
+    // ✅ MULTI path: mfMap object from backend
+    if (src.mfMap && typeof src.mfMap === 'object' && !Array.isArray(src.mfMap)) {
+        return { ...src.mfMap };
+    }
+
+    // ✅ ALSO ACCEPT: selection object map from backend (label -> mf)
+    if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
+        return { ...src.selection };
+    }
+
+    // ✅ SINGLE normalized path (you set tilenoas.selection)
+    if (tilenoas.selection && typeof tilenoas.selection === 'object' && !Array.isArray(tilenoas.selection)) {
+        return { ...tilenoas.selection };
+    }
+
+    // ✅ fallback arrays selection[] + resistance[]
+    const map = {};
+    const sel = Array.isArray(src.selection) ? src.selection : [];
+    const res = Array.isArray(src.resistance) ? src.resistance : [];
+    sel.forEach((k, i) => {
+        const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
+        if (label) map[label] = res[i];
+    });
+
+    return map;
+});
+
+const materialOptions = computed(() => Object.keys(mfByMaterial.value).map((label) => ({ label, value: label })));
+watch(materialOptions, (opts) => {
+    if (!opts.some((o) => o?.value === selectedMaterial.value)) {
+        console.log(opts.some((o) => o?.value === selectedMaterial.value));
+        selectedMaterial.value = null;
+    }
+});
 // ---- your existing Mg/λ painter (unchanged), but we'll call updateMF after it this worked
+
+function numLike(v) {
+    // handles: number, "12.3", "12.3⁴", {Direct_Deck:..}, [..]
+    if (v == null) return 0;
+
+    if (Array.isArray(v)) return numLike(v[0]);
+
+    if (typeof v === 'object') {
+        // common payload shapes
+        if ('Direct_Deck' in v) return numLike(v.Direct_Deck);
+        if ('value' in v) return numLike(v.value);
+        // if it’s an object but unknown shape:
+        return 0;
+    }
+
+    // string/number
+    const SUPER_RE = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+    const s = String(v).replace(SUPER_RE, '').trim();
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+}
+
 function applyMgLambdaFromTables(srcOverride) {
-    const src = srcOverride || unref(srcData);
+    // const src = srcOverride || unref(srcData) || {};
+    const src = srcOverride || lastTilePayload.value || unref(srcData) || {};
+    // ✅ CHANGE: take Table2/Table3 if present; otherwise fall back to *_map
+    const T2 = src.Table2 ?? tilenoas.Table2 ?? src.Table2_map ?? src.Table2_Map ?? tilenoas.table2_map ?? null;
+    const T3 = src.Table3 ?? tilenoas.Table3 ?? src.tile_map ?? src.Tile_Map ?? tilenoas.tile_map ?? null;
 
-    if (!src?.Table3 || !src?.Table2) return;
-    if (src?.content === 'multiple') return; // multi-tile handled by onTileTypePick
+    // multi is handled elsewhere
+    if (src?.content === 'multiple' || isMultiTileValid.value) return;
 
-    // pick slope bucket key
+    if (!T2 || !T3) return;
+
     const bucket = bucketFromSlope(dims.slope); // 2..7
     const keys = ['two', 'three', 'four', 'five', 'six', 'seven'];
     const key = keys[Math.min(Math.max(bucket - 2, 0), 5)];
-    // MG: prefer Direct_Deck if present, else the raw number
-    const t3row = src.Table3?.[key];
-    const mg = t3row?.Direct_Deck ?? t3row ?? 0;
 
-    // λ: prefer Direct_Deck if present, else numeric value
-    const lam = src.Table2?.Direct_Deck ?? src.Table2 ?? 0;
+    // ✅ CHANGE: T3 might be {two:..} OR {Table3:{two:..}} etc → we read directly
+    const mg = numLike(T3?.[key]);
+    const lam = numLike(T2);
 
-    zoneone.mg1 = mg;
-    zonetwo.mg2 = mg;
-    zonethree.mg3 = mg;
     zoneone.lambda1 = lam;
     zonetwo.lambda2 = lam;
     zonethree.lambda3 = lam;
 
-    const z1 = Number(zoneone.zone || 0) * Number(zoneone.lambda1 || 0) - Number(zoneone.mg1 || 0);
-    const z2 = Number(zonetwo.zone || 0) * Number(zonetwo.lambda2 || 0) - Number(zonetwo.mg2 || 0);
-    const z3 = Number(zonethree.zone || 0) * Number(zonethree.lambda3 || 0) - Number(zonethree.mg3 || 0);
+    zoneone.mg1 = mg;
+    zonetwo.mg2 = mg;
+    zonethree.mg3 = mg;
 
-    zoneone.mr1 = z1.toFixed(2);
-    zonetwo.mr2 = z2.toFixed(2);
-    zonethree.mr3 = z3.toFixed(2);
-    computeMR1();
+    computeMR1(); // uses zone*.zone, λ, Mg
 }
 
 function computeMR1() {
@@ -1469,6 +1522,98 @@ function computeMR1() {
     zonetwo.mr2 = z2.toFixed(2);
     zonethree.mr3 = z3.toFixed(2);
 }
+
+// =======================
+// ✅ CHANGE: ONE MF SOURCE MAP + ONE OPTION LIST + ONE MF WRITER
+// =======================
+
+// keep your SUPER_RE + toNum if you already have them
+const SUPER_RE = /[\u00B2-\u00B3\u00B9\u2070-\u207F]/g;
+const toNum = (x) => Number(String(x ?? '').replace(SUPER_RE, ''));
+
+// ✅ CHANGE: normalize select value -> label string
+function materialLabelFromSelect(v) {
+    if (v == null) return '';
+    if (typeof v === 'string' || typeof v === 'number') return String(v);
+    if (typeof v === 'object') return String(v.value ?? v.label ?? '');
+    return String(v);
+}
+
+// ✅ CHANGE: keep select valid when options change
+watch(
+    materialOptions,
+    (opts) => {
+        const cur = materialLabelFromSelect(selectedMaterial.value);
+        if (cur && !opts.some((o) => o.value === cur)) {
+            selectedMaterial.value = null;
+        }
+    },
+    { immediate: true }
+);
+
+// ✅ CHANGE: ONE MF writer (NO reassign to selectedMaterial)
+// NO save/post here.
+function applyMF(selected) {
+    const label = materialLabelFromSelect(selected);
+    if (!label) return;
+
+    const mfRaw = mfByMaterial.value[label];
+    if (mfRaw == null) return;
+
+    const mfStr = String(mfRaw);
+    const mfNum = toNum(mfStr);
+
+    zoneone.mf1 = mfStr;
+    zonetwo.mf2 = mfStr;
+    zonethree.mf3 = mfStr;
+
+    // validate MR vs MF
+    const mr1 = toNum(zoneone.mr1);
+    const mr2 = toNum(zonetwo.mr2);
+    const mr3 = toNum(zonethree.mr3);
+
+    ismrValidMR1.value = mr1 < mfNum;
+    ismrInvalid1.value = !ismrValidMR1.value;
+
+    ismrValidMR2.value = mr2 < mfNum;
+    ismrInvalid2.value = !ismrValidMR2.value;
+
+    ismrValidMR3.value = mr3 < mfNum;
+    ismrInvalid3.value = !ismrValidMR3.value;
+
+    // persist selected label into staging model (do NOT save/post)
+    tileData2.material = label;
+}
+
+// ✅ CHANGE: recompute lambda/mg/mr and then re-apply MF if a material is already selected
+watch(
+    [() => slopeBucket.value, () => srcData.value],
+    () => {
+        // recompute MR from tables
+        if (!isMultiTileValid.value) {
+            applyMgLambdaFromTables();
+        } else if (isMultiTileValid.value && selectedMulti.value) {
+            onTileTypePick(selectedMulti.value);
+        }
+
+        // re-apply MF with current selection (keeps MF in sync after MR changes)
+        if (selectedMaterial.value) {
+            applyMF(selectedMaterial.value);
+        }
+    },
+    { deep: true, immediate: true }
+);
+
+// ✅ CHANGE: when user selects a material, compute MR first (if needed) then MF
+watch(
+    () => selectedMaterial.value,
+    (val) => {
+        if (!val) return;
+        // ensure MR is computed before validating MF
+        if (!isMultiTileValid.value) applyMgLambdaFromTables();
+        applyMF(val);
+    }
+);
 
 function updateMF(val) {
     const label = typeof val === 'object' && val ? (val.value ?? val.label) : val;
@@ -1493,9 +1638,9 @@ function updateMF(val) {
     ismrInvalid2.value = !ismrValidMR2.value;
     ismrValidMR3.value = mr3 < mfNum;
     ismrInvalid3.value = !ismrValidMR3.value;
-    selectedMaterial.value = label;
+    // selectedMaterial.value = label;
     tileData2.material = label;
-    saveTileData();
+    // saveTileData();
 }
 
 // recompute λ/Mg when slope or payload changes
@@ -1568,8 +1713,7 @@ watch(selectedOption, (mode, prev) => {
     if (prev && prev !== mode) childQueryRef.value?.clearInput?.();
 
     resetTileUI();
-    // isPaddySingle.value = mode === 'single';
-    // isPaddyDouble.value = mode === 'double';
+
     isTileValid.value = true;
     isMultiTileValid.value = false;
     refreshSrc();
@@ -1657,16 +1801,6 @@ watch(
     }
 );
 
-// watchers
-// watch(
-//     () => childQueryRef,
-//     debouncedClearAfterFirst(() => childQueryRef.noa, resetTileModal, 1500)
-// );
-
-watch(
-    () => childQueryRef.value?.noa,
-    debouncedClearAfterFirst(() => childQueryRef.value?.noa, resetTileModal, 1500)
-);
 function resetTileModal() {
     modalIsActive.value = false;
     modalKey.value++; // force a fresh modal instance next open
@@ -1802,11 +1936,11 @@ const allZonesPass = computed(() => ismrValidMR1.value && ismrValidMR2.value && 
 const commonTile = () => ({
     meProcess: tilenoas.meProcessnumber,
     muniProcess: tilenoas.muniProc,
-    noa: tileData2.noa ?? '',
-    applicant: tileData2.applicant ?? '',
-    description: tileData2.description ?? '',
-    material: tileData2.material ?? '',
-    decktype: tileData2.Decktype ?? '',
+    noa: tilenoas.noa ?? '',
+    applicant: tilenoas.manufacturer ?? '',
+    description: tilenoas.description ?? '',
+    material: tilenoas.material ?? '',
+    decktype: dt.value ?? '',
     area: num(dims.area),
     height: num(dims.height),
     slope: num(dims.slope),
@@ -1840,24 +1974,21 @@ function toPlainSA(v) {
 
     return isProxy(x) ? toRaw(x) : x;
 }
-// async function onOpenTileClick() {
-//     // ✅ force the NOA input to fetch + emit before modal opens
-//     await childQueryRef.value?.commit?.();
-
-//     // at this point, onTileNoaConfirmed(payload) has already hydrated tilenoas
-//     modalKey.value++;
-//     await nextTick();
-//     modalIsActive.value = true;
-// }
 
 async function onOpenTileClick() {
-    // ensure latest payload has been applied by watchers
+    // ensure the child emitted confirmed payload
+    // console.log('[OPEN MODAL] tilenoas', JSON.parse(JSON.stringify(tilenoas)));
+
     await childQueryRef.value?.commit?.();
-    modalKey.value++;
 
+    // ✅ require payload before opening
+    if (!lastTilePayload.value) return;
+
+    // force one remount only
+    modalKey.value++;
     await nextTick();
-    modalKey.value++;
 
+    // snapshot current values (optional)
     const src = toPlain(tilenoas);
     currentTile.value = {
         manufacturer: src?.manufacturer ?? '',
@@ -1865,17 +1996,11 @@ async function onOpenTileClick() {
         description: src?.description ?? ''
     };
 
-    // force remount so stale VNodes are gone
-    modalKey.value++;
-    await nextTick();
-
     modalIsActive.value = true;
 }
-const tileNoaChanges = ref(0);
-// function onTileNoaConfirmed(val) {
-//     tileNoaChanges.value += 1;
-//     if (tileNoaChanges.value >= 2) resetTileModal(); // after at least one prior input
-// }
+
+// const tileNoaChanges = ref(0);
+
 const tileUDLChanges = ref(0);
 function onUdlNoaConfirmed(val) {
     tileUDLChanges.value += 1;
@@ -2064,7 +2189,8 @@ watch(selectedsystemf, () => {
 
                 <div v-show="isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700">
                     <label for="material">Tile Material</label>
-                    <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="updateMF" />
+                    <!-- @update:modelValue="updateMF" -->
+                    <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="applyMF" />
                 </div>
 
                 <Divider />
@@ -2074,7 +2200,7 @@ watch(selectedsystemf, () => {
                 </div>
                 <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700">
                     <label style="color: #122620">Tile Material</label>
-                    <Select
+                    <!-- <Select
                         v-model="selectedMaterial"
                         :options="safeOptions"
                         optionLabel="label"
@@ -2087,7 +2213,9 @@ watch(selectedsystemf, () => {
                                 refreshExposureFromSelection();
                             }
                         "
-                    />
+                    /> -->
+                    <!-- ✅ CHANGE: Single material select uses SAME materialOptions -->
+                    <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="applyMF" />
                 </div>
             </div>
         </ModalWindow>
@@ -2115,7 +2243,7 @@ watch(selectedsystemf, () => {
             </div>
             <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700">
                 <label style="color: #122620">Tile Material</label>
-                <Select
+                <!-- <Select
                     v-model="selectedMaterial"
                     :options="safeOptions"
                     optionLabel="label"
@@ -2128,7 +2256,9 @@ watch(selectedsystemf, () => {
                             refreshExposureFromSelection();
                         }
                     "
-                />
+                /> -->
+                <!-- ✅ CHANGE: Multi material select uses the SAME materialOptions + same model + no save -->
+                <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="applyMF" />
             </div>
         </div>
     </ModalWindow>

@@ -14,7 +14,13 @@ dotenv.config();
 // https://vitejs.dev/config/
 export default defineConfig({
     optimizeDeps: {
-        noDiscovery: true
+        noDiscovery: true,
+        include: ['pdftoimg-js']
+    },
+    build: {
+        commonjsOptions: {
+            transformMixedEsModules: true
+        }
     },
     plugins: [
         vue(),

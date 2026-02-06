@@ -57,24 +57,6 @@ const onSelect = (e) => {
     emitSelectedFromStore(noa);
 };
 
-// ✅ PrimeVue AutoComplete: must set items.value in search()
-// const search = (event) => {
-//     const q = (event.query ?? '').toString().trim();
-
-//     // if empty input, you can show top N or none
-//     if (!q) {
-//         items.value = allNoas.value.slice(0, 50); // or [] if you prefer
-//         return;
-//     }
-
-//     items.value = allNoas.value.filter((noa) => noa.includes(q)).slice(0, 50);
-// };
-
-// optional: when user selects an item, emit details
-// const onSelect = (e) => {
-//     const noa = e.value;
-//     emitSelectedFromStore(noa);
-// };
 const search = (event) => {
     const q = String(event.query ?? '').trim();
     const list = allNoas.value; // your computed list

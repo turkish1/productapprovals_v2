@@ -2,24 +2,20 @@
     <div class="tile">
         <div class="w-64 gap-2 mt-8 space-y-2 mb-2">
             <FloatLabel>
-                <InputText id="tilenoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @keydown.enter.prevent="grabInput" @keydown.tab.prevent="grabInput" />
+                <AutoComplete v-model="query" showClear :suggestions="items" @complete="search" @item-select="onSelect" @itemSelect="onSelect" inputClass="w-56" />
+
+                <!-- <InputText id="tilenoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @keydown.enter.prevent="grabInput" @keydown.tab.prevent="grabInput" /> -->
                 <label for="ac">Tile NOA: 00000000</label>
             </FloatLabel>
             <!-- Optional mini badge to show which DB is active -->
             <small class="text-xs text-gray-500"> Source: {{ isDouble ? 'Double Paddy' : 'Single Paddy' }} </small>
         </div>
-
-        <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions" role="listbox" aria-label="NOA suggestions">
-            <li v-for="(suggestion, index) in filteredSuggestions" :key="index" role="option" @pointerdown.prevent="selectSuggestion(suggestion)">
-                {{ suggestion }}
-            </li>
-        </ul>
     </div>
 </template>
 
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import usetileInputdouble from '@/composables/InputLogic/use-tileInputDoublepaddy';
 import usetileInputsingle from '@/composables/InputLogic/use-tileInputsinglepaddy';
@@ -48,8 +44,13 @@ const { inputdatas } = storeToRefs(doublePaddy);
 // const emit = defineEmits(['update', 'cleared']);
 const emit = defineEmits(['update', 'cleared', 'confirmed']);
 
+onMounted(async () => {
+    // callFunction();
+});
 // --- local state ---
+// const query = ref('');
 const query = ref('');
+const items = ref([]);
 const showSuggestions = ref(false);
 // 🔔 Emit "cleared" whenever the field is emptied
 watch(query, (v) => {
@@ -59,8 +60,10 @@ watch(query, (v) => {
 const isDouble = computed(() => paddyCat.activeCategory === 'double');
 const currentNOAs = computed(() => {
     const list = isDouble.value ? doubleStore.noaList : singleStore.noaList;
+    console.log(inputdatas, inputdata);
     return Array.isArray(list) ? list.map(String) : [];
 });
+
 watch(
     [isDouble, () => singleStore.noaList, () => doubleStore.noaList],
     () => {
@@ -69,12 +72,24 @@ watch(
     { immediate: true }
 );
 
-// filter suggestions by the query (case-insensitive)
-const filteredSuggestions = computed(() => {
-    const q = query.value.trim().toLowerCase();
-    if (!q) return [];
-    return currentNOAs.value.filter((n) => n.toLowerCase().includes(q));
-});
+const onSelect = (e) => {
+    // e.value should be the selected item
+    const noa = e?.value ?? query.value;
+    console.log('[TileNoa] selected:', noa);
+
+    emit('updated', { noa }); // ✅ parent can now see it
+
+    // optional: if you want full payload:
+    emitSelectedFromStore(noa);
+};
+
+const search = (event) => {
+    const q = String(event.query ?? '').trim();
+    console.log(q);
+    const list = currentNOAs.value; // your computed list
+    console.log(list);
+    items.value = !q ? list.slice(0, 50) : list.filter((noa) => noa.includes(q)).slice(0, 50);
+};
 
 watch(
     () => paddyCat.activeCategory,
@@ -97,29 +112,6 @@ watch(
 
 // commit current query: fetch detail from the correct DB and push into pdStore
 
-async function grabInput() {
-    const val = query.value?.trim();
-    if (!val) return;
-
-    try {
-        let payload;
-
-        if (isDouble.value) {
-            payload = await getTilenoas(val); // ✅ return payload from composable
-        } else {
-            payload = await getTilenoa(val); // ✅ return payload from composable
-        }
-
-        if (payload) {
-            emit('confirmed', payload); // ✅ send payload to parent
-        }
-    } catch (e) {
-        console.error('grabInput failed:', e);
-    } finally {
-        showSuggestions.value = false;
-    }
-}
-
 // temp watch
 watch(
     () => singleStore.noaList,
@@ -132,23 +124,48 @@ watch(
     { deep: true }
 );
 
-// suggestion click commits immediately
-function selectSuggestion(s) {
-    query.value = s;
-    grabInput();
-}
+async function emitSelectedFromStore(noa) {
+    console.log(noa);
 
-function onInput() {
-    showSuggestions.value = true;
-}
+    if (!noa) {
+        // at least emit noa so parent can open modal
+        emit('updated', { noa });
+        return;
+    }
+    if (!noa) return;
 
-function hideSuggestions() {
-    // small delay so click registers before blur hides the list
-    setTimeout(() => (showSuggestions.value = false), 100);
+    try {
+        let payload;
+
+        if (isDouble.value) {
+            payload = await getTilenoas(noa); // ✅ return payload from composable
+            console.log('confirmed payload double', payload);
+        } else {
+            payload = await getTilenoa(noa); // ✅ return payload from composable
+            console.log('confirmed payload double', payload);
+        }
+
+        if (payload) {
+            emit('confirmed', payload); // ✅ send payload to parent
+        }
+
+        const sd = payload;
+
+        emit('updated', {
+            noa: sd.noa ?? '',
+            manufacturer: sd.applicant ?? sd.manufacturer ?? '',
+            material: sd.material ?? '',
+            description: sd.description ?? ''
+        });
+    } catch (e) {
+        console.error('get data failed:', e);
+    } finally {
+        showSuggestions.value = false;
+    }
 }
 defineExpose({
     clearInput: () => (query.value = ''),
-    commit: grabInput
+    commit: emitSelectedFromStore
 });
 </script>
 
