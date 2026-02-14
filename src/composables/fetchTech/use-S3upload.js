@@ -7,6 +7,7 @@ import { ref } from 'vue';
 export default function useS3upload() {
     const bucketName = 'dsr-pdfupload';
     const region = 'us-east-1';
+    const bucket = 'amzn-s3-temp-upload-bucket';
 
     const uploadUrl = ref('');
 
@@ -52,7 +53,7 @@ export default function useS3upload() {
 
         const fileName = file.name; // Keep original name or generate a new one
         console.log(fileName);
-        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${objName}/${fileName}`;
+        const s3Url = `https://dsr-pdfupload.s3.us-east-1.amazonaws.com/${pdfdir}/${fileName}`;
         console.log(s3Url);
         // try {
         const response = await fetch(s3Url, {

@@ -17,11 +17,6 @@ const router = createRouter({
                     component: () => import('@/views/pages/Landing.vue')
                 },
 
-                // {
-                //     path: '/login',
-                //     name: 'login',
-                //     component: () => import('@/views/pages/auth/AuthGoogle.vue')
-                // },
                 {
                     path: '/noc',
                     name: 'noc',
@@ -52,11 +47,7 @@ const router = createRouter({
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
-                // {
-                //     path: '/userlanding',
-                //     name: 'userland',
-                //     component: () => import('@/components/UserLanding/UserDash.vue')
-                // },
+
                 {
                     path: '/terms',
                     name: 'termsofUse',
@@ -107,6 +98,11 @@ const router = createRouter({
                     path: '/tile',
                     name: 'tile',
                     component: () => import('@/components/Tile.vue')
+                },
+                {
+                    path: '/miamibeachapp',
+                    name: 'app',
+                    component: () => import('@/components/MuniApplications/MiamiBeach.vue')
                 },
                 {
                     path: '/metalpanel',

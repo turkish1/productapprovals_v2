@@ -113,9 +113,10 @@ function roofArea() {
     steep.value = st1 + st2 + st3 + st4;
 
     lowslope.value = l1;
-    // console.log(process.value);
+    console.log(lowslope.value);
 
     total.value = lowslope.value + steep.value;
+    console.log(total.value);
     dataGeneral.slopeData = lowslope.value;
     dataGeneral.steepData = steep.value;
     dataGeneral.totalData = Number(total.value);

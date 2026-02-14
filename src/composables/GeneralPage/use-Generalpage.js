@@ -21,11 +21,6 @@ export default function useGeneral() {
     const isGeneralPageValid = ref(false);
 
     const checkedTypes = reactive({
-        // mtile: false,
-        // adtile: false,
-        // shingle: false,
-        // metal: false,
-        // slope:
         checkedmtile: false,
         checkedmetal: false,
         checkedslp: false,
@@ -80,14 +75,15 @@ export default function useGeneral() {
             console.log(item, typeMapping[item.item]);
             const config = typeMapping[item.item];
             if (config) {
-                console.log(config);
+                console.log(config.flags);
                 const dimValue = Number(item[config.dim]) || 0;
-                checkedTypes[config.flag] = true;
+                checkedTypes[config] = true;
                 dataGeneral[`${config.flag}`] = true;
                 console.log(config.flag, dataGeneral);
                 // createDocument.roofSystem.push(config.flag);
-                if (config.flag === 'slope') {
-                    dims.low1 = dimValue;
+                if (config.flag === 'checkedslp') {
+                    console.log(dimValue);
+                    dims.low2 = dimValue;
                 } else {
                     dims[config.steepKey] = dimValue;
                 }
@@ -99,7 +95,8 @@ export default function useGeneral() {
 
     async function roofArea() {
         totals.steep = dims.steep1 + dims.steep2 + dims.steep3 + dims.steep4;
-        totals.lowslope = dims.low1;
+        totals.lowslope = dims.low2;
+        console.log(totals.lowslope);
         totals.total = totals.steep + totals.lowslope;
         dataGeneral.area = totals.total;
         dataGeneral.steepData = totals.steep;

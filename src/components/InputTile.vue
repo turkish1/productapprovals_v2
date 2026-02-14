@@ -17,7 +17,6 @@ import RadioButton from 'primevue/radiobutton';
 
 import tileNoaNumber from '@/components/roofSystems/tileNoaNumber.vue';
 import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
-import { usemultiAdStore } from '@/stores/multitileADStore';
 import { usePaddyoptionStore } from '@/stores/paddyCatStore';
 import { useRoofListStore } from '@/stores/roofList';
 // import { useSavedStore } from '@/stores/savedTiledataStore';
@@ -31,7 +30,7 @@ import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, wa
 // addPaddyCatval
 const paddyCat = usePaddyoptionStore();
 
-const { setCategory } = usePaddyoptionStore();
+// const { setCategory } = usePaddyoptionStore();
 const paddyStore = usePaddyStore();
 const { inputdata } = storeToRefs(paddyStore);
 
@@ -42,12 +41,10 @@ const permitStore = usePermitappStore();
 const lastTilePayload = ref(null);
 
 const ftileStore = usetilesysfStore();
-const multipleStore = usemultiAdStore();
+// const multipleStore = usemultiAdStore();
 
-const { multiAdinput } = storeToRefs(multipleStore);
+// const { multiAdinput } = storeToRefs(multipleStore);
 const { addSystemvalues } = usevalueStore();
-// const pdStore = usevalueStore();
-// const { addSavedvalues } = useSavedStore();
 const { Edatamounted } = useUDL();
 
 const { post } = usePostToLambda();

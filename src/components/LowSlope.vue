@@ -1,7 +1,6 @@
 <script setup>
 import { useRoofListStore } from '@/stores/roofList';
 import { useDocumentVisibility } from '@vueuse/core';
-import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 import AgreementsDialogLowslope from './AgreementsDialogLowslope.vue';
 
@@ -10,7 +9,6 @@ import logicBur2 from '@/components/LowSlope/logicBur2.vue';
 import AOS from 'aos';
 const visibility = useDocumentVisibility();
 const store = useRoofListStore();
-const { roofList } = storeToRefs(store);
 
 const isDialog = ref(false);
 const roofType = ref(store.$state.roofList);
