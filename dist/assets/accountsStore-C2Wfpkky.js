@@ -1,1 +1,0 @@
-import{aK as o,e as r,I as u}from"./index-CWzlT8KI.js";const l=o(()=>{const s=r([]),e=u(()=>s.value);async function a(t){s.value.push(t)}class c{constructor(){this.accountUsers=[]}}return{reset:c,accountUsers:s,getUser:e,addUser:a}});export{l as u};
