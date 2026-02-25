@@ -33,7 +33,7 @@ export default function useGeneral() {
         steep2: 0,
         steep3: 0,
         steep4: 0,
-        low1: 0
+        low2: 0
     });
 
     const totals = reactive({
@@ -72,10 +72,8 @@ export default function useGeneral() {
         Object.keys(dims).forEach((key) => (dims[key] = 0));
 
         roofList.value.forEach((item) => {
-            console.log(item, typeMapping[item.item]);
             const config = typeMapping[item.item];
             if (config) {
-                console.log(config.flags);
                 const dimValue = Number(item[config.dim]) || 0;
                 checkedTypes[config] = true;
                 dataGeneral[`${config.flag}`] = true;
@@ -96,7 +94,6 @@ export default function useGeneral() {
     async function roofArea() {
         totals.steep = dims.steep1 + dims.steep2 + dims.steep3 + dims.steep4;
         totals.lowslope = dims.low2;
-        console.log(totals.lowslope);
         totals.total = totals.steep + totals.lowslope;
         dataGeneral.area = totals.total;
         dataGeneral.steepData = totals.steep;

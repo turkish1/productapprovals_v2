@@ -55,6 +55,7 @@ export default function useTileInputSingle() {
     }
     const buildPayload = (entry) => {
         const isMultiple = entry?.Table2?.content === 'multiple';
+        console.log(entry);
 
         if (isMultiple) {
             return {

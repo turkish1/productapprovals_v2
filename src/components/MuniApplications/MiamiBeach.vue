@@ -1,7 +1,7 @@
 <!-- PermitApplicationPage1.vue -->
 <script setup>
 import useMuniapp from '@/composables/Postdata/usePostMuniapp';
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 /**
  * Model matches the visible first-page fields/sections in the PDF:
  * - Permit Request (multi-select)
@@ -13,6 +13,10 @@ import { computed, reactive } from 'vue';
  * - Owner/qualifier signatures + notary acknowledgements
  */
 const { postMuniAppData } = useMuniapp();
+const datas = ref(null);
+const data = ref('');
+const error = ref(null);
+const loading = ref(false);
 
 const form = reactive({
     permitRequest: {
@@ -138,13 +142,63 @@ const form = reactive({
         producedIdentification: ''
     }
 });
-
+const formStagingData = reactive({
+    address: '',
+    muni: '',
+    license: '',
+    folio: '',
+    contractor: '',
+    permit: '',
+    processNumber: '',
+    phNumber: '',
+    emails: '',
+    muniProc: '',
+    historic: Boolean,
+    date: new Date(),
+    checkIfBeach: 0
+});
+const permitMuniAppPdf = reactive({
+    dba: '',
+    applicantLicense: '',
+    jobaddress: '',
+    municipality: '',
+    muniprocessnumber: '',
+    processnumber: '',
+    masterpermit: '',
+    license: '',
+    email: '',
+    name: '',
+    driversLicense: '',
+    state: '',
+    zip: '',
+    contractorLic: '',
+    permitType: '',
+    propertyUse: '',
+    timelineElection: '',
+    workValue: '',
+    descriptionOfWork: '',
+    areaOfWork: ''
+});
 const errors = reactive({ timelineElection: '' });
 
 const isValid = computed(() => {
     return !!form.timelineElection; // PDF shows it as Required
 });
+watch(
+    () => form.permitRequest,
+    (newVal) => {
+        console.log('permitRequest changed:', newVal, form.permitRequest.newPermit);
+    },
+    { immediate: true }
+);
 
+watch(
+    () => form.property,
+    (newVal) => {
+        console.log('property changed:', newVal, form.property.propertyAddress);
+    },
+    { immediate: true }
+);
 function validate() {
     errors.timelineElection = form.timelineElection ? '' : 'Required: select Opt IN or Opt OUT per F.S.553.79(16).';
     return !errors.timelineElection;
@@ -156,51 +210,80 @@ function submit() {
     console.log('Permit Application Page 1 payload:', JSON.parse(JSON.stringify(form)));
     alert('Saved (demo). Wire submit() to your backend.');
 }
-// async function load() {
-//     try {
-//         loading.value = true;
+const inputAddress = ref('');
+async function fetchData(url) {
+    loading.value = true;
+    error.value = null;
+    try {
+        const response = await fetch(url);
+        datas.value = await response.json();
+        data.value = datas.value.body.MinimumPropertyInfos[0];
+        console.log('Property Info', data.value);
+        // formData.contractor = glAccount.dba;
+        // formData.license = data.value.secondary_status;
+        formStagingData.muni = data.value.Municipality;
+        formStagingData.folio = data.value.Strap;
+        form.property.city = formStagingData.muni;
+        form.property.parcelFolio = formStagingData.folio;
+        // It seems that I need to add the address in all caps for the historic function work properly.
+        // Further investigation pending 08112025
+        // isHistoric.value = await datas.value.body.isHistoric;
+        // console.log(isHistoric.value);
+        // checkV.value = formData.folio;
+    } catch (err) {
+        alert('No data found or enter correct address!');
+        error.value = err.message;
+    } finally {
+        loading.value = false;
+    }
+}
+async function load() {
+    try {
+        loading.value = true;
+        inputAddress.value = form.property.propertyAddress;
+        // muniProcessdata.value = muniProcess.value;
+        const addr = inputAddress.value.toUpperCase();
+        // This takes in the address as a field which lambda is expecting under the address below.
+        const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
-//         muniProcessdata.value = muniProcess.value;
-//         const addr = inputAddress.value.toUpperCase();
-//         // This takes in the address as a field which lambda is expecting under the address below.
-//         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
+        await fetchData(url);
 
-//         await fetchData(url);
+        // formData.muniProc = muniProcess.value;
+        form.property.propertyAddress = inputAddress.value;
+        Object.assign(permitMuniAppPdf, {
+            applicantLicense: form.applicant.licenseNumber,
+            applicantType: applicant.applicantType,
+            jobaddress: form.property.propertyAddress,
+            municipality: form.property.city,
+            email: applicant.email,
+            name: applicant.name,
+            driversLicense: applicant.driversLicenseOrStateId,
+            state: applicant.state,
+            zip: applicant.zip,
+            contractorLic: applicant.contractorLicenseNumber,
+            permitType: permitRequest.permitType,
+            propertyUse: propertyInformation,
+            timelineElection: timelineElection,
+            workValue: work.valueOfWork,
+            descriptionOfWork: work.descriptionOfWork,
+            areaOfWork: work.areaOfWorkSqFt
 
-//         // enrich form
-//         Object.assign(formData, {
-//             // license: glAccount.licenseStat,
-//             dba: glAccount.dba,
-//             emails: glAccount.email,
-//             muniprocessnumber: muniProcess.value,
-//             phonenumber: glAccount.phone
-//         });
-
-//         const newNumber = String(resNum.value).substring(3, 19);
-//         const nextNum = useToNumber(newNumber).value + 1;
-//         formData.processNumber = prefix.value.concat(String(nextNum));
-
-//         formData.muniProc = muniProcess.value;
-//         formData.address = inputAddress.value;
-//         Object.assign(permitAppPdf, {
-//             dba: formData.contractor,
-//             jobaddress: formData.address,
-//             municipality: formData.muni,
-//             muniprocessnumber: formData.muniProc,
-//             processnumber: formData.processNumber,
-//             masterpermit: formData.permit,
-//             license: formData.license
-//         });
-//         convMB.value = checkV.value.substring(1, 2);
-//         checkMB.value = useToNumber(convMB);
-//         convertFolio(checkMB.value);
-//         await procReceive(formData);
-//         await callPermitdata(permitAppPdf);
-//         saveFormToStore(); // ← use the new clean function
-//     } catch (err) {
-//         alert(err);
-//     }
-// }
+            // muniprocessnumber: formData.muniProc,
+            // processnumber: formData.processNumber,
+            // masterpermit: formData.permit,
+            // license: formData.license
+        });
+        // convMB.value = checkV.value.substring(1, 2);
+        // checkMB.value = useToNumber(convMB);
+        // convertFolio(checkMB.value);
+        // await procReceive(formData);
+        await postMuniAppData(permitMuniAppPdf);
+        // await callPermitdata(permitAppPdf);
+        // saveFormToStore(); // ← use the new clean function
+    } catch (err) {
+        alert(err);
+    }
+}
 function reset() {
     // Simple reset: reload page state by clearing key user-entered fields
     Object.keys(form.permitRequest).forEach((k) => (form.permitRequest[k] = false));
@@ -359,7 +442,14 @@ function reset() {
                 </div>
                 <div v-if="errors.timelineElection" class="error">{{ errors.timelineElection }}</div>
 
-                <div class="hint">For more information, see attached F.S.553.79(16)</div>
+                <div
+                    class="hint"
+                    v-tooltip.bottom="
+                        '(16) Except as provided in paragraph (e), a building permit for a single-family residential dwelling must be issued within 30 business days after receiving the permit application unless the permit application fails to satisfy the Florida Building Code or the enforcing agency’s laws or ordinances.(a) If a local enforcement agency fails to issue a building permit for a single-family residential dwelling within 30 business days after receiving the permit application, it must reduce the building permit fee by 10 percent for each business day that it fails to meet the deadline. Each 10-percent reduction shall be based on the original amount of the building permit fee.(b) A local enforcement agency does not have to reduce the building permit fee if it provides written notice to the applicant, by e-mail or United States Postal Service, within 30 business days after receiving the permit application, that specifically states the reasons the permit application fails to satisfy the Florida Building Code or the enforcing agency’s laws or ordinances. The written notice must also state that the applicant has 10 business days after receiving the written notice to submit revisions to correct the permit application and that failure to correct the application within 10 business days will result in a denial of the application.(c) The applicant has 10 business days after receiving the written notice to address the reasons specified by the local enforcement agency and submit revisions to correct the permit application. If the applicant submits revisions within 10 business days after receiving the written notice, the local enforcement agency has 10 business days after receiving such revisions to approve or deny the building permit unless the applicant agrees to a longer period in writing. If the local enforcement agency fails to issue or deny the building permit within 10 business days after receiving the revisions, it must reduce the building permit fee by 20 percent for the first business day that it fails to meet the deadline unless the applicant agrees to a longer period in writing. For each additional business day, but not to exceed 5 business days, that the local enforcement agency fails to meet the deadline, the building permit fee must be reduced by an additional 10 percent. Each reduction shall be based on the original amount of the building permit fee.(d) If any building permit fees are refunded under this subsection, the surcharges provided in s. 468.631 or s. 553.721 must be recalculated based on the amount of the building permit fees after the refund.(e) A building permit for a single-family residential dwelling applied for by a contractor licensed in this state on behalf of a property owner who participates in a Community Development Block Grant–Disaster Recovery program administered by the Department of Economic Opportunity must be issued within 15 working days after receipt of the application unless the permit application fails to satisfy the Florida Building Code or the enforcing agency’s laws or ordinances.'
+                    "
+                >
+                    For more information, hover this text or see attached F.S.553.79(16)
+                </div>
             </div>
         </section>
 
@@ -371,10 +461,13 @@ function reset() {
                     <label>Property Address</label>
                     <input v-model="form.property.propertyAddress" type="text" />
                 </div>
-                <div class="field small">
+                <!-- <Button type="button" severity="contrast" icon="pi pi-search" style="font-size: 1rem" :loading="loading" @click="load" /> -->
+                <i class="pi pi-search" :loading="loading" @click="load" style="font-size: 1rem; margin-top: 15px"></i>
+
+                <!-- <div class="field small">
                     <label>Unit #</label>
                     <input v-model="form.property.unit" type="text" />
-                </div>
+                </div> style="margin-left: 50px"-->
                 <div class="field">
                     <label>City</label>
                     <input v-model="form.property.city" type="text" />
@@ -404,7 +497,7 @@ function reset() {
         </section>
 
         <section class="card">
-            <div class="card-title">Applicant Information (Blue or Black Ink Only)</div>
+            <div class="card-title">Applicant Information</div>
 
             <div class="radio-row">
                 <label class="rad"><input type="radio" value="contractor" v-model="form.applicant.applicantType" /> Contractor</label>
@@ -462,6 +555,65 @@ function reset() {
                 </div>
             </div>
         </section>
+        <!-- <section class="card">
+            <div class="card-title">Contractor Information</div>
+
+            <div class="radio-row">
+                <label class="rad"><input type="radio" value="contractor" v-model="form.applicant.applicantType" /> Contractor</label>
+                <label class="rad"><input type="radio" value="owner" v-model="form.applicant.applicantType" /> Property Owner</label>
+                <label class="rad"><input type="radio" value="architect" v-model="form.applicant.applicantType" /> Architect</label>
+                <label class="rad"><input type="radio" value="engineer" v-model="form.applicant.applicantType" /> Structural Engineer</label>
+            </div>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label>Name</label>
+                    <input v-model="form.applicant.name" type="text" />
+                </div>
+                <div class="field">
+                    <label>License Number</label>
+                    <input v-model="form.applicant.licenseNumber" type="text" />
+                </div>
+                <div class="field">
+                    <label>Contractor License Number</label>
+                    <input v-model="form.applicant.contractorLicenseNumber" type="text" />
+                </div>
+                <div class="field">
+                    <label>Driver’s License/State Identification</label>
+                    <input v-model="form.applicant.driversLicenseOrStateId" type="text" />
+                </div>
+
+                <div class="field">
+                    <label>Address</label>
+                    <input v-model="form.applicant.address" type="text" />
+                </div>
+                <div class="field small">
+                    <label>Suite</label>
+                    <input v-model="form.applicant.suite" type="text" />
+                </div>
+                <div class="field">
+                    <label>City</label>
+                    <input v-model="form.applicant.city" type="text" />
+                </div>
+                <div class="field xsmall">
+                    <label>State</label>
+                    <input v-model="form.applicant.state" type="text" maxlength="2" />
+                </div>
+                <div class="field small">
+                    <label>Zip Code</label>
+                    <input v-model="form.applicant.zip" type="text" />
+                </div>
+
+                <div class="field">
+                    <label>Daytime phone</label>
+                    <input v-model="form.applicant.daytimePhone" type="tel" />
+                </div>
+                <div class="field">
+                    <label>E-Mail Address (REQUIRED)</label>
+                    <input v-model="form.applicant.email" type="email" />
+                </div>
+            </div>
+        </section> -->
 
         <!-- Permit Type + Work -->
         <section class="grid-2">

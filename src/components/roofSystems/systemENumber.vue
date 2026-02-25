@@ -1,9 +1,9 @@
 <template>
     <div class="autocomplete">
-        <div class="w-64 gap-2 space-y-2 mb-2" style="margin-left: 20px">
+        <div class="w-64 gap-2 space-y-1 mb-3" style="margin-left: 25px; margin-bottom: 10px">
             <!-- @keypress="checkInput" -->
             <FloatLabel>
-                <InputText id="udlInput" v-tooltip.bottom="'Press Tab after value'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputUDL" />
+                <InputText id="udlInput" inputClass="w-56" v-tooltip.bottom="'Press Tab after value'" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @change="grabInputUDL" />
                 <label for="ac">Fastened UDL NOA: 00000000</label>
             </FloatLabel>
         </div>

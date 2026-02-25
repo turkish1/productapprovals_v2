@@ -45,7 +45,7 @@ export default function usetileInputdouble() {
 
     const buildPayload = (entry) => {
         const isMultiple = entry?.Table2?.content === 'multiple';
-
+        console.log(entry);
         if (isMultiple) {
             return {
                 noa: entry.NOA ?? entry.noa ?? '',

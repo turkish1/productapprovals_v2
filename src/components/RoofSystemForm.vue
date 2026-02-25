@@ -46,7 +46,7 @@ function addSelectedSystem(newValue) {
     if (!newValue || area.value == 0) return;
     const name = selectedSystem.value.name;
     const sqft = Number(area.value);
-
+    console.log(name, sqft);
     const byName = {
         'Asphalt Shingle': () => roofStore.addSystemShingle(name, sqft),
         'Low Slope': () => roofStore.addSystemBur(name, sqft),
@@ -54,7 +54,7 @@ function addSelectedSystem(newValue) {
         'Adhesive Set Tile': () => roofStore.addSystemATile(name, sqft),
         'Metal Panel': () => roofStore.addSystemMetal(name, sqft)
     };
-    console.log(byName);
+    console.log(byName, roofKind.value);
     byName[name]?.();
     dataGeneral.roofCheck = roofKind.value;
     roofCheck.addCheck({ ...dataGeneral });

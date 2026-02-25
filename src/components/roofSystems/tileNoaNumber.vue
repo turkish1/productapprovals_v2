@@ -2,9 +2,7 @@
     <div class="tile">
         <div class="w-64 gap-2 mt-8 space-y-2 mb-2">
             <FloatLabel>
-                <AutoComplete v-model="query" showClear :suggestions="items" @complete="search" @item-select="onSelect" @itemSelect="onSelect" inputClass="w-56" />
-
-                <!-- <InputText id="tilenoa" v-model="query" inputId="ac" @focus="showSuggestions = true" @blur="hideSuggestions" @input="onInput" @keydown.enter.prevent="grabInput" @keydown.tab.prevent="grabInput" /> -->
+                <AutoComplete v-model="query" :suggestions="items" @complete="search" @item-select="onSelect" inputClass="w-56" showClear />
                 <label for="ac">Tile NOA: 00000000</label>
             </FloatLabel>
             <!-- Optional mini badge to show which DB is active -->
@@ -123,46 +121,36 @@ watch(
     (v) => console.log('[tileNoaNumber] doubleStore.noaList changed len=', v?.length, v?.slice?.(0, 5)),
     { deep: true }
 );
-
 async function emitSelectedFromStore(noa) {
-    console.log(noa);
-
-    if (!noa) {
-        // at least emit noa so parent can open modal
-        emit('updated', { noa });
-        return;
-    }
     if (!noa) return;
 
     try {
-        let payload;
+        // 1. Fetch the data
+        const payload = isDouble.value ? await getTilenoas(noa) : await getTilenoa(noa);
 
-        if (isDouble.value) {
-            payload = await getTilenoas(noa); // ✅ return payload from composable
-            console.log('confirmed payload double', payload);
-        } else {
-            payload = await getTilenoa(noa); // ✅ return payload from composable
-            console.log('confirmed payload double', payload);
+        // 2. THE FIX: Check if payload is null before doing ANYTHING else
+        if (!payload) {
+            console.log('Payload is still loading or not found...');
+            return; // Exit the function early so it doesn't crash below
         }
 
-        if (payload) {
-            emit('confirmed', payload); // ✅ send payload to parent
-        }
+        // 3. Now it is safe to access properties
+        console.log('Successfully received payload:', payload);
 
-        const sd = payload;
+        emit('confirmed', payload);
 
+        // We use the keys defined in your buildPayload function (manufacturer, material, etc.)
         emit('updated', {
-            noa: sd.noa ?? '',
-            manufacturer: sd.applicant ?? sd.manufacturer ?? '',
-            material: sd.material ?? '',
-            description: sd.description ?? ''
+            noa: noa,
+            manufacturer: payload.manufacturer || '',
+            material: payload.material || '',
+            description: payload.description || ''
         });
     } catch (e) {
-        console.error('get data failed:', e);
-    } finally {
-        showSuggestions.value = false;
+        console.error('Data mapping failed:', e);
     }
 }
+
 defineExpose({
     clearInput: () => (query.value = ''),
     commit: emitSelectedFromStore
