@@ -5,7 +5,7 @@
             <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="transparent" animationDuration="8.5s" aria-label="Verifying Documents..." />
         </div>
         <h2 class="text-white text-2xl font-bold">Verifying Documents...</h2>
-        <p class="text-black/80 mt-2">Checking S3 for: {{ expectedFiles.join(', ') }}</p>
+        <p class="text-black/80 mt-2">Confirming creation of Documents: {{ expectedFiles.join(', ') }}</p>
     </div>
 
     <div id="summary" :class="{ 'opacity-30 pointer-events-none grayscale': isCheckingFiles }" style="margin-left: 250px; transition: all 0.5s ease">
@@ -122,9 +122,6 @@ const doublePaddyData = computed(() => tileNoaInfo.value?.doublepaddyData || '')
 
 const burInfo = computed(() => burpdfStore.$state.burpdfinput[1]?.burpdfData);
 const isPaddySingle = ref(false);
-// const burInfoData = ref(burInfo.value?.burpdfData || '');
-// const singlePaddyData = ref(tileNoaInfo.value?.singlepaddyData || '');
-// const doublePaddyData = ref(tileNoaInfo.value?.doublepaddyData || '');
 const shingleInfo = computed(() => shingleStore.$state.inputshingle[0]);
 const shData = computed(() => shingleInfo.value?.shingleData || '');
 const mechData = ref(mechtileNoaInfo.value);
@@ -220,32 +217,6 @@ const displayInfo = reactive({
     dim: '',
     item: ''
 });
-// const callState = tryOnMounted(() => {
-//     if (roofType.value.length === 0) {
-//         return '';
-//     } else {
-//         for (let i = 0; i < roofType.value.length; i++) {
-//             if (roofType.value[i].item === 'Asphalt Shingle') {
-//                 isRoofShingleValid.value = true;
-//                 displayInfo.dim = roofType.value[i].dim1;
-//                 displayInfo.item = roofType.value[i].item;
-//             } else if (roofType.value[i].item === 'Low Slope') {
-//                 isRoofLowslopeValid.value = true;
-//                 console.log(isRoofLowslopeValid, burInfo);
-//             } else if (roofType.value[i].item === 'Adhesive Set Tile') {
-//                 console.log(roofType.value[i].item);
-//                 isRoofTileADValid.value = true;
-//             } else if (roofType.value[i].item === 'Mechanical Fastened Tile') {
-//                 console.log(roofType.value[i].item);
-//                 isRoofTileMechanicalValid.value = true;
-//             } else if (generalType.value.length !== 1) {
-//                 isGenaralPageValid.value = true;
-//             }
-
-//             console.log(roofType.value, burpdfStore);
-//         }
-//     }
-// });
 
 // Change this: const callState = tryOnMounted(() => { ... })
 // To this:
