@@ -2,14 +2,13 @@
     <div class="shinglenoa">
         <div class="w-64 gap-2 mt-8 space-y-2 mb-2" style="margin-left: 20px">
             <FloatLabel>
-                <!-- <AutoComplete v-model="query" showClear :suggestions="items" @complete="search" @item-select="onSelect" inputClass="w-56" /> -->
-                <AutoComplete v-model="query" showClear :suggestions="items" @complete="search" @item-select="onSelect" @itemSelect="onSelect" inputClass="w-56" />
-
+                <AutoComplete v-model="query" showClear :suggestions="items" @complete="search" @item-select="onSelect" inputClass="w-56" />
                 <label for="ac">Shingle NOA: 00000000</label>
             </FloatLabel>
         </div>
     </div>
 </template>
+
 <script setup>
 import useInputwFetch from '@/composables/fetchTech/use-InputwFetch';
 import { useShingleStore } from '@/stores/shingleStore';
@@ -19,59 +18,65 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 const emit = defineEmits(['updated']);
 
+// Destructure composable
 const { callFunction, noaStore } = useInputwFetch();
-
 const store = useShingleStore();
 const { inputshingle } = storeToRefs(store);
+
 const query = ref('');
 const items = ref([]);
-// ✅ derive the NOA list reactively from the store (no local ref copy)
+
+/**
+ * FIXED: Reactive list derivation
+ * Checks common Pinia storage patterns to find the array
+ */
 const allNoas = computed(() => {
-    const v = noaStore.$state.noashingle;
+    const state = noaStore.$state.noashingle;
+    if (!state) return [];
 
-    const first = Array.isArray(v) ? v[0] : null;
-    const candidate = first?.shingleNoaNumber?.noa ?? first?.noa ?? v?.shingleNoaNumber?.noa ?? v?.noa ?? [];
+    // Case 1: Data is nested in the first element of an array (your current logic)
+    const deepData = state[0]?.shingleNoaNumber?.noa || state[0]?.noa;
+    if (Array.isArray(deepData)) return deepData;
 
-    let arr = candidate;
-    if (typeof arr === 'string') {
-        try {
-            arr = JSON.parse(arr);
-        } catch {}
-    }
+    // Case 2: Data is the state itself
+    if (Array.isArray(state)) return state;
 
-    return Array.isArray(arr) ? arr.map(String) : [];
+    return [];
 });
 
 onMounted(() => {
     callFunction();
 });
 
-const onSelect = (e) => {
-    // e.value should be the selected item
-    const noa = e?.value ?? query.value;
-    console.log('[ShingleNoa] selected:', noa);
+/**
+ * FIXED: Search Logic
+ * This was empty in your snippet, which is why the dropdown was empty!
+ */
+const search = (event) => {
+    const q = String(event.query ?? '')
+        .toLowerCase()
+        .trim();
+    const list = allNoas.value;
 
-    emit('updated', { noa }); // ✅ parent can now see it
-
-    // optional: if you want full payload:
-    emitSelectedFromStore(noa);
+    if (!q) {
+        items.value = list.slice(0, 50);
+    } else {
+        items.value = list.filter((noa) => String(noa).toLowerCase().includes(q)).slice(0, 50);
+    }
 };
 
-const search = (event) => {
-    const q = String(event.query ?? '').trim();
-    const list = allNoas.value; // your computed list
-
-    items.value = !q ? list.slice(0, 50) : list.filter((noa) => noa.includes(q)).slice(0, 50);
+const onSelect = (e) => {
+    const noa = e?.value ?? query.value;
+    emit('updated', { noa });
+    emitSelectedFromStore(noa);
 };
 
 function emitSelectedFromStore(noa) {
     const list = Array.isArray(inputshingle.value) ? inputshingle.value : [];
-    console.log(inputshingle);
-    const match = list.find((x) => x?.shingleData?.noa?.toString() === noa?.toString()) || list.find((x) => x?.shingleData?.NOA?.toString() === noa?.toString());
+    const match = list.find((x) => x?.shingleData?.noa?.toString() === noa?.toString() || x?.shingleData?.NOA?.toString() === noa?.toString());
+
     const sd = match?.shingleData;
-    console.log(sd);
     if (!sd) {
-        // at least emit noa so parent can open modal
         emit('updated', { noa });
         return;
     }
@@ -83,7 +88,15 @@ function emitSelectedFromStore(noa) {
         description: sd.description ?? ''
     });
 }
-watch(allNoas, (v) => console.log('allNoas len', v.length, v[0]), { immediate: true });
+
+// Helpful debug watch
+watch(
+    allNoas,
+    (newVal) => {
+        console.log('[ShingleNoa] Computed allNoas updated. Count:', newVal.length);
+    },
+    { immediate: true }
+);
 </script>
 
 <style scoped>

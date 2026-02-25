@@ -28,31 +28,27 @@ export default function useInputs() {
         .get()
         .json();
 
-    watch(
-        () => data.value,
-        (val) => {
-            if (!val) return;
+    watch(data, (val) => {
+        if (!val) return;
 
-            let body = val.body ?? val;
-
-            // ✅ parse lambda body if it's JSON string
-            if (typeof body === 'string') {
-                try {
-                    body = JSON.parse(body);
-                } catch (e) {}
+        // val is already the parsed JSON from the Lambda 'body'
+        // If Lambda returns json.dumps(["A", "B"]), val is ["A", "B"]
+        let arr = Array.isArray(val) ? val : [];
+        console.log(arr, data);
+        // If it's still a string for some reason, parse it once
+        if (typeof val === 'string') {
+            try {
+                arr = JSON.parse(val);
+            } catch (e) {
+                arr = [];
             }
-
-            // ✅ force array
-            const arr = Array.isArray(body) ? body : [];
-            shingleNoaNumber.noa = arr;
-            // ✅ store consistent shape your component can read
-            noaStore.addShingle(shingleNoaNumber);
-            // {
-
-            // }
         }
-    );
 
+        // Save strictly as an array of strings to the store
+        noaStore.addShingle({ noa: arr });
+
+        console.log('[Composable] Saved to store, count:', arr.length);
+    });
     const callFunction = async () => {
         await fetchData();
     };

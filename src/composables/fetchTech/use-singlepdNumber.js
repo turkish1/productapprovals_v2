@@ -9,10 +9,6 @@ export default function useSingle() {
 
     const singleStore = useSinglepdStore();
 
-    const pdNumber = reactive({
-        noa: []
-    });
-
     const url = computed(() => {
         return 'https://kn5yokjdkzi7aylxly7cqo2hm40ezyfl.lambda-url.us-east-1.on.aws/';
     });

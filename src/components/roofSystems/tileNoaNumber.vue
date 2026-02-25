@@ -57,6 +57,7 @@ watch(query, (v) => {
 
 const isDouble = computed(() => paddyCat.activeCategory === 'double');
 const currentNOAs = computed(() => {
+    console.log(doubleStore);
     const list = isDouble.value ? doubleStore.noaList : singleStore.noaList;
     console.log(inputdatas, inputdata);
     return Array.isArray(list) ? list.map(String) : [];
@@ -121,25 +122,54 @@ watch(
     (v) => console.log('[tileNoaNumber] doubleStore.noaList changed len=', v?.length, v?.slice?.(0, 5)),
     { deep: true }
 );
+// async function emitSelectedFromStore(noa) {
+//     if (!noa) return;
+
+//     try {
+//         // 1. Fetch the data
+//         const payload = isDouble.value ? await getTilenoas(noa) : await getTilenoa(noa);
+
+//         // 2. THE FIX: Check if payload is null before doing ANYTHING else
+//         if (!payload) {
+//             console.log('Payload is still loading or not found...');
+//             return; // Exit the function early so it doesn't crash below
+//         }
+
+//         // 3. Now it is safe to access properties
+//         console.log('Successfully received payload:', payload);
+
+//         emit('confirmed', payload);
+
+//         // We use the keys defined in your buildPayload function (manufacturer, material, etc.)
+//         emit('updated', {
+//             noa: noa,
+//             manufacturer: payload.manufacturer || '',
+//             material: payload.material || '',
+//             description: payload.description || ''
+//         });
+//     } catch (e) {
+//         console.error('Data mapping failed:', e);
+//     }
+// }
 async function emitSelectedFromStore(noa) {
     if (!noa) return;
 
     try {
-        // 1. Fetch the data
+        // 1. Await the fetch
+        // Make sure isDouble.value is correctly toggling based on the store
         const payload = isDouble.value ? await getTilenoas(noa) : await getTilenoa(noa);
 
-        // 2. THE FIX: Check if payload is null before doing ANYTHING else
+        console.log('[Component] Received payload from composable:', payload);
+
         if (!payload) {
-            console.log('Payload is still loading or not found...');
-            return; // Exit the function early so it doesn't crash below
+            console.warn('No payload found for NOA:', noa);
+            return;
         }
 
-        // 3. Now it is safe to access properties
-        console.log('Successfully received payload:', payload);
-
+        // 2. Emit 'confirmed' for the modal to open/populate
         emit('confirmed', payload);
 
-        // We use the keys defined in your buildPayload function (manufacturer, material, etc.)
+        // 3. Emit 'updated' for general form state
         emit('updated', {
             noa: noa,
             manufacturer: payload.manufacturer || '',
@@ -147,10 +177,9 @@ async function emitSelectedFromStore(noa) {
             description: payload.description || ''
         });
     } catch (e) {
-        console.error('Data mapping failed:', e);
+        console.error('Data mapping failed in component:', e);
     }
 }
-
 defineExpose({
     clearInput: () => (query.value = ''),
     commit: emitSelectedFromStore

@@ -16,10 +16,10 @@ const visible = ref(false);
 .modal-wrapper {
     position: fixed;
     left: 150px;
-    top: 100px;
+    top: 90px;
     z-index: 500;
-    width: 55vw;
-    height: 50vh;
+    width: 850px;
+    height: 500px;
     background-color: rgba(174, 180, 181, 0.1); // Clear light blue with 10% opacity
     backdrop-filter: blur(15px); // Strong frosted glass effect
     border-radius: 12px;
@@ -45,7 +45,7 @@ const visible = ref(false);
         display: center;
         flex-direction: column;
         position: relative;
-        max-width: 250px;
+        max-width: 450px;
         width: 100%;
 
         h3 {
@@ -58,7 +58,7 @@ const visible = ref(false);
         .form {
             display: flex;
             flex-direction: column;
-            max-width: 80%;
+            max-width: 100%;
 
             label {
                 font-size: 12px;

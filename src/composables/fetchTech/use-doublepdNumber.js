@@ -8,10 +8,6 @@ export default function useDouble() {
     const results = ref([]);
     const doubleStore = useDoublepdStore();
 
-    const pdNumbers = reactive({
-        noa: []
-    });
-
     const url = computed(() => {
         return 'https://fcnamqr5pm5p2mqiwlliryrdli0voxkb.lambda-url.us-east-1.on.aws/';
     });
@@ -30,21 +26,26 @@ export default function useDouble() {
         .get()
         .json();
 
-    watch(data, (arr) => {
-        console.log(arr?.body);
-        if (arr?.body) {
-            pdNumbers.noa = arr.body; // Keep local reactive
-            console.log(arr?.body);
+    watch(
+        () => data.value,
+        (val) => {
+            console.log(data.value);
+            console.log('[double fetch] data.value:', val);
+            const body = val?.body ?? val; // fallback if lambda returns list directly
+            if (!body) return;
 
-            doubleStore.addNoas({ noa: arr.body }); // Store correct shape
-        }
-    });
+            doubleStore.addNoas({ noa: body });
+        },
+        { immediate: true }
+    );
     const callFunctions = async () => {
         await fetchData();
     };
     const fetchData = async () => {
         errors.value = '';
-        await execute(); // This triggers the GET request
+        console.log('[double fetch] execute() starting');
+        await execute();
+        console.log('[double fetch] execute() done');
     };
 
     return {
