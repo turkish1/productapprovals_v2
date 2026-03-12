@@ -19,7 +19,6 @@ import tileNoaNumber from '@/components/roofSystems/tileNoaNumber.vue';
 import { useDoublePaddyStore } from '@/stores/doublepaddyStore';
 import { usePaddyoptionStore } from '@/stores/paddyCatStore';
 import { useRoofListStore } from '@/stores/roofList';
-// import { useSavedStore } from '@/stores/savedTiledataStore';
 import { usePaddyStore } from '@/stores/singlepaddyStore';
 import { usetilesysfStore } from '@/stores/tilesysfStore';
 import { usevalueStore } from '@/stores/tilevalueStore';
@@ -30,7 +29,6 @@ import { computed, isProxy, nextTick, onMounted, reactive, ref, toRaw, unref, wa
 // addPaddyCatval
 const paddyCat = usePaddyoptionStore();
 
-// const { setCategory } = usePaddyoptionStore();
 const paddyStore = usePaddyStore();
 const { inputdata } = storeToRefs(paddyStore);
 
@@ -41,9 +39,7 @@ const permitStore = usePermitappStore();
 const lastTilePayload = ref(null);
 
 const ftileStore = usetilesysfStore();
-// const multipleStore = usemultiAdStore();
 
-// const { multiAdinput } = storeToRefs(multipleStore);
 const { addSystemvalues } = usevalueStore();
 const { Edatamounted } = useUDL();
 
@@ -58,10 +54,7 @@ const childQueryRef = ref();
 // Reactive State
 const selectedOption = ref('');
 const query = ref('');
-// const isPaddySingle = ref(false);
-// const isPaddyDouble = ref(false);
 
-// const isPaddydatavalid = ref(false);
 const isHeightValid = ref(false);
 const isDisabledslope = ref(true);
 const isDisabled = ref(true);
@@ -98,14 +91,6 @@ watch(isHeightDisabled, (newVal) => {
     }
 });
 
-// const lastNonEmpty = (arrRef, key) => {
-//     const a = Array.isArray(arrRef.value) ? arrRef.value : [];
-//     for (let i = a.length - 1; i >= 0; i--) {
-//         const x = a[i]?.[key];
-//         if (x && Object.keys(x).length) return x;
-//     }
-//     return null;
-// };
 const selectedDeck = ref();
 const type = ref([{ name: 'Select Deck Type' }, { name: '5/8" Plywood' }, { name: '3/4" Plywood' }, { name: '1" x 6" T & G' }, { name: '1" x 8" T & G' }, { name: 'Existing 1/2" Plywood' }]);
 
@@ -132,7 +117,6 @@ const clamp = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a,
 const latestOf = (list) => (Array.isArray(list) && list.length ? list[list.length - 1] : null);
 
 const isMulti = (obj) => Array.isArray(obj?.select_tile) && obj.select_tile.length > 0;
-// const selectedUnderlaymentKey = ref(0);
 const isUDLValid = ref(false);
 const isUDLNOAValid = ref(false);
 const isSAValid = ref(false);
@@ -160,11 +144,7 @@ const tilenoas = reactive({
     Table2: [],
     Table3: [],
     select_tile: [],
-    // tile_map: [],
-    // table2_map: [],
-    // Table3_obj_map: [],
-    // mfMap: [],
-    // Table2_obj_map: [],
+
     tile_map: {},
     table2_map: {},
     Table3_obj_map: {},
@@ -904,6 +884,23 @@ function applyNOA(src, { multiple }) {
     //     // expose to modal
     //     tilenoas.selection = map; // <— single path feeds the modal
     // }
+    // IMPROVED NORMALIZATION
+    const map = {};
+    // Look for the material list in multiple possible keys
+    const rawLabels = src.AdhesiveMaterial || src.selection || [];
+    const rawResistance = src.resistance || [];
+
+    if (Array.isArray(rawLabels)) {
+        rawLabels.forEach((val, i) => {
+            const label = typeof val === 'string' ? val : (val?.label ?? val?.value ?? '');
+            if (label) map[label] = rawResistance[i] ?? '';
+        });
+        tilenoas.selection = map;
+    } else if (typeof rawLabels === 'object') {
+        tilenoas.selection = rawLabels; // It's already a map
+    }
+
+    selectedMaterial.value = null;
     if (src.mfMap && typeof src.mfMap === 'object' && !Array.isArray(src.mfMap)) {
         tilenoas.selection = { ...src.mfMap };
     } else if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
@@ -1420,36 +1417,66 @@ function bucketFromSlope(s) {
 }
 // ✅ CHANGE: single computed MF map that works for BOTH single + mult
 
+// const mfByMaterial = computed(() => {
+//     const src = srcData.value || {};
+
+//     // ✅ MULTI path: mfMap object from backend
+//     if (src.mfMap && typeof src.mfMap === 'object' && !Array.isArray(src.mfMap)) {
+//         return { ...src.mfMap };
+//     }
+
+//     // ✅ ALSO ACCEPT: selection object map from backend (label -> mf)
+//     if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
+//         return { ...src.selection };
+//     }
+
+//     // ✅ SINGLE normalized path (you set tilenoas.selection)
+//     if (tilenoas.selection && typeof tilenoas.selection === 'object' && !Array.isArray(tilenoas.selection)) {
+//         return { ...tilenoas.selection };
+//     }
+
+//     // ✅ fallback arrays selection[] + resistance[]
+//     const map = {};
+//     const sel = Array.isArray(src.selection) ? src.selection : [];
+//     const res = Array.isArray(src.resistance) ? src.resistance : [];
+//     sel.forEach((k, i) => {
+//         const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
+//         if (label) map[label] = res[i];
+//     });
+
+//     return map;
+// });
 const mfByMaterial = computed(() => {
     const src = srcData.value || {};
+    const map = {};
 
-    // ✅ MULTI path: mfMap object from backend
-    if (src.mfMap && typeof src.mfMap === 'object' && !Array.isArray(src.mfMap)) {
-        return { ...src.mfMap };
-    }
-
-    // ✅ ALSO ACCEPT: selection object map from backend (label -> mf)
-    if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
-        return { ...src.selection };
-    }
-
-    // ✅ SINGLE normalized path (you set tilenoas.selection)
+    // 1. Check tilenoas.selection (where you normalize single path)
     if (tilenoas.selection && typeof tilenoas.selection === 'object' && !Array.isArray(tilenoas.selection)) {
         return { ...tilenoas.selection };
     }
 
-    // ✅ fallback arrays selection[] + resistance[]
-    const map = {};
-    const sel = Array.isArray(src.selection) ? src.selection : [];
-    const res = Array.isArray(src.resistance) ? src.resistance : [];
-    sel.forEach((k, i) => {
-        const label = typeof k === 'string' ? k : (k?.label ?? k?.value ?? '');
-        if (label) map[label] = res[i];
-    });
+    // 2. Direct Backend Object Map (label -> mf)
+    if (src.selection && typeof src.selection === 'object' && !Array.isArray(src.selection)) {
+        return { ...src.selection };
+    }
+
+    // 3. Fallback: Handle the "AdhesiveMaterial" array + "resistance" array
+    // This is likely where your data is sitting
+    const labels = src.AdhesiveMaterial || src.selection || [];
+    const resistance = src.resistance || [];
+
+    if (Array.isArray(labels)) {
+        labels.forEach((label, i) => {
+            const cleanLabel = typeof label === 'string' ? label : label?.label || '';
+            if (cleanLabel) {
+                // Map the string to the corresponding index in resistance array
+                map[cleanLabel] = resistance[i] || '';
+            }
+        });
+    }
 
     return map;
 });
-
 const materialOptions = computed(() => Object.keys(mfByMaterial.value).map((label) => ({ label, value: label })));
 watch(materialOptions, (opts) => {
     if (!opts.some((o) => o?.value === selectedMaterial.value)) {
@@ -1635,9 +1662,7 @@ function updateMF(val) {
     ismrInvalid2.value = !ismrValidMR2.value;
     ismrValidMR3.value = mr3 < mfNum;
     ismrInvalid3.value = !ismrValidMR3.value;
-    // selectedMaterial.value = label;
     tileData2.material = label;
-    // saveTileData();
 }
 
 // recompute λ/Mg when slope or payload changes
@@ -1903,6 +1928,7 @@ const tileStaging = async () => {
             hittype: tilenoas.hittype
         };
         await post(body);
+        console.log(selectedMaterial.value);
         // Success: maybe show a toast or update UI
         console.log('Posted successfully');
     } catch (error) {
@@ -1936,7 +1962,7 @@ const commonTile = () => ({
     noa: tilenoas.noa ?? '',
     applicant: tilenoas.manufacturer ?? '',
     description: tilenoas.description ?? '',
-    material: tilenoas.material ?? '',
+    material: selectedMaterial.value ?? '',
     decktype: dt.value ?? '',
     area: num(dims.area),
     height: num(dims.height),
@@ -1995,8 +2021,6 @@ async function onOpenTileClick() {
 
     modalIsActive.value = true;
 }
-
-// const tileNoaChanges = ref(0);
 
 const tileUDLChanges = ref(0);
 function onUdlNoaConfirmed(val) {
@@ -2079,7 +2103,6 @@ watch(selectedsystemf, () => {
 </script>
 
 <template>
-    <!-- inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-3-->
     <div id="tile" class="inner mx-auto max-w-5xl p-6 dark:bg-gray-800 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-4" style="margin-left: 50px; margin-top: 100px">
         <div class="w-64 gap-2 mt-5 space-y-2" style="margin-left: 20px">
             <Select v-model="selectedDeck" :options="type" optionLabel="name" placeholder="Select a Deck Type" class="w-full md:w-56" @change="getdeckType" />
@@ -2100,7 +2123,6 @@ watch(selectedsystemf, () => {
             <Message v-if="errorHeightMessage" class="w-96 mt-1" severity="error" :life="6000" style="margin-left: 2px">{{ errorHeightMessage }}</Message>
         </div>
 
-        <!-- <Divider /> -->
         <DripEdAdTile />
 
         <div class="w-64 mt-3 ..." style="margin-left: 20px">
@@ -2186,8 +2208,7 @@ watch(selectedsystemf, () => {
 
                 <div v-show="isMultiTileValid" class="w-1/2 flex flex-col border-2 p-2 border-gray-700">
                     <label for="material">Tile Material</label>
-                    <!-- @update:modelValue="updateMF" -->
-                    <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="applyMF" />
+                    <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="Select Material" @change="(e) => applyMF(e.value)" />
                 </div>
 
                 <Divider />
@@ -2234,26 +2255,12 @@ watch(selectedsystemf, () => {
             </div>
 
             <Divider />
-            <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
+            <div v-show="!isMultiTileValid" class="min-w-[450px] flex flex-col border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="description">Tile Description</label>
                 <InputText id="description" v-model="tilenoas.description" />
             </div>
             <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700">
                 <label style="color: #122620">Tile Material</label>
-                <!-- <Select
-                    v-model="selectedMaterial"
-                    :options="safeOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="make a selection"
-                    @update:modelValue="
-                        (val) => {
-                            applyMgLambdaFromTables(); // λ/Mg from Table2/3 for single
-                            updatedMF1(val); // MF from selection/resistance
-                            refreshExposureFromSelection();
-                        }
-                    "
-                /> -->
                 <!-- ✅ CHANGE: Multi material select uses the SAME materialOptions + same model + no save -->
                 <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="applyMF" />
             </div>
@@ -2279,14 +2286,12 @@ watch(selectedsystemf, () => {
                 <InputText id="designPressure" v-model="udlTile.designPressure" :disabled="!selectedsystemE" />
             </div>
             <div class="grid grid-cols-1 gap-2 border-gray-700 focus:border-orange-600">
-                <div class="min-w-[700px] flex flex-col">
+                <div class="min-w-[800px] flex flex-col">
                     <label style="color: #122620" for="anchor">Anchor Base Sheet</label>
-                    <!-- <InputText id="anchor" v-model="anchorForSelected" :disabled="!selectedsystemE" /> -->
                     <InputText id="anchor" v-model="udlTile.Anchor_Base_Sheet" :disabled="!selectedsystemE" />
                 </div>
                 <div class="min-w-[380px] flex flex-col">
                     <label style="color: #122620" for="description">(UDL) Description</label>
-                    <!-- <InputText id="description" v-model="descForSelected" :disabled="!selectedsystemE" /> -->
                     <InputText id="description" v-model="udlTile.TileCap_Sheet_Description" :disabled="!selectedsystemE" />
                 </div>
             </div>

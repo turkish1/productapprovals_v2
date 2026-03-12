@@ -1,7 +1,8 @@
 <!-- PermitApplicationPage1.vue -->
 <script setup>
 import useMuniapp from '@/composables/Postdata/usePostMuniapp';
-import { computed, reactive, ref, watch } from 'vue';
+import SignaturePad from 'signature_pad'; // npm install signature_pad
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 /**
  * Model matches the visible first-page fields/sections in the PDF:
  * - Permit Request (multi-select)
@@ -19,35 +20,10 @@ const error = ref(null);
 const loading = ref(false);
 
 const form = reactive({
-    permitRequest: {
-        newPermit: false,
-        permitRevision: false,
-        permitRenewal: false,
-        permitExtension: false,
-        changeOfArchEng: false,
-        changeOfOwner: false,
-        changeOfContractor: false,
-        privateProvider: false,
-        cityProject: false,
-        affordableHousing: false,
-        reprievePermit: false,
-        interiorNonStructural: false,
-        leed: false,
-        seal: false,
-        phasedPermit: false,
-        subPermit: false,
-        roofing: false,
-        electrical: false,
-        mechanical: false,
-        plumbing: false,
-        fire: false,
-        generator: false,
-        tempStructure: false,
-        demoYearBuilt: false,
-        shopDrawings: false
-    },
+    // CHANGED: From object of booleans to a single string
+    permitRequest: [],
 
-    propertyInformation: 'residential', // 'residential' | 'commercial'
+    propertyInformation: 'residential',
 
     property: {
         propertyAddress: '',
@@ -61,7 +37,7 @@ const form = reactive({
     },
 
     applicant: {
-        applicantType: 'contractor', // 'contractor' | 'owner' | 'architect' | 'engineer'
+        applicantType: '',
         name: '',
         licenseNumber: '',
         contractorLicenseNumber: '',
@@ -75,15 +51,15 @@ const form = reactive({
         email: ''
     },
 
-    permitType: 'building', // 'building'|'electrical'|'mechanical'|'plumbing'|'roofing'|'fire' etc (keep simple)
+    permitType: 'building',
 
-    timelineElection: '', // required by PDF: optIn | optOut
-
+    timelineElection: '',
+    typeOfWork: '',
     work: {
-        valueOfWork: '',
+        valueOfWork: 0,
         areaOfWorkSqFt: '',
-        newConstructionAdditions: false,
-        alterationsReconfig: false,
+        // CHANGED: Grouped into a single selection
+        // typeOfWork: '',
         descriptionOfWork: '',
         occupancyClassification: ''
     },
@@ -177,9 +153,11 @@ const permitMuniAppPdf = reactive({
     timelineElection: '',
     workValue: '',
     descriptionOfWork: '',
-    areaOfWork: ''
+    areaOfWork: '',
+    signature: ''
 });
 const errors = reactive({ timelineElection: '' });
+const inputAddress = ref('');
 
 const isValid = computed(() => {
     return !!form.timelineElection; // PDF shows it as Required
@@ -191,7 +169,33 @@ watch(
     },
     { immediate: true }
 );
+// Add this to your <script setup>
+watch(
+    () => form.notary1.physicalPresence,
+    (val) => {
+        if (val) form.notary1.onlineNotarization = false;
+    }
+);
+watch(
+    () => form.notary1.onlineNotarization,
+    (val) => {
+        if (val) form.notary1.physicalPresence = false;
+    }
+);
 
+// Repeat for notary2 if they are separate signers
+watch(
+    () => form.notary2.physicalPresence,
+    (val) => {
+        if (val) form.notary2.onlineNotarization = false;
+    }
+);
+watch(
+    () => form.notary2.onlineNotarization,
+    (val) => {
+        if (val) form.notary2.onlineNotarization = false;
+    }
+);
 watch(
     () => form.property,
     (newVal) => {
@@ -204,13 +208,35 @@ function validate() {
     return !errors.timelineElection;
 }
 
-function submit() {
+async function submit() {
     if (!validate()) return;
-    // Replace with your API call:
-    console.log('Permit Application Page 1 payload:', JSON.parse(JSON.stringify(form)));
-    alert('Saved (demo). Wire submit() to your backend.');
+    form.property.propertyAddress = inputAddress.value;
+
+    Object.assign(permitMuniAppPdf, {
+        applicantLicense: form.applicant.licenseNumber,
+        jobaddress: form.property.propertyAddress,
+        municipality: form.property.city,
+        email: form.applicant.email,
+        name: form.applicant.name,
+        driversLicense: form.applicant.driversLicenseOrStateId,
+        state: form.applicant.state,
+        zip: form.applicant.zip,
+        contractorLic: form.applicant.contractorLicenseNumber,
+        permitType: form.permitType,
+        typeOfWork: form.typeOfWork,
+        propertyUse: form.propertyInformation,
+        timelineElection: form.timelineElection,
+        workValue: form.work.valueOfWork,
+        descriptionOfWork: form.work.descriptionOfWork,
+        areaOfWork: form.work.areaOfWorkSqFt,
+        notary1: form.notary1,
+        notary2: form.notary2,
+        signature: form.signatures
+    });
+
+    await postMuniAppData(permitMuniAppPdf);
+    console.log('Payload:', JSON.parse(JSON.stringify(form)));
 }
-const inputAddress = ref('');
 async function fetchData(url) {
     loading.value = true;
     error.value = null;
@@ -237,51 +263,23 @@ async function fetchData(url) {
         loading.value = false;
     }
 }
+
 async function load() {
     try {
         loading.value = true;
-        inputAddress.value = form.property.propertyAddress;
-        // muniProcessdata.value = muniProcess.value;
-        const addr = inputAddress.value.toUpperCase();
-        // This takes in the address as a field which lambda is expecting under the address below.
+        const addr = form.property.propertyAddress.toUpperCase();
         const url = `https://6x2kydgvuahfitwvxkkfbybv6u0kbxgl.lambda-url.us-east-1.on.aws/?address=${addr}`;
 
-        await fetchData(url);
+        const response = await fetch(url);
+        const resData = await response.json();
+        const propInfo = resData.body.MinimumPropertyInfos[0];
 
-        // formData.muniProc = muniProcess.value;
-        form.property.propertyAddress = inputAddress.value;
-        Object.assign(permitMuniAppPdf, {
-            applicantLicense: form.applicant.licenseNumber,
-            applicantType: applicant.applicantType,
-            jobaddress: form.property.propertyAddress,
-            municipality: form.property.city,
-            email: applicant.email,
-            name: applicant.name,
-            driversLicense: applicant.driversLicenseOrStateId,
-            state: applicant.state,
-            zip: applicant.zip,
-            contractorLic: applicant.contractorLicenseNumber,
-            permitType: permitRequest.permitType,
-            propertyUse: propertyInformation,
-            timelineElection: timelineElection,
-            workValue: work.valueOfWork,
-            descriptionOfWork: work.descriptionOfWork,
-            areaOfWork: work.areaOfWorkSqFt
-
-            // muniprocessnumber: formData.muniProc,
-            // processnumber: formData.processNumber,
-            // masterpermit: formData.permit,
-            // license: formData.license
-        });
-        // convMB.value = checkV.value.substring(1, 2);
-        // checkMB.value = useToNumber(convMB);
-        // convertFolio(checkMB.value);
-        // await procReceive(formData);
-        await postMuniAppData(permitMuniAppPdf);
-        // await callPermitdata(permitAppPdf);
-        // saveFormToStore(); // ← use the new clean function
+        form.property.city = propInfo.Municipality;
+        form.property.parcelFolio = propInfo.Strap;
     } catch (err) {
-        alert(err);
+        alert('No data found or enter correct address!');
+    } finally {
+        loading.value = false;
     }
 }
 function reset() {
@@ -318,7 +316,7 @@ function reset() {
     form.permitType = 'building';
     form.timelineElection = '';
     Object.assign(form.work, {
-        valueOfWork: '',
+        valueOfWork: 0,
         areaOfWorkSqFt: '',
         newConstructionAdditions: false,
         alterationsReconfig: false,
@@ -355,6 +353,45 @@ function reset() {
     Object.assign(form.notary2, JSON.parse(JSON.stringify(form.notary1)));
     errors.timelineElection = '';
 }
+// Signature Logic
+const sigCanvas = ref(null);
+let signaturePad = null;
+
+onMounted(() => {
+    // Initialize the pad
+    signaturePad = new SignaturePad(sigCanvas.value, {
+        penColor: 'rgb(0, 0, 0)',
+        backgroundColor: 'rgb(255, 255, 255)'
+    });
+});
+
+const clearSig = () => signaturePad.clear();
+
+const saveSig = () => {
+    if (signaturePad.isEmpty()) return alert('Please sign first');
+
+    // Convert to Base64 Image
+    const dataURL = signaturePad.toDataURL();
+    console.log(dataURL);
+    // To make it VERIFIABLE:
+    // You store this dataURL AND the user's metadata (IP, timestamp)
+    // in your database. DocuSeal does this automatically if you use their API.
+    form.signatures.ownerAgentOrGC = dataURL;
+    // form.signatures.qualifier = dataURL;
+    alert('Signature captured and hashed.');
+};
+const saveQualifierSig = () => {
+    if (signaturePad.isEmpty()) return alert('Please sign first');
+
+    // Convert to Base64 Image
+    const dataURL = signaturePad.toDataURL();
+    console.log(dataURL);
+    // To make it VERIFIABLE:
+    // You store this dataURL AND the user's metadata (IP, timestamp)
+    // in your database. DocuSeal does this automatically if you use their API.
+    form.signatures.qualifier = dataURL;
+    alert('Signature captured and hashed.');
+};
 </script>
 
 <template>
@@ -381,37 +418,35 @@ function reset() {
             <div class="card">
                 <div class="card-title">Permit Request (select all that apply)</div>
                 <div class="check-grid">
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.newPermit" /> New Permit</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.permitRevision" /> Permit Revision</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.permitRenewal" /> Permit Renewal</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.permitExtension" /> Permit Extension</label>
+                    <label class="chk"><input type="checkbox" value="newPermit" v-model="form.permitRequest" /> New Permit</label>
+                    <label class="chk"><input type="checkbox" value="permitRevision" v-model="form.permitRequest" /> Permit Revision</label>
+                    <label class="chk"><input type="checkbox" value="permitRenewal" v-model="form.permitRequest" /> Permit Renewal</label>
+                    <label class="chk"><input type="checkbox" value="permitExtension" v-model="form.permitRequest" /> Permit Extension</label>
+                    <label class="chk"><input type="checkbox" value="changeOfArchEng" v-model="form.permitRequest" /> Change of Arch/Engr</label>
+                    <label class="chk"><input type="checkbox" value="changeOfOwner" v-model="form.permitRequest" /> Change of Owner</label>
+                    <label class="chk"><input type="checkbox" value="changeOfContractor" v-model="form.permitRequest" /> Change of Contractor</label>
 
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.changeOfArchEng" /> Change of Arch/Engr</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.changeOfOwner" /> Change of Owner</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.changeOfContractor" /> Change of Contractor</label>
-
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.privateProvider" /> Private Provider</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.cityProject" /> City Project</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.affordableHousing" /> Affordable Housing</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.reprievePermit" /> Reprieve Permit</label>
-
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.interiorNonStructural" /> Interior, Non-Structural</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.leed" /> LEED</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.seal" /> (SEAL)</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Private Provider</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> City Project</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Affordable Housing</label>
+                    <!-- <label class="chk"><input type="checkbox" v-model="form.permitRequest.reprievePermit" /> Reprieve Permit</label> -->
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Reprieve Permit</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Interior, Non-Structural</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> LEED</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> (SEAL)</label>
 
                     <div class="divider"></div>
-
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.phasedPermit" /> Phased Permit</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.subPermit" /> Sub-permit</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.roofing" /> Roofing</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.electrical" /> Electrical</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.mechanical" /> Mechanical</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.plumbing" /> Plumbing</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.fire" /> Fire</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.generator" /> Generator</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.tempStructure" /> Temp Structure</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.demoYearBuilt" /> Demo year-built</label>
-                    <label class="chk"><input type="checkbox" v-model="form.permitRequest.shopDrawings" /> Shop Drawings</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Phased Permit</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Sub-permit</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Roofing</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Electrical</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Mechanical</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Plumbing</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Fire</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Generator</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Temp Structure</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Demo year-built</label>
+                    <label class="chk"><input type="checkbox" v-model="form.permitRequest" /> Shop Drawings</label>
                 </div>
             </div>
 
@@ -454,20 +489,19 @@ function reset() {
         </section>
 
         <!-- Property + Applicant -->
-        <section class="card">
+        <!-- <section class="card">
             <div class="card-title">Property Address / Identifiers</div>
             <div class="form-grid">
                 <div class="field">
                     <label>Property Address</label>
                     <input v-model="form.property.propertyAddress" type="text" />
                 </div>
-                <!-- <Button type="button" severity="contrast" icon="pi pi-search" style="font-size: 1rem" :loading="loading" @click="load" /> -->
-                <i class="pi pi-search" :loading="loading" @click="load" style="font-size: 1rem; margin-top: 15px"></i>
+                <Button type="button" severity="contrast" icon="pi pi-search" style="padding: 0.25rem 0.5rem; width: 20px; height: 30px; margin-top: 20px" :loading="loading" @click="load" />
+                <div class="field">
+                    <label>Parcel/Folio Number</label>
+                    <input v-model="form.property.parcelFolio" type="text" />
+                </div>
 
-                <!-- <div class="field small">
-                    <label>Unit #</label>
-                    <input v-model="form.property.unit" type="text" />
-                </div> style="margin-left: 50px"-->
                 <div class="field">
                     <label>City</label>
                     <input v-model="form.property.city" type="text" />
@@ -482,14 +516,49 @@ function reset() {
                 </div>
 
                 <div class="field">
-                    <label>Parcel/Folio Number</label>
-                    <input v-model="form.property.parcelFolio" type="text" />
-                </div>
-                <div class="field">
                     <label>Master Permit (If applicable)</label>
                     <input v-model="form.property.masterPermit" type="text" />
                 </div>
                 <div class="field">
+                    <label>Recertification and/or Violation No. (If applicable)</label>
+                    <input v-model="form.property.recertOrViolationNo" type="text" />
+                </div>
+            </div>
+        </section> -->
+        <section class="card">
+            <div class="card-title">Property Address / Identifiers</div>
+            <div class="form-grid-property">
+                <div class="field-property field-address">
+                    <label>Property Address</label>
+                    <input v-model="form.property.propertyAddress" type="text" />
+                </div>
+
+                <Button type="button" severity="contrast" icon="pi pi-search" class="search-btn" :loading="loading" @click="load" />
+
+                <div class="field-property field-parcel">
+                    <label>Parcel/Folio Number</label>
+                    <input v-model="form.property.parcelFolio" type="text" />
+                </div>
+
+                <div class="field-property field-city">
+                    <label>City</label>
+                    <input v-model="form.property.city" type="text" />
+                </div>
+                <div class="field-property field-state">
+                    <label>State</label>
+                    <input v-model="form.property.state" type="text" maxlength="2" />
+                </div>
+                <div class="field-property field-zip">
+                    <label>Zip Code</label>
+                    <input v-model="form.property.zip" type="text" />
+                </div>
+                <div style="grid-column: span 3"></div>
+
+                <div class="field-property field-half">
+                    <label>Master Permit (If applicable)</label>
+                    <input v-model="form.property.masterPermit" type="text" />
+                </div>
+                <div class="field-property field-half">
                     <label>Recertification and/or Violation No. (If applicable)</label>
                     <input v-model="form.property.recertOrViolationNo" type="text" />
                 </div>
@@ -555,65 +624,6 @@ function reset() {
                 </div>
             </div>
         </section>
-        <!-- <section class="card">
-            <div class="card-title">Contractor Information</div>
-
-            <div class="radio-row">
-                <label class="rad"><input type="radio" value="contractor" v-model="form.applicant.applicantType" /> Contractor</label>
-                <label class="rad"><input type="radio" value="owner" v-model="form.applicant.applicantType" /> Property Owner</label>
-                <label class="rad"><input type="radio" value="architect" v-model="form.applicant.applicantType" /> Architect</label>
-                <label class="rad"><input type="radio" value="engineer" v-model="form.applicant.applicantType" /> Structural Engineer</label>
-            </div>
-
-            <div class="form-grid">
-                <div class="field">
-                    <label>Name</label>
-                    <input v-model="form.applicant.name" type="text" />
-                </div>
-                <div class="field">
-                    <label>License Number</label>
-                    <input v-model="form.applicant.licenseNumber" type="text" />
-                </div>
-                <div class="field">
-                    <label>Contractor License Number</label>
-                    <input v-model="form.applicant.contractorLicenseNumber" type="text" />
-                </div>
-                <div class="field">
-                    <label>Driver’s License/State Identification</label>
-                    <input v-model="form.applicant.driversLicenseOrStateId" type="text" />
-                </div>
-
-                <div class="field">
-                    <label>Address</label>
-                    <input v-model="form.applicant.address" type="text" />
-                </div>
-                <div class="field small">
-                    <label>Suite</label>
-                    <input v-model="form.applicant.suite" type="text" />
-                </div>
-                <div class="field">
-                    <label>City</label>
-                    <input v-model="form.applicant.city" type="text" />
-                </div>
-                <div class="field xsmall">
-                    <label>State</label>
-                    <input v-model="form.applicant.state" type="text" maxlength="2" />
-                </div>
-                <div class="field small">
-                    <label>Zip Code</label>
-                    <input v-model="form.applicant.zip" type="text" />
-                </div>
-
-                <div class="field">
-                    <label>Daytime phone</label>
-                    <input v-model="form.applicant.daytimePhone" type="tel" />
-                </div>
-                <div class="field">
-                    <label>E-Mail Address (REQUIRED)</label>
-                    <input v-model="form.applicant.email" type="email" />
-                </div>
-            </div>
-        </section> -->
 
         <!-- Permit Type + Work -->
         <section class="grid-2">
@@ -639,7 +649,7 @@ function reset() {
                 <div class="form-grid">
                     <div class="field">
                         <label>Value of Work ($)</label>
-                        <input v-model="form.work.valueOfWork" type="text" placeholder="This amount cannot be changed once submitted" />
+                        <input v-model="form.work.valueOfWork" type="number" placeholder="This amount cannot be changed once submitted" />
                         <div class="hint">Attach a copy of the construction cost affidavit to this form</div>
                     </div>
                     <div class="field">
@@ -649,11 +659,17 @@ function reset() {
                 </div>
 
                 <div class="card-title" style="margin-top: 10px">Type of Work</div>
-                <div class="radio-row">
-                    <label class="chk"><input type="checkbox" v-model="form.work.newConstructionAdditions" /> New Construction/Additions</label>
-                    <label class="chk"><input type="checkbox" v-model="form.work.alterationsReconfig" /> Alterations/Reconfig of space</label>
-                </div>
 
+                <div class="radio-row">
+                    <label class="rad">
+                        <input type="radio" value="newconstruction" v-model="form.typeOfWork" />
+                        New Construction/Additions
+                    </label>
+                    <label class="rad">
+                        <input type="radio" value="alterations" v-model="form.typeOfWork" />
+                        Alterations/Reconfig of space
+                    </label>
+                </div>
                 <div class="field">
                     <label>Description of Work</label>
                     <textarea v-model="form.work.descriptionOfWork" rows="4" />
@@ -743,8 +759,8 @@ function reset() {
                     </div>
 
                     <div class="radio-row" style="grid-column: 1 / -1">
-                        <label class="chk"><input type="checkbox" v-model="form.notary1.physicalPresence" /> physical presence</label>
-                        <label class="chk"><input type="checkbox" v-model="form.notary1.onlineNotarization" /> online notarization</label>
+                        <label class="rad"><input type="radio" v-model="form.notary1.physicalPresence" /> physical presence</label>
+                        <label class="rad"><input type="radio" v-model="form.notary1.onlineNotarization" /> online notarization</label>
                     </div>
 
                     <div class="field">
@@ -783,8 +799,8 @@ function reset() {
                     </div>
 
                     <div class="radio-row" style="grid-column: 1 / -1">
-                        <label class="chk"><input type="checkbox" v-model="form.notary2.physicalPresence" /> physical presence</label>
-                        <label class="chk"><input type="checkbox" v-model="form.notary2.onlineNotarization" /> online notarization</label>
+                        <label class="rad"><input type="radio" v-model="form.notary2.physicalPresence" /> physical presence</label>
+                        <label class="rad"><input type="radio" v-model="form.notary2.onlineNotarization" /> online notarization</label>
                     </div>
 
                     <div class="field">
@@ -807,7 +823,28 @@ function reset() {
                 </div>
             </div>
         </section>
-
+        <div class="signature-container">
+            <section class="card">
+                <div class="card-title">Applicant Signature (Verifiable)</div>
+                <div class="signature-wrapper" style="border: 1px solid #000; width: 250px; height: 120px">
+                    <canvas ref="sigCanvas" width="230" height="100"></canvas>
+                </div>
+                <div class="actions" style="margin-top: 5px">
+                    <button type="button" @click="clearSig">Clear</button>
+                    <button type="button" @click="saveSig">Lock Signature</button>
+                </div>
+            </section>
+            <section class="card">
+                <div class="card-title">Qualifier Signature (Verifiable)</div>
+                <div class="signature-wrapper" style="border: 1px solid #000; width: 250px; height: 120px">
+                    <canvas ref="sigCanvas" width="230" height="100"></canvas>
+                </div>
+                <div class="actions" style="margin-top: 5px">
+                    <button type="button" @click="clearSig">Clear</button>
+                    <button type="button" @click="saveQualifierSig">Lock Signature</button>
+                </div>
+            </section>
+        </div>
         <!-- Actions -->
         <footer class="actions">
             <button class="btn" :disabled="!isValid" @click="submit">Submit</button>
@@ -926,13 +963,50 @@ function reset() {
     grid-template-columns: 1fr 1fr 1fr;
     gap: 10px;
 }
+.form-grid-property {
+    display: grid;
+    /* Create 12 equal columns for maximum layout control */
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1rem;
+    align-items: end; /* Aligns the button with the inputs, not the labels */
+}
 
+.field-property {
+    display: flex;
+    flex-direction: column;
+}
 .field {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
+/* Row 1: Address (span 6), Search (span 1), Parcel (span 5) */
+.field-address {
+    grid-column: span 6;
+}
+.search-btn {
+    grid-column: span 1;
+    margin-bottom: 2px;
+} /* Small tweak for alignment */
+.field-parcel {
+    grid-column: span 5;
+}
 
+/* Row 2: City (span 5), State (span 2), Zip (span 2), Empty Space (span 3) */
+.field-city {
+    grid-column: span 5;
+}
+.field-state {
+    grid-column: span 2;
+}
+.field-zip {
+    grid-column: span 2;
+}
+
+/* Row 3: Bottom fields (span 6 each) */
+.field-half {
+    grid-column: span 6;
+}
 .field label {
     font-size: 11px;
     font-weight: 700;
@@ -1032,5 +1106,16 @@ function reset() {
     .check-grid {
         grid-template-columns: 1fr;
     }
+}
+.signature-container {
+    display: flex; /* Activates Flexbox */
+    flex-direction: row; /* Aligns items horizontally */
+    gap: 390px; /* Adds space between the two cards */
+    align-items: flex-start; /* Ensures they align at the top */
+}
+
+.card {
+    /* Optional: prevents cards from shrinking if the screen is small */
+    flex-shrink: 0;
 }
 </style>
