@@ -610,10 +610,10 @@ const conditions = [
         identifier: 'system_e'
     }
 ];
-
+// ASTM #90 Prescriptive hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
-    { selectedBasesheet: 'ASTM #90 Prescriptive hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
+    { selectedBasesheet: 'Prescriptive hot asphalt applied Type II # 90 Tile Capsheet, adhered to an ASTM #30 base sheet.', key: 1 },
     { selectedBasesheet: 'System F: per the NOA (S/A) Tile Capsheet adhered diretly to a wood deck', key: 2 },
     { selectedBasesheet: 'System E: per the NOA (S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet', key: 3 }
 ]);
@@ -1768,7 +1768,7 @@ const mechSAStaging = async () => {
                     <InputText id="designPressure" v-model="udlTile.designPressure" />
                 </div>
                 <div v-show="isUDLNOAValid" class="grid grid-cols-1 gap-2 border-gray-700 focus:border-orange-600" style="margin-left: 2px">
-                    <div class="min-w-[1080px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
+                    <div class="min-w-[580px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">
                         <AnchorInputWrapper id="anchor" v-model="udlTile.Anchor_Base_Sheet" placeholder="Enter anchor base sheet" />
                     </div>
                     <div class="min-w-[480px] flex flex-col gap-2 border-2 border-gray-700 focus:border-orange-600">

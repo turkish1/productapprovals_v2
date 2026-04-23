@@ -98,7 +98,7 @@ const UnderlaymentSelection = ref('');
 let selectedUnderlayment = ref('');
 const underlaymentType = ref([
     { selectedBasesheet: '-- Select Tile Capsheet/Underlayment --', key: 0 },
-    { selectedBasesheet: 'ASTM #90 Prescriptive hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30', key: 1 },
+    { selectedBasesheet: 'Prescriptive hot asphalt applied Type II # 90 Tile Capsheet, adhered to an ASTM #30 base sheet.', key: 1 },
     { selectedBasesheet: 'System F: per the NOA (S/A) Tile Capsheet adhered diretly to a wood deck', key: 2 },
     { selectedBasesheet: 'System E: per the NOA (S/A) Tile Capsheet adhered to a mechanically fastened UDL/Anchor Sheet', key: 3 }
 ]);
@@ -282,7 +282,7 @@ watch(
 
 const conditions = [
     {
-        match: ['ASTM #90 Prescriptive hot mopped with Type IV Asphalt to a mechanically fastened ASTM #30'],
+        match: ['Prescriptive hot asphalt applied Type II # 90 Tile Capsheet, adhered to an ASTM #30 base sheet.'],
         flags: { isUDLNOAValid: false, isSAValid: false, isTileData: true },
         identifier: 'astm'
     },
@@ -2218,21 +2218,6 @@ watch(selectedsystemf, () => {
                 </div>
                 <div v-show="!isMultiTileValid" class="min-w-[350px] flex flex-col border-2 p-2 border-gray-700">
                     <label style="color: #122620">Tile Material</label>
-                    <!-- <Select
-                        v-model="selectedMaterial"
-                        :options="safeOptions"
-                        optionLabel="label"
-                        optionValue="value"
-                        placeholder="make a selection"
-                        @update:modelValue="
-                            (val) => {
-                                applyMgLambdaFromTables(); // λ/Mg from Table2/3 for single
-                                updatedMF1(val); // MF from selection/resistance
-                                refreshExposureFromSelection();
-                            }
-                        "
-                    /> -->
-                    <!-- ✅ CHANGE: Single material select uses SAME materialOptions -->
                     <Select v-model="selectedMaterial" :options="materialOptions" optionLabel="label" optionValue="value" placeholder="make a selection" @update:modelValue="applyMF" />
                 </div>
             </div>
@@ -2303,7 +2288,7 @@ watch(selectedsystemf, () => {
                 <label style="color: #122620" for="saapplicant">S/A Applicant</label>
                 <InputText id="saapplicant" v-model="saTiles.manufacturer" />
             </div>
-            <div class="w-1/2 border-2 p-2 border-gray-700 focus:border-orange-600">
+            <div class="w-3/4 border-2 p-2 border-gray-700 focus:border-orange-600">
                 <label style="color: #122620" for="samaterial">S/A Material Type</label>
                 <InputText id="saaterial" v-model="saTiles.material" />
             </div>
